@@ -1,0 +1,330 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L220</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L220</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> src/crewai/utilities/events/crew_events.py, line 171<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/e1a73e0c44fd85b2ad34ca0a3eda57964c0dee4b">e1a73e0c44</a> (2025-03-26T21:54:23)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">                self.fingerprint_metadata = self.crew.fingerprint.metadata</span></pre><h2>File at the merge commit, lines 163 to 171</h2><pre>  163 | 
+  164 |     def __init__(self, **data):
+  165 |         super().__init__(**data)
+  166 |         # Set fingerprint data from the crew
+  167 |         if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:
+  168 |             self.source_fingerprint = self.crew.fingerprint.uuid_str
+  169 |             self.source_type = &quot;crew&quot;
+  170 |             if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:
+<span class="t">  171 |                 self.fingerprint_metadata = self.crew.fingerprint.metadata</span></pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/f845fac4da7ec0255f966bf5f5999e713f0535e5">f845fac4da</a> (2025-03-27T15:42:11-03:00)</h2><p class="k">Refactor event base classes (#2491)<br>Path after this commit: src/crewai/utilities/events/crew_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/utilities/events/crew_events.py b/src/crewai/utilities/events/crew_events.py
+index 4a10772a8..d73cd95d3 100644
+<span class="d">--- a/src/crewai/utilities/events/crew_events.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/crew_events.py</span>
+<span class="h">@@ -1,171 +1,102 @@</span>
+<span class="d">-from typing import Any, Dict, Optional, Union</span>
+<span class="a">+from typing import TYPE_CHECKING, Any, Dict, Optional, Union</span>
+ 
+<span class="d">-from pydantic import InstanceOf</span>
+<span class="a">+from crewai.utilities.events.base_events import BaseEvent</span>
+ 
+<span class="d">-from crewai.utilities.events.base_events import CrewEvent</span>
+<span class="a">+if TYPE_CHECKING:</span>
+<span class="a">+    from crewai.crew import Crew</span>
+<span class="a">+else:</span>
+<span class="a">+    Crew = Any</span>
+ 
+ 
+<span class="d">-class CrewKickoffStartedEvent(CrewEvent):</span>
+<span class="d">-    &quot;&quot;&quot;Event emitted when a crew starts execution&quot;&quot;&quot;</span>
+<span class="a">+class CrewBaseEvent(BaseEvent):</span>
+<span class="a">+    &quot;&quot;&quot;Base class for crew events with fingerprint handling&quot;&quot;&quot;</span>
+ 
+     crew_name: Optional[str]
+<span class="d">-    inputs: Optional[Dict[str, Any]]</span>
+<span class="d">-    type: str = &quot;crew_kickoff_started&quot;</span>
+<span class="d">-    crew: Optional[Any] = None</span>
+<span class="a">+    crew: Optional[Crew] = None</span>
+ 
+     def __init__(self, **data):
+         super().__init__(**data)
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="a">+        self.set_crew_fingerprint()</span>
+<span class="a">+</span>
+<span class="a">+    def set_crew_fingerprint(self) -&gt; None:</span>
+<span class="a">+        if self.crew and hasattr(self.crew, &quot;fingerprint&quot;) and self.crew.fingerprint:</span>
+             self.source_fingerprint = self.crew.fingerprint.uuid_str
+             self.source_type = &quot;crew&quot;
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="a">+            if (</span>
+<span class="a">+                hasattr(self.crew.fingerprint, &quot;metadata&quot;)</span>
+<span class="a">+                and self.crew.fingerprint.metadata</span>
+<span class="a">+            ):</span>
+<span class=" m">                 self.fingerprint_metadata = self.crew.fingerprint.metadata</span>
+ 
+<span class="a">+    def to_json(self, exclude: set[str] | None = None):</span>
+<span class="a">+        if exclude is None:</span>
+<span class="a">+            exclude = set()</span>
+<span class="a">+        exclude.add(&quot;crew&quot;)</span>
+<span class="a">+        return super().to_json(exclude=exclude)</span>
+<span class="a">+</span>
+ 
+<span class="d">-class CrewKickoffCompletedEvent(CrewEvent):</span>
+<span class="a">+class CrewKickoffStartedEvent(CrewBaseEvent):</span>
+<span class="a">+    &quot;&quot;&quot;Event emitted when a crew starts execution&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    inputs: Optional[Dict[str, Any]]</span>
+<span class="a">+    type: str = &quot;crew_kickoff_started&quot;</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class CrewKickoffCompletedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew completes execution&quot;&quot;&quot;
+ 
+<span class="d">-    crew_name: Optional[str]</span>
+     output: Any
+     type: str = &quot;crew_kickoff_completed&quot;
+<span class="d">-    crew: Optional[Any] = None</span>
+<span class="d">-</span>
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="d">-            self.source_fingerprint = self.crew.fingerprint.uuid_str</span>
+<span class="d">-            self.source_type = &quot;crew&quot;</span>
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="d m">-                self.fingerprint_metadata = self.crew.fingerprint.metadata</span>
+ 
+ 
+<span class="d">-class CrewKickoffFailedEvent(CrewEvent):</span>
+<span class="a">+class CrewKickoffFailedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew fails to complete execution&quot;&quot;&quot;
+ 
+     error: str
+<span class="d">-    crew_name: Optional[str]</span>
+     type: str = &quot;crew_kickoff_failed&quot;
+<span class="d">-    crew: Optional[Any] = None</span>
+ 
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="d">-            self.source_fingerprint = self.crew.fingerprint.uuid_str</span>
+<span class="d">-            self.source_type = &quot;crew&quot;</span>
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="d m">-                self.fingerprint_metadata = self.crew.fingerprint.metadata</span>
+ 
+<span class="d">-</span>
+<span class="d">-class CrewTrainStartedEvent(CrewEvent):</span>
+<span class="a">+class CrewTrainStartedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew starts training&quot;&quot;&quot;
+ 
+<span class="d">-    crew_name: Optional[str]</span>
+     n_iterations: int
+     filename: str
+     inputs: Optional[Dict[str, Any]]
+     type: str = &quot;crew_train_started&quot;
+<span class="d">-    crew: Optional[Any] = None</span>
+<span class="d">-</span>
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="d">-            self.source_fingerprint = self.crew.fingerprint.uuid_str</span>
+<span class="d">-            self.source_type = &quot;crew&quot;</span>
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="d m">-                self.fingerprint_metadata = self.crew.fingerprint.metadata</span>
+ 
+ 
+<span class="d">-class CrewTrainCompletedEvent(CrewEvent):</span>
+<span class="a">+class CrewTrainCompletedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew completes training&quot;&quot;&quot;
+ 
+<span class="d">-    crew_name: Optional[str]</span>
+     n_iterations: int
+     filename: str
+     type: str = &quot;crew_train_completed&quot;
+<span class="d">-    crew: Optional[Any] = None</span>
+<span class="d">-</span>
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="d">-            self.source_fingerprint = self.crew.fingerprint.uuid_str</span>
+<span class="d">-            self.source_type = &quot;crew&quot;</span>
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="d m">-                self.fingerprint_metadata = self.crew.fingerprint.metadata</span>
+ 
+ 
+<span class="d">-class CrewTrainFailedEvent(CrewEvent):</span>
+<span class="a">+class CrewTrainFailedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew fails to complete training&quot;&quot;&quot;
+ 
+     error: str
+<span class="d">-    crew_name: Optional[str]</span>
+     type: str = &quot;crew_train_failed&quot;
+<span class="d">-    crew: Optional[Any] = None</span>
+ 
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="d">-            self.source_fingerprint = self.crew.fingerprint.uuid_str</span>
+<span class="d">-            self.source_type = &quot;crew&quot;</span>
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="d m">-                self.fingerprint_metadata = self.crew.fingerprint.metadata</span>
+ 
+<span class="d">-</span>
+<span class="d">-class CrewTestStartedEvent(CrewEvent):</span>
+<span class="a">+class CrewTestStartedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew starts testing&quot;&quot;&quot;
+ 
+<span class="d">-    crew_name: Optional[str]</span>
+     n_iterations: int
+     eval_llm: Optional[Union[str, Any]]
+     inputs: Optional[Dict[str, Any]]
+     type: str = &quot;crew_test_started&quot;
+<span class="d">-    crew: Optional[Any] = None</span>
+<span class="d">-</span>
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="d">-            self.source_fingerprint = self.crew.fingerprint.uuid_str</span>
+<span class="d">-            self.source_type = &quot;crew&quot;</span>
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="d m">-                self.fingerprint_metadata = self.crew.fingerprint.metadata</span>
+ 
+ 
+<span class="d">-class CrewTestCompletedEvent(CrewEvent):</span>
+<span class="a">+class CrewTestCompletedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew completes testing&quot;&quot;&quot;
+ 
+<span class="d">-    crew_name: Optional[str]</span>
+     type: str = &quot;crew_test_completed&quot;
+<span class="d">-    crew: Optional[Any] = None</span>
+<span class="d">-</span>
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="d">-            self.source_fingerprint = self.crew.fingerprint.uuid_str</span>
+<span class="d">-            self.source_type = &quot;crew&quot;</span>
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="d m">-                self.fingerprint_metadata = self.crew.fingerprint.metadata</span>
+ 
+ 
+<span class="d">-class CrewTestFailedEvent(CrewEvent):</span>
+<span class="a">+class CrewTestFailedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew fails to complete testing&quot;&quot;&quot;
+ 
+     error: str
+<span class="d">-    crew_name: Optional[str]</span>
+     type: str = &quot;crew_test_failed&quot;
+<span class="d">-    crew: Optional[Any] = None</span>
+<span class="d">-</span>
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the crew</span>
+<span class="d">-        if self.crew and hasattr(self.crew, &#x27;fingerprint&#x27;) and self.crew.fingerprint:</span>
+<span class="d">-            self.source_fingerprint = self.crew.fingerprint.uuid_str</span>
+<span class="d">-            self.source_type = &quot;crew&quot;</span>
+<span class="d">-            if hasattr(self.crew.fingerprint, &#x27;metadata&#x27;) and self.crew.fingerprint.metadata:</span>
+<span class="d m">-                self.fingerprint_metadata = self.crew.fingerprint.metadata</span></pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/31ffa90075ee953a57db5e62ed83c26d6b65fbf9">31ffa90075</a> (2025-05-21T10:32:03-07:00)</h2><p class="k">telemetry initialization and enhance event handling (#2853)<br>Path after this commit: src/crewai/utilities/events/crew_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/utilities/events/crew_events.py b/src/crewai/utilities/events/crew_events.py
+index d73cd95d3..103f3ecd3 100644
+<span class="d">--- a/src/crewai/utilities/events/crew_events.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/crew_events.py</span>
+<span class="h">@@ -100,3 +100,12 @@ class CrewTestFailedEvent(CrewBaseEvent):</span>
+ 
+     error: str
+     type: str = &quot;crew_test_failed&quot;
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class CrewTestResultEvent(CrewBaseEvent):</span>
+<span class="a">+    &quot;&quot;&quot;Event emitted when a crew test result is available&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    quality: float</span>
+<span class="a">+    execution_duration: float</span>
+<span class="a">+    model: str</span>
+<span class="a">+    type: str = &quot;crew_test_result&quot;</span></pre><h2>Commit #3: <a href="https://github.com/crewaiinc/crewai/commit/8f4a6cc61cbda2dcde30b5b0743e56c9cf7a1075">8f4a6cc61c</a> (2025-08-06T14:05:14-07:00)</h2><p class="k">Lorenze/tracing v1 (#3279)<br>Path after this commit: src/crewai/utilities/events/crew_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/utilities/events/crew_events.py b/src/crewai/utilities/events/crew_events.py
+index 103f3ecd3..f500ac9cc 100644
+<span class="d">--- a/src/crewai/utilities/events/crew_events.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/crew_events.py</span>
+<span class="h">@@ -47,6 +47,7 @@ class CrewKickoffCompletedEvent(CrewBaseEvent):</span>
+ 
+     output: Any
+     type: str = &quot;crew_kickoff_completed&quot;
+<span class="a">+    total_tokens: int = 0</span>
+ 
+ 
+ class CrewKickoffFailedEvent(CrewBaseEvent):</pre><h2>Commit #4: <a href="https://github.com/crewaiinc/crewai/commit/878c1a649af98a0155bdba5f4c2e903c8b6a1d58">878c1a649a</a> (2025-09-02T10:06:42-04:00)</h2><p class="k">refactor: Move events module to crewai.events (#3425)<br>Path after this commit: src/crewai/events/types/crew_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/utilities/events/crew_events.py b/src/crewai/events/types/crew_events.py
+similarity index 98%
+rename from src/crewai/utilities/events/crew_events.py
+rename to src/crewai/events/types/crew_events.py
+index f500ac9cc..02d0f983d 100644
+<span class="d">--- a/src/crewai/utilities/events/crew_events.py</span>
+<span class="a">+++ b/src/crewai/events/types/crew_events.py</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+ from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+ 
+<span class="d">-from crewai.utilities.events.base_events import BaseEvent</span>
+<span class="a">+from crewai.events.base_events import BaseEvent</span>
+ 
+ if TYPE_CHECKING:
+     from crewai.crew import Crew</pre><h2>Commit #5: <a href="https://github.com/crewaiinc/crewai/commit/2cfc4d37b812fdbc38bc62ee12f0e49ee287cbe7">2cfc4d37b8</a> (2025-09-19T20:10:55-04:00)</h2><p class="k">chore: apply ruff linting fixes to events module<br>Path after this commit: src/crewai/events/types/crew_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/events/types/crew_events.py b/src/crewai/events/types/crew_events.py
+index 02d0f983d..10f98847a 100644
+<span class="d">--- a/src/crewai/events/types/crew_events.py</span>
+<span class="a">+++ b/src/crewai/events/types/crew_events.py</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-from typing import TYPE_CHECKING, Any, Dict, Optional, Union</span>
+<span class="a">+from typing import TYPE_CHECKING, Any</span>
+ 
+ from crewai.events.base_events import BaseEvent
+ 
+<span class="h">@@ -11,8 +11,8 @@ else:</span>
+ class CrewBaseEvent(BaseEvent):
+     &quot;&quot;&quot;Base class for crew events with fingerprint handling&quot;&quot;&quot;
+ 
+<span class="d">-    crew_name: Optional[str]</span>
+<span class="d">-    crew: Optional[Crew] = None</span>
+<span class="a">+    crew_name: str | None</span>
+<span class="a">+    crew: Crew | None = None</span>
+ 
+     def __init__(self, **data):
+         super().__init__(**data)
+<span class="h">@@ -38,7 +38,7 @@ class CrewBaseEvent(BaseEvent):</span>
+ class CrewKickoffStartedEvent(CrewBaseEvent):
+     &quot;&quot;&quot;Event emitted when a crew starts execution&quot;&quot;&quot;
+ 
+<span class="d">-    inputs: Optional[Dict[str, Any]]</span>
+<span class="a">+    inputs: dict[str, Any] | None</span>
+     type: str = &quot;crew_kickoff_started&quot;
+ 
+ 
+<span class="h">@@ -62,7 +62,7 @@ class CrewTrainStartedEvent(CrewBaseEvent):</span>
+ 
+     n_iterations: int
+     filename: str
+<span class="d">-    inputs: Optional[Dict[str, Any]]</span>
+<span class="a">+    inputs: dict[str, Any] | None</span>
+     type: str = &quot;crew_train_started&quot;
+ 
+ 
+<span class="h">@@ -85,8 +85,8 @@ class CrewTestStartedEvent(CrewBaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when a crew starts testing&quot;&quot;&quot;
+ 
+     n_iterations: int
+<span class="d">-    eval_llm: Optional[Union[str, Any]]</span>
+<span class="d">-    inputs: Optional[Dict[str, Any]]</span>
+<span class="a">+    eval_llm: str | Any | None</span>
+<span class="a">+    inputs: dict[str, Any] | None</span>
+     type: str = &quot;crew_test_started&quot;
+ 
+ </pre><h2>Commit #6: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: lib/crewai/src/crewai/events/types/crew_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/events/types/crew_events.py b/lib/crewai/src/crewai/events/types/crew_events.py
+similarity index 99%
+rename from src/crewai/events/types/crew_events.py
+rename to lib/crewai/src/crewai/events/types/crew_events.py
+index 10f98847a..8fdcbfd2b 100644
+<span class="d">--- a/src/crewai/events/types/crew_events.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/events/types/crew_events.py</span>
+<span class="h">@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any</span>
+ 
+ from crewai.events.base_events import BaseEvent
+ 
+<span class="a">+</span>
+ if TYPE_CHECKING:
+     from crewai.crew import Crew
+ else:</pre></body></html>

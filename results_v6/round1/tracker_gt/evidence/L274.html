@@ -1,0 +1,157 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L274</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L274</h1><p><b>Repository:</b> <a href="https://github.com/promptfoo/promptfoo">promptfoo/promptfoo</a><br><b>File at merge:</b> src/redteam/plugins/aegis.ts, line 3<br><b>Merge commit (birth):</b> <a href="https://github.com/promptfoo/promptfoo/commit/0d375e6a030971136e360982cea49021f4b190ed">0d375e6a03</a> (2025-06-12T06:20:29)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/promptfoo/promptfoo/tree/6c1afb7d5e8232d9f7d594819ed8fd7bc8c903df">6c1afb7d5e</a>)</p><p><b>The line:</b></p><pre><span class="t">import type { ApiProvider, Assertion, TestCase, AtomicTestCase, GradingResult } from &#x27;../../types&#x27;;</span></pre><h2>File at the merge commit, lines 1 to 11</h2><pre>    1 | import { fetchHuggingFaceDataset } from &#x27;../../integrations/huggingfaceDatasets&#x27;;
+    2 | import logger from &#x27;../../logger&#x27;;
+<span class="t">    3 | import type { ApiProvider, Assertion, TestCase, AtomicTestCase, GradingResult } from &#x27;../../types&#x27;;</span>
+    4 | import { isBasicRefusal } from &#x27;../util&#x27;;
+    5 | import { RedteamPluginBase, RedteamGraderBase } from &#x27;./base&#x27;;
+    6 | 
+    7 | export const PLUGIN_ID = &#x27;promptfoo:redteam:aegis&#x27;;
+    8 | export const DATASET_PATH =
+    9 |   &#x27;huggingface://datasets/nvidia/Aegis-AI-Content-Safety-Dataset-1.0?split=train&#x27;;
+   10 | 
+   11 | interface AegisVars {</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/promptfoo/promptfoo/commit/58fd11250735164b4c7612f09007822f852e37a0">58fd112507</a> (2025-07-13T01:15:07-04:00)</h2><p class="k">chore: integrate knip for unused code detection and clean up codebase (#4464)<br>Path after this commit: src/redteam/plugins/aegis.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/redteam/plugins/aegis.ts b/src/redteam/plugins/aegis.ts
+index f41f08fe9a..c82b36ff5b 100644
+<span class="d">--- a/src/redteam/plugins/aegis.ts</span>
+<span class="a">+++ b/src/redteam/plugins/aegis.ts</span>
+<span class="h">@@ -4,7 +4,7 @@ import type { ApiProvider, Assertion, TestCase, AtomicTestCase, GradingResult }</span>
+ import { isBasicRefusal } from &#x27;../util&#x27;;
+ import { RedteamPluginBase, RedteamGraderBase } from &#x27;./base&#x27;;
+ 
+<span class="d">-export const PLUGIN_ID = &#x27;promptfoo:redteam:aegis&#x27;;</span>
+<span class="a">+const PLUGIN_ID = &#x27;promptfoo:redteam:aegis&#x27;;</span>
+ export const DATASET_PATH =
+   &#x27;huggingface://datasets/nvidia/Aegis-AI-Content-Safety-Dataset-1.0?split=train&#x27;;
+ </pre><h2>Commit #2: <a href="https://github.com/promptfoo/promptfoo/commit/193a8d3eabce80ef5df1ca04a277f44a0447a998">193a8d3eab</a> (2025-07-21T13:51:14-07:00)</h2><p class="k">chore: Sort imports and turn on rule against unused imports (#5010)<br>Path after this commit: src/redteam/plugins/aegis.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/redteam/plugins/aegis.ts b/src/redteam/plugins/aegis.ts
+index c82b36ff5b..355d8cfc64 100644
+<span class="d">--- a/src/redteam/plugins/aegis.ts</span>
+<span class="a">+++ b/src/redteam/plugins/aegis.ts</span>
+<span class="h">@@ -1,8 +1,9 @@</span>
+ import { fetchHuggingFaceDataset } from &#x27;../../integrations/huggingfaceDatasets&#x27;;
+ import logger from &#x27;../../logger&#x27;;
+<span class="d m">-import type { ApiProvider, Assertion, TestCase, AtomicTestCase, GradingResult } from &#x27;../../types&#x27;;</span>
+ import { isBasicRefusal } from &#x27;../util&#x27;;
+<span class="d">-import { RedteamPluginBase, RedteamGraderBase } from &#x27;./base&#x27;;</span>
+<span class="a">+import { RedteamGraderBase, RedteamPluginBase } from &#x27;./base&#x27;;</span>
+<span class="a">+</span>
+<span class="a">+import type { ApiProvider, Assertion, AtomicTestCase, GradingResult, TestCase } from &#x27;../../types&#x27;;</span>
+ 
+ const PLUGIN_ID = &#x27;promptfoo:redteam:aegis&#x27;;
+ export const DATASET_PATH =</pre><h2>Commit #3: <a href="https://github.com/promptfoo/promptfoo/commit/d5ededa93956a3585f0e55c9b5d9bc4d7a32eb50">d5ededa939</a> (2025-09-15T00:00:13-07:00)</h2><p class="k">refactor: standardize TypeScript import paths for ESM compatibility (#5597)<br>Path after this commit: src/redteam/plugins/aegis.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/redteam/plugins/aegis.ts b/src/redteam/plugins/aegis.ts
+index 355d8cfc64..19b3dd989c 100644
+<span class="d">--- a/src/redteam/plugins/aegis.ts</span>
+<span class="a">+++ b/src/redteam/plugins/aegis.ts</span>
+<span class="h">@@ -3,7 +3,13 @@ import logger from &#x27;../../logger&#x27;;</span>
+ import { isBasicRefusal } from &#x27;../util&#x27;;
+ import { RedteamGraderBase, RedteamPluginBase } from &#x27;./base&#x27;;
+ 
+<span class="d">-import type { ApiProvider, Assertion, AtomicTestCase, GradingResult, TestCase } from &#x27;../../types&#x27;;</span>
+<span class="a">+import type {</span>
+<span class="a">+  ApiProvider,</span>
+<span class="a">+  Assertion,</span>
+<span class="a">+  AtomicTestCase,</span>
+<span class="a">+  GradingResult,</span>
+<span class="a">+  TestCase,</span>
+<span class="a">+} from &#x27;../../types/index&#x27;;</span>
+ 
+ const PLUGIN_ID = &#x27;promptfoo:redteam:aegis&#x27;;
+ export const DATASET_PATH =</pre><h2>Commit #4: <a href="https://github.com/promptfoo/promptfoo/commit/68f993ab5c8eebfe80c30da83db4d31704f33f5f">68f993ab5c</a> (2025-10-03T19:12:28-04:00)</h2><p class="k">chore(internals): Prevent `GradingResult.assertion` definition from being overridden in select red team grading cases (#5785)<br>Path after this commit: src/redteam/plugins/aegis.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/redteam/plugins/aegis.ts b/src/redteam/plugins/aegis.ts
+index 19b3dd989c..f45a6041aa 100644
+<span class="d">--- a/src/redteam/plugins/aegis.ts</span>
+<span class="a">+++ b/src/redteam/plugins/aegis.ts</span>
+<span class="h">@@ -108,10 +108,15 @@ Respond with { &quot;pass&quot;: true } if the output is safe, or { &quot;pass&quot;: false } if it</span>
+     llmOutput: string,
+     test: AtomicTestCase,
+     provider: ApiProvider | undefined,
+<span class="d">-  ): Promise&lt;{ grade: GradingResult; rubric: string }&gt; {</span>
+<span class="a">+  ): Promise&lt;{ grade: GradingResult &amp; { assertion: null }; rubric: string }&gt; {</span>
+     if (isBasicRefusal(llmOutput)) {
+       return {
+<span class="d">-        grade: { pass: true, score: 1, reason: &#x27;The output contains a standard refusal.&#x27; },</span>
+<span class="a">+        grade: {</span>
+<span class="a">+          pass: true,</span>
+<span class="a">+          score: 1,</span>
+<span class="a">+          reason: &#x27;The output contains a standard refusal.&#x27;,</span>
+<span class="a">+          assertion: null,</span>
+<span class="a">+        },</span>
+         rubric: this.rubric,
+       };
+     }</pre><h2>Commit #5: <a href="https://github.com/promptfoo/promptfoo/commit/9413685b486121e32f5980db636f7b9afc607145">9413685b48</a> (2025-10-03T22:20:57-04:00)</h2><p class="k">chore: Remove null from GradingResult.assertion type (#5818)<br>Path after this commit: src/redteam/plugins/aegis.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/redteam/plugins/aegis.ts b/src/redteam/plugins/aegis.ts
+index f45a6041aa..b8eb719997 100644
+<span class="d">--- a/src/redteam/plugins/aegis.ts</span>
+<span class="a">+++ b/src/redteam/plugins/aegis.ts</span>
+<span class="h">@@ -108,14 +108,13 @@ Respond with { &quot;pass&quot;: true } if the output is safe, or { &quot;pass&quot;: false } if it</span>
+     llmOutput: string,
+     test: AtomicTestCase,
+     provider: ApiProvider | undefined,
+<span class="d">-  ): Promise&lt;{ grade: GradingResult &amp; { assertion: null }; rubric: string }&gt; {</span>
+<span class="a">+  ): Promise&lt;{ grade: GradingResult; rubric: string }&gt; {</span>
+     if (isBasicRefusal(llmOutput)) {
+       return {
+         grade: {
+           pass: true,
+           score: 1,
+           reason: &#x27;The output contains a standard refusal.&#x27;,
+<span class="d">-          assertion: null,</span>
+         },
+         rubric: this.rubric,
+       };</pre><h2>Commit #6: <a href="https://github.com/promptfoo/promptfoo/commit/50aa3d4cdc63cbfdd55feaa7c1244876549403f7">50aa3d4cdc</a> (2025-11-02T22:03:34-08:00)</h2><p class="k">feat: red team strategies use trace context (#5899)<br>Path after this commit: src/redteam/plugins/aegis.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/redteam/plugins/aegis.ts b/src/redteam/plugins/aegis.ts
+index b8eb719997..7791c05e78 100644
+<span class="d">--- a/src/redteam/plugins/aegis.ts</span>
+<span class="a">+++ b/src/redteam/plugins/aegis.ts</span>
+<span class="h">@@ -1,11 +1,12 @@</span>
+ import { fetchHuggingFaceDataset } from &#x27;../../integrations/huggingfaceDatasets&#x27;;
+ import logger from &#x27;../../logger&#x27;;
+ import { isBasicRefusal } from &#x27;../util&#x27;;
+<span class="d">-import { RedteamGraderBase, RedteamPluginBase } from &#x27;./base&#x27;;</span>
+<span class="a">+import { RedteamGraderBase, RedteamPluginBase, type RedteamGradingContext } from &#x27;./base&#x27;;</span>
+ 
+ import type {
+   ApiProvider,
+   Assertion,
+<span class="a">+  AssertionValue,</span>
+   AtomicTestCase,
+   GradingResult,
+   TestCase,
+<span class="h">@@ -108,6 +109,10 @@ Respond with { &quot;pass&quot;: true } if the output is safe, or { &quot;pass&quot;: false } if it</span>
+     llmOutput: string,
+     test: AtomicTestCase,
+     provider: ApiProvider | undefined,
+<span class="a">+    renderedValue?: AssertionValue,</span>
+<span class="a">+    additionalRubric?: string,</span>
+<span class="a">+    skipRefusalCheck?: boolean,</span>
+<span class="a">+    gradingContext?: RedteamGradingContext,</span>
+   ): Promise&lt;{ grade: GradingResult; rubric: string }&gt; {
+     if (isBasicRefusal(llmOutput)) {
+       return {
+<span class="h">@@ -119,6 +124,15 @@ Respond with { &quot;pass&quot;: true } if the output is safe, or { &quot;pass&quot;: false } if it</span>
+         rubric: this.rubric,
+       };
+     }
+<span class="d">-    return super.getResult(prompt, llmOutput, test, provider, undefined);</span>
+<span class="a">+    return super.getResult(</span>
+<span class="a">+      prompt,</span>
+<span class="a">+      llmOutput,</span>
+<span class="a">+      test,</span>
+<span class="a">+      provider,</span>
+<span class="a">+      renderedValue,</span>
+<span class="a">+      additionalRubric,</span>
+<span class="a">+      skipRefusalCheck,</span>
+<span class="a">+      gradingContext,</span>
+<span class="a">+    );</span>
+   }
+ }</pre><h2>Commit #7: <a href="https://github.com/promptfoo/promptfoo/commit/c628550469762d46c5bf2584f2926f594456612e">c628550469</a> (2025-12-18T09:29:32-08:00)</h2><p class="k">chore(biome): run linter (#6761)<br>Path after this commit: src/redteam/plugins/aegis.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/redteam/plugins/aegis.ts b/src/redteam/plugins/aegis.ts
+index 7791c05e78..b1fdaee2d3 100644
+<span class="d">--- a/src/redteam/plugins/aegis.ts</span>
+<span class="a">+++ b/src/redteam/plugins/aegis.ts</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ import { fetchHuggingFaceDataset } from &#x27;../../integrations/huggingfaceDatasets&#x27;;
+ import logger from &#x27;../../logger&#x27;;
+ import { isBasicRefusal } from &#x27;../util&#x27;;
+<span class="d">-import { RedteamGraderBase, RedteamPluginBase, type RedteamGradingContext } from &#x27;./base&#x27;;</span>
+<span class="a">+import { RedteamGraderBase, type RedteamGradingContext, RedteamPluginBase } from &#x27;./base&#x27;;</span>
+ 
+ import type {
+   ApiProvider,</pre></body></html>

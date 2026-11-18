@@ -1,0 +1,83 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L165</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L165</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> tests/utilities/events/test_crewai_event_bus.py, line 42<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/2902201bfa24410fff77c8c933b3c9d15d17a951">2902201bfa</a> (2025-05-01T19:48:29)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">    event = TestEvent(type=&quot;test_event&quot;)</span></pre><h2>File at the merge commit, lines 34 to 47</h2><pre>   34 |     mock_handler.assert_called_once_with(&quot;source_object&quot;, event)
+   35 | 
+   36 | 
+   37 | def test_event_bus_error_handling(capfd):
+   38 |     @crewai_event_bus.on(BaseEvent)
+   39 |     def broken_handler(source, event):
+   40 |         raise ValueError(&quot;Simulated handler failure&quot;)
+   41 | 
+<span class="t">   42 |     event = TestEvent(type=&quot;test_event&quot;)</span>
+   43 |     crewai_event_bus.emit(&quot;source_object&quot;, event)
+   44 | 
+   45 |     out, err = capfd.readouterr()
+   46 |     assert &quot;Simulated handler failure&quot; in out
+   47 |     assert &quot;Handler &#x27;broken_handler&#x27; failed&quot; in out</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/878c1a649af98a0155bdba5f4c2e903c8b6a1d58">878c1a649a</a> (2025-09-02T10:06:42-04:00)</h2><p class="k">refactor: Move events module to crewai.events (#3425)<br>Path after this commit: tests/utilities/events/test_crewai_event_bus.py. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/tests/utilities/events/test_crewai_event_bus.py b/tests/utilities/events/test_crewai_event_bus.py
+index aec17a8a6..f034de595 100644
+<span class="d">--- a/tests/utilities/events/test_crewai_event_bus.py</span>
+<span class="a">+++ b/tests/utilities/events/test_crewai_event_bus.py</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ from unittest.mock import Mock
+ 
+<span class="d">-from crewai.utilities.events.base_events import BaseEvent</span>
+<span class="d">-from crewai.utilities.events.crewai_event_bus import crewai_event_bus</span>
+<span class="a">+from crewai.events.base_events import BaseEvent</span>
+<span class="a">+from crewai.events.event_bus import crewai_event_bus</span>
+ 
+ 
+ class TestEvent(BaseEvent):</pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: lib/crewai/tests/utilities/events/test_crewai_event_bus.py.</p><pre>diff --git a/tests/utilities/events/test_crewai_event_bus.py b/tests/utilities/events/test_crewai_event_bus.py
+deleted file mode 100644
+index f034de595..000000000
+<span class="d">--- a/tests/utilities/events/test_crewai_event_bus.py</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,47 +0,0 @@</span>
+<span class="d">-from unittest.mock import Mock</span>
+<span class="d">-</span>
+<span class="d">-from crewai.events.base_events import BaseEvent</span>
+<span class="d">-from crewai.events.event_bus import crewai_event_bus</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class TestEvent(BaseEvent):</span>
+<span class="d">-    pass</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_specific_event_handler():</span>
+<span class="d">-    mock_handler = Mock()</span>
+<span class="d">-</span>
+<span class="d">-    @crewai_event_bus.on(TestEvent)</span>
+<span class="d">-    def handler(source, event):</span>
+<span class="d">-        mock_handler(source, event)</span>
+<span class="d">-</span>
+<span class="d m">-    event = TestEvent(type=&quot;test_event&quot;)</span>
+<span class="d">-    crewai_event_bus.emit(&quot;source_object&quot;, event)</span>
+<span class="d">-</span>
+<span class="d">-    mock_handler.assert_called_once_with(&quot;source_object&quot;, event)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_wildcard_event_handler():</span>
+<span class="d">-    mock_handler = Mock()</span>
+<span class="d">-</span>
+<span class="d">-    @crewai_event_bus.on(BaseEvent)</span>
+<span class="d">-    def handler(source, event):</span>
+<span class="d">-        mock_handler(source, event)</span>
+<span class="d">-</span>
+<span class="d m">-    event = TestEvent(type=&quot;test_event&quot;)</span>
+<span class="d">-    crewai_event_bus.emit(&quot;source_object&quot;, event)</span>
+<span class="d">-</span>
+<span class="d">-    mock_handler.assert_called_once_with(&quot;source_object&quot;, event)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_event_bus_error_handling(capfd):</span>
+<span class="d">-    @crewai_event_bus.on(BaseEvent)</span>
+<span class="d">-    def broken_handler(source, event):</span>
+<span class="d">-        raise ValueError(&quot;Simulated handler failure&quot;)</span>
+<span class="d">-</span>
+<span class="d m">-    event = TestEvent(type=&quot;test_event&quot;)</span>
+<span class="d">-    crewai_event_bus.emit(&quot;source_object&quot;, event)</span>
+<span class="d">-</span>
+<span class="d">-    out, err = capfd.readouterr()</span>
+<span class="d">-    assert &quot;Simulated handler failure&quot; in out</span>
+<span class="d">-    assert &quot;Handler &#x27;broken_handler&#x27; failed&quot; in out</span></pre></body></html>

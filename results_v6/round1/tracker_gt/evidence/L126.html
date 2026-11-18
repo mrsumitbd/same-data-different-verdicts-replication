@@ -1,0 +1,155 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L126</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L126</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/perfview">microsoft/perfview</a><br><b>File at merge:</b> src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs, line 43<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/perfview/commit/43d89bea298669a21643bad4e9753c715c782487">43d89bea29</a> (2025-04-14T20:04:35)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/perfview/tree/de20568b9616c4f9a0bcae0d8682077e0fb9680b">de20568b96</a>)</p><p><b>The line:</b></p><pre><span class="t">                TraceProcess process = traceLog.Processes.GetOrCreateProcess(data.ProcessID, data.TimeStampQPC);</span></pre><h2>File at the merge commit, lines 35 to 51</h2><pre>   35 |             };
+   36 |             universalSystemParser.ProcessExit += delegate (EmptyTraceData data)
+   37 |             {
+   38 |                 TraceProcess process = traceLog.Processes.GetOrCreateProcess(data.ProcessID, data.TimeStampQPC);
+   39 |                 process.UniversalProcessStop(data);
+   40 |             };
+   41 |             universalSystemParser.ProcessMapping += delegate (ProcessMappingTraceData data)
+   42 |             {
+<span class="t">   43 |                 TraceProcess process = traceLog.Processes.GetOrCreateProcess(data.ProcessID, data.TimeStampQPC);</span>
+   44 |                 TraceModuleFile moduleFile = process.LoadedModules.UniversalMapping(data);
+   45 | 
+   46 |                 _mappingIdToProcesses[data.Id] = process;
+   47 |             };
+   48 |             universalSystemParser.ProcessSymbol += delegate (ProcessSymbolTraceData data)
+   49 |             {
+   50 |                 _dynamicSymbols.Add((ProcessSymbolTraceData)data.Clone());
+   51 |             };</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/perfview/commit/1914c541b95a5e7c485ca6805aba46a023178ff9">1914c541b9</a> (2025-04-21T10:37:45-07:00)</h2><p class="k">Implement R2R Symbol Lookup for Linux Traces (#2183)<br>Path after this commit: src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs. Lines with exactly this text in the file after the commit: 4.</p><pre>diff --git a/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs b/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs
+index 12c247a1..10961ad4 100644
+<span class="d">--- a/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs</span>
+<span class="a">+++ b/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs</span>
+<span class="h">@@ -9,6 +9,7 @@ namespace Microsoft.Diagnostics.Tracing.SourceConverters</span>
+     {
+         private List&lt;ProcessSymbolTraceData&gt; _dynamicSymbols = new List&lt;ProcessSymbolTraceData&gt;();
+         private Dictionary&lt;ulong, TraceProcess&gt; _mappingIdToProcesses = new Dictionary&lt;ulong, TraceProcess&gt;();
+<span class="a">+        private Dictionary&lt;ulong, ProcessMappingMetadataTraceData&gt; _mappingMetadata = new Dictionary&lt;ulong, ProcessMappingMetadataTraceData&gt;();</span>
+ 
+         internal NettraceUniversalConverter()
+         {
+<span class="h">@@ -40,11 +41,16 @@ namespace Microsoft.Diagnostics.Tracing.SourceConverters</span>
+             };
+             universalSystemParser.ProcessMapping += delegate (ProcessMappingTraceData data)
+             {
+<span class="a">+                _mappingMetadata.TryGetValue(data.MetadataId, out ProcessMappingMetadataTraceData metadata);</span>
+<span class=" m">                 TraceProcess process = traceLog.Processes.GetOrCreateProcess(data.ProcessID, data.TimeStampQPC);</span>
+<span class="d">-                TraceModuleFile moduleFile = process.LoadedModules.UniversalMapping(data);</span>
+<span class="a">+                TraceModuleFile moduleFile = process.LoadedModules.UniversalMapping(data, metadata);</span>
+ 
+                 _mappingIdToProcesses[data.Id] = process;
+             };
+<span class="a">+            universalSystemParser.ProcessMappingMetadata += delegate (ProcessMappingMetadataTraceData data)</span>
+<span class="a">+            {</span>
+<span class="a">+                _mappingMetadata[data.Id] = (ProcessMappingMetadataTraceData)data.Clone();</span>
+<span class="a">+            };</span>
+             universalSystemParser.ProcessSymbol += delegate (ProcessSymbolTraceData data)
+             {
+                 _dynamicSymbols.Add((ProcessSymbolTraceData)data.Clone());</pre><h2>Commit #2: <a href="https://github.com/microsoft/perfview/commit/e7ea5b42c39de18cfa2fc86b6dbcf56473715d5f">e7ea5b42c3</a> (2025-07-29T11:37:52-07:00)</h2><p class="k">Fix jitted code symbols in universal traces to show assembly names instead of memfd:doublemapper (#2269)<br>Path after this commit: src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs. Lines with exactly this text in the file after the commit: 4.</p><pre>diff --git a/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs b/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs
+index 10961ad4..215c282a 100644
+<span class="d">--- a/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs</span>
+<span class="a">+++ b/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs</span>
+<span class="h">@@ -7,6 +7,8 @@ namespace Microsoft.Diagnostics.Tracing.SourceConverters</span>
+ {
+     internal sealed class NettraceUniversalConverter
+     {
+<span class="a">+        private const string DotnetJittedCodeMappingName = &quot;/memfd:doublemapper&quot;;</span>
+<span class="a">+</span>
+         private List&lt;ProcessSymbolTraceData&gt; _dynamicSymbols = new List&lt;ProcessSymbolTraceData&gt;();
+         private Dictionary&lt;ulong, TraceProcess&gt; _mappingIdToProcesses = new Dictionary&lt;ulong, TraceProcess&gt;();
+         private Dictionary&lt;ulong, ProcessMappingMetadataTraceData&gt; _mappingMetadata = new Dictionary&lt;ulong, ProcessMappingMetadataTraceData&gt;();
+<span class="h">@@ -41,11 +43,18 @@ namespace Microsoft.Diagnostics.Tracing.SourceConverters</span>
+             };
+             universalSystemParser.ProcessMapping += delegate (ProcessMappingTraceData data)
+             {
+<span class="d">-                _mappingMetadata.TryGetValue(data.MetadataId, out ProcessMappingMetadataTraceData metadata);</span>
+<span class=" m">                 TraceProcess process = traceLog.Processes.GetOrCreateProcess(data.ProcessID, data.TimeStampQPC);</span>
+<span class="d">-                TraceModuleFile moduleFile = process.LoadedModules.UniversalMapping(data, metadata);</span>
+<span class="d">-</span>
+                 _mappingIdToProcesses[data.Id] = process;
+<span class="a">+</span>
+<span class="a">+                if (!string.IsNullOrEmpty(data.FileName) &amp;&amp; data.FileName.StartsWith(DotnetJittedCodeMappingName))</span>
+<span class="a">+                {</span>
+<span class="a">+                    // Don&#x27;t create a module for jitted code.</span>
+<span class="a">+                    // These will be created for each jitted code symbol.</span>
+<span class="a">+                    return;</span>
+<span class="a">+                }</span>
+<span class="a">+</span>
+<span class="a">+                _mappingMetadata.TryGetValue(data.MetadataId, out ProcessMappingMetadataTraceData metadata);</span>
+<span class="a">+                TraceModuleFile moduleFile = process.LoadedModules.UniversalMapping(data, metadata);</span>
+             };
+             universalSystemParser.ProcessMappingMetadata += delegate (ProcessMappingMetadataTraceData data)
+             {
+<span class="h">@@ -75,5 +84,35 @@ namespace Microsoft.Diagnostics.Tracing.SourceConverters</span>
+                 }
+             }
+         }
+<span class="a">+</span>
+<span class="a">+        /// &lt;summary&gt;</span>
+<span class="a">+        /// Regular expression for parsing dotnet jitted symbol names from universal traces.</span>
+<span class="a">+        /// Format: &quot;returnType [module] Namespace.Class::Method(args...)[OptimizationLevel]&quot;</span>
+<span class="a">+        /// The return type can be multi-word (e.g., &quot;instance void&quot;, &quot;valuetype [Type]Type&quot;).</span>
+<span class="a">+        /// &lt;/summary&gt;</span>
+<span class="a">+        private static readonly System.Text.RegularExpressions.Regex s_jittedSymbolRegex =</span>
+<span class="a">+            new System.Text.RegularExpressions.Regex(@&quot;^(?&lt;returnType&gt;.+?)\s+\[(?&lt;module&gt;[^\]]+)\]\s+(?&lt;methodSignature&gt;.+?)\[(?&lt;optimizationLevel&gt;[^\]]+)\]$&quot;,</span>
+<span class="a">+                System.Text.RegularExpressions.RegexOptions.Compiled);</span>
+<span class="a">+</span>
+<span class="a">+        /// &lt;summary&gt;</span>
+<span class="a">+        /// Parses a dotnet jitted symbol name from universal traces with format: &quot;returnType [module] Namespace.Class::Method(args...)[OptimizationLevel]&quot;</span>
+<span class="a">+        /// and returns the module name and method signature.</span>
+<span class="a">+        /// &lt;/summary&gt;</span>
+<span class="a">+        internal static (string moduleName, string methodSignature)? ParseDotnetJittedSymbolName(string symbolName)</span>
+<span class="a">+        {</span>
+<span class="a">+            if (!string.IsNullOrEmpty(symbolName))</span>
+<span class="a">+            {</span>
+<span class="a">+                var match = s_jittedSymbolRegex.Match(symbolName);</span>
+<span class="a">+</span>
+<span class="a">+                if (match.Success)</span>
+<span class="a">+                {</span>
+<span class="a">+                    string module = match.Groups[&quot;module&quot;].Value;</span>
+<span class="a">+                    string methodSignature = match.Groups[&quot;methodSignature&quot;].Value.Trim();</span>
+<span class="a">+                    return (module, methodSignature);</span>
+<span class="a">+                }</span>
+<span class="a">+            }</span>
+<span class="a">+</span>
+<span class="a">+            return null;</span>
+<span class="a">+        }</span>
+     }
+ }</pre><h2>Commit #3: <a href="https://github.com/microsoft/perfview/commit/e30bebac25858289a81b4ac49c8a328470119957">e30bebac25</a> (2025-09-02T12:12:01-07:00)</h2><p class="k">Small cleanup in NettraceUniversalConverter. (#2292)<br>Path after this commit: src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs. Lines with exactly this text in the file after the commit: 4.</p><pre>diff --git a/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs b/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs
+index 215c282a..3bbb40a2 100644
+<span class="d">--- a/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs</span>
+<span class="a">+++ b/src/TraceEvent/SourceConverters/NettraceUniversalConverter.cs</span>
+<span class="h">@@ -1,7 +1,9 @@</span>
+ ﻿using Microsoft.Diagnostics.Tracing.Etlx;
+ using Microsoft.Diagnostics.Tracing.Parsers;
+ using Microsoft.Diagnostics.Tracing.Parsers.Universal.Events;
+<span class="a">+using System;</span>
+ using System.Collections.Generic;
+<span class="a">+using System.Text.RegularExpressions;</span>
+ 
+ namespace Microsoft.Diagnostics.Tracing.SourceConverters
+ {
+<span class="h">@@ -46,7 +48,7 @@ namespace Microsoft.Diagnostics.Tracing.SourceConverters</span>
+<span class=" m">                 TraceProcess process = traceLog.Processes.GetOrCreateProcess(data.ProcessID, data.TimeStampQPC);</span>
+                 _mappingIdToProcesses[data.Id] = process;
+ 
+<span class="d">-                if (!string.IsNullOrEmpty(data.FileName) &amp;&amp; data.FileName.StartsWith(DotnetJittedCodeMappingName))</span>
+<span class="a">+                if (!string.IsNullOrEmpty(data.FileName) &amp;&amp; data.FileName.StartsWith(DotnetJittedCodeMappingName, StringComparison.Ordinal))</span>
+                 {
+                     // Don&#x27;t create a module for jitted code.
+                     // These will be created for each jitted code symbol.
+<span class="h">@@ -90,9 +92,9 @@ namespace Microsoft.Diagnostics.Tracing.SourceConverters</span>
+         /// Format: &quot;returnType [module] Namespace.Class::Method(args...)[OptimizationLevel]&quot;
+         /// The return type can be multi-word (e.g., &quot;instance void&quot;, &quot;valuetype [Type]Type&quot;).
+         /// &lt;/summary&gt;
+<span class="d">-        private static readonly System.Text.RegularExpressions.Regex s_jittedSymbolRegex =</span>
+<span class="d">-            new System.Text.RegularExpressions.Regex(@&quot;^(?&lt;returnType&gt;.+?)\s+\[(?&lt;module&gt;[^\]]+)\]\s+(?&lt;methodSignature&gt;.+?)\[(?&lt;optimizationLevel&gt;[^\]]+)\]$&quot;,</span>
+<span class="d">-                System.Text.RegularExpressions.RegexOptions.Compiled);</span>
+<span class="a">+        private static readonly Regex s_jittedSymbolRegex =</span>
+<span class="a">+            new Regex(@&quot;^(?&lt;returnType&gt;.+?)\s+\[(?&lt;module&gt;[^\]]+)\]\s+(?&lt;methodSignature&gt;.+?)\[(?&lt;optimizationLevel&gt;[^\]]+)\]$&quot;,</span>
+<span class="a">+                RegexOptions.Compiled);</span>
+ 
+         /// &lt;summary&gt;
+         /// Parses a dotnet jitted symbol name from universal traces with format: &quot;returnType [module] Namespace.Class::Method(args...)[OptimizationLevel]&quot;</pre></body></html>

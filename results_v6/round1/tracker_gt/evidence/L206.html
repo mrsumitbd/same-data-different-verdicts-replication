@@ -1,0 +1,182 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L206</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L206</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/botframework-webchat">microsoft/botframework-webchat</a><br><b>File at merge:</b> packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx, line 48<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/botframework-webchat/commit/5e127987c6ae2a5e8a1c6dd9eace8bffc74a600e">5e127987c6</a> (2025-05-05T16:51:59)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/botframework-webchat/tree/587b91b125a3710ad2764d9e49de1914e74ce3b5">587b91b125</a>)</p><p><b>The line:</b></p><pre><span class="t">    &lt;ThumbButton</span></pre><h2>File at the merge commit, lines 40 to 56</h2><pre>   40 | 
+   41 |   const handleClick = useCallback(
+   42 |     () =&gt; setSelectedAction(actionRef.current === selectedActionRef.current ? undefined : actionRef.current),
+   43 |     [actionRef, selectedActionRef, setSelectedAction]
+   44 |   );
+   45 |   const disabled = hasSubmitted &amp;&amp; !shouldAllowResubmit;
+   46 | 
+   47 |   return (
+<span class="t">   48 |     &lt;ThumbButton</span>
+   49 |       className={classNames({
+   50 |         &#x27;webchat__thumb-button--large&#x27;: shouldShowFeedbackForm || feedbackActionsPlacement === &#x27;activity-actions&#x27;,
+   51 |         &#x27;webchat__thumb-button--submitted&#x27;: hasSubmitted
+   52 |       })}
+   53 |       direction={direction}
+   54 |       disabled={disabled}
+   55 |       onClick={handleClick}
+   56 |       pressed={selectedAction === action}</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/botframework-webchat/commit/d1cd51af0195cad1035ea1d502697b19744c94d2">d1cd51af01</a> (2025-05-19T15:49:06-07:00)</h2><p class="k">Feedback buttons should not squash other buttons (#5480)<br>Path after this commit: packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx b/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx
+index 1bdc521ef..1d83973c1 100644
+<span class="d">--- a/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx</span>
+<span class="a">+++ b/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx</span>
+<span class="h">@@ -1,28 +1,52 @@</span>
+ import { hooks } from &#x27;botframework-webchat-api&#x27;;
+<span class="a">+import { validateProps } from &#x27;botframework-webchat-api/internal&#x27;;</span>
+ import { onErrorResumeNext, parseVoteAction, type OrgSchemaAction } from &#x27;botframework-webchat-core&#x27;;
+<span class="d">-import React, { memo, useCallback, useMemo } from &#x27;react&#x27;;</span>
+<span class="a">+import React, { memo, useCallback, useMemo, useRef } from &#x27;react&#x27;;</span>
+ import { useRefFrom } from &#x27;use-ref-from&#x27;;
+<span class="a">+import { custom, literal, object, optional, pipe, readonly, safeParse, union, type InferInput } from &#x27;valibot&#x27;;</span>
+ 
+<span class="d">-import classNames from &#x27;classnames&#x27;;</span>
+<span class="d">-import useHasSubmitted from &#x27;../providers/useHasSubmitted&#x27;;</span>
+<span class="d">-import useSelectedAction from &#x27;../providers/useSelectedAction&#x27;;</span>
+<span class="d">-import useShouldAllowResubmit from &#x27;../providers/useShouldAllowResubmit&#x27;;</span>
+<span class="d">-import useShouldShowFeedbackForm from &#x27;../providers/useShouldShowFeedbackForm&#x27;;</span>
+<span class="a">+import { useListenToActivityFeedbackFocus } from &#x27;../providers/private/FocusPropagation&#x27;;</span>
+<span class="a">+import useActivityFeedbackHooks from &#x27;../providers/useActivityFeedbackHooks&#x27;;</span>
+ import ThumbButton from &#x27;./ThumbButton&#x27;;
+<span class="a">+import canActionResubmit from &#x27;./canActionResubmit&#x27;;</span>
+<span class="a">+import isActionRequireReview from &#x27;./isActionRequireReview&#x27;;</span>
+ 
+ const { useLocalizer, useStyleOptions } = hooks;
+ 
+<span class="d">-type FeedbackVoteButtonProps = Readonly&lt;{</span>
+<span class="d">-  action: OrgSchemaAction;</span>
+<span class="d">-}&gt;;</span>
+<span class="a">+const feedbackVoteButtonPropsSchema = pipe(</span>
+<span class="a">+  object({</span>
+<span class="a">+    action: custom&lt;OrgSchemaAction&gt;(</span>
+<span class="a">+      value =&gt;</span>
+<span class="a">+        safeParse(</span>
+<span class="a">+          union([</span>
+<span class="a">+            object({</span>
+<span class="a">+              &#x27;@type&#x27;: union([literal(&#x27;DislikeAction&#x27;), literal(&#x27;LikeAction&#x27;)])</span>
+<span class="a">+            }),</span>
+<span class="a">+            object({</span>
+<span class="a">+              &#x27;@type&#x27;: literal(&#x27;VoteAction&#x27;),</span>
+<span class="a">+              actionOption: optional(union([literal(&#x27;downvote&#x27;), literal(&#x27;upvote&#x27;)]))</span>
+<span class="a">+            })</span>
+<span class="a">+          ]),</span>
+<span class="a">+          value</span>
+<span class="a">+        ).success</span>
+<span class="a">+    ),</span>
+<span class="a">+    as: union([literal(&#x27;button&#x27;), literal(&#x27;radio&#x27;)])</span>
+<span class="a">+  }),</span>
+<span class="a">+  readonly()</span>
+<span class="a">+);</span>
+<span class="a">+</span>
+<span class="a">+type FeedbackVoteButtonProps = InferInput&lt;typeof feedbackVoteButtonPropsSchema&gt;;</span>
+<span class="a">+</span>
+<span class="a">+function FeedbackVoteButton(props: FeedbackVoteButtonProps) {</span>
+<span class="a">+  const { useHasSubmitted, useSelectedAction: useSelectedActions } = useActivityFeedbackHooks();</span>
+<span class="a">+</span>
+<span class="a">+  const { action, as } = validateProps(feedbackVoteButtonPropsSchema, props);</span>
+ 
+<span class="d">-function FeedbackVoteButton({ action }: FeedbackVoteButtonProps) {</span>
+   const [{ feedbackActionsPlacement }] = useStyleOptions();
+   const [hasSubmitted] = useHasSubmitted();
+<span class="d">-  const [selectedAction, setSelectedAction] = useSelectedAction();</span>
+<span class="d">-  const [shouldAllowResubmit] = useShouldAllowResubmit();</span>
+<span class="d">-  const [shouldShowFeedbackForm] = useShouldShowFeedbackForm();</span>
+<span class="a">+  const [selectedAction, setSelectedAction] = useSelectedActions();</span>
+   const actionRef = useRefFrom(action);
+<span class="a">+  const buttonRef = useRef&lt;HTMLInputElement&gt;(null);</span>
+   const direction = useMemo(() =&gt; {
+     if (
+       action[&#x27;@type&#x27;] === &#x27;DislikeAction&#x27; ||
+<span class="h">@@ -42,22 +66,26 @@ function FeedbackVoteButton({ action }: FeedbackVoteButtonProps) {</span>
+     () =&gt; setSelectedAction(actionRef.current === selectedActionRef.current ? undefined : actionRef.current),
+     [actionRef, selectedActionRef, setSelectedAction]
+   );
+<span class="d">-  const disabled = hasSubmitted &amp;&amp; !shouldAllowResubmit;</span>
+<span class="a">+  const disabled = hasSubmitted &amp;&amp; !canActionResubmit(action);</span>
+<span class="a">+</span>
+<span class="a">+  useListenToActivityFeedbackFocus(</span>
+<span class="a">+    useCallback(target =&gt; target === actionRef.current &amp;&amp; buttonRef.current?.focus(), [actionRef])</span>
+<span class="a">+  );</span>
+ 
+   return (
+<span class=" m">     &lt;ThumbButton</span>
+<span class="d">-      className={classNames({</span>
+<span class="d">-        &#x27;webchat__thumb-button--large&#x27;: shouldShowFeedbackForm || feedbackActionsPlacement === &#x27;activity-actions&#x27;,</span>
+<span class="d">-        &#x27;webchat__thumb-button--submitted&#x27;: hasSubmitted</span>
+<span class="d">-      })}</span>
+<span class="a">+      as={as}</span>
+       direction={direction}
+       disabled={disabled}
+       onClick={handleClick}
+       pressed={selectedAction === action}
+<span class="a">+      ref={buttonRef}</span>
+<span class="a">+      size={isActionRequireReview(action) || feedbackActionsPlacement === &#x27;activity-actions&#x27; ? &#x27;large&#x27; : &#x27;small&#x27;}</span>
+<span class="a">+      submitted={hasSubmitted}</span>
+       title={disabled ? localize(&#x27;VOTE_COMPLETE_ALT&#x27;) : undefined}
+     /&gt;
+   );
+ }
+ 
+ export default memo(FeedbackVoteButton);
+<span class="d">-export { type FeedbackVoteButtonProps };</span>
+<span class="a">+export { feedbackVoteButtonPropsSchema, type FeedbackVoteButtonProps };</span></pre><h2>Commit #2: <a href="https://github.com/microsoft/botframework-webchat/commit/85d7da83e38cf0a2b620370a04207c9662c8c781">85d7da83e3</a> (2025-05-30T10:06:25-07:00)</h2><p class="k">Move suggested actions from Redux store to React hooks (#5489)<br>Path after this commit: packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx b/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx
+index 1d83973c1..be72c28c0 100644
+<span class="d">--- a/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx</span>
+<span class="a">+++ b/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import { hooks } from &#x27;botframework-webchat-api&#x27;;
+<span class="d">-import { validateProps } from &#x27;botframework-webchat-api/internal&#x27;;</span>
+<span class="a">+import { validateProps } from &#x27;botframework-webchat-react-valibot&#x27;;</span>
+ import { onErrorResumeNext, parseVoteAction, type OrgSchemaAction } from &#x27;botframework-webchat-core&#x27;;
+ import React, { memo, useCallback, useMemo, useRef } from &#x27;react&#x27;;
+ import { useRefFrom } from &#x27;use-ref-from&#x27;;</pre><h2>Commit #3: <a href="https://github.com/microsoft/botframework-webchat/commit/6044b59ef09e8a5756704437301c01e21203e024">6044b59ef0</a> (2025-08-02T17:24:26-07:00)</h2><p class="k">Move internal packages to @msinternal/* (#5531)<br>Path after this commit: packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx b/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx
+index be72c28c0..f5ba6571e 100644
+<span class="d">--- a/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx</span>
+<span class="a">+++ b/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+<span class="a">+import { validateProps } from &#x27;@msinternal/botframework-webchat-react-valibot&#x27;;</span>
+ import { hooks } from &#x27;botframework-webchat-api&#x27;;
+<span class="d">-import { validateProps } from &#x27;botframework-webchat-react-valibot&#x27;;</span>
+ import { onErrorResumeNext, parseVoteAction, type OrgSchemaAction } from &#x27;botframework-webchat-core&#x27;;
+ import React, { memo, useCallback, useMemo, useRef } from &#x27;react&#x27;;
+ import { useRefFrom } from &#x27;use-ref-from&#x27;;</pre><h2>Commit #4: <a href="https://github.com/microsoft/botframework-webchat/commit/04ad796c014272d1a47008327e0899f0b54f4d85">04ad796c01</a> (2025-10-22T15:17:01-07:00)</h2><p class="k">Bump to Chrome 141 (#5619)<br>Path after this commit: packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx b/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx
+index f5ba6571e..89988604a 100644
+<span class="d">--- a/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx</span>
+<span class="a">+++ b/packages/component/src/ActivityFeedback/private/FeedbackVoteButton.tsx</span>
+<span class="h">@@ -3,7 +3,7 @@ import { hooks } from &#x27;botframework-webchat-api&#x27;;</span>
+ import { onErrorResumeNext, parseVoteAction, type OrgSchemaAction } from &#x27;botframework-webchat-core&#x27;;
+ import React, { memo, useCallback, useMemo, useRef } from &#x27;react&#x27;;
+ import { useRefFrom } from &#x27;use-ref-from&#x27;;
+<span class="d">-import { custom, literal, object, optional, pipe, readonly, safeParse, union, type InferInput } from &#x27;valibot&#x27;;</span>
+<span class="a">+import { custom, literal, object, optional, pipe, readonly, safeParse, string, union, type InferInput } from &#x27;valibot&#x27;;</span>
+ 
+ import { useListenToActivityFeedbackFocus } from &#x27;../providers/private/FocusPropagation&#x27;;
+ import useActivityFeedbackHooks from &#x27;../providers/useActivityFeedbackHooks&#x27;;
+<span class="h">@@ -30,7 +30,8 @@ const feedbackVoteButtonPropsSchema = pipe(</span>
+           value
+         ).success
+     ),
+<span class="d">-    as: union([literal(&#x27;button&#x27;), literal(&#x27;radio&#x27;)])</span>
+<span class="a">+    as: union([literal(&#x27;button&#x27;), literal(&#x27;radio&#x27;)]),</span>
+<span class="a">+    name: string()</span>
+   }),
+   readonly()
+ );
+<span class="h">@@ -40,7 +41,7 @@ type FeedbackVoteButtonProps = InferInput&lt;typeof feedbackVoteButtonPropsSchema&gt;;</span>
+ function FeedbackVoteButton(props: FeedbackVoteButtonProps) {
+   const { useHasSubmitted, useSelectedAction: useSelectedActions } = useActivityFeedbackHooks();
+ 
+<span class="d">-  const { action, as } = validateProps(feedbackVoteButtonPropsSchema, props);</span>
+<span class="a">+  const { action, as, name } = validateProps(feedbackVoteButtonPropsSchema, props);</span>
+ 
+   const [{ feedbackActionsPlacement }] = useStyleOptions();
+   const [hasSubmitted] = useHasSubmitted();
+<span class="h">@@ -77,6 +78,7 @@ function FeedbackVoteButton(props: FeedbackVoteButtonProps) {</span>
+       as={as}
+       direction={direction}
+       disabled={disabled}
+<span class="a">+      name={name}</span>
+       onClick={handleClick}
+       pressed={selectedAction === action}
+       ref={buttonRef}</pre></body></html>

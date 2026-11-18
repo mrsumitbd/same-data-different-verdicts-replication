@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L297</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L297</h1><p><b>Repository:</b> <a href="https://github.com/dkrivoruchko/screenstream">dkrivoruchko/screenstream</a><br><b>File at merge:</b> rtsp/src/main/java/info/dvkr/screenstream/rtsp/RtspModuleService.kt, line 68<br><b>Merge commit (birth):</b> <a href="https://github.com/dkrivoruchko/screenstream/commit/444909abd8da2798579529b319775502e6016e4e">444909abd8</a> (2025-04-09T09:13:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dkrivoruchko/screenstream/tree/287af10d50740947174352f72fbd7231f96cbcf1">287af10d50</a>)</p><p><b>The line:</b></p><pre><span class="t">        if (streamingModuleManager.isActive(RtspStreamingModule.Companion.Id)) {</span></pre><h2>File at the merge commit, lines 60 to 76</h2><pre>   60 |         if ((flags and START_FLAG_REDELIVERY) != 0) {
+   61 |             XLog.e(
+   62 |                 getLog(&quot;onStartCommand&quot;),
+   63 |                 IllegalArgumentException(&quot;RtspModuleService.onStartCommand: redelivered intent, RtspEvent: $mjpegEvent, startId: $startId, $intent&quot;)
+   64 |             )
+   65 |             return START_NOT_STICKY
+   66 |         }
+   67 | 
+<span class="t">   68 |         if (streamingModuleManager.isActive(RtspStreamingModule.Companion.Id)) {</span>
+   69 |             when (mjpegEvent) {
+   70 |                 is RtspEvent.Intentable.StartService -&gt; rtspStreamingModule.onServiceStart(this)
+   71 |                 is RtspEvent.Intentable.StopStream -&gt; rtspStreamingModule.sendEvent(mjpegEvent)
+   72 |                 RtspEvent.Intentable.RecoverError -&gt; rtspStreamingModule.sendEvent(mjpegEvent)
+   73 |             }
+   74 |         } else {
+   75 |             XLog.w(getLog(&quot;onStartCommand&quot;, &quot;Not active module. Stop self, startId: $startId&quot;))
+   76 |             stopSelf(startId)</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dkrivoruchko/screenstream/commit/6f43b9998d3f67c6d81dfee87b969a25a98a8370">6f43b9998d</a> (2025-12-31T10:02:28+02:00)</h2><p class="k">RTSP Server mode (#342)<br>Path after this commit: rtsp/src/main/java/info/dvkr/screenstream/rtsp/RtspModuleService.kt. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/rtsp/src/main/java/info/dvkr/screenstream/rtsp/RtspModuleService.kt b/rtsp/src/main/java/info/dvkr/screenstream/rtsp/RtspModuleService.kt
+index 4c6706c3..a64f2c10 100644
+<span class="d">--- a/rtsp/src/main/java/info/dvkr/screenstream/rtsp/RtspModuleService.kt</span>
+<span class="a">+++ b/rtsp/src/main/java/info/dvkr/screenstream/rtsp/RtspModuleService.kt</span>
+<span class="h">@@ -65,7 +65,7 @@ public class RtspModuleService : StreamingModuleService() {</span>
+             return START_NOT_STICKY
+         }
+ 
+<span class="d m">-        if (streamingModuleManager.isActive(RtspStreamingModule.Companion.Id)) {</span>
+<span class="a">+        if (streamingModuleManager.isActive(RtspStreamingModule.Id)) {</span>
+             when (mjpegEvent) {
+                 is RtspEvent.Intentable.StartService -&gt; rtspStreamingModule.onServiceStart(this)
+                 is RtspEvent.Intentable.StopStream -&gt; rtspStreamingModule.sendEvent(mjpegEvent)
+<span class="h">@@ -81,7 +81,7 @@ public class RtspModuleService : StreamingModuleService() {</span>
+ 
+     override fun onDestroy() {
+         XLog.d(getLog(&quot;onDestroy&quot;))
+<span class="d">-        runBlocking { streamingModuleManager.stopModule(RtspStreamingModule.Companion.Id) }</span>
+<span class="a">+        runBlocking { streamingModuleManager.stopModule(RtspStreamingModule.Id) }</span>
+         super.onDestroy()
+     }
+ 
+<span class="h">@@ -89,7 +89,7 @@ public class RtspModuleService : StreamingModuleService() {</span>
+     internal fun startForeground() {
+         XLog.d(getLog(&quot;startForeground&quot;, &quot;foregroundNotificationsEnabled: ${notificationHelper.foregroundNotificationsEnabled()}&quot;))
+ 
+<span class="d">-        if (notificationHelper.notificationPermissionGranted(this).not()) throw RtspError.NotificationPermissionRequired</span>
+<span class="a">+        if (notificationHelper.notificationPermissionGranted(this).not()) throw RtspError.NotificationPermissionRequired()</span>
+ 
+         startForeground(RtspEvent.Intentable.StopStream(&quot;RtspModuleService. User action: Notification&quot;).toIntent(this))
+     }</pre></body></html>

@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L162</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L162</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/android">dotnet/android</a><br><b>File at merge:</b> src/Xamarin.Android.Build.Tasks/Utilities/LlvmIrGenerator/MemberInfoUtilities.cs, line 191<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/android/commit/45305f6e79de31493b4e076d92e601242e6e5efb">45305f6e79</a> (2025-07-14T12:33:58)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/android/tree/bb5968d700eaea7c4aae25e7c671c73efebc777f">bb5968d700</a>)</p><p><b>The line:</b></p><pre><span class="t">		/// &lt;returns&gt;The number format to use for the member.&lt;/returns&gt;</span></pre><h2>File at the merge commit, lines 183 to 199</h2><pre>  183 | 			return attr.NeedsPadding;
+  184 | 		}
+  185 | 
+  186 | 		/// &lt;summary&gt;
+  187 | 		/// Gets the number format to use for a member.
+  188 | 		/// &lt;/summary&gt;
+  189 | 		/// &lt;param name=&quot;mi&quot;&gt;The member info to get the number format for.&lt;/param&gt;
+  190 | 		/// &lt;param name=&quot;cache&quot;&gt;The LLVM IR type cache.&lt;/param&gt;
+<span class="t">  191 | 		/// &lt;returns&gt;The number format to use for the member.&lt;/returns&gt;</span>
+  192 | 		public static LlvmIrVariableNumberFormat GetNumberFormat (this MemberInfo mi, LlvmIrTypeCache cache)
+  193 | 		{
+  194 | 			var attr = cache.GetNativeAssemblerAttribute (mi);
+  195 | 			if (attr == null) {
+  196 | 				return LlvmIrVariableNumberFormat.Default;
+  197 | 			}
+  198 | 
+  199 | 			return attr.NumberFormat;</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

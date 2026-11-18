@@ -1,0 +1,104 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L194</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L194</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/graphrag">microsoft/graphrag</a><br><b>File at merge:</b> graphrag/cli/index.py, line 13<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/graphrag/commit/e84df28e6429e338595e1b7730be2a89153b6c18">e84df28e64</a> (2025-07-10T00:29:03)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/graphrag/tree/fdb7e3835badc483f50605db476d8636aeea7156">fdb7e3835b</a>)</p><p><b>The line:</b></p><pre><span class="t">from graphrag.config.enums import CacheType, IndexingMethod, ReportingType</span></pre><h2>File at the merge commit, lines 5 to 21</h2><pre>    5 | 
+    6 | import asyncio
+    7 | import logging
+    8 | import sys
+    9 | import warnings
+   10 | from pathlib import Path
+   11 | 
+   12 | import graphrag.api as api
+<span class="t">   13 | from graphrag.config.enums import CacheType, IndexingMethod, ReportingType</span>
+   14 | from graphrag.config.load_config import load_config
+   15 | from graphrag.index.validate_config import validate_config_names
+   16 | from graphrag.utils.cli import redact
+   17 | 
+   18 | # Ignore warnings from numba
+   19 | warnings.filterwarnings(&quot;ignore&quot;, message=&quot;.*NumbaDeprecationWarning.*&quot;)
+   20 | 
+   21 | logger = logging.getLogger(__name__)</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/graphrag/commit/77fb7d9d7ddf8326632c54f8824438118adcc3bc">77fb7d9d7d</a> (2025-08-25T14:56:43-07:00)</h2><p class="k">Logging improvements (#2030)<br>Path after this commit: graphrag/cli/index.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/graphrag/cli/index.py b/graphrag/cli/index.py
+index 87b8b1af..33deebca 100644
+<span class="d">--- a/graphrag/cli/index.py</span>
+<span class="a">+++ b/graphrag/cli/index.py</span>
+<span class="h">@@ -10,9 +10,11 @@ import warnings</span>
+ from pathlib import Path
+ 
+ import graphrag.api as api
+<span class="a">+from graphrag.callbacks.console_workflow_callbacks import ConsoleWorkflowCallbacks</span>
+<span class=" m"> from graphrag.config.enums import CacheType, IndexingMethod, ReportingType</span>
+ from graphrag.config.load_config import load_config
+ from graphrag.index.validate_config import validate_config_names
+<span class="a">+from graphrag.logger.standard_logging import DEFAULT_LOG_FILENAME</span>
+ from graphrag.utils.cli import redact
+ 
+ # Ignore warnings from numba
+<span class="h">@@ -115,7 +117,6 @@ def _run_index(</span>
+     # Initialize loggers and reporting config
+     init_loggers(
+         config=config,
+<span class="d">-        root_dir=str(config.root_dir) if config.root_dir else None,</span>
+         verbose=verbose,
+     )
+ 
+<span class="h">@@ -124,8 +125,8 @@ def _run_index(</span>
+ 
+     # Log the configuration details
+     if config.reporting.type == ReportingType.file:
+<span class="d">-        log_dir = Path(config.root_dir or &quot;&quot;) / (config.reporting.base_dir or &quot;&quot;)</span>
+<span class="d">-        log_path = log_dir / &quot;logs.txt&quot;</span>
+<span class="a">+        log_dir = Path(config.root_dir) / config.reporting.base_dir</span>
+<span class="a">+        log_path = log_dir / DEFAULT_LOG_FILENAME</span>
+         logger.info(&quot;Logging enabled at %s&quot;, log_path)
+     else:
+         logger.info(
+<span class="h">@@ -154,6 +155,7 @@ def _run_index(</span>
+             method=method,
+             is_update_run=is_update_run,
+             memory_profile=memprofile,
+<span class="a">+            callbacks=[ConsoleWorkflowCallbacks(verbose=verbose)],</span>
+         )
+     )
+     encountered_errors = any(</pre><h2>Commit #2: <a href="https://github.com/microsoft/graphrag/commit/2030f94eb4f6be162f89d1ab5ecb0bbe3ef3b589">2030f94eb4</a> (2025-08-28T13:53:07-07:00)</h2><p class="k">Refactor CacheFactory, StorageFactory, and VectorStoreFactory to use consistent registration patterns and add custom vector store documentation (#2006)<br>Path after this commit: graphrag/cli/index.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/graphrag/cli/index.py b/graphrag/cli/index.py
+index 33deebca..b5464d25 100644
+<span class="d">--- a/graphrag/cli/index.py</span>
+<span class="a">+++ b/graphrag/cli/index.py</span>
+<span class="h">@@ -11,10 +11,9 @@ from pathlib import Path</span>
+ 
+ import graphrag.api as api
+ from graphrag.callbacks.console_workflow_callbacks import ConsoleWorkflowCallbacks
+<span class="d m">-from graphrag.config.enums import CacheType, IndexingMethod, ReportingType</span>
+<span class="a">+from graphrag.config.enums import CacheType, IndexingMethod</span>
+ from graphrag.config.load_config import load_config
+ from graphrag.index.validate_config import validate_config_names
+<span class="d">-from graphrag.logger.standard_logging import DEFAULT_LOG_FILENAME</span>
+ from graphrag.utils.cli import redact
+ 
+ # Ignore warnings from numba
+<span class="h">@@ -123,17 +122,6 @@ def _run_index(</span>
+     if not cache:
+         config.cache.type = CacheType.none
+ 
+<span class="d">-    # Log the configuration details</span>
+<span class="d">-    if config.reporting.type == ReportingType.file:</span>
+<span class="d">-        log_dir = Path(config.root_dir) / config.reporting.base_dir</span>
+<span class="d">-        log_path = log_dir / DEFAULT_LOG_FILENAME</span>
+<span class="d">-        logger.info(&quot;Logging enabled at %s&quot;, log_path)</span>
+<span class="d">-    else:</span>
+<span class="d">-        logger.info(</span>
+<span class="d">-            &quot;Logging not enabled for config %s&quot;,</span>
+<span class="d">-            redact(config.model_dump()),</span>
+<span class="d">-        )</span>
+<span class="d">-</span>
+     if not skip_validation:
+         validate_config_names(config)
+ 
+<span class="h">@@ -156,6 +144,7 @@ def _run_index(</span>
+             is_update_run=is_update_run,
+             memory_profile=memprofile,
+             callbacks=[ConsoleWorkflowCallbacks(verbose=verbose)],
+<span class="a">+            verbose=verbose,</span>
+         )
+     )
+     encountered_errors = any(</pre></body></html>

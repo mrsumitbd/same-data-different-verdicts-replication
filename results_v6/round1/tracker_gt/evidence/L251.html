@@ -1,0 +1,563 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L251</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L251</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs, line 52<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/33721413633f3b34b9ee367900a5fad047f04870">3372141363</a> (2025-06-24T22:31:00)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">        // Assert</span></pre><h2>File at the merge commit, lines 44 to 60</h2><pre>   44 |     {
+   45 |         // Arrange
+   46 |         var reporter = NullPublishingActivityProgressReporter.Instance;
+   47 |         var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+   48 | 
+   49 |         // Act
+   50 |         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+   51 | 
+<span class="t">   52 |         // Assert</span>
+   53 |         Assert.NotNull(task);
+   54 |         Assert.Equal(step.Id, task.StepId);
+   55 |         Assert.Equal(&quot;Initial status&quot;, task.StatusText);
+   56 |         Assert.Equal(TaskCompletionState.InProgress, task.CompletionState);
+   57 |     }
+   58 | 
+   59 |     [Fact]
+   60 |     public async Task PublishingStepExtensions_Succeed_WorksCorrectly()</pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/2f034511a13cc08e3614dc5f242579516163ce60">2f034511a1</a> (2025-06-25T22:21:44-07:00)</h2><p class="k">Refactor publishing state model and CLI protocol to aggregate CompletionState at all levels (#10037)<br>Path after this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs. Lines with exactly this text in the file after the commit: 7. Identical text added in other files in this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingActivityProgressReporterTests.cs.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs
+index a4b4a4b741..5b69c91b02 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="h">@@ -24,7 +24,7 @@ public class PublishingExtensionsTests</span>
+         Assert.NotNull(task);
+         Assert.Equal(step.Id, task.StepId);
+         Assert.Equal(&quot;Initial status&quot;, task.StatusText);
+<span class="d">-        Assert.Equal(TaskCompletionState.InProgress, task.CompletionState);</span>
+<span class="a">+        Assert.Equal(CompletionState.InProgress, task.CompletionState);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -36,7 +36,7 @@ public class PublishingExtensionsTests</span>
+         // Act &amp; Assert
+         var exception = await Assert.ThrowsAsync&lt;InvalidOperationException&gt;(
+             () =&gt; step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None));
+<span class="d">-        Assert.Equal(&quot;No progress reporter is available for this step.&quot;, exception.Message);</span>
+<span class="a">+        Assert.Equal(&quot;Cannot create task: Reporter is not set.&quot;, exception.Message);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -53,7 +53,7 @@ public class PublishingExtensionsTests</span>
+         Assert.NotNull(task);
+         Assert.Equal(step.Id, task.StepId);
+         Assert.Equal(&quot;Initial status&quot;, task.StatusText);
+<span class="d">-        Assert.Equal(TaskCompletionState.InProgress, task.CompletionState);</span>
+<span class="a">+        Assert.Equal(CompletionState.InProgress, task.CompletionState);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -68,7 +68,7 @@ public class PublishingExtensionsTests</span>
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(step, result);
+<span class="d">-        Assert.True(step.IsComplete);</span>
+<span class="a">+        Assert.True(step.CompletionState != CompletionState.InProgress);</span>
+         Assert.Equal(&quot;Success message&quot;, step.CompletionText);
+     }
+ 
+<span class="h">@@ -101,7 +101,7 @@ public class PublishingExtensionsTests</span>
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(task, result);
+<span class="d">-        Assert.Equal(TaskCompletionState.Completed, task.CompletionState);</span>
+<span class="a">+        Assert.Equal(CompletionState.Completed, task.CompletionState);</span>
+         Assert.Equal(&quot;Success message&quot;, task.CompletionMessage);
+     }
+ 
+<span class="h">@@ -118,7 +118,7 @@ public class PublishingExtensionsTests</span>
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(task, result);
+<span class="d">-        Assert.Equal(TaskCompletionState.CompletedWithWarning, task.CompletionState);</span>
+<span class="a">+        Assert.Equal(CompletionState.CompletedWithWarning, task.CompletionState);</span>
+         Assert.Equal(&quot;Warning message&quot;, task.CompletionMessage);
+     }
+ 
+<span class="h">@@ -131,11 +131,10 @@ public class PublishingExtensionsTests</span>
+         var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);
+ 
+         // Act
+<span class="d">-        var result = await task.FailAsync(&quot;Error message&quot;, CancellationToken.None);</span>
+<span class="a">+        await task.FailAsync(&quot;Error message&quot;, CancellationToken.None);</span>
+ 
+<span class=" m">         // Assert</span>
+<span class="d">-        Assert.Equal(task, result);</span>
+<span class="d">-        Assert.Equal(TaskCompletionState.CompletedWithError, task.CompletionState);</span>
+<span class="a">+        Assert.Equal(CompletionState.CompletedWithError, task.CompletionState);</span>
+         Assert.Equal(&quot;Error message&quot;, task.CompletionMessage);
+     }
+ }
+\ No newline at end of file</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/5f415f762891ee253f42a5940c0cce948ac3b8fd">5f415f7628</a> (2025-06-27T19:30:20-07:00)</h2><p class="k">Implement CLI prompting on top of InteractionService (#10101)<br>Path after this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs. Lines with exactly this text in the file after the commit: 7. Identical text added in other files in this commit: tests/Aspire.Cli.Tests/Commands/PublishCommandPromptingIntegrationTests.cs.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs
+index 5b69c91b02..ec17ec208c 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="h">@@ -10,11 +10,13 @@ namespace Aspire.Hosting.Tests.Publishing;</span>
+ 
+ public class PublishingExtensionsTests
+ {
+<span class="a">+    private readonly InteractionService _interactionService = PublishingActivityProgressReporterTests.CreateInteractionService();</span>
+<span class="a">+</span>
+     [Fact]
+     public async Task PublishingStepExtensions_CreateTask_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter();</span>
+<span class="a">+        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+         var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+ 
+         // Act
+<span class="h">@@ -60,7 +62,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingStepExtensions_Succeed_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter();</span>
+<span class="a">+        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+         var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+ 
+         // Act
+<span class="h">@@ -76,7 +78,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_UpdateStatus_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter();</span>
+<span class="a">+        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+         var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -92,7 +94,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Succeed_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter();</span>
+<span class="a">+        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+         var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -109,7 +111,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Warn_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter();</span>
+<span class="a">+        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+         var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -126,7 +128,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Fail_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter();</span>
+<span class="a">+        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+         var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -137,4 +139,4 @@ public class PublishingExtensionsTests</span>
+         Assert.Equal(CompletionState.CompletedWithError, task.CompletionState);
+         Assert.Equal(&quot;Error message&quot;, task.CompletionMessage);
+     }
+<span class="d">-}</span>
+\ No newline at end of file
+<span class="a">+}</span></pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/50e580e434e0a8acebfb66e99e9bd3429fd36f83">50e580e434</a> (2025-07-01T15:40:28-07:00)</h2><p class="k">Rename and refactor steps/tasks-related publishing APIs (#10145)<br>Path after this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs. Lines with exactly this text in the file after the commit: 6. Identical text added in other files in this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingActivityProgressReporterTests.cs.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs
+index ec17ec208c..a0ca15c791 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="h">@@ -17,45 +17,18 @@ public class PublishingExtensionsTests</span>
+     {
+         // Arrange
+         var reporter = new PublishingActivityProgressReporter(_interactionService);
+<span class="d">-        var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="a">+        await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+ 
+         // Act
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class=" m">         // Assert</span>
+         Assert.NotNull(task);
+<span class="d">-        Assert.Equal(step.Id, task.StepId);</span>
+<span class="d">-        Assert.Equal(&quot;Initial status&quot;, task.StatusText);</span>
+<span class="d">-        Assert.Equal(CompletionState.InProgress, task.CompletionState);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    [Fact]</span>
+<span class="d">-    public async Task PublishingStepExtensions_CreateTask_ThrowsWhenNoReporter()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Arrange</span>
+<span class="d">-        var step = new PublishingStep(&quot;test-id&quot;, &quot;Test Step&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        // Act &amp; Assert</span>
+<span class="d">-        var exception = await Assert.ThrowsAsync&lt;InvalidOperationException&gt;(</span>
+<span class="d">-            () =&gt; step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None));</span>
+<span class="d">-        Assert.Equal(&quot;Cannot create task: Reporter is not set.&quot;, exception.Message);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    [Fact]</span>
+<span class="d">-    public async Task PublishingStepExtensions_CreateTask_WorksWithNullReporter()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Arrange</span>
+<span class="d">-        var reporter = NullPublishingActivityProgressReporter.Instance;</span>
+<span class="d">-        var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="d">-</span>
+<span class="d">-        // Act</span>
+<span class="d">-        var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);</span>
+<span class="d">-</span>
+<span class="d m">-        // Assert</span>
+<span class="d">-        Assert.NotNull(task);</span>
+<span class="d">-        Assert.Equal(step.Id, task.StepId);</span>
+<span class="d">-        Assert.Equal(&quot;Initial status&quot;, task.StatusText);</span>
+<span class="d">-        Assert.Equal(CompletionState.InProgress, task.CompletionState);</span>
+<span class="a">+        await using var stepInternal = Assert.IsType&lt;PublishingStep&gt;(step);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        Assert.Equal(stepInternal.Id, taskInternal.StepId);</span>
+<span class="a">+        Assert.Equal(&quot;Initial status&quot;, taskInternal.StatusText);</span>
+<span class="a">+        Assert.Equal(CompletionState.InProgress, taskInternal.CompletionState);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -63,15 +36,17 @@ public class PublishingExtensionsTests</span>
+     {
+         // Arrange
+         var reporter = new PublishingActivityProgressReporter(_interactionService);
+<span class="d">-        var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="a">+        await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+ 
+         // Act
+         var result = await step.SucceedAsync(&quot;Success message&quot;, CancellationToken.None);
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(step, result);
+<span class="d">-        Assert.True(step.CompletionState != CompletionState.InProgress);</span>
+<span class="d">-        Assert.Equal(&quot;Success message&quot;, step.CompletionText);</span>
+<span class="a">+        // Cast to internal type to verify internal state for testing</span>
+<span class="a">+        await using var stepInternal = Assert.IsType&lt;PublishingStep&gt;(step);</span>
+<span class="a">+        Assert.NotEqual(CompletionState.InProgress, stepInternal.CompletionState);</span>
+<span class="a">+        Assert.Equal(&quot;Success message&quot;, stepInternal.CompletionText);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -79,15 +54,18 @@ public class PublishingExtensionsTests</span>
+     {
+         // Arrange
+         var reporter = new PublishingActivityProgressReporter(_interactionService);
+<span class="d">-        var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="d">-        var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);</span>
+<span class="a">+        await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="a">+        var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);</span>
+ 
+         // Act
+         var result = await task.UpdateStatusAsync(&quot;Updated status&quot;, CancellationToken.None);
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(task, result);
+<span class="d">-        Assert.Equal(&quot;Updated status&quot;, task.StatusText);</span>
+<span class="a">+</span>
+<span class="a">+        // Cast to internal type to verify internal state for testing</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        Assert.Equal(&quot;Updated status&quot;, taskInternal.StatusText);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -95,16 +73,17 @@ public class PublishingExtensionsTests</span>
+     {
+         // Arrange
+         var reporter = new PublishingActivityProgressReporter(_interactionService);
+<span class="d">-        var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="d">-        var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);</span>
+<span class="a">+        await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="a">+        var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);</span>
+ 
+         // Act
+         var result = await task.SucceedAsync(&quot;Success message&quot;, CancellationToken.None);
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(task, result);
+<span class="d">-        Assert.Equal(CompletionState.Completed, task.CompletionState);</span>
+<span class="d">-        Assert.Equal(&quot;Success message&quot;, task.CompletionMessage);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        Assert.Equal(CompletionState.Completed, taskInternal.CompletionState);</span>
+<span class="a">+        Assert.Equal(&quot;Success message&quot;, taskInternal.CompletionMessage);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -112,16 +91,17 @@ public class PublishingExtensionsTests</span>
+     {
+         // Arrange
+         var reporter = new PublishingActivityProgressReporter(_interactionService);
+<span class="d">-        var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="d">-        var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);</span>
+<span class="a">+        await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="a">+        var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);</span>
+ 
+         // Act
+         var result = await task.WarnAsync(&quot;Warning message&quot;, CancellationToken.None);
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(task, result);
+<span class="d">-        Assert.Equal(CompletionState.CompletedWithWarning, task.CompletionState);</span>
+<span class="d">-        Assert.Equal(&quot;Warning message&quot;, task.CompletionMessage);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        Assert.Equal(CompletionState.CompletedWithWarning, taskInternal.CompletionState);</span>
+<span class="a">+        Assert.Equal(&quot;Warning message&quot;, taskInternal.CompletionMessage);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -129,14 +109,15 @@ public class PublishingExtensionsTests</span>
+     {
+         // Arrange
+         var reporter = new PublishingActivityProgressReporter(_interactionService);
+<span class="d">-        var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="d">-        var task = await reporter.CreateTaskAsync(step, &quot;Initial status&quot;, CancellationToken.None);</span>
+<span class="a">+        await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);</span>
+<span class="a">+        var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);</span>
+ 
+         // Act
+         await task.FailAsync(&quot;Error message&quot;, CancellationToken.None);
+ 
+<span class=" m">         // Assert</span>
+<span class="d">-        Assert.Equal(CompletionState.CompletedWithError, task.CompletionState);</span>
+<span class="d">-        Assert.Equal(&quot;Error message&quot;, task.CompletionMessage);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        Assert.Equal(CompletionState.CompletedWithError, taskInternal.CompletionState);</span>
+<span class="a">+        Assert.Equal(&quot;Error message&quot;, taskInternal.CompletionMessage);</span>
+     }
+ }</pre><h2>Commit #4: <a href="https://github.com/dotnet/aspire/commit/853c9189814850a686f5445b9b1ac0f5a76e3b30">853c918981</a> (2025-07-07T11:10:03-07:00)</h2><p class="k">Rename IPublishingActivityProgressReporter to IPublishingActivityReporter (#10253)<br>Path after this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs. Lines with exactly this text in the file after the commit: 6.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs
+index a0ca15c791..f60a87d7ca 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="h">@@ -10,13 +10,13 @@ namespace Aspire.Hosting.Tests.Publishing;</span>
+ 
+ public class PublishingExtensionsTests
+ {
+<span class="d">-    private readonly InteractionService _interactionService = PublishingActivityProgressReporterTests.CreateInteractionService();</span>
+<span class="a">+    private readonly InteractionService _interactionService = PublishingActivityReporterTests.CreateInteractionService();</span>
+ 
+     [Fact]
+     public async Task PublishingStepExtensions_CreateTask_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+<span class="a">+        var reporter = new PublishingActivityReporter(_interactionService);</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+ 
+         // Act
+<span class="h">@@ -35,7 +35,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingStepExtensions_Succeed_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+<span class="a">+        var reporter = new PublishingActivityReporter(_interactionService);</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+ 
+         // Act
+<span class="h">@@ -53,7 +53,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_UpdateStatus_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+<span class="a">+        var reporter = new PublishingActivityReporter(_interactionService);</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -72,7 +72,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Succeed_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+<span class="a">+        var reporter = new PublishingActivityReporter(_interactionService);</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -90,7 +90,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Warn_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+<span class="a">+        var reporter = new PublishingActivityReporter(_interactionService);</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -108,7 +108,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Fail_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityProgressReporter(_interactionService);</span>
+<span class="a">+        var reporter = new PublishingActivityReporter(_interactionService);</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ </pre><h2>Commit #5: <a href="https://github.com/dotnet/aspire/commit/7c8b37c473b5a6aa1c0403e8580546793535bb51">7c8b37c473</a> (2025-07-14T16:42:47+00:00)</h2><p class="k">Add xmldocs to generated metadata projects (#9868)<br>Path after this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs. Lines with exactly this text in the file after the commit: 6.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs
+index f60a87d7ca..66733630b1 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="h">@@ -4,7 +4,6 @@</span>
+ #pragma warning disable ASPIREPUBLISHERS001
+ 
+ using Aspire.Hosting.Publishing;
+<span class="d">-using Xunit;</span>
+ 
+ namespace Aspire.Hosting.Tests.Publishing;
+ </pre><h2>Commit #6: <a href="https://github.com/dotnet/aspire/commit/6a7dbca779030e36377eb654b419bebacf0e681c">6a7dbca779</a> (2025-10-10T12:16:24+08:00)</h2><p class="k">Support dynamic inputs (#11635)<br>Path after this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs. Lines with exactly this text in the file after the commit: 6. Identical text added in other files in this commit: tests/Aspire.Hosting.Tests/InteractionServiceTests.cs.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs
+index 66733630b1..b1589b69ea 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="h">@@ -4,6 +4,7 @@</span>
+ #pragma warning disable ASPIREPUBLISHERS001
+ 
+ using Aspire.Hosting.Publishing;
+<span class="a">+using Microsoft.Extensions.Logging.Abstractions;</span>
+ 
+ namespace Aspire.Hosting.Tests.Publishing;
+ 
+<span class="h">@@ -15,7 +16,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingStepExtensions_CreateTask_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityReporter(_interactionService);</span>
+<span class="a">+        var reporter = CreatePublishingReporter();</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+ 
+         // Act
+<span class="h">@@ -34,7 +35,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingStepExtensions_Succeed_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityReporter(_interactionService);</span>
+<span class="a">+        var reporter = CreatePublishingReporter();</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+ 
+         // Act
+<span class="h">@@ -52,7 +53,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_UpdateStatus_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityReporter(_interactionService);</span>
+<span class="a">+        var reporter = CreatePublishingReporter();</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -71,7 +72,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Succeed_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityReporter(_interactionService);</span>
+<span class="a">+        var reporter = CreatePublishingReporter();</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -89,7 +90,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Warn_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityReporter(_interactionService);</span>
+<span class="a">+        var reporter = CreatePublishingReporter();</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -107,7 +108,7 @@ public class PublishingExtensionsTests</span>
+     public async Task PublishingTaskExtensions_Fail_WorksCorrectly()
+     {
+         // Arrange
+<span class="d">-        var reporter = new PublishingActivityReporter(_interactionService);</span>
+<span class="a">+        var reporter = CreatePublishingReporter();</span>
+         await using var step = await reporter.CreateStepAsync(&quot;Test Step&quot;, CancellationToken.None);
+         var task = await step.CreateTaskAsync(&quot;Initial status&quot;, CancellationToken.None);
+ 
+<span class="h">@@ -119,4 +120,9 @@ public class PublishingExtensionsTests</span>
+         Assert.Equal(CompletionState.CompletedWithError, taskInternal.CompletionState);
+         Assert.Equal(&quot;Error message&quot;, taskInternal.CompletionMessage);
+     }
+<span class="a">+</span>
+<span class="a">+    private PublishingActivityReporter CreatePublishingReporter()</span>
+<span class="a">+    {</span>
+<span class="a">+        return new PublishingActivityReporter(_interactionService, NullLogger&lt;PublishingActivityReporter&gt;.Instance);</span>
+<span class="a">+    }</span>
+ }</pre><h2>Commit #7: <a href="https://github.com/dotnet/aspire/commit/46b8881190b2cddb17a6048172c79069d08701b0">46b8881190</a> (2025-10-18T12:35:06-07:00)</h2><p class="k">Rename AcitivityReporter and auto-create publishing steps (#12137)<br>Path after this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs. Lines with exactly this text in the file after the commit: 6.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs
+index b1589b69ea..54044acd23 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="h">@@ -3,7 +3,7 @@</span>
+ 
+ #pragma warning disable ASPIREPUBLISHERS001
+ 
+<span class="d">-using Aspire.Hosting.Publishing;</span>
+<span class="a">+using Aspire.Hosting.Pipelines;</span>
+ using Microsoft.Extensions.Logging.Abstractions;
+ 
+ namespace Aspire.Hosting.Tests.Publishing;
+<span class="h">@@ -24,8 +24,8 @@ public class PublishingExtensionsTests</span>
+ 
+<span class=" m">         // Assert</span>
+         Assert.NotNull(task);
+<span class="d">-        await using var stepInternal = Assert.IsType&lt;PublishingStep&gt;(step);</span>
+<span class="d">-        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        await using var stepInternal = Assert.IsType&lt;ReportingStep&gt;(step);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;ReportingTask&gt;(task);</span>
+         Assert.Equal(stepInternal.Id, taskInternal.StepId);
+         Assert.Equal(&quot;Initial status&quot;, taskInternal.StatusText);
+         Assert.Equal(CompletionState.InProgress, taskInternal.CompletionState);
+<span class="h">@@ -44,7 +44,7 @@ public class PublishingExtensionsTests</span>
+<span class=" m">         // Assert</span>
+         Assert.Equal(step, result);
+         // Cast to internal type to verify internal state for testing
+<span class="d">-        await using var stepInternal = Assert.IsType&lt;PublishingStep&gt;(step);</span>
+<span class="a">+        await using var stepInternal = Assert.IsType&lt;ReportingStep&gt;(step);</span>
+         Assert.NotEqual(CompletionState.InProgress, stepInternal.CompletionState);
+         Assert.Equal(&quot;Success message&quot;, stepInternal.CompletionText);
+     }
+<span class="h">@@ -64,7 +64,7 @@ public class PublishingExtensionsTests</span>
+         Assert.Equal(task, result);
+ 
+         // Cast to internal type to verify internal state for testing
+<span class="d">-        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;ReportingTask&gt;(task);</span>
+         Assert.Equal(&quot;Updated status&quot;, taskInternal.StatusText);
+     }
+ 
+<span class="h">@@ -81,7 +81,7 @@ public class PublishingExtensionsTests</span>
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(task, result);
+<span class="d">-        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;ReportingTask&gt;(task);</span>
+         Assert.Equal(CompletionState.Completed, taskInternal.CompletionState);
+         Assert.Equal(&quot;Success message&quot;, taskInternal.CompletionMessage);
+     }
+<span class="h">@@ -99,7 +99,7 @@ public class PublishingExtensionsTests</span>
+ 
+<span class=" m">         // Assert</span>
+         Assert.Equal(task, result);
+<span class="d">-        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;ReportingTask&gt;(task);</span>
+         Assert.Equal(CompletionState.CompletedWithWarning, taskInternal.CompletionState);
+         Assert.Equal(&quot;Warning message&quot;, taskInternal.CompletionMessage);
+     }
+<span class="h">@@ -116,13 +116,13 @@ public class PublishingExtensionsTests</span>
+         await task.FailAsync(&quot;Error message&quot;, CancellationToken.None);
+ 
+<span class=" m">         // Assert</span>
+<span class="d">-        var taskInternal = Assert.IsType&lt;PublishingTask&gt;(task);</span>
+<span class="a">+        var taskInternal = Assert.IsType&lt;ReportingTask&gt;(task);</span>
+         Assert.Equal(CompletionState.CompletedWithError, taskInternal.CompletionState);
+         Assert.Equal(&quot;Error message&quot;, taskInternal.CompletionMessage);
+     }
+ 
+<span class="d">-    private PublishingActivityReporter CreatePublishingReporter()</span>
+<span class="a">+    private PipelineActivityReporter CreatePublishingReporter()</span>
+     {
+<span class="d">-        return new PublishingActivityReporter(_interactionService, NullLogger&lt;PublishingActivityReporter&gt;.Instance);</span>
+<span class="a">+        return new PipelineActivityReporter(_interactionService, NullLogger&lt;PipelineActivityReporter&gt;.Instance);</span>
+     }
+ }</pre><h2>Commit #8: <a href="https://github.com/dotnet/aspire/commit/861eadf3c3b4cdef35df3593aa0881e5f87189de">861eadf3c3</a> (2025-10-27T21:49:41-07:00)</h2><p class="k">Rename ASPIREPUBLISHERS001 to sequential ASPIREPIPELINES001-003 diagnostic codes (#12416)<br>Path after this commit: tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs. Lines with exactly this text in the file after the commit: 6.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs
+index 54044acd23..bbee638925 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/Publishing/PublishingExtensionsTests.cs</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ // Licensed to the .NET Foundation under one or more agreements.
+ // The .NET Foundation licenses this file to you under the MIT license.
+ 
+<span class="d">-#pragma warning disable ASPIREPUBLISHERS001</span>
+<span class="a">+#pragma warning disable ASPIREPIPELINES001</span>
+ 
+ using Aspire.Hosting.Pipelines;
+ using Microsoft.Extensions.Logging.Abstractions;</pre></body></html>

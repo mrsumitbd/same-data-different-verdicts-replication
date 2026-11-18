@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L173</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L173</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/onnxruntime">microsoft/onnxruntime</a><br><b>File at merge:</b> onnxruntime/core/providers/webgpu/tensor/depth_to_space.cc, line 85<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/onnxruntime/commit/fcf2c588972e748c1a5b72f2aa58f1783023f4d2">fcf2c58897</a> (2025-04-22T10:30:12)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/onnxruntime/tree/94e7a1c61c302318c7099f1dde4fec2f2c07e8b1">94e7a1c61c</a>)</p><p><b>The line:</b></p><pre><span class="t">      int64_t shape_values[] = {n, h, w, c / (blocksize_ * blocksize_), blocksize_, blocksize_};</span></pre><h2>File at the merge commit, lines 77 to 93</h2><pre>   77 |     c = input_shape[3];
+   78 | 
+   79 |     if (is_dcr_) {
+   80 |       int64_t shape_values[] = {n, h, w, blocksize_, blocksize_, c / (blocksize_ * blocksize_)};
+   81 |       int64_t perm_values[] = {0, 1, 3, 2, 4, 5};
+   82 |       std::copy(shape_values, shape_values + 6, shape);
+   83 |       std::copy(perm_values, perm_values + 6, perm);
+   84 |     } else {
+<span class="t">   85 |       int64_t shape_values[] = {n, h, w, c / (blocksize_ * blocksize_), blocksize_, blocksize_};</span>
+   86 |       int64_t perm_values[] = {0, 1, 4, 2, 5, 3};
+   87 |       std::copy(shape_values, shape_values + 6, shape);
+   88 |       std::copy(perm_values, perm_values + 6, perm);
+   89 |     }
+   90 |   } else {
+   91 |     n = input_shape[0];
+   92 |     h = input_shape[2];
+   93 |     w = input_shape[3];</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

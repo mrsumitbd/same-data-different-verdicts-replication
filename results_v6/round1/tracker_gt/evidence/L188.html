@@ -1,0 +1,746 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L188</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L188</h1><p><b>Repository:</b> <a href="https://github.com/cartography-cncf/cartography">cartography-cncf/cartography</a><br><b>File at merge:</b> tests/unit/cartography/intel/aws/ec2/test_launch_templates.py, line 29<br><b>Merge commit (birth):</b> <a href="https://github.com/cartography-cncf/cartography/commit/9443da4f22bf8422003e04ba929686eb3ac0fb81">9443da4f22</a> (2025-04-09T22:36:06)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/cartography-cncf/cartography/tree/3881615b88816199205ea864d97e7019e37a20e3">3881615b88</a>)</p><p><b>The line:</b></p><pre><span class="t">    result = get_launch_template_versions_by_template(</span></pre><h2>File at the merge commit, lines 21 to 37</h2><pre>   21 |     mock_session.client.return_value = mock_client
+   22 |     mock_client.get_paginator.return_value = mock_paginator
+   23 |     mock_paginator.paginate.side_effect = botocore.exceptions.ClientError(
+   24 |         error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;InvalidLaunchTemplateId.NotFound&#x27;, &#x27;Message&#x27;: &#x27;Launch template not found&#x27;}},
+   25 |         operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,
+   26 |     )
+   27 | 
+   28 |     # Act
+<span class="t">   29 |     result = get_launch_template_versions_by_template(</span>
+   30 |         mock_session,
+   31 |         &#x27;fake-template-id&#x27;,
+   32 |         &#x27;us-east-1&#x27;,
+   33 |     )
+   34 | 
+   35 |     # Assert
+   36 |     assert result == []
+   37 |     mock_logger.warning.assert_called_once_with(</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/cartography-cncf/cartography/commit/ea91ab190127a66a1683b51c3304726011a7054b">ea91ab1901</a> (2025-04-11T02:52:23+00:00)</h2><p class="k">Prevent loading of non-existent launch templates (#1522)<br>Path after this commit: tests/unit/cartography/intel/aws/ec2/test_launch_templates.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py b/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py
+index f722749d..d9d1757c 100644
+<span class="d">--- a/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py</span>
+<span class="a">+++ b/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py</span>
+<span class="h">@@ -4,6 +4,7 @@ from unittest.mock import patch</span>
+ import botocore
+ import pytest
+ 
+<span class="a">+from cartography.intel.aws.ec2.launch_templates import get_launch_template_versions</span>
+ from cartography.intel.aws.ec2.launch_templates import get_launch_template_versions_by_template
+ from tests.utils import unwrapper
+ 
+<span class="h">@@ -11,8 +12,8 @@ from tests.utils import unwrapper</span>
+ @patch(&#x27;cartography.intel.aws.ec2.launch_templates.logger&#x27;)
+ def test_get_launch_template_versions_by_template_not_found(mock_logger):
+     &quot;&quot;&quot;
+<span class="d">-    Test that a ClientError with code &#x27;InvalidLaunchTemplateId.NotFound&#x27; logs a warning</span>
+<span class="d">-    but doesn&#x27;t raise an exception.</span>
+<span class="a">+    Test that a ClientError with code &#x27;InvalidLaunchTemplateId.NotFound&#x27; is raised</span>
+<span class="a">+    when the template is not found.</span>
+     &quot;&quot;&quot;
+     # Arrange
+     mock_session = MagicMock()
+<span class="h">@@ -20,25 +21,27 @@ def test_get_launch_template_versions_by_template_not_found(mock_logger):</span>
+     mock_paginator = MagicMock()
+     mock_session.client.return_value = mock_client
+     mock_client.get_paginator.return_value = mock_paginator
+<span class="d">-    mock_paginator.paginate.side_effect = botocore.exceptions.ClientError(</span>
+<span class="a">+    not_found_error = botocore.exceptions.ClientError(</span>
+         error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;InvalidLaunchTemplateId.NotFound&#x27;, &#x27;Message&#x27;: &#x27;Launch template not found&#x27;}},
+         operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,
+     )
+<span class="a">+    mock_paginator.paginate.side_effect = not_found_error</span>
+ 
+<span class="d">-    # Act</span>
+<span class="d m">-    result = get_launch_template_versions_by_template(</span>
+<span class="d">-        mock_session,</span>
+<span class="d">-        &#x27;fake-template-id&#x27;,</span>
+<span class="d">-        &#x27;us-east-1&#x27;,</span>
+<span class="d">-    )</span>
+<span class="a">+    # Unwrap the function because we removed @aws_handle_regions</span>
+<span class="a">+    original_func = unwrapper(get_launch_template_versions_by_template)</span>
+ 
+<span class="d">-    # Assert</span>
+<span class="d">-    assert result == []</span>
+<span class="d">-    mock_logger.warning.assert_called_once_with(</span>
+<span class="d">-        &quot;Launch template %s no longer exists in region %s&quot;,</span>
+<span class="d">-        &#x27;fake-template-id&#x27;,</span>
+<span class="d">-        &#x27;us-east-1&#x27;,</span>
+<span class="d">-    )</span>
+<span class="a">+    # Act &amp; Assert</span>
+<span class="a">+    with pytest.raises(botocore.exceptions.ClientError) as excinfo:</span>
+<span class="a">+        original_func(</span>
+<span class="a">+            mock_session,</span>
+<span class="a">+            &#x27;fake-template-id&#x27;,</span>
+<span class="a">+            &#x27;us-east-1&#x27;,</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+    # Check if the raised exception is the one we expect</span>
+<span class="a">+    assert excinfo.value is not_found_error</span>
+<span class="a">+    # Ensure no warning was logged here, as it now happens in the caller</span>
+<span class="a">+    mock_logger.warning.assert_not_called()</span>
+ 
+ 
+ def test_get_launch_template_versions_by_template_other_error():
+<span class="h">@@ -92,3 +95,129 @@ def test_get_launch_template_versions_by_template_success():</span>
+     assert result == [{&#x27;VersionNumber&#x27;: 1}]
+     mock_client.get_paginator.assert_called_once_with(&#x27;describe_launch_template_versions&#x27;)
+     mock_paginator.paginate.assert_called_once_with(LaunchTemplateId=&#x27;valid-template-id&#x27;)
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+@patch(&#x27;cartography.intel.aws.ec2.launch_templates.get_launch_template_versions_by_template&#x27;)</span>
+<span class="a">+def test_get_launch_template_versions_all_found(mock_get_by_template):</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    Test that when all templates have versions, the function returns all versions and all original templates.</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    # Arrange</span>
+<span class="a">+    mock_session = MagicMock()</span>
+<span class="a">+    region = &#x27;us-west-2&#x27;</span>
+<span class="a">+    templates = [</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-1&#x27;},</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-2&#x27;},</span>
+<span class="a">+    ]</span>
+<span class="a">+    versions_lt1 = [{&#x27;VersionNumber&#x27;: 1, &#x27;LaunchTemplateId&#x27;: &#x27;lt-1&#x27;}]</span>
+<span class="a">+    versions_lt2 = [{&#x27;VersionNumber&#x27;: 1, &#x27;LaunchTemplateId&#x27;: &#x27;lt-2&#x27;}, {&#x27;VersionNumber&#x27;: 2, &#x27;LaunchTemplateId&#x27;: &#x27;lt-2&#x27;}]</span>
+<span class="a">+    mock_get_by_template.side_effect = [versions_lt1, versions_lt2]</span>
+<span class="a">+</span>
+<span class="a">+    # Act</span>
+<span class="a">+    result_versions, result_templates = get_launch_template_versions(mock_session, region, templates)</span>
+<span class="a">+</span>
+<span class="a">+    # Assert</span>
+<span class="a">+    assert result_versions == versions_lt1 + versions_lt2</span>
+<span class="a">+    assert result_templates == templates</span>
+<span class="a">+    assert mock_get_by_template.call_count == 2</span>
+<span class="a">+    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-1&#x27;, region)</span>
+<span class="a">+    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-2&#x27;, region)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+@patch(&#x27;cartography.intel.aws.ec2.launch_templates.logger&#x27;)</span>
+<span class="a">+@patch(&#x27;cartography.intel.aws.ec2.launch_templates.get_launch_template_versions_by_template&#x27;)</span>
+<span class="a">+def test_get_launch_template_versions_some_not_found(mock_get_by_template, mock_logger):</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    Test that when some templates are not found (raising ClientError), the function logs a warning</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    # Arrange</span>
+<span class="a">+    mock_session = MagicMock()</span>
+<span class="a">+    region = &#x27;us-east-1&#x27;</span>
+<span class="a">+    templates = [</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-found&#x27;},</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-not-found&#x27;},</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-also-found&#x27;},</span>
+<span class="a">+    ]</span>
+<span class="a">+    versions_found = [{&#x27;VersionNumber&#x27;: 1, &#x27;LaunchTemplateId&#x27;: &#x27;lt-found&#x27;}]</span>
+<span class="a">+    versions_also_found = [{&#x27;VersionNumber&#x27;: 3, &#x27;LaunchTemplateId&#x27;: &#x27;lt-also-found&#x27;}]</span>
+<span class="a">+    # Simulate &#x27;lt-not-found&#x27; raising ClientError</span>
+<span class="a">+    not_found_error = botocore.exceptions.ClientError(</span>
+<span class="a">+        error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;InvalidLaunchTemplateId.NotFound&#x27;, &#x27;Message&#x27;: &#x27;Not Found&#x27;}},</span>
+<span class="a">+        operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,</span>
+<span class="a">+    )</span>
+<span class="a">+    mock_get_by_template.side_effect = [versions_found, not_found_error, versions_also_found]</span>
+<span class="a">+</span>
+<span class="a">+    # Act</span>
+<span class="a">+    result_versions, result_templates = get_launch_template_versions(mock_session, region, templates)</span>
+<span class="a">+</span>
+<span class="a">+    # Assert</span>
+<span class="a">+    assert result_versions == versions_found + versions_also_found</span>
+<span class="a">+    assert result_templates == [</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-found&#x27;},</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-also-found&#x27;},</span>
+<span class="a">+    ]</span>
+<span class="a">+    assert mock_get_by_template.call_count == 3</span>
+<span class="a">+    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-found&#x27;, region)</span>
+<span class="a">+    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-not-found&#x27;, region)</span>
+<span class="a">+    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-also-found&#x27;, region)</span>
+<span class="a">+    mock_logger.warning.assert_called_once_with(</span>
+<span class="a">+        &quot;Launch template %s no longer exists in region %s, skipping.&quot;,</span>
+<span class="a">+        &#x27;lt-not-found&#x27;, region,</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+@patch(&#x27;cartography.intel.aws.ec2.launch_templates.logger&#x27;)</span>
+<span class="a">+@patch(&#x27;cartography.intel.aws.ec2.launch_templates.get_launch_template_versions_by_template&#x27;)</span>
+<span class="a">+def test_get_launch_template_versions_none_found(mock_get_by_template, mock_logger):</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    Test that when no templates are found (all raise ClientError), the function logs warnings</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    # Arrange</span>
+<span class="a">+    mock_session = MagicMock()</span>
+<span class="a">+    region = &#x27;eu-central-1&#x27;</span>
+<span class="a">+    templates = [</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-gone-1&#x27;},</span>
+<span class="a">+        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-gone-2&#x27;},</span>
+<span class="a">+    ]</span>
+<span class="a">+    # Simulate all templates raising ClientError</span>
+<span class="a">+    not_found_error = botocore.exceptions.ClientError(</span>
+<span class="a">+        error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;InvalidLaunchTemplateId.NotFound&#x27;, &#x27;Message&#x27;: &#x27;Not Found&#x27;}},</span>
+<span class="a">+        operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,</span>
+<span class="a">+    )</span>
+<span class="a">+    mock_get_by_template.side_effect = not_found_error</span>
+<span class="a">+</span>
+<span class="a">+    # Act</span>
+<span class="a">+    result_versions, result_templates = get_launch_template_versions(mock_session, region, templates)</span>
+<span class="a">+</span>
+<span class="a">+    # Assert</span>
+<span class="a">+    assert result_versions == []</span>
+<span class="a">+    assert result_templates == []</span>
+<span class="a">+    assert mock_get_by_template.call_count == 2</span>
+<span class="a">+    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-gone-1&#x27;, region)</span>
+<span class="a">+    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-gone-2&#x27;, region)</span>
+<span class="a">+    assert mock_logger.warning.call_count == 2</span>
+<span class="a">+    mock_logger.warning.assert_any_call(</span>
+<span class="a">+        &quot;Launch template %s no longer exists in region %s, skipping.&quot;,</span>
+<span class="a">+        &#x27;lt-gone-1&#x27;, region,</span>
+<span class="a">+    )</span>
+<span class="a">+    mock_logger.warning.assert_any_call(</span>
+<span class="a">+        &quot;Launch template %s no longer exists in region %s, skipping.&quot;,</span>
+<span class="a">+        &#x27;lt-gone-2&#x27;, region,</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_get_launch_template_versions_empty_input():</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    Test that providing an empty list of templates results in empty output lists.</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    # Arrange</span>
+<span class="a">+    mock_session = MagicMock()</span>
+<span class="a">+    region = &#x27;ap-southeast-2&#x27;</span>
+<span class="a">+    templates = []</span>
+<span class="a">+</span>
+<span class="a">+    # Act</span>
+<span class="a">+    result_versions, result_templates = get_launch_template_versions(mock_session, region, templates)</span>
+<span class="a">+</span>
+<span class="a">+    # Assert</span>
+<span class="a">+    assert result_versions == []</span>
+<span class="a">+    assert result_templates == []</span></pre><h2>Commit #2: <a href="https://github.com/cartography-cncf/cartography/commit/e2de7669cc1bb7e2699246f92831ad3a94c4a080">e2de7669cc</a> (2025-04-16T13:32:52-07:00)</h2><p class="k">Consolidate launch templates and their versions outside the fetch functions (#1528)<br>Path after this commit: tests/unit/cartography/intel/aws/ec2/test_launch_templates.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py b/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py
+index d9d1757c..acf05f39 100644
+<span class="d">--- a/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py</span>
+<span class="a">+++ b/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py</span>
+<span class="h">@@ -1,19 +1,27 @@</span>
+<span class="a">+from datetime import datetime</span>
+ from unittest.mock import MagicMock
+ from unittest.mock import patch
+ 
+ import botocore
+ import pytest
+ 
+<span class="d">-from cartography.intel.aws.ec2.launch_templates import get_launch_template_versions</span>
+ from cartography.intel.aws.ec2.launch_templates import get_launch_template_versions_by_template
+<span class="a">+from cartography.intel.aws.ec2.launch_templates import transform_launch_templates</span>
+ from tests.utils import unwrapper
+ 
+<span class="a">+FAKE_AWS_ACCOUNT_ID = &#x27;123456789012&#x27;</span>
+<span class="a">+FAKE_REGION = &#x27;us-east-1&#x27;</span>
+<span class="a">+FAKE_UPDATE_TAG = 123456789</span>
+<span class="a">+COMMON_JOB_PARAMS = {&#x27;AWS_ID&#x27;: FAKE_AWS_ACCOUNT_ID, &#x27;Region&#x27;: FAKE_REGION}</span>
+<span class="a">+MOCK_CREATE_TIME_DT = datetime(2023, 1, 1, 0, 0, 0)</span>
+<span class="a">+MOCK_CREATE_TIME_STR = str(int(MOCK_CREATE_TIME_DT.timestamp()))</span>
+<span class="a">+</span>
+ 
+ @patch(&#x27;cartography.intel.aws.ec2.launch_templates.logger&#x27;)
+ def test_get_launch_template_versions_by_template_not_found(mock_logger):
+     &quot;&quot;&quot;
+<span class="d">-    Test that a ClientError with code &#x27;InvalidLaunchTemplateId.NotFound&#x27; is raised</span>
+<span class="d">-    when the template is not found.</span>
+<span class="a">+    Test that a ClientError with code &#x27;InvalidLaunchTemplateId.NotFound&#x27; logs a warning</span>
+<span class="a">+    but doesn&#x27;t raise an exception.</span>
+     &quot;&quot;&quot;
+     # Arrange
+     mock_session = MagicMock()
+<span class="h">@@ -21,27 +29,25 @@ def test_get_launch_template_versions_by_template_not_found(mock_logger):</span>
+     mock_paginator = MagicMock()
+     mock_session.client.return_value = mock_client
+     mock_client.get_paginator.return_value = mock_paginator
+<span class="d">-    not_found_error = botocore.exceptions.ClientError(</span>
+<span class="a">+    mock_paginator.paginate.side_effect = botocore.exceptions.ClientError(</span>
+         error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;InvalidLaunchTemplateId.NotFound&#x27;, &#x27;Message&#x27;: &#x27;Launch template not found&#x27;}},
+         operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,
+     )
+<span class="d">-    mock_paginator.paginate.side_effect = not_found_error</span>
+<span class="d">-</span>
+<span class="d">-    # Unwrap the function because we removed @aws_handle_regions</span>
+<span class="d">-    original_func = unwrapper(get_launch_template_versions_by_template)</span>
+ 
+<span class="d">-    # Act &amp; Assert</span>
+<span class="d">-    with pytest.raises(botocore.exceptions.ClientError) as excinfo:</span>
+<span class="d">-        original_func(</span>
+<span class="d">-            mock_session,</span>
+<span class="d">-            &#x27;fake-template-id&#x27;,</span>
+<span class="d">-            &#x27;us-east-1&#x27;,</span>
+<span class="d">-        )</span>
+<span class="a">+    # Act</span>
+<span class="a m">+    result = get_launch_template_versions_by_template(</span>
+<span class="a">+        mock_session,</span>
+<span class="a">+        &#x27;fake-template-id&#x27;,</span>
+<span class="a">+        &#x27;us-east-1&#x27;,</span>
+<span class="a">+    )</span>
+ 
+<span class="d">-    # Check if the raised exception is the one we expect</span>
+<span class="d">-    assert excinfo.value is not_found_error</span>
+<span class="d">-    # Ensure no warning was logged here, as it now happens in the caller</span>
+<span class="d">-    mock_logger.warning.assert_not_called()</span>
+<span class="a">+    # Assert</span>
+<span class="a">+    assert result == []</span>
+<span class="a">+    mock_logger.warning.assert_called_once_with(</span>
+<span class="a">+        &quot;Launch template %s no longer exists in region %s&quot;,</span>
+<span class="a">+        &#x27;fake-template-id&#x27;,</span>
+<span class="a">+        &#x27;us-east-1&#x27;,</span>
+<span class="a">+    )</span>
+ 
+ 
+ def test_get_launch_template_versions_by_template_other_error():
+<span class="h">@@ -97,127 +103,124 @@ def test_get_launch_template_versions_by_template_success():</span>
+     mock_paginator.paginate.assert_called_once_with(LaunchTemplateId=&#x27;valid-template-id&#x27;)
+ 
+ 
+<span class="d">-@patch(&#x27;cartography.intel.aws.ec2.launch_templates.get_launch_template_versions_by_template&#x27;)</span>
+<span class="d">-def test_get_launch_template_versions_all_found(mock_get_by_template):</span>
+<span class="a">+def test_get_launch_template_versions_empty_input():</span>
+     &quot;&quot;&quot;
+<span class="d">-    Test that when all templates have versions, the function returns all versions and all original templates.</span>
+<span class="a">+    Test that the function returns an empty list when given an empty input.</span>
+     &quot;&quot;&quot;
+     # Arrange
+     mock_session = MagicMock()
+<span class="d">-    region = &#x27;us-west-2&#x27;</span>
+<span class="d">-    templates = [</span>
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-1&#x27;},</span>
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-2&#x27;},</span>
+<span class="d">-    ]</span>
+<span class="d">-    versions_lt1 = [{&#x27;VersionNumber&#x27;: 1, &#x27;LaunchTemplateId&#x27;: &#x27;lt-1&#x27;}]</span>
+<span class="d">-    versions_lt2 = [{&#x27;VersionNumber&#x27;: 1, &#x27;LaunchTemplateId&#x27;: &#x27;lt-2&#x27;}, {&#x27;VersionNumber&#x27;: 2, &#x27;LaunchTemplateId&#x27;: &#x27;lt-2&#x27;}]</span>
+<span class="d">-    mock_get_by_template.side_effect = [versions_lt1, versions_lt2]</span>
+<span class="a">+    mock_client = MagicMock()</span>
+<span class="a">+    mock_paginator = MagicMock()</span>
+<span class="a">+    mock_session.client.return_value = mock_client</span>
+<span class="a">+    mock_client.get_paginator.return_value = mock_paginator</span>
+<span class="a">+    mock_paginator.paginate.return_value = []</span>
+ 
+     # Act
+<span class="d">-    result_versions, result_templates = get_launch_template_versions(mock_session, region, templates)</span>
+<span class="a">+    result_versions = get_launch_template_versions_by_template(</span>
+<span class="a">+        mock_session,</span>
+<span class="a">+        &#x27;&#x27;,</span>
+<span class="a">+        &#x27;us-east-1&#x27;,</span>
+<span class="a">+    )</span>
+ 
+     # Assert
+<span class="d">-    assert result_versions == versions_lt1 + versions_lt2</span>
+<span class="d">-    assert result_templates == templates</span>
+<span class="d">-    assert mock_get_by_template.call_count == 2</span>
+<span class="d">-    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-1&#x27;, region)</span>
+<span class="d">-    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-2&#x27;, region)</span>
+<span class="a">+    assert result_versions == []</span>
+ 
+ 
+<span class="d">-@patch(&#x27;cartography.intel.aws.ec2.launch_templates.logger&#x27;)</span>
+<span class="d">-@patch(&#x27;cartography.intel.aws.ec2.launch_templates.get_launch_template_versions_by_template&#x27;)</span>
+<span class="d">-def test_get_launch_template_versions_some_not_found(mock_get_by_template, mock_logger):</span>
+<span class="a">+def test_transform_launch_templates_no_matching_ids():</span>
+     &quot;&quot;&quot;
+<span class="d">-    Test that when some templates are not found (raising ClientError), the function logs a warning</span>
+<span class="a">+    Test that the function returns an empty list when no template IDs match version IDs.</span>
+     &quot;&quot;&quot;
+     # Arrange
+<span class="d">-    mock_session = MagicMock()</span>
+<span class="d">-    region = &#x27;us-east-1&#x27;</span>
+     templates = [
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-found&#x27;},</span>
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-not-found&#x27;},</span>
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-also-found&#x27;},</span>
+<span class="a">+        {</span>
+<span class="a">+            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="a">+            &#x27;CreateTime&#x27;: MOCK_CREATE_TIME_DT,</span>
+<span class="a">+            &#x27;LaunchTemplateName&#x27;: &#x27;template1&#x27;,</span>
+<span class="a">+        },</span>
+<span class="a">+    ]</span>
+<span class="a">+    versions = [</span>
+<span class="a">+        {</span>
+<span class="a">+            &#x27;LaunchTemplateId&#x27;: &#x27;lt-789012&#x27;,</span>
+<span class="a">+            &#x27;VersionNumber&#x27;: 1,</span>
+<span class="a">+        },</span>
+     ]
+<span class="d">-    versions_found = [{&#x27;VersionNumber&#x27;: 1, &#x27;LaunchTemplateId&#x27;: &#x27;lt-found&#x27;}]</span>
+<span class="d">-    versions_also_found = [{&#x27;VersionNumber&#x27;: 3, &#x27;LaunchTemplateId&#x27;: &#x27;lt-also-found&#x27;}]</span>
+<span class="d">-    # Simulate &#x27;lt-not-found&#x27; raising ClientError</span>
+<span class="d">-    not_found_error = botocore.exceptions.ClientError(</span>
+<span class="d">-        error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;InvalidLaunchTemplateId.NotFound&#x27;, &#x27;Message&#x27;: &#x27;Not Found&#x27;}},</span>
+<span class="d">-        operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,</span>
+<span class="d">-    )</span>
+<span class="d">-    mock_get_by_template.side_effect = [versions_found, not_found_error, versions_also_found]</span>
+ 
+     # Act
+<span class="d">-    result_versions, result_templates = get_launch_template_versions(mock_session, region, templates)</span>
+<span class="a">+    result = transform_launch_templates(templates, versions)</span>
+ 
+     # Assert
+<span class="d">-    assert result_versions == versions_found + versions_also_found</span>
+<span class="d">-    assert result_templates == [</span>
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-found&#x27;},</span>
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-also-found&#x27;},</span>
+<span class="d">-    ]</span>
+<span class="d">-    assert mock_get_by_template.call_count == 3</span>
+<span class="d">-    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-found&#x27;, region)</span>
+<span class="d">-    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-not-found&#x27;, region)</span>
+<span class="d">-    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-also-found&#x27;, region)</span>
+<span class="d">-    mock_logger.warning.assert_called_once_with(</span>
+<span class="d">-        &quot;Launch template %s no longer exists in region %s, skipping.&quot;,</span>
+<span class="d">-        &#x27;lt-not-found&#x27;, region,</span>
+<span class="d">-    )</span>
+<span class="a">+    assert result == []</span>
+ 
+ 
+<span class="d">-@patch(&#x27;cartography.intel.aws.ec2.launch_templates.logger&#x27;)</span>
+<span class="d">-@patch(&#x27;cartography.intel.aws.ec2.launch_templates.get_launch_template_versions_by_template&#x27;)</span>
+<span class="d">-def test_get_launch_template_versions_none_found(mock_get_by_template, mock_logger):</span>
+<span class="a">+def test_transform_launch_templates_multiple_matches():</span>
+     &quot;&quot;&quot;
+<span class="d">-    Test that when no templates are found (all raise ClientError), the function logs warnings</span>
+<span class="a">+    Test that the function correctly transforms multiple templates with matching version IDs.</span>
+     &quot;&quot;&quot;
+     # Arrange
+<span class="d">-    mock_session = MagicMock()</span>
+<span class="d">-    region = &#x27;eu-central-1&#x27;</span>
+     templates = [
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-gone-1&#x27;},</span>
+<span class="d">-        {&#x27;LaunchTemplateId&#x27;: &#x27;lt-gone-2&#x27;},</span>
+<span class="a">+        {</span>
+<span class="a">+            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="a">+            &#x27;CreateTime&#x27;: MOCK_CREATE_TIME_DT,</span>
+<span class="a">+            &#x27;LaunchTemplateName&#x27;: &#x27;template1&#x27;,</span>
+<span class="a">+        },</span>
+<span class="a">+        {</span>
+<span class="a">+            &#x27;LaunchTemplateId&#x27;: &#x27;lt-789012&#x27;,</span>
+<span class="a">+            &#x27;CreateTime&#x27;: MOCK_CREATE_TIME_DT,</span>
+<span class="a">+            &#x27;LaunchTemplateName&#x27;: &#x27;template2&#x27;,</span>
+<span class="a">+        },</span>
+<span class="a">+    ]</span>
+<span class="a">+    versions = [</span>
+<span class="a">+        {</span>
+<span class="a">+            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="a">+            &#x27;VersionNumber&#x27;: 1,</span>
+<span class="a">+        },</span>
+<span class="a">+        {</span>
+<span class="a">+            &#x27;LaunchTemplateId&#x27;: &#x27;lt-789012&#x27;,</span>
+<span class="a">+            &#x27;VersionNumber&#x27;: 1,</span>
+<span class="a">+        },</span>
+     ]
+<span class="d">-    # Simulate all templates raising ClientError</span>
+<span class="d">-    not_found_error = botocore.exceptions.ClientError(</span>
+<span class="d">-        error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;InvalidLaunchTemplateId.NotFound&#x27;, &#x27;Message&#x27;: &#x27;Not Found&#x27;}},</span>
+<span class="d">-        operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,</span>
+<span class="d">-    )</span>
+<span class="d">-    mock_get_by_template.side_effect = not_found_error</span>
+ 
+     # Act
+<span class="d">-    result_versions, result_templates = get_launch_template_versions(mock_session, region, templates)</span>
+<span class="a">+    result = transform_launch_templates(templates, versions)</span>
+ 
+     # Assert
+<span class="d">-    assert result_versions == []</span>
+<span class="d">-    assert result_templates == []</span>
+<span class="d">-    assert mock_get_by_template.call_count == 2</span>
+<span class="d">-    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-gone-1&#x27;, region)</span>
+<span class="d">-    mock_get_by_template.assert_any_call(mock_session, &#x27;lt-gone-2&#x27;, region)</span>
+<span class="d">-    assert mock_logger.warning.call_count == 2</span>
+<span class="d">-    mock_logger.warning.assert_any_call(</span>
+<span class="d">-        &quot;Launch template %s no longer exists in region %s, skipping.&quot;,</span>
+<span class="d">-        &#x27;lt-gone-1&#x27;, region,</span>
+<span class="d">-    )</span>
+<span class="d">-    mock_logger.warning.assert_any_call(</span>
+<span class="d">-        &quot;Launch template %s no longer exists in region %s, skipping.&quot;,</span>
+<span class="d">-        &#x27;lt-gone-2&#x27;, region,</span>
+<span class="d">-    )</span>
+<span class="a">+    assert len(result) == 2</span>
+<span class="a">+    assert result[0][&#x27;LaunchTemplateId&#x27;] == &#x27;lt-123456&#x27;</span>
+<span class="a">+    assert result[0][&#x27;CreateTime&#x27;] == MOCK_CREATE_TIME_STR</span>
+<span class="a">+    assert result[1][&#x27;LaunchTemplateId&#x27;] == &#x27;lt-789012&#x27;</span>
+<span class="a">+    assert result[1][&#x27;CreateTime&#x27;] == MOCK_CREATE_TIME_STR</span>
+ 
+ 
+<span class="d">-def test_get_launch_template_versions_empty_input():</span>
+<span class="a">+def test_transform_launch_templates_preserves_other_fields():</span>
+     &quot;&quot;&quot;
+<span class="d">-    Test that providing an empty list of templates results in empty output lists.</span>
+<span class="a">+    Test that the function preserves all other fields in the template.</span>
+     &quot;&quot;&quot;
+     # Arrange
+<span class="d">-    mock_session = MagicMock()</span>
+<span class="d">-    region = &#x27;ap-southeast-2&#x27;</span>
+<span class="d">-    templates = []</span>
+<span class="a">+    templates = [</span>
+<span class="a">+        {</span>
+<span class="a">+            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="a">+            &#x27;CreateTime&#x27;: MOCK_CREATE_TIME_DT,</span>
+<span class="a">+            &#x27;LaunchTemplateName&#x27;: &#x27;template1&#x27;,</span>
+<span class="a">+            &#x27;CreatedBy&#x27;: &#x27;user1&#x27;,</span>
+<span class="a">+            &#x27;DefaultVersionNumber&#x27;: 1,</span>
+<span class="a">+            &#x27;LatestVersionNumber&#x27;: 2,</span>
+<span class="a">+        },</span>
+<span class="a">+    ]</span>
+<span class="a">+    versions = [</span>
+<span class="a">+        {</span>
+<span class="a">+            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="a">+            &#x27;VersionNumber&#x27;: 1,</span>
+<span class="a">+        },</span>
+<span class="a">+    ]</span>
+ 
+     # Act
+<span class="d">-    result_versions, result_templates = get_launch_template_versions(mock_session, region, templates)</span>
+<span class="a">+    result = transform_launch_templates(templates, versions)</span>
+ 
+     # Assert
+<span class="d">-    assert result_versions == []</span>
+<span class="d">-    assert result_templates == []</span>
+<span class="a">+    assert len(result) == 1</span>
+<span class="a">+    assert result[0][&#x27;LaunchTemplateId&#x27;] == &#x27;lt-123456&#x27;</span>
+<span class="a">+    assert result[0][&#x27;LaunchTemplateName&#x27;] == &#x27;template1&#x27;</span>
+<span class="a">+    assert result[0][&#x27;CreatedBy&#x27;] == &#x27;user1&#x27;</span>
+<span class="a">+    assert result[0][&#x27;DefaultVersionNumber&#x27;] == 1</span>
+<span class="a">+    assert result[0][&#x27;LatestVersionNumber&#x27;] == 2</span>
+<span class="a">+    assert result[0][&#x27;CreateTime&#x27;] == MOCK_CREATE_TIME_STR</span></pre><h2>Commit #3: <a href="https://github.com/cartography-cncf/cartography/commit/a0b18ec3157a4ed010323b02534b8325e3eeab60">a0b18ec315</a> (2025-05-02T20:01:31+02:00)</h2><p class="k">chore: better PEP8 formating (#1466)<br>Path after this commit: tests/unit/cartography/intel/aws/ec2/test_launch_templates.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py b/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py
+index acf05f39..22578728 100644
+<span class="d">--- a/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py</span>
+<span class="a">+++ b/tests/unit/cartography/intel/aws/ec2/test_launch_templates.py</span>
+<span class="h">@@ -5,19 +5,21 @@ from unittest.mock import patch</span>
+ import botocore
+ import pytest
+ 
+<span class="d">-from cartography.intel.aws.ec2.launch_templates import get_launch_template_versions_by_template</span>
+<span class="a">+from cartography.intel.aws.ec2.launch_templates import (</span>
+<span class="a">+    get_launch_template_versions_by_template,</span>
+<span class="a">+)</span>
+ from cartography.intel.aws.ec2.launch_templates import transform_launch_templates
+ from tests.utils import unwrapper
+ 
+<span class="d">-FAKE_AWS_ACCOUNT_ID = &#x27;123456789012&#x27;</span>
+<span class="d">-FAKE_REGION = &#x27;us-east-1&#x27;</span>
+<span class="a">+FAKE_AWS_ACCOUNT_ID = &quot;123456789012&quot;</span>
+<span class="a">+FAKE_REGION = &quot;us-east-1&quot;</span>
+ FAKE_UPDATE_TAG = 123456789
+<span class="d">-COMMON_JOB_PARAMS = {&#x27;AWS_ID&#x27;: FAKE_AWS_ACCOUNT_ID, &#x27;Region&#x27;: FAKE_REGION}</span>
+<span class="a">+COMMON_JOB_PARAMS = {&quot;AWS_ID&quot;: FAKE_AWS_ACCOUNT_ID, &quot;Region&quot;: FAKE_REGION}</span>
+ MOCK_CREATE_TIME_DT = datetime(2023, 1, 1, 0, 0, 0)
+ MOCK_CREATE_TIME_STR = str(int(MOCK_CREATE_TIME_DT.timestamp()))
+ 
+ 
+<span class="d">-@patch(&#x27;cartography.intel.aws.ec2.launch_templates.logger&#x27;)</span>
+<span class="a">+@patch(&quot;cartography.intel.aws.ec2.launch_templates.logger&quot;)</span>
+ def test_get_launch_template_versions_by_template_not_found(mock_logger):
+     &quot;&quot;&quot;
+     Test that a ClientError with code &#x27;InvalidLaunchTemplateId.NotFound&#x27; logs a warning
+<span class="h">@@ -30,23 +32,28 @@ def test_get_launch_template_versions_by_template_not_found(mock_logger):</span>
+     mock_session.client.return_value = mock_client
+     mock_client.get_paginator.return_value = mock_paginator
+     mock_paginator.paginate.side_effect = botocore.exceptions.ClientError(
+<span class="d">-        error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;InvalidLaunchTemplateId.NotFound&#x27;, &#x27;Message&#x27;: &#x27;Launch template not found&#x27;}},</span>
+<span class="d">-        operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,</span>
+<span class="a">+        error_response={</span>
+<span class="a">+            &quot;Error&quot;: {</span>
+<span class="a">+                &quot;Code&quot;: &quot;InvalidLaunchTemplateId.NotFound&quot;,</span>
+<span class="a">+                &quot;Message&quot;: &quot;Launch template not found&quot;,</span>
+<span class="a">+            }</span>
+<span class="a">+        },</span>
+<span class="a">+        operation_name=&quot;DescribeLaunchTemplateVersions&quot;,</span>
+     )
+ 
+     # Act
+<span class=" m">     result = get_launch_template_versions_by_template(</span>
+         mock_session,
+<span class="d">-        &#x27;fake-template-id&#x27;,</span>
+<span class="d">-        &#x27;us-east-1&#x27;,</span>
+<span class="a">+        &quot;fake-template-id&quot;,</span>
+<span class="a">+        &quot;us-east-1&quot;,</span>
+     )
+ 
+     # Assert
+     assert result == []
+     mock_logger.warning.assert_called_once_with(
+         &quot;Launch template %s no longer exists in region %s&quot;,
+<span class="d">-        &#x27;fake-template-id&#x27;,</span>
+<span class="d">-        &#x27;us-east-1&#x27;,</span>
+<span class="a">+        &quot;fake-template-id&quot;,</span>
+<span class="a">+        &quot;us-east-1&quot;,</span>
+     )
+ 
+ 
+<span class="h">@@ -61,8 +68,10 @@ def test_get_launch_template_versions_by_template_other_error():</span>
+     mock_session.client.return_value = mock_client
+     mock_client.get_paginator.return_value = mock_paginator
+     mock_paginator.paginate.side_effect = botocore.exceptions.ClientError(
+<span class="d">-        error_response={&#x27;Error&#x27;: {&#x27;Code&#x27;: &#x27;ValidationError&#x27;, &#x27;Message&#x27;: &#x27;Validation error&#x27;}},</span>
+<span class="d">-        operation_name=&#x27;DescribeLaunchTemplateVersions&#x27;,</span>
+<span class="a">+        error_response={</span>
+<span class="a">+            &quot;Error&quot;: {&quot;Code&quot;: &quot;ValidationError&quot;, &quot;Message&quot;: &quot;Validation error&quot;}</span>
+<span class="a">+        },</span>
+<span class="a">+        operation_name=&quot;DescribeLaunchTemplateVersions&quot;,</span>
+     )
+ 
+     # Unwrap the function to bypass retry logic
+<span class="h">@@ -72,8 +81,8 @@ def test_get_launch_template_versions_by_template_other_error():</span>
+     with pytest.raises(botocore.exceptions.ClientError):
+         original_func(
+             mock_session,
+<span class="d">-            &#x27;fake-template-id&#x27;,</span>
+<span class="d">-            &#x27;us-east-1&#x27;,</span>
+<span class="a">+            &quot;fake-template-id&quot;,</span>
+<span class="a">+            &quot;us-east-1&quot;,</span>
+         )
+ 
+ 
+<span class="h">@@ -87,20 +96,24 @@ def test_get_launch_template_versions_by_template_success():</span>
+     mock_paginator = MagicMock()
+     mock_session.client.return_value = mock_client
+     mock_client.get_paginator.return_value = mock_paginator
+<span class="d">-    mock_template_version = {&#x27;LaunchTemplateVersions&#x27;: [{&#x27;VersionNumber&#x27;: 1}]}</span>
+<span class="a">+    mock_template_version = {&quot;LaunchTemplateVersions&quot;: [{&quot;VersionNumber&quot;: 1}]}</span>
+     mock_paginator.paginate.return_value = [mock_template_version]
+ 
+     # Act
+<span class=" m">     result = get_launch_template_versions_by_template(</span>
+         mock_session,
+<span class="d">-        &#x27;valid-template-id&#x27;,</span>
+<span class="d">-        &#x27;us-east-1&#x27;,</span>
+<span class="a">+        &quot;valid-template-id&quot;,</span>
+<span class="a">+        &quot;us-east-1&quot;,</span>
+     )
+ 
+     # Assert
+<span class="d">-    assert result == [{&#x27;VersionNumber&#x27;: 1}]</span>
+<span class="d">-    mock_client.get_paginator.assert_called_once_with(&#x27;describe_launch_template_versions&#x27;)</span>
+<span class="d">-    mock_paginator.paginate.assert_called_once_with(LaunchTemplateId=&#x27;valid-template-id&#x27;)</span>
+<span class="a">+    assert result == [{&quot;VersionNumber&quot;: 1}]</span>
+<span class="a">+    mock_client.get_paginator.assert_called_once_with(</span>
+<span class="a">+        &quot;describe_launch_template_versions&quot;</span>
+<span class="a">+    )</span>
+<span class="a">+    mock_paginator.paginate.assert_called_once_with(</span>
+<span class="a">+        LaunchTemplateId=&quot;valid-template-id&quot;</span>
+<span class="a">+    )</span>
+ 
+ 
+ def test_get_launch_template_versions_empty_input():
+<span class="h">@@ -118,8 +131,8 @@ def test_get_launch_template_versions_empty_input():</span>
+     # Act
+     result_versions = get_launch_template_versions_by_template(
+         mock_session,
+<span class="d">-        &#x27;&#x27;,</span>
+<span class="d">-        &#x27;us-east-1&#x27;,</span>
+<span class="a">+        &quot;&quot;,</span>
+<span class="a">+        &quot;us-east-1&quot;,</span>
+     )
+ 
+     # Assert
+<span class="h">@@ -133,15 +146,15 @@ def test_transform_launch_templates_no_matching_ids():</span>
+     # Arrange
+     templates = [
+         {
+<span class="d">-            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="d">-            &#x27;CreateTime&#x27;: MOCK_CREATE_TIME_DT,</span>
+<span class="d">-            &#x27;LaunchTemplateName&#x27;: &#x27;template1&#x27;,</span>
+<span class="a">+            &quot;LaunchTemplateId&quot;: &quot;lt-123456&quot;,</span>
+<span class="a">+            &quot;CreateTime&quot;: MOCK_CREATE_TIME_DT,</span>
+<span class="a">+            &quot;LaunchTemplateName&quot;: &quot;template1&quot;,</span>
+         },
+     ]
+     versions = [
+         {
+<span class="d">-            &#x27;LaunchTemplateId&#x27;: &#x27;lt-789012&#x27;,</span>
+<span class="d">-            &#x27;VersionNumber&#x27;: 1,</span>
+<span class="a">+            &quot;LaunchTemplateId&quot;: &quot;lt-789012&quot;,</span>
+<span class="a">+            &quot;VersionNumber&quot;: 1,</span>
+         },
+     ]
+ 
+<span class="h">@@ -159,24 +172,24 @@ def test_transform_launch_templates_multiple_matches():</span>
+     # Arrange
+     templates = [
+         {
+<span class="d">-            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="d">-            &#x27;CreateTime&#x27;: MOCK_CREATE_TIME_DT,</span>
+<span class="d">-            &#x27;LaunchTemplateName&#x27;: &#x27;template1&#x27;,</span>
+<span class="a">+            &quot;LaunchTemplateId&quot;: &quot;lt-123456&quot;,</span>
+<span class="a">+            &quot;CreateTime&quot;: MOCK_CREATE_TIME_DT,</span>
+<span class="a">+            &quot;LaunchTemplateName&quot;: &quot;template1&quot;,</span>
+         },
+         {
+<span class="d">-            &#x27;LaunchTemplateId&#x27;: &#x27;lt-789012&#x27;,</span>
+<span class="d">-            &#x27;CreateTime&#x27;: MOCK_CREATE_TIME_DT,</span>
+<span class="d">-            &#x27;LaunchTemplateName&#x27;: &#x27;template2&#x27;,</span>
+<span class="a">+            &quot;LaunchTemplateId&quot;: &quot;lt-789012&quot;,</span>
+<span class="a">+            &quot;CreateTime&quot;: MOCK_CREATE_TIME_DT,</span>
+<span class="a">+            &quot;LaunchTemplateName&quot;: &quot;template2&quot;,</span>
+         },
+     ]
+     versions = [
+         {
+<span class="d">-            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="d">-            &#x27;VersionNumber&#x27;: 1,</span>
+<span class="a">+            &quot;LaunchTemplateId&quot;: &quot;lt-123456&quot;,</span>
+<span class="a">+            &quot;VersionNumber&quot;: 1,</span>
+         },
+         {
+<span class="d">-            &#x27;LaunchTemplateId&#x27;: &#x27;lt-789012&#x27;,</span>
+<span class="d">-            &#x27;VersionNumber&#x27;: 1,</span>
+<span class="a">+            &quot;LaunchTemplateId&quot;: &quot;lt-789012&quot;,</span>
+<span class="a">+            &quot;VersionNumber&quot;: 1,</span>
+         },
+     ]
+ 
+<span class="h">@@ -185,10 +198,10 @@ def test_transform_launch_templates_multiple_matches():</span>
+ 
+     # Assert
+     assert len(result) == 2
+<span class="d">-    assert result[0][&#x27;LaunchTemplateId&#x27;] == &#x27;lt-123456&#x27;</span>
+<span class="d">-    assert result[0][&#x27;CreateTime&#x27;] == MOCK_CREATE_TIME_STR</span>
+<span class="d">-    assert result[1][&#x27;LaunchTemplateId&#x27;] == &#x27;lt-789012&#x27;</span>
+<span class="d">-    assert result[1][&#x27;CreateTime&#x27;] == MOCK_CREATE_TIME_STR</span>
+<span class="a">+    assert result[0][&quot;LaunchTemplateId&quot;] == &quot;lt-123456&quot;</span>
+<span class="a">+    assert result[0][&quot;CreateTime&quot;] == MOCK_CREATE_TIME_STR</span>
+<span class="a">+    assert result[1][&quot;LaunchTemplateId&quot;] == &quot;lt-789012&quot;</span>
+<span class="a">+    assert result[1][&quot;CreateTime&quot;] == MOCK_CREATE_TIME_STR</span>
+ 
+ 
+ def test_transform_launch_templates_preserves_other_fields():
+<span class="h">@@ -198,18 +211,18 @@ def test_transform_launch_templates_preserves_other_fields():</span>
+     # Arrange
+     templates = [
+         {
+<span class="d">-            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="d">-            &#x27;CreateTime&#x27;: MOCK_CREATE_TIME_DT,</span>
+<span class="d">-            &#x27;LaunchTemplateName&#x27;: &#x27;template1&#x27;,</span>
+<span class="d">-            &#x27;CreatedBy&#x27;: &#x27;user1&#x27;,</span>
+<span class="d">-            &#x27;DefaultVersionNumber&#x27;: 1,</span>
+<span class="d">-            &#x27;LatestVersionNumber&#x27;: 2,</span>
+<span class="a">+            &quot;LaunchTemplateId&quot;: &quot;lt-123456&quot;,</span>
+<span class="a">+            &quot;CreateTime&quot;: MOCK_CREATE_TIME_DT,</span>
+<span class="a">+            &quot;LaunchTemplateName&quot;: &quot;template1&quot;,</span>
+<span class="a">+            &quot;CreatedBy&quot;: &quot;user1&quot;,</span>
+<span class="a">+            &quot;DefaultVersionNumber&quot;: 1,</span>
+<span class="a">+            &quot;LatestVersionNumber&quot;: 2,</span>
+         },
+     ]
+     versions = [
+         {
+<span class="d">-            &#x27;LaunchTemplateId&#x27;: &#x27;lt-123456&#x27;,</span>
+<span class="d">-            &#x27;VersionNumber&#x27;: 1,</span>
+<span class="a">+            &quot;LaunchTemplateId&quot;: &quot;lt-123456&quot;,</span>
+<span class="a">+            &quot;VersionNumber&quot;: 1,</span>
+         },
+     ]
+ 
+<span class="h">@@ -218,9 +231,9 @@ def test_transform_launch_templates_preserves_other_fields():</span>
+ 
+     # Assert
+     assert len(result) == 1
+<span class="d">-    assert result[0][&#x27;LaunchTemplateId&#x27;] == &#x27;lt-123456&#x27;</span>
+<span class="d">-    assert result[0][&#x27;LaunchTemplateName&#x27;] == &#x27;template1&#x27;</span>
+<span class="d">-    assert result[0][&#x27;CreatedBy&#x27;] == &#x27;user1&#x27;</span>
+<span class="d">-    assert result[0][&#x27;DefaultVersionNumber&#x27;] == 1</span>
+<span class="d">-    assert result[0][&#x27;LatestVersionNumber&#x27;] == 2</span>
+<span class="d">-    assert result[0][&#x27;CreateTime&#x27;] == MOCK_CREATE_TIME_STR</span>
+<span class="a">+    assert result[0][&quot;LaunchTemplateId&quot;] == &quot;lt-123456&quot;</span>
+<span class="a">+    assert result[0][&quot;LaunchTemplateName&quot;] == &quot;template1&quot;</span>
+<span class="a">+    assert result[0][&quot;CreatedBy&quot;] == &quot;user1&quot;</span>
+<span class="a">+    assert result[0][&quot;DefaultVersionNumber&quot;] == 1</span>
+<span class="a">+    assert result[0][&quot;LatestVersionNumber&quot;] == 2</span>
+<span class="a">+    assert result[0][&quot;CreateTime&quot;] == MOCK_CREATE_TIME_STR</span></pre></body></html>

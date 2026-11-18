@@ -1,0 +1,373 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L042</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L042</h1><p><b>Repository:</b> <a href="https://github.com/promptfoo/promptfoo">promptfoo/promptfoo</a><br><b>File at merge:</b> src/providers/alibaba.ts, line 42<br><b>Merge commit (birth):</b> <a href="https://github.com/promptfoo/promptfoo/commit/fae92f588f9cc6bc7325a027e9b25f3fd133df4c">fae92f588f</a> (2025-01-30T20:37:38)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/promptfoo/promptfoo/tree/6c1afb7d5e8232d9f7d594819ed8fd7bc8c903df">6c1afb7d5e</a>)</p><p><b>The line:</b></p><pre><span class="t">const API_BASE_URL = &#x27;https://dashscope-intl.aliyuncs.com/compatible-mode/v1&#x27;;</span></pre><h2>File at the merge commit, lines 34 to 50</h2><pre>   34 |   &#x27;qwen1.5-72b-chat&#x27;,
+   35 |   &#x27;qwen1.5-32b-chat&#x27;,
+   36 |   &#x27;qwen1.5-14b-chat&#x27;,
+   37 |   &#x27;qwen1.5-7b-chat&#x27;,
+   38 |   // Embedding models
+   39 |   &#x27;text-embedding-v3&#x27;,
+   40 | ]);
+   41 | 
+<span class="t">   42 | const API_BASE_URL = &#x27;https://dashscope-intl.aliyuncs.com/compatible-mode/v1&#x27;;</span>
+   43 | 
+   44 | export class AlibabaChatCompletionProvider extends OpenAiChatCompletionProvider {
+   45 |   constructor(modelName: string, options: ProviderOptions = {}) {
+   46 |     if (!modelName || !KNOWN_MODELS.has(modelName)) {
+   47 |       throw new Error(
+   48 |         `Invalid Alibaba Cloud model: ${modelName}. Available models: ${Array.from(KNOWN_MODELS).join(&#x27;, &#x27;)}`,
+   49 |       );
+   50 |     }</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/promptfoo/promptfoo/commit/394abb06ec9006b6a2385e8ef065caeaa28374e1">394abb06ec</a> (2025-02-02T14:43:47-05:00)</h2><p class="k">refactor(providers): restructure OpenAI provider into modular files (#2953)<br>Path after this commit: src/providers/alibaba.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/providers/alibaba.ts b/src/providers/alibaba.ts
+index 33dc064bff..9012e89b4e 100644
+<span class="d">--- a/src/providers/alibaba.ts</span>
+<span class="a">+++ b/src/providers/alibaba.ts</span>
+<span class="h">@@ -1,5 +1,6 @@</span>
+ import type { ProviderOptions } from &#x27;../types&#x27;;
+<span class="d">-import { OpenAiChatCompletionProvider, OpenAiEmbeddingProvider } from &#x27;./openai&#x27;;</span>
+<span class="a">+import { OpenAiChatCompletionProvider } from &#x27;./openai/chat&#x27;;</span>
+<span class="a">+import { OpenAiEmbeddingProvider } from &#x27;./openai/embedding&#x27;;</span>
+ 
+ const KNOWN_MODELS = new Set([
+   // Flagship models</pre><h2>Commit #2: <a href="https://github.com/promptfoo/promptfoo/commit/2175f2a5fa9c62c61581205179caae305891a0b1">2175f2a5fa</a> (2025-02-10T06:57:10-08:00)</h2><p class="k">chore(providers): allow Alibaba API base URL override (#3040)<br>Path after this commit: src/providers/alibaba.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/providers/alibaba.ts b/src/providers/alibaba.ts
+index 9012e89b4e..ea71b7421c 100644
+<span class="d">--- a/src/providers/alibaba.ts</span>
+<span class="a">+++ b/src/providers/alibaba.ts</span>
+<span class="h">@@ -54,7 +54,7 @@ export class AlibabaChatCompletionProvider extends OpenAiChatCompletionProvider</span>
+       ...options,
+       config: {
+         ...options.config,
+<span class="d">-        apiBaseUrl: API_BASE_URL,</span>
+<span class="a">+        apiBaseUrl: options.config?.API_BASE_URL || API_BASE_URL,</span>
+         apiKeyEnvar: &#x27;DASHSCOPE_API_KEY&#x27;,
+       },
+     });
+<span class="h">@@ -73,7 +73,7 @@ export class AlibabaEmbeddingProvider extends OpenAiEmbeddingProvider {</span>
+       ...options,
+       config: {
+         ...options.config,
+<span class="d">-        apiBaseUrl: API_BASE_URL,</span>
+<span class="a">+        apiBaseUrl: options.config?.API_BASE_URL || API_BASE_URL,</span>
+         apiKeyEnvar: &#x27;DASHSCOPE_API_KEY&#x27;,
+       },
+     });</pre><h2>Commit #3: <a href="https://github.com/promptfoo/promptfoo/commit/193a8d3eabce80ef5df1ca04a277f44a0447a998">193a8d3eab</a> (2025-07-21T13:51:14-07:00)</h2><p class="k">chore: Sort imports and turn on rule against unused imports (#5010)<br>Path after this commit: src/providers/alibaba.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/providers/alibaba.ts b/src/providers/alibaba.ts
+index ea71b7421c..7671809cf0 100644
+<span class="d">--- a/src/providers/alibaba.ts</span>
+<span class="a">+++ b/src/providers/alibaba.ts</span>
+<span class="h">@@ -1,7 +1,8 @@</span>
+<span class="d">-import type { ProviderOptions } from &#x27;../types&#x27;;</span>
+ import { OpenAiChatCompletionProvider } from &#x27;./openai/chat&#x27;;
+ import { OpenAiEmbeddingProvider } from &#x27;./openai/embedding&#x27;;
+ 
+<span class="a">+import type { ProviderOptions } from &#x27;../types&#x27;;</span>
+<span class="a">+</span>
+ const KNOWN_MODELS = new Set([
+   // Flagship models
+   &#x27;qwen-max&#x27;,</pre><h2>Commit #4: <a href="https://github.com/promptfoo/promptfoo/commit/d5ededa93956a3585f0e55c9b5d9bc4d7a32eb50">d5ededa939</a> (2025-09-15T00:00:13-07:00)</h2><p class="k">refactor: standardize TypeScript import paths for ESM compatibility (#5597)<br>Path after this commit: src/providers/alibaba.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/providers/alibaba.ts b/src/providers/alibaba.ts
+index 7671809cf0..4ed751a6dc 100644
+<span class="d">--- a/src/providers/alibaba.ts</span>
+<span class="a">+++ b/src/providers/alibaba.ts</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ import { OpenAiChatCompletionProvider } from &#x27;./openai/chat&#x27;;
+ import { OpenAiEmbeddingProvider } from &#x27;./openai/embedding&#x27;;
+ 
+<span class="d">-import type { ProviderOptions } from &#x27;../types&#x27;;</span>
+<span class="a">+import type { ProviderOptions } from &#x27;../types/index&#x27;;</span>
+ 
+ const KNOWN_MODELS = new Set([
+   // Flagship models</pre><h2>Commit #5: <a href="https://github.com/promptfoo/promptfoo/commit/1a6802dc7e671d4ffb4bb7c25cc49381387f488e">1a6802dc7e</a> (2025-10-14T14:00:26-07:00)</h2><p class="k">chore: update alibaba models (#5919)<br>Path after this commit: src/providers/alibaba.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/providers/alibaba.ts b/src/providers/alibaba.ts
+index 4ed751a6dc..8acfa98b62 100644
+<span class="d">--- a/src/providers/alibaba.ts</span>
+<span class="a">+++ b/src/providers/alibaba.ts</span>
+<span class="h">@@ -2,41 +2,160 @@ import { OpenAiChatCompletionProvider } from &#x27;./openai/chat&#x27;;</span>
+ import { OpenAiEmbeddingProvider } from &#x27;./openai/embedding&#x27;;
+ 
+ import type { ProviderOptions } from &#x27;../types/index&#x27;;
+<span class="a">+import logger from &#x27;../logger&#x27;;</span>
+ 
+ const KNOWN_MODELS = new Set([
+<span class="d">-  // Flagship models</span>
+<span class="a">+  // Qwen3-Max</span>
+<span class="a">+  &#x27;qwen3-max&#x27;,</span>
+<span class="a">+  &#x27;qwen3-max-2025-09-23&#x27;,</span>
+<span class="a">+  &#x27;qwen3-max-preview&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen-Max</span>
+   &#x27;qwen-max&#x27;,
+   &#x27;qwen-max-latest&#x27;,
+   &#x27;qwen-max-2025-01-25&#x27;,
+<span class="a">+</span>
+<span class="a">+  // Qwen-Plus</span>
+   &#x27;qwen-plus&#x27;,
+   &#x27;qwen-plus-latest&#x27;,
+<span class="a">+  &#x27;qwen-plus-2025-09-11&#x27;,</span>
+<span class="a">+  &#x27;qwen-plus-2025-07-28&#x27;,</span>
+<span class="a">+  &#x27;qwen-plus-2025-07-14&#x27;,</span>
+<span class="a">+  &#x27;qwen-plus-2025-04-28&#x27;,</span>
+   &#x27;qwen-plus-2025-01-25&#x27;,
+<span class="a">+</span>
+<span class="a">+  // Qwen-Flash</span>
+<span class="a">+  &#x27;qwen-flash&#x27;,</span>
+<span class="a">+  &#x27;qwen-flash-2025-07-28&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen-Turbo</span>
+   &#x27;qwen-turbo&#x27;,
+   &#x27;qwen-turbo-latest&#x27;,
+<span class="a">+  &#x27;qwen-turbo-2025-04-28&#x27;,</span>
+   &#x27;qwen-turbo-2024-11-01&#x27;,
+<span class="d">-  // Visual models</span>
+<span class="d">-  &#x27;qwen-vl-max&#x27;,</span>
+<span class="d">-  &#x27;qwen-vl-plus&#x27;,</span>
+<span class="d">-  &#x27;qwen2.5-vl-72b-instruct&#x27;,</span>
+<span class="d">-  &#x27;qwen2.5-vl-7b-instruct&#x27;,</span>
+<span class="d">-  &#x27;qwen2.5-vl-3b-instruct&#x27;,</span>
+<span class="d">-  // Qwen 2.5 models</span>
+<span class="d">-  &#x27;qwen2.5-7b-instruct-1m&#x27;,</span>
+<span class="d">-  &#x27;qwen2.5-14b-instruct-1m&#x27;,</span>
+<span class="d">-  &#x27;qwen2.5-72b-instruct&#x27;,</span>
+<span class="d">-  &#x27;qwen2.5-32b-instruct&#x27;,</span>
+<span class="d">-  &#x27;qwen2.5-14b-instruct&#x27;,</span>
+<span class="d">-  &#x27;qwen2.5-7b-instruct&#x27;,</span>
+<span class="d">-  // Qwen 2 models</span>
+<span class="d">-  &#x27;qwen2-72b-instruct&#x27;,</span>
+<span class="d">-  &#x27;qwen2-57b-a14b-instruct&#x27;,</span>
+<span class="d">-  &#x27;qwen2-7b-instruct&#x27;,</span>
+<span class="d">-  // Qwen 1.5 models</span>
+<span class="d">-  &#x27;qwen1.5-110b-chat&#x27;,</span>
+<span class="d">-  &#x27;qwen1.5-72b-chat&#x27;,</span>
+<span class="d">-  &#x27;qwen1.5-32b-chat&#x27;,</span>
+<span class="d">-  &#x27;qwen1.5-14b-chat&#x27;,</span>
+<span class="d">-  &#x27;qwen1.5-7b-chat&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // QwQ</span>
+<span class="a">+  &#x27;qwq-plus&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen-Long</span>
+<span class="a">+  &#x27;qwen-long-latest&#x27;,</span>
+<span class="a">+  &#x27;qwen-long-2025-01-25&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen-Omni</span>
+<span class="a">+  &#x27;qwen3-omni-flash&#x27;,</span>
+<span class="a">+  &#x27;qwen3-omni-flash-2025-09-15&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen-Omni-Realtime</span>
+<span class="a">+  &#x27;qwen3-omni-flash-realtime&#x27;,</span>
+<span class="a">+  &#x27;qwen3-omni-flash-realtime-2025-09-15&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // QVQ</span>
+<span class="a">+  &#x27;qvq-max&#x27;,</span>
+<span class="a">+  &#x27;qvq-max-latest&#x27;,</span>
+<span class="a">+  &#x27;qvq-max-2025-03-25&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen3-VL-Plus</span>
+<span class="a">+  &#x27;qwen3-vl-plus&#x27;,</span>
+<span class="a">+  &#x27;qwen3-vl-plus-2025-09-23&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen-VL-OCR</span>
+<span class="a">+  &#x27;qwen-vl-ocr&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen3-ASR</span>
+<span class="a">+  &#x27;qwen3-asr-flash&#x27;,</span>
+<span class="a">+  &#x27;qwen3-asr-flash-2025-09-08&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen-Math</span>
+<span class="a">+  &#x27;qwen-math-plus&#x27;,</span>
+<span class="a">+  &#x27;qwen-math-plus-latest&#x27;,</span>
+<span class="a">+  &#x27;qwen-math-plus-2024-09-19&#x27;,</span>
+<span class="a">+  &#x27;qwen-math-plus-2024-08-16&#x27;,</span>
+<span class="a">+  &#x27;qwen-math-turbo&#x27;,</span>
+<span class="a">+  &#x27;qwen-math-turbo-latest&#x27;,</span>
+<span class="a">+  &#x27;qwen-math-turbo-2024-09-19&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen3-Coder-Plus</span>
+<span class="a">+  &#x27;qwen3-coder-plus&#x27;,</span>
+<span class="a">+  &#x27;qwen3-coder-plus-2025-09-23&#x27;,</span>
+<span class="a">+  &#x27;qwen3-coder-plus-2025-07-22&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen3-Coder-Flash</span>
+<span class="a">+  &#x27;qwen3-coder-flash&#x27;,</span>
+<span class="a">+  &#x27;qwen3-coder-flash-2025-07-28&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen-MT</span>
+<span class="a">+  &#x27;qwen-mt-plus&#x27;,</span>
+<span class="a">+  &#x27;qwen-mt-turbo&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen data mining</span>
+<span class="a">+  &#x27;qwen-doc-turbo&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen deep research</span>
+<span class="a">+  &#x27;qwen-deep-research&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen3 open-source</span>
+<span class="a">+  &#x27;qwen3-next-80b-a3b-thinking&#x27;,</span>
+<span class="a">+  &#x27;qwen3-next-80b-a3b-instruct&#x27;,</span>
+<span class="a">+  &#x27;qwen3-235b-a22b-thinking-2507&#x27;,</span>
+<span class="a">+  &#x27;qwen3-235b-a22b-instruct-2507&#x27;,</span>
+<span class="a">+  &#x27;qwen3-30b-a3b-thinking-2507&#x27;,</span>
+<span class="a">+  &#x27;qwen3-30b-a3b-instruct-2507&#x27;,</span>
+<span class="a">+  &#x27;qwen3-235b-a22b&#x27;,</span>
+<span class="a">+  &#x27;qwen3-32b&#x27;,</span>
+<span class="a">+  &#x27;qwen3-30b-a3b&#x27;,</span>
+<span class="a">+  &#x27;qwen3-14b&#x27;,</span>
+<span class="a">+  &#x27;qwen3-8b&#x27;,</span>
+<span class="a">+  &#x27;qwen3-4b&#x27;,</span>
+<span class="a">+  &#x27;qwen3-1.7b&#x27;,</span>
+<span class="a">+  &#x27;qwen3-0.6b&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // QwQ open-source</span>
+<span class="a">+  &#x27;qwq-32b&#x27;,</span>
+<span class="a">+  &#x27;qwq-32b-preview&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // QVQ open-source</span>
+<span class="a">+  &#x27;qvq-72b-preview&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen2.5-Omni</span>
+<span class="a">+  &#x27;qwen2.5-omni-7b&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen3-Omni-Captioner</span>
+<span class="a">+  &#x27;qwen3-omni-30b-a3b-captioner&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen3-VL open-source</span>
+<span class="a">+  &#x27;qwen3-vl-30b-a3b-thinking&#x27;,</span>
+<span class="a">+  &#x27;qwen3-vl-30b-a3b-instruct&#x27;,</span>
+<span class="a">+  &#x27;qwen3-vl-235b-a22b-thinking&#x27;,</span>
+<span class="a">+  &#x27;qwen3-vl-235b-a22b-instruct&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen2.5-Math</span>
+<span class="a">+  &#x27;qwen2.5-math-72b-instruct&#x27;,</span>
+<span class="a">+  &#x27;qwen2.5-math-7b-instruct&#x27;,</span>
+<span class="a">+  &#x27;qwen2.5-math-1.5b-instruct&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Qwen3-Coder open-source</span>
+<span class="a">+  &#x27;qwen3-coder-480b-a35b-instruct&#x27;,</span>
+<span class="a">+  &#x27;qwen3-coder-30b-a3b-instruct&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // DeepSeek</span>
+<span class="a">+  &#x27;deepseek-v3.2-exp&#x27;,</span>
+<span class="a">+  &#x27;deepseek-v3.1&#x27;,</span>
+<span class="a">+  &#x27;deepseek-r1&#x27;,</span>
+<span class="a">+  &#x27;deepseek-r1-0528&#x27;,</span>
+<span class="a">+  &#x27;deepseek-v3&#x27;,</span>
+<span class="a">+  &#x27;deepseek-r1-distill-qwen-1.5b&#x27;,</span>
+<span class="a">+  &#x27;deepseek-r1-distill-qwen-7b&#x27;,</span>
+<span class="a">+  &#x27;deepseek-r1-distill-qwen-14b&#x27;,</span>
+<span class="a">+  &#x27;deepseek-r1-distill-qwen-32b&#x27;,</span>
+<span class="a">+  &#x27;deepseek-r1-distill-llama-8b&#x27;,</span>
+<span class="a">+  &#x27;deepseek-r1-distill-llama-70b&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Kimi</span>
+<span class="a">+  &#x27;moonshot-kimi-k2-instruct&#x27;,</span>
+<span class="a">+</span>
+<span class="a">+  // Image generation</span>
+<span class="a">+  &#x27;qwen-image-plus&#x27;,</span>
+<span class="a">+</span>
+   // Embedding models
+   &#x27;text-embedding-v3&#x27;,
+ ]);
+<span class="h">@@ -45,9 +164,12 @@ const API_BASE_URL = &#x27;https://dashscope-intl.aliyuncs.com/compatible-mode/v1&#x27;;</span>
+ 
+ export class AlibabaChatCompletionProvider extends OpenAiChatCompletionProvider {
+   constructor(modelName: string, options: ProviderOptions = {}) {
+<span class="d">-    if (!modelName || !KNOWN_MODELS.has(modelName)) {</span>
+<span class="d">-      throw new Error(</span>
+<span class="d">-        `Invalid Alibaba Cloud model: ${modelName}. Available models: ${Array.from(KNOWN_MODELS).join(&#x27;, &#x27;)}`,</span>
+<span class="a">+    if (!modelName) {</span>
+<span class="a">+      throw new Error(&#x27;Alibaba modelName is required&#x27;);</span>
+<span class="a">+    }</span>
+<span class="a">+    if (!KNOWN_MODELS.has(modelName)) {</span>
+<span class="a">+      logger.warn(</span>
+<span class="a">+        `Unknown Alibaba Cloud model: ${modelName}. Known models: ${Array.from(KNOWN_MODELS).join(&#x27;, &#x27;)}`,</span>
+       );
+     }
+ 
+<span class="h">@@ -55,7 +177,7 @@ export class AlibabaChatCompletionProvider extends OpenAiChatCompletionProvider</span>
+       ...options,
+       config: {
+         ...options.config,
+<span class="d">-        apiBaseUrl: options.config?.API_BASE_URL || API_BASE_URL,</span>
+<span class="a">+        apiBaseUrl: options.config?.apiBaseUrl ?? API_BASE_URL,</span>
+         apiKeyEnvar: &#x27;DASHSCOPE_API_KEY&#x27;,
+       },
+     });
+<span class="h">@@ -64,9 +186,12 @@ export class AlibabaChatCompletionProvider extends OpenAiChatCompletionProvider</span>
+ 
+ export class AlibabaEmbeddingProvider extends OpenAiEmbeddingProvider {
+   constructor(modelName: string, options: ProviderOptions = {}) {
+<span class="d">-    if (!modelName || !KNOWN_MODELS.has(modelName)) {</span>
+<span class="d">-      throw new Error(</span>
+<span class="d">-        `Invalid Alibaba Cloud model: ${modelName}. Available models: ${Array.from(KNOWN_MODELS).join(&#x27;, &#x27;)}`,</span>
+<span class="a">+    if (!modelName) {</span>
+<span class="a">+      throw new Error(&#x27;Alibaba modelName is required&#x27;);</span>
+<span class="a">+    }</span>
+<span class="a">+    if (!KNOWN_MODELS.has(modelName)) {</span>
+<span class="a">+      logger.warn(</span>
+<span class="a">+        `Unknown Alibaba Cloud model: ${modelName}. Known models: ${Array.from(KNOWN_MODELS).join(&#x27;, &#x27;)}`,</span>
+       );
+     }
+ 
+<span class="h">@@ -74,7 +199,7 @@ export class AlibabaEmbeddingProvider extends OpenAiEmbeddingProvider {</span>
+       ...options,
+       config: {
+         ...options.config,
+<span class="d">-        apiBaseUrl: options.config?.API_BASE_URL || API_BASE_URL,</span>
+<span class="a">+        apiBaseUrl: options.config?.apiBaseUrl ?? API_BASE_URL,</span>
+         apiKeyEnvar: &#x27;DASHSCOPE_API_KEY&#x27;,
+       },
+     });</pre><h2>Commit #6: <a href="https://github.com/promptfoo/promptfoo/commit/59dcda41a2c5edb74ec54658c5110fc53c393579">59dcda41a2</a> (2025-11-09T19:33:22-05:00)</h2><p class="k">docs(providers): update Alibaba Cloud models (#6144)<br>Path after this commit: src/providers/alibaba.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/providers/alibaba.ts b/src/providers/alibaba.ts
+index 8acfa98b62..9bf5abf1a8 100644
+<span class="d">--- a/src/providers/alibaba.ts</span>
+<span class="a">+++ b/src/providers/alibaba.ts</span>
+<span class="h">@@ -58,6 +58,10 @@ const KNOWN_MODELS = new Set([</span>
+   &#x27;qwen3-vl-plus&#x27;,
+   &#x27;qwen3-vl-plus-2025-09-23&#x27;,
+ 
+<span class="a">+  // Qwen3-VL-Flash</span>
+<span class="a">+  &#x27;qwen3-vl-flash&#x27;,</span>
+<span class="a">+  &#x27;qwen3-vl-flash-2025-10-15&#x27;,</span>
+<span class="a">+</span>
+   // Qwen-VL-OCR
+   &#x27;qwen-vl-ocr&#x27;,
+ 
+<span class="h">@@ -65,6 +69,10 @@ const KNOWN_MODELS = new Set([</span>
+   &#x27;qwen3-asr-flash&#x27;,
+   &#x27;qwen3-asr-flash-2025-09-08&#x27;,
+ 
+<span class="a">+  // Qwen3-ASR-Realtime</span>
+<span class="a">+  &#x27;qwen3-asr-flash-realtime&#x27;,</span>
+<span class="a">+  &#x27;qwen3-asr-flash-realtime-2025-10-27&#x27;,</span>
+<span class="a">+</span>
+   // Qwen-Math
+   &#x27;qwen-math-plus&#x27;,
+   &#x27;qwen-math-plus-latest&#x27;,
+<span class="h">@@ -127,6 +135,10 @@ const KNOWN_MODELS = new Set([</span>
+   &#x27;qwen3-vl-30b-a3b-instruct&#x27;,
+   &#x27;qwen3-vl-235b-a22b-thinking&#x27;,
+   &#x27;qwen3-vl-235b-a22b-instruct&#x27;,
+<span class="a">+  &#x27;qwen3-vl-32b-thinking&#x27;,</span>
+<span class="a">+  &#x27;qwen3-vl-32b-instruct&#x27;,</span>
+<span class="a">+  &#x27;qwen3-vl-8b-thinking&#x27;,</span>
+<span class="a">+  &#x27;qwen3-vl-8b-instruct&#x27;,</span>
+ 
+   // Qwen2.5-Math
+   &#x27;qwen2.5-math-72b-instruct&#x27;,
+<span class="h">@@ -158,6 +170,7 @@ const KNOWN_MODELS = new Set([</span>
+ 
+   // Embedding models
+   &#x27;text-embedding-v3&#x27;,
+<span class="a">+  &#x27;text-embedding-v4&#x27;,</span>
+ ]);
+ 
+<span class=" m"> const API_BASE_URL = &#x27;https://dashscope-intl.aliyuncs.com/compatible-mode/v1&#x27;;</span></pre><h2>Commit #7: <a href="https://github.com/promptfoo/promptfoo/commit/c628550469762d46c5bf2584f2926f594456612e">c628550469</a> (2025-12-18T09:29:32-08:00)</h2><p class="k">chore(biome): run linter (#6761)<br>Path after this commit: src/providers/alibaba.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/providers/alibaba.ts b/src/providers/alibaba.ts
+index 9bf5abf1a8..ca91d90559 100644
+<span class="d">--- a/src/providers/alibaba.ts</span>
+<span class="a">+++ b/src/providers/alibaba.ts</span>
+<span class="h">@@ -1,8 +1,8 @@</span>
+<span class="a">+import logger from &#x27;../logger&#x27;;</span>
+ import { OpenAiChatCompletionProvider } from &#x27;./openai/chat&#x27;;
+ import { OpenAiEmbeddingProvider } from &#x27;./openai/embedding&#x27;;
+ 
+ import type { ProviderOptions } from &#x27;../types/index&#x27;;
+<span class="d">-import logger from &#x27;../logger&#x27;;</span>
+ 
+ const KNOWN_MODELS = new Set([
+   // Qwen3-Max</pre></body></html>

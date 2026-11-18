@@ -1,0 +1,10 @@
+E8. Commits that modify lines of more than one group (author rule, commit unit, full window)
+
+mixed commits: 530 of 5,300 tier-mapped commits; Devin+Human 285, Human+Human-supervised 217, Devin+Human+Human-supervised 17, Devin+Human-supervised 11
+
+Human-supervised majority  11.4% (166/1453) self  9.9% (144) | every group  10.9% (172/1574) self  9.4% (148) | dropped  11.4% (152/1329) self  9.9% (131)
+Devin            majority  14.3% (88/617) self 13.8% (85) | every group  11.6% (92/792) self 11.2% (89) | dropped  16.3% (78/479) self 15.9% (76)
+Human            majority   3.1% (100/3230) self  0.2% (7) | every group   3.5% (123/3481) self  0.8% (28) | dropped   3.1% (91/2962) self  0.0% (0)
+
+max |change| in the agent (= human) share: 2.65 pp; in the self-modification share: 2.54 pp
+human share of modifications to agent code (both tiers): majority 87.7% (1816/2070), every group 88.8% (2075/2338), dropped 87.3% (1578/1808)

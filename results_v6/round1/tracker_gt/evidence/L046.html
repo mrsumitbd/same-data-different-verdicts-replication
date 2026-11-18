@@ -1,0 +1,568 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L046</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L046</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> src/crewai/utilities/events/event_types.py, line 55<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/00c2f5043e80be88dc3337d5e57a73358f5ca11a">00c2f5043e</a> (2025-02-19T21:52:47)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">    MethodExecutionFinishedEvent,</span></pre><h2>File at the merge commit, lines 47 to 61</h2><pre>   47 |     AgentExecutionStartedEvent,
+   48 |     AgentExecutionCompletedEvent,
+   49 |     TaskStartedEvent,
+   50 |     TaskCompletedEvent,
+   51 |     TaskFailedEvent,
+   52 |     FlowStartedEvent,
+   53 |     FlowFinishedEvent,
+   54 |     MethodExecutionStartedEvent,
+<span class="t">   55 |     MethodExecutionFinishedEvent,</span>
+   56 |     MethodExecutionFailedEvent,
+   57 |     AgentExecutionErrorEvent,
+   58 |     ToolUsageFinishedEvent,
+   59 |     ToolUsageErrorEvent,
+   60 |     ToolUsageStartedEvent,
+   61 | ]</pre><p class="k">Below are all 11 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/a1f35e768fdf762f7547ff7cae1bf2bb8a6c9447">a1f35e768f</a> (2025-03-07T12:54:32-05:00)</h2><p class="k">Enhance LLM Streaming Response Handling and Event System (#2266)<br>Path after this commit: src/crewai/utilities/events/event_types.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/crewai/utilities/events/event_types.py b/src/crewai/utilities/events/event_types.py
+index 81caf17f4..2ea514f37 100644
+<span class="d">--- a/src/crewai/utilities/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/event_types.py</span>
+<span class="h">@@ -23,6 +23,12 @@ from .flow_events import (</span>
+<span class=" m">     MethodExecutionFinishedEvent,</span>
+     MethodExecutionStartedEvent,
+ )
+<span class="a">+from .llm_events import (</span>
+<span class="a">+    LLMCallCompletedEvent,</span>
+<span class="a">+    LLMCallFailedEvent,</span>
+<span class="a">+    LLMCallStartedEvent,</span>
+<span class="a">+    LLMStreamChunkEvent,</span>
+<span class="a">+)</span>
+ from .task_events import (
+     TaskCompletedEvent,
+     TaskFailedEvent,
+<span class="h">@@ -58,4 +64,8 @@ EventTypes = Union[</span>
+     ToolUsageFinishedEvent,
+     ToolUsageErrorEvent,
+     ToolUsageStartedEvent,
+<span class="a">+    LLMCallStartedEvent,</span>
+<span class="a">+    LLMCallCompletedEvent,</span>
+<span class="a">+    LLMCallFailedEvent,</span>
+<span class="a">+    LLMStreamChunkEvent,</span>
+ ]</pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/015e1a41b208ee634b8315b0a62ae1f820457769">015e1a41b2</a> (2025-04-30T10:47:58-04:00)</h2><p class="k">Supporting no-code Guardrail creation (#2636)<br>Path after this commit: src/crewai/utilities/events/event_types.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/crewai/utilities/events/event_types.py b/src/crewai/utilities/events/event_types.py
+index 2ea514f37..9f5a5da58 100644
+<span class="d">--- a/src/crewai/utilities/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/event_types.py</span>
+<span class="h">@@ -34,6 +34,10 @@ from .task_events import (</span>
+     TaskFailedEvent,
+     TaskStartedEvent,
+ )
+<span class="a">+from .task_guardrail_events import (</span>
+<span class="a">+    TaskGuardrailCompletedEvent,</span>
+<span class="a">+    TaskGuardrailStartedEvent,</span>
+<span class="a">+)</span>
+ from .tool_usage_events import (
+     ToolUsageErrorEvent,
+     ToolUsageFinishedEvent,
+<span class="h">@@ -68,4 +72,6 @@ EventTypes = Union[</span>
+     LLMCallCompletedEvent,
+     LLMCallFailedEvent,
+     LLMStreamChunkEvent,
+<span class="a">+    TaskGuardrailStartedEvent,</span>
+<span class="a">+    TaskGuardrailCompletedEvent,</span>
+ ]</pre><h2>Commit #3: <a href="https://github.com/crewaiinc/crewai/commit/d348d5f20e5f6e4cca8cb829d1dfd4850f74cf3d">d348d5f20e</a> (2025-04-30T13:11:35-04:00)</h2><p class="k">fix: renaming TaskGuardrail to LLMGuardrail (#2731)<br>Path after this commit: src/crewai/utilities/events/event_types.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/crewai/utilities/events/event_types.py b/src/crewai/utilities/events/event_types.py
+index 9f5a5da58..4e0673758 100644
+<span class="d">--- a/src/crewai/utilities/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/event_types.py</span>
+<span class="h">@@ -29,15 +29,15 @@ from .llm_events import (</span>
+     LLMCallStartedEvent,
+     LLMStreamChunkEvent,
+ )
+<span class="a">+from .llm_guardrail_events import (</span>
+<span class="a">+    LLMGuardrailCompletedEvent,</span>
+<span class="a">+    LLMGuardrailStartedEvent,</span>
+<span class="a">+)</span>
+ from .task_events import (
+     TaskCompletedEvent,
+     TaskFailedEvent,
+     TaskStartedEvent,
+ )
+<span class="d">-from .task_guardrail_events import (</span>
+<span class="d">-    TaskGuardrailCompletedEvent,</span>
+<span class="d">-    TaskGuardrailStartedEvent,</span>
+<span class="d">-)</span>
+ from .tool_usage_events import (
+     ToolUsageErrorEvent,
+     ToolUsageFinishedEvent,
+<span class="h">@@ -72,6 +72,6 @@ EventTypes = Union[</span>
+     LLMCallCompletedEvent,
+     LLMCallFailedEvent,
+     LLMStreamChunkEvent,
+<span class="d">-    TaskGuardrailStartedEvent,</span>
+<span class="d">-    TaskGuardrailCompletedEvent,</span>
+<span class="a">+    LLMGuardrailStartedEvent,</span>
+<span class="a">+    LLMGuardrailCompletedEvent,</span>
+ ]</pre><h2>Commit #4: <a href="https://github.com/crewaiinc/crewai/commit/50b8f83428cbe1e6b618b7e73698ac144f3c9be8">50b8f83428</a> (2025-05-20T14:21:21-07:00)</h2><p class="k">reasoning logs<br>Path after this commit: src/crewai/utilities/events/event_types.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/crewai/utilities/events/event_types.py b/src/crewai/utilities/events/event_types.py
+index 4e0673758..5d4a41dcc 100644
+<span class="d">--- a/src/crewai/utilities/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/event_types.py</span>
+<span class="h">@@ -43,6 +43,11 @@ from .tool_usage_events import (</span>
+     ToolUsageFinishedEvent,
+     ToolUsageStartedEvent,
+ )
+<span class="a">+from .reasoning_events import (</span>
+<span class="a">+    AgentReasoningStartedEvent,</span>
+<span class="a">+    AgentReasoningCompletedEvent,</span>
+<span class="a">+    AgentReasoningFailedEvent,</span>
+<span class="a">+)</span>
+ 
+ EventTypes = Union[
+     CrewKickoffStartedEvent,
+<span class="h">@@ -74,4 +79,7 @@ EventTypes = Union[</span>
+     LLMStreamChunkEvent,
+     LLMGuardrailStartedEvent,
+     LLMGuardrailCompletedEvent,
+<span class="a">+    AgentReasoningStartedEvent,</span>
+<span class="a">+    AgentReasoningCompletedEvent,</span>
+<span class="a">+    AgentReasoningFailedEvent,</span>
+ ]</pre><h2>Commit #5: <a href="https://github.com/crewaiinc/crewai/commit/b3484c1d0e6dd88ac39a67732a9b83d6c5c3818a">b3484c1d0e</a> (2025-05-21T11:23:53-04:00)</h2><p class="k">Document knowledge events in event-listener.mdx and knowledge.mdx (#2872)<br>Path after this commit: src/crewai/utilities/events/event_types.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/crewai/utilities/events/event_types.py b/src/crewai/utilities/events/event_types.py
+index 5d4a41dcc..46f289caf 100644
+<span class="d">--- a/src/crewai/utilities/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/event_types.py</span>
+<span class="h">@@ -48,6 +48,14 @@ from .reasoning_events import (</span>
+     AgentReasoningCompletedEvent,
+     AgentReasoningFailedEvent,
+ )
+<span class="a">+from .knowledge_events import (</span>
+<span class="a">+    KnowledgeRetrievalStartedEvent,</span>
+<span class="a">+    KnowledgeRetrievalCompletedEvent,</span>
+<span class="a">+    KnowledgeQueryStartedEvent,</span>
+<span class="a">+    KnowledgeQueryCompletedEvent,</span>
+<span class="a">+    KnowledgeQueryFailedEvent,</span>
+<span class="a">+    KnowledgeSearchQueryFailedEvent,</span>
+<span class="a">+)</span>
+ 
+ EventTypes = Union[
+     CrewKickoffStartedEvent,
+<span class="h">@@ -82,4 +90,10 @@ EventTypes = Union[</span>
+     AgentReasoningStartedEvent,
+     AgentReasoningCompletedEvent,
+     AgentReasoningFailedEvent,
+<span class="a">+    KnowledgeRetrievalStartedEvent,</span>
+<span class="a">+    KnowledgeRetrievalCompletedEvent,</span>
+<span class="a">+    KnowledgeQueryStartedEvent,</span>
+<span class="a">+    KnowledgeQueryCompletedEvent,</span>
+<span class="a">+    KnowledgeQueryFailedEvent,</span>
+<span class="a">+    KnowledgeSearchQueryFailedEvent,</span>
+ ]</pre><h2>Commit #6: <a href="https://github.com/crewaiinc/crewai/commit/ab39753a7513dd3c7abf25798cae56572eb6eeef">ab39753a75</a> (2025-07-01T22:50:39-04:00)</h2><p class="k">Introduce MemoryEvents to monitor their usage (#3098)<br>Path after this commit: src/crewai/utilities/events/event_types.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/crewai/utilities/events/event_types.py b/src/crewai/utilities/events/event_types.py
+index 46f289caf..404db1990 100644
+<span class="d">--- a/src/crewai/utilities/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/event_types.py</span>
+<span class="h">@@ -57,6 +57,17 @@ from .knowledge_events import (</span>
+     KnowledgeSearchQueryFailedEvent,
+ )
+ 
+<span class="a">+from .memory_events import (</span>
+<span class="a">+    MemorySaveStartedEvent,</span>
+<span class="a">+    MemorySaveCompletedEvent,</span>
+<span class="a">+    MemorySaveFailedEvent,</span>
+<span class="a">+    MemoryQueryStartedEvent,</span>
+<span class="a">+    MemoryQueryCompletedEvent,</span>
+<span class="a">+    MemoryQueryFailedEvent,</span>
+<span class="a">+    MemoryRetrievalStartedEvent,</span>
+<span class="a">+    MemoryRetrievalCompletedEvent,</span>
+<span class="a">+)</span>
+<span class="a">+</span>
+ EventTypes = Union[
+     CrewKickoffStartedEvent,
+     CrewKickoffCompletedEvent,
+<span class="h">@@ -96,4 +107,12 @@ EventTypes = Union[</span>
+     KnowledgeQueryCompletedEvent,
+     KnowledgeQueryFailedEvent,
+     KnowledgeSearchQueryFailedEvent,
+<span class="a">+    MemorySaveStartedEvent,</span>
+<span class="a">+    MemorySaveCompletedEvent,</span>
+<span class="a">+    MemorySaveFailedEvent,</span>
+<span class="a">+    MemoryQueryStartedEvent,</span>
+<span class="a">+    MemoryQueryCompletedEvent,</span>
+<span class="a">+    MemoryQueryFailedEvent,</span>
+<span class="a">+    MemoryRetrievalStartedEvent,</span>
+<span class="a">+    MemoryRetrievalCompletedEvent,</span>
+ ]</pre><h2>Commit #7: <a href="https://github.com/crewaiinc/crewai/commit/6ebb6c9b63a4c1e9073a75287dda06edf2e7a643">6ebb6c9b63</a> (2025-07-15T09:22:41-04:00)</h2><p class="k">Supporting eval single Agent/LiteAgent (#3167)<br>Path after this commit: src/crewai/utilities/events/event_types.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/crewai/utilities/events/event_types.py b/src/crewai/utilities/events/event_types.py
+index 404db1990..690c8fda7 100644
+<span class="d">--- a/src/crewai/utilities/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/event_types.py</span>
+<span class="h">@@ -4,6 +4,7 @@ from .agent_events import (</span>
+     AgentExecutionCompletedEvent,
+     AgentExecutionErrorEvent,
+     AgentExecutionStartedEvent,
+<span class="a">+    LiteAgentExecutionCompletedEvent,</span>
+ )
+ from .crew_events import (
+     CrewKickoffCompletedEvent,
+<span class="h">@@ -80,6 +81,7 @@ EventTypes = Union[</span>
+     CrewTrainFailedEvent,
+     AgentExecutionStartedEvent,
+     AgentExecutionCompletedEvent,
+<span class="a">+    LiteAgentExecutionCompletedEvent,</span>
+     TaskStartedEvent,
+     TaskCompletedEvent,
+     TaskFailedEvent,</pre><h2>Commit #8: <a href="https://github.com/crewaiinc/crewai/commit/878c1a649af98a0155bdba5f4c2e903c8b6a1d58">878c1a649a</a> (2025-09-02T10:06:42-04:00)</h2><p class="k">refactor: Move events module to crewai.events (#3425)<br>Path after this commit: src/crewai/events/event_types.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/crewai/utilities/events/event_types.py b/src/crewai/events/event_types.py
+similarity index 88%
+rename from src/crewai/utilities/events/event_types.py
+rename to src/crewai/events/event_types.py
+index 690c8fda7..f4fc06519 100644
+<span class="d">--- a/src/crewai/utilities/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/events/event_types.py</span>
+<span class="h">@@ -1,12 +1,12 @@</span>
+ from typing import Union
+ 
+<span class="d">-from .agent_events import (</span>
+<span class="a">+from crewai.events.types.agent_events import (</span>
+     AgentExecutionCompletedEvent,
+     AgentExecutionErrorEvent,
+     AgentExecutionStartedEvent,
+     LiteAgentExecutionCompletedEvent,
+ )
+<span class="d">-from .crew_events import (</span>
+<span class="a">+from .types.crew_events import (</span>
+     CrewKickoffCompletedEvent,
+     CrewKickoffFailedEvent,
+     CrewKickoffStartedEvent,
+<span class="h">@@ -17,39 +17,39 @@ from .crew_events import (</span>
+     CrewTrainFailedEvent,
+     CrewTrainStartedEvent,
+ )
+<span class="d">-from .flow_events import (</span>
+<span class="a">+from .types.flow_events import (</span>
+     FlowFinishedEvent,
+     FlowStartedEvent,
+     MethodExecutionFailedEvent,
+<span class=" m">     MethodExecutionFinishedEvent,</span>
+     MethodExecutionStartedEvent,
+ )
+<span class="d">-from .llm_events import (</span>
+<span class="a">+from .types.llm_events import (</span>
+     LLMCallCompletedEvent,
+     LLMCallFailedEvent,
+     LLMCallStartedEvent,
+     LLMStreamChunkEvent,
+ )
+<span class="d">-from .llm_guardrail_events import (</span>
+<span class="a">+from .types.llm_guardrail_events import (</span>
+     LLMGuardrailCompletedEvent,
+     LLMGuardrailStartedEvent,
+ )
+<span class="d">-from .task_events import (</span>
+<span class="a">+from .types.task_events import (</span>
+     TaskCompletedEvent,
+     TaskFailedEvent,
+     TaskStartedEvent,
+ )
+<span class="d">-from .tool_usage_events import (</span>
+<span class="a">+from .types.tool_usage_events import (</span>
+     ToolUsageErrorEvent,
+     ToolUsageFinishedEvent,
+     ToolUsageStartedEvent,
+ )
+<span class="d">-from .reasoning_events import (</span>
+<span class="a">+from .types.reasoning_events import (</span>
+     AgentReasoningStartedEvent,
+     AgentReasoningCompletedEvent,
+     AgentReasoningFailedEvent,
+ )
+<span class="d">-from .knowledge_events import (</span>
+<span class="a">+from .types.knowledge_events import (</span>
+     KnowledgeRetrievalStartedEvent,
+     KnowledgeRetrievalCompletedEvent,
+     KnowledgeQueryStartedEvent,
+<span class="h">@@ -58,7 +58,7 @@ from .knowledge_events import (</span>
+     KnowledgeSearchQueryFailedEvent,
+ )
+ 
+<span class="d">-from .memory_events import (</span>
+<span class="a">+from .types.memory_events import (</span>
+     MemorySaveStartedEvent,
+     MemorySaveCompletedEvent,
+     MemorySaveFailedEvent,</pre><h2>Commit #9: <a href="https://github.com/crewaiinc/crewai/commit/2cfc4d37b812fdbc38bc62ee12f0e49ee287cbe7">2cfc4d37b8</a> (2025-09-19T20:10:55-04:00)</h2><p class="k">chore: apply ruff linting fixes to events module<br>Path after this commit: src/crewai/events/event_types.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/events/event_types.py b/src/crewai/events/event_types.py
+index f4fc06519..e84494813 100644
+<span class="d">--- a/src/crewai/events/event_types.py</span>
+<span class="a">+++ b/src/crewai/events/event_types.py</span>
+<span class="h">@@ -1,11 +1,10 @@</span>
+<span class="d">-from typing import Union</span>
+<span class="d">-</span>
+ from crewai.events.types.agent_events import (
+     AgentExecutionCompletedEvent,
+     AgentExecutionErrorEvent,
+     AgentExecutionStartedEvent,
+     LiteAgentExecutionCompletedEvent,
+ )
+<span class="a">+</span>
+ from .types.crew_events import (
+     CrewKickoffCompletedEvent,
+     CrewKickoffFailedEvent,
+<span class="h">@@ -24,6 +23,14 @@ from .types.flow_events import (</span>
+<span class=" m">     MethodExecutionFinishedEvent,</span>
+     MethodExecutionStartedEvent,
+ )
+<span class="a">+from .types.knowledge_events import (</span>
+<span class="a">+    KnowledgeQueryCompletedEvent,</span>
+<span class="a">+    KnowledgeQueryFailedEvent,</span>
+<span class="a">+    KnowledgeQueryStartedEvent,</span>
+<span class="a">+    KnowledgeRetrievalCompletedEvent,</span>
+<span class="a">+    KnowledgeRetrievalStartedEvent,</span>
+<span class="a">+    KnowledgeSearchQueryFailedEvent,</span>
+<span class="a">+)</span>
+ from .types.llm_events import (
+     LLMCallCompletedEvent,
+     LLMCallFailedEvent,
+<span class="h">@@ -34,6 +41,21 @@ from .types.llm_guardrail_events import (</span>
+     LLMGuardrailCompletedEvent,
+     LLMGuardrailStartedEvent,
+ )
+<span class="a">+from .types.memory_events import (</span>
+<span class="a">+    MemoryQueryCompletedEvent,</span>
+<span class="a">+    MemoryQueryFailedEvent,</span>
+<span class="a">+    MemoryQueryStartedEvent,</span>
+<span class="a">+    MemoryRetrievalCompletedEvent,</span>
+<span class="a">+    MemoryRetrievalStartedEvent,</span>
+<span class="a">+    MemorySaveCompletedEvent,</span>
+<span class="a">+    MemorySaveFailedEvent,</span>
+<span class="a">+    MemorySaveStartedEvent,</span>
+<span class="a">+)</span>
+<span class="a">+from .types.reasoning_events import (</span>
+<span class="a">+    AgentReasoningCompletedEvent,</span>
+<span class="a">+    AgentReasoningFailedEvent,</span>
+<span class="a">+    AgentReasoningStartedEvent,</span>
+<span class="a">+)</span>
+ from .types.task_events import (
+     TaskCompletedEvent,
+     TaskFailedEvent,
+<span class="h">@@ -44,77 +66,53 @@ from .types.tool_usage_events import (</span>
+     ToolUsageFinishedEvent,
+     ToolUsageStartedEvent,
+ )
+<span class="d">-from .types.reasoning_events import (</span>
+<span class="d">-    AgentReasoningStartedEvent,</span>
+<span class="d">-    AgentReasoningCompletedEvent,</span>
+<span class="d">-    AgentReasoningFailedEvent,</span>
+<span class="d">-)</span>
+<span class="d">-from .types.knowledge_events import (</span>
+<span class="d">-    KnowledgeRetrievalStartedEvent,</span>
+<span class="d">-    KnowledgeRetrievalCompletedEvent,</span>
+<span class="d">-    KnowledgeQueryStartedEvent,</span>
+<span class="d">-    KnowledgeQueryCompletedEvent,</span>
+<span class="d">-    KnowledgeQueryFailedEvent,</span>
+<span class="d">-    KnowledgeSearchQueryFailedEvent,</span>
+<span class="d">-)</span>
+ 
+<span class="d">-from .types.memory_events import (</span>
+<span class="d">-    MemorySaveStartedEvent,</span>
+<span class="d">-    MemorySaveCompletedEvent,</span>
+<span class="d">-    MemorySaveFailedEvent,</span>
+<span class="d">-    MemoryQueryStartedEvent,</span>
+<span class="d">-    MemoryQueryCompletedEvent,</span>
+<span class="d">-    MemoryQueryFailedEvent,</span>
+<span class="d">-    MemoryRetrievalStartedEvent,</span>
+<span class="d">-    MemoryRetrievalCompletedEvent,</span>
+<span class="a">+EventTypes = (</span>
+<span class="a">+    CrewKickoffStartedEvent</span>
+<span class="a">+    | CrewKickoffCompletedEvent</span>
+<span class="a">+    | CrewKickoffFailedEvent</span>
+<span class="a">+    | CrewTestStartedEvent</span>
+<span class="a">+    | CrewTestCompletedEvent</span>
+<span class="a">+    | CrewTestFailedEvent</span>
+<span class="a">+    | CrewTrainStartedEvent</span>
+<span class="a">+    | CrewTrainCompletedEvent</span>
+<span class="a">+    | CrewTrainFailedEvent</span>
+<span class="a">+    | AgentExecutionStartedEvent</span>
+<span class="a">+    | AgentExecutionCompletedEvent</span>
+<span class="a">+    | LiteAgentExecutionCompletedEvent</span>
+<span class="a">+    | TaskStartedEvent</span>
+<span class="a">+    | TaskCompletedEvent</span>
+<span class="a">+    | TaskFailedEvent</span>
+<span class="a">+    | FlowStartedEvent</span>
+<span class="a">+    | FlowFinishedEvent</span>
+<span class="a">+    | MethodExecutionStartedEvent</span>
+<span class="a">+    | MethodExecutionFinishedEvent</span>
+<span class="a">+    | MethodExecutionFailedEvent</span>
+<span class="a">+    | AgentExecutionErrorEvent</span>
+<span class="a">+    | ToolUsageFinishedEvent</span>
+<span class="a">+    | ToolUsageErrorEvent</span>
+<span class="a">+    | ToolUsageStartedEvent</span>
+<span class="a">+    | LLMCallStartedEvent</span>
+<span class="a">+    | LLMCallCompletedEvent</span>
+<span class="a">+    | LLMCallFailedEvent</span>
+<span class="a">+    | LLMStreamChunkEvent</span>
+<span class="a">+    | LLMGuardrailStartedEvent</span>
+<span class="a">+    | LLMGuardrailCompletedEvent</span>
+<span class="a">+    | AgentReasoningStartedEvent</span>
+<span class="a">+    | AgentReasoningCompletedEvent</span>
+<span class="a">+    | AgentReasoningFailedEvent</span>
+<span class="a">+    | KnowledgeRetrievalStartedEvent</span>
+<span class="a">+    | KnowledgeRetrievalCompletedEvent</span>
+<span class="a">+    | KnowledgeQueryStartedEvent</span>
+<span class="a">+    | KnowledgeQueryCompletedEvent</span>
+<span class="a">+    | KnowledgeQueryFailedEvent</span>
+<span class="a">+    | KnowledgeSearchQueryFailedEvent</span>
+<span class="a">+    | MemorySaveStartedEvent</span>
+<span class="a">+    | MemorySaveCompletedEvent</span>
+<span class="a">+    | MemorySaveFailedEvent</span>
+<span class="a">+    | MemoryQueryStartedEvent</span>
+<span class="a">+    | MemoryQueryCompletedEvent</span>
+<span class="a">+    | MemoryQueryFailedEvent</span>
+<span class="a">+    | MemoryRetrievalStartedEvent</span>
+<span class="a">+    | MemoryRetrievalCompletedEvent</span>
+ )
+<span class="d">-</span>
+<span class="d">-EventTypes = Union[</span>
+<span class="d">-    CrewKickoffStartedEvent,</span>
+<span class="d">-    CrewKickoffCompletedEvent,</span>
+<span class="d">-    CrewKickoffFailedEvent,</span>
+<span class="d">-    CrewTestStartedEvent,</span>
+<span class="d">-    CrewTestCompletedEvent,</span>
+<span class="d">-    CrewTestFailedEvent,</span>
+<span class="d">-    CrewTrainStartedEvent,</span>
+<span class="d">-    CrewTrainCompletedEvent,</span>
+<span class="d">-    CrewTrainFailedEvent,</span>
+<span class="d">-    AgentExecutionStartedEvent,</span>
+<span class="d">-    AgentExecutionCompletedEvent,</span>
+<span class="d">-    LiteAgentExecutionCompletedEvent,</span>
+<span class="d">-    TaskStartedEvent,</span>
+<span class="d">-    TaskCompletedEvent,</span>
+<span class="d">-    TaskFailedEvent,</span>
+<span class="d">-    FlowStartedEvent,</span>
+<span class="d">-    FlowFinishedEvent,</span>
+<span class="d">-    MethodExecutionStartedEvent,</span>
+<span class="d m">-    MethodExecutionFinishedEvent,</span>
+<span class="d">-    MethodExecutionFailedEvent,</span>
+<span class="d">-    AgentExecutionErrorEvent,</span>
+<span class="d">-    ToolUsageFinishedEvent,</span>
+<span class="d">-    ToolUsageErrorEvent,</span>
+<span class="d">-    ToolUsageStartedEvent,</span>
+<span class="d">-    LLMCallStartedEvent,</span>
+<span class="d">-    LLMCallCompletedEvent,</span>
+<span class="d">-    LLMCallFailedEvent,</span>
+<span class="d">-    LLMStreamChunkEvent,</span>
+<span class="d">-    LLMGuardrailStartedEvent,</span>
+<span class="d">-    LLMGuardrailCompletedEvent,</span>
+<span class="d">-    AgentReasoningStartedEvent,</span>
+<span class="d">-    AgentReasoningCompletedEvent,</span>
+<span class="d">-    AgentReasoningFailedEvent,</span>
+<span class="d">-    KnowledgeRetrievalStartedEvent,</span>
+<span class="d">-    KnowledgeRetrievalCompletedEvent,</span>
+<span class="d">-    KnowledgeQueryStartedEvent,</span>
+<span class="d">-    KnowledgeQueryCompletedEvent,</span>
+<span class="d">-    KnowledgeQueryFailedEvent,</span>
+<span class="d">-    KnowledgeSearchQueryFailedEvent,</span>
+<span class="d">-    MemorySaveStartedEvent,</span>
+<span class="d">-    MemorySaveCompletedEvent,</span>
+<span class="d">-    MemorySaveFailedEvent,</span>
+<span class="d">-    MemoryQueryStartedEvent,</span>
+<span class="d">-    MemoryQueryCompletedEvent,</span>
+<span class="d">-    MemoryQueryFailedEvent,</span>
+<span class="d">-    MemoryRetrievalStartedEvent,</span>
+<span class="d">-    MemoryRetrievalCompletedEvent,</span>
+<span class="d">-]</span></pre><h2>Commit #10: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: lib/crewai/src/crewai/events/event_types.py. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: lib/crewai/src/crewai/events/event_listener.py.</p><pre>diff --git a/src/crewai/events/event_types.py b/lib/crewai/src/crewai/events/event_types.py
+similarity index 86%
+rename from src/crewai/events/event_types.py
+rename to lib/crewai/src/crewai/events/event_types.py
+index e84494813..f7a4d1f72 100644
+<span class="d">--- a/src/crewai/events/event_types.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/events/event_types.py</span>
+<span class="h">@@ -4,8 +4,7 @@ from crewai.events.types.agent_events import (</span>
+     AgentExecutionStartedEvent,
+     LiteAgentExecutionCompletedEvent,
+ )
+<span class="d">-</span>
+<span class="d">-from .types.crew_events import (</span>
+<span class="a">+from crewai.events.types.crew_events import (</span>
+     CrewKickoffCompletedEvent,
+     CrewKickoffFailedEvent,
+     CrewKickoffStartedEvent,
+<span class="h">@@ -16,14 +15,14 @@ from .types.crew_events import (</span>
+     CrewTrainFailedEvent,
+     CrewTrainStartedEvent,
+ )
+<span class="d">-from .types.flow_events import (</span>
+<span class="a">+from crewai.events.types.flow_events import (</span>
+     FlowFinishedEvent,
+     FlowStartedEvent,
+     MethodExecutionFailedEvent,
+<span class=" m">     MethodExecutionFinishedEvent,</span>
+     MethodExecutionStartedEvent,
+ )
+<span class="d">-from .types.knowledge_events import (</span>
+<span class="a">+from crewai.events.types.knowledge_events import (</span>
+     KnowledgeQueryCompletedEvent,
+     KnowledgeQueryFailedEvent,
+     KnowledgeQueryStartedEvent,
+<span class="h">@@ -31,17 +30,17 @@ from .types.knowledge_events import (</span>
+     KnowledgeRetrievalStartedEvent,
+     KnowledgeSearchQueryFailedEvent,
+ )
+<span class="d">-from .types.llm_events import (</span>
+<span class="a">+from crewai.events.types.llm_events import (</span>
+     LLMCallCompletedEvent,
+     LLMCallFailedEvent,
+     LLMCallStartedEvent,
+     LLMStreamChunkEvent,
+ )
+<span class="d">-from .types.llm_guardrail_events import (</span>
+<span class="a">+from crewai.events.types.llm_guardrail_events import (</span>
+     LLMGuardrailCompletedEvent,
+     LLMGuardrailStartedEvent,
+ )
+<span class="d">-from .types.memory_events import (</span>
+<span class="a">+from crewai.events.types.memory_events import (</span>
+     MemoryQueryCompletedEvent,
+     MemoryQueryFailedEvent,
+     MemoryQueryStartedEvent,
+<span class="h">@@ -51,22 +50,23 @@ from .types.memory_events import (</span>
+     MemorySaveFailedEvent,
+     MemorySaveStartedEvent,
+ )
+<span class="d">-from .types.reasoning_events import (</span>
+<span class="a">+from crewai.events.types.reasoning_events import (</span>
+     AgentReasoningCompletedEvent,
+     AgentReasoningFailedEvent,
+     AgentReasoningStartedEvent,
+ )
+<span class="d">-from .types.task_events import (</span>
+<span class="a">+from crewai.events.types.task_events import (</span>
+     TaskCompletedEvent,
+     TaskFailedEvent,
+     TaskStartedEvent,
+ )
+<span class="d">-from .types.tool_usage_events import (</span>
+<span class="a">+from crewai.events.types.tool_usage_events import (</span>
+     ToolUsageErrorEvent,
+     ToolUsageFinishedEvent,
+     ToolUsageStartedEvent,
+ )
+ 
+<span class="a">+</span>
+ EventTypes = (
+     CrewKickoffStartedEvent
+     | CrewKickoffCompletedEvent</pre><h2>Commit #11: <a href="https://github.com/crewaiinc/crewai/commit/6f36d7003bc465dcbc267a1f840676d17df19e3f">6f36d7003b</a> (2025-11-06T17:45:16-08:00)</h2><p class="k">Lorenze/feat mcp first class support (#3850)<br>Path after this commit: lib/crewai/src/crewai/events/event_types.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/lib/crewai/src/crewai/events/event_types.py b/lib/crewai/src/crewai/events/event_types.py
+index f7a4d1f72..ea00aa9ae 100644
+<span class="d">--- a/lib/crewai/src/crewai/events/event_types.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/events/event_types.py</span>
+<span class="h">@@ -40,6 +40,14 @@ from crewai.events.types.llm_guardrail_events import (</span>
+     LLMGuardrailCompletedEvent,
+     LLMGuardrailStartedEvent,
+ )
+<span class="a">+from crewai.events.types.mcp_events import (</span>
+<span class="a">+    MCPConnectionCompletedEvent,</span>
+<span class="a">+    MCPConnectionFailedEvent,</span>
+<span class="a">+    MCPConnectionStartedEvent,</span>
+<span class="a">+    MCPToolExecutionCompletedEvent,</span>
+<span class="a">+    MCPToolExecutionFailedEvent,</span>
+<span class="a">+    MCPToolExecutionStartedEvent,</span>
+<span class="a">+)</span>
+ from crewai.events.types.memory_events import (
+     MemoryQueryCompletedEvent,
+     MemoryQueryFailedEvent,
+<span class="h">@@ -115,4 +123,10 @@ EventTypes = (</span>
+     | MemoryQueryFailedEvent
+     | MemoryRetrievalStartedEvent
+     | MemoryRetrievalCompletedEvent
+<span class="a">+    | MCPConnectionStartedEvent</span>
+<span class="a">+    | MCPConnectionCompletedEvent</span>
+<span class="a">+    | MCPConnectionFailedEvent</span>
+<span class="a">+    | MCPToolExecutionStartedEvent</span>
+<span class="a">+    | MCPToolExecutionCompletedEvent</span>
+<span class="a">+    | MCPToolExecutionFailedEvent</span>
+ )</pre></body></html>

@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L216</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L216</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-js">azure/azure-sdk-for-js</a><br><b>File at merge:</b> sdk/hybridconnectivity/arm-hybridconnectivity/samples-dev/publicCloudConnectorsGetSample.ts, line 5<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-sdk-for-js/commit/81dbefa4bf30ad921b821bdb932461e8fb1ce0a0">81dbefa4bf</a> (2025-03-28T07:43:37)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-js/tree/e0d9f972f4e8ede3d075fb0504a9379d4ac1899b">e0d9f972f4</a>)</p><p><b>The line:</b></p><pre><span class="t">import { DefaultAzureCredential } from &quot;@azure/identity&quot;;</span></pre><h2>File at the merge commit, lines 1 to 13</h2><pre>    1 | // Copyright (c) Microsoft Corporation.
+    2 | // Licensed under the MIT License.
+    3 | 
+    4 | import { HybridConnectivityManagementAPI } from &quot;@azure/arm-hybridconnectivity&quot;;
+<span class="t">    5 | import { DefaultAzureCredential } from &quot;@azure/identity&quot;;</span>
+    6 | 
+    7 | /**
+    8 |  * This sample demonstrates how to get a PublicCloudConnector
+    9 |  *
+   10 |  * @summary get a PublicCloudConnector
+   11 |  * x-ms-original-file: 2024-12-01/PublicCloudConnectors_Get.json
+   12 |  */
+   13 | async function publicCloudConnectorsGet(): Promise&lt;void&gt; {</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-js/commit/171ba411a8d37545d6525156a74cfe1f06b8fc06">171ba411a8</a> (2025-08-19T13:43:00-07:00)</h2><p class="k">[Samples] Correct headers and summary comment positions (#35609)<br>Path after this commit: sdk/hybridconnectivity/arm-hybridconnectivity/samples-dev/publicCloudConnectorsGetSample.ts. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: sdk/advisor/arm-advisor/samples-dev/configurationsCreateInResourceGroupSample.ts, sdk/advisor/arm-advisor/samples-dev/configurationsCreateInSubscriptionSample.ts, sdk/advisor/arm-advisor/samples-dev/configurationsListByResourceGroupSample.ts, sdk/advisor/arm-advisor/samples-dev/configurationsListBySubscriptionSample.ts, sdk/advisor/arm-advisor/samples-dev/recommendationMetadataGetSample.ts.</p><pre>diff --git a/sdk/hybridconnectivity/arm-hybridconnectivity/samples-dev/publicCloudConnectorsGetSample.ts b/sdk/hybridconnectivity/arm-hybridconnectivity/samples-dev/publicCloudConnectorsGetSample.ts
+index 2dcd26ba148..bf4c1d1ce31 100644
+<span class="d">--- a/sdk/hybridconnectivity/arm-hybridconnectivity/samples-dev/publicCloudConnectorsGetSample.ts</span>
+<span class="a">+++ b/sdk/hybridconnectivity/arm-hybridconnectivity/samples-dev/publicCloudConnectorsGetSample.ts</span>
+<span class="h">@@ -1,15 +1,16 @@</span>
+ // Copyright (c) Microsoft Corporation.
+ // Licensed under the MIT License.
+ 
+<span class="d">-import { HybridConnectivityManagementAPI } from &quot;@azure/arm-hybridconnectivity&quot;;</span>
+<span class="d m">-import { DefaultAzureCredential } from &quot;@azure/identity&quot;;</span>
+<span class="d">-</span>
+ /**
+  * This sample demonstrates how to get a PublicCloudConnector
+  *
+  * @summary get a PublicCloudConnector
+  * x-ms-original-file: 2024-12-01/PublicCloudConnectors_Get.json
+  */
+<span class="a">+</span>
+<span class="a">+import { HybridConnectivityManagementAPI } from &quot;@azure/arm-hybridconnectivity&quot;;</span>
+<span class="a m">+import { DefaultAzureCredential } from &quot;@azure/identity&quot;;</span>
+<span class="a">+</span>
+ async function publicCloudConnectorsGet(): Promise&lt;void&gt; {
+   const credential = new DefaultAzureCredential();
+   const subscriptionId = &quot;5ACC4579-DB34-4C2F-8F8C-25061168F342&quot;;</pre></body></html>

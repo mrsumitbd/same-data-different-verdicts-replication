@@ -1,0 +1,348 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L281</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L281</h1><p><b>Repository:</b> <a href="https://github.com/celestiaorg/celestia-core">celestiaorg/celestia-core</a><br><b>File at merge:</b> state/execution.go, line 161<br><b>Merge commit (birth):</b> <a href="https://github.com/celestiaorg/celestia-core/commit/46f103dbb4d738fc1bcc964163bb49e239b7d76d">46f103dbb4</a> (2025-06-30T22:02:37)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/celestiaorg/celestia-core/tree/b5850ac7d807ab5d79842ea9c21cfa6e8d26f074">b5850ac7d8</a>)</p><p><b>The line:</b></p><pre><span class="t">			if r := recover(); r != nil {</span></pre><h2>File at the merge commit, lines 153 to 169</h2><pre>  153 | 		NextValidatorsHash: block.NextValidatorsHash,
+  154 | 		ProposerAddress:    block.ProposerAddress,
+  155 | 	}
+  156 | 
+  157 | 	var rpp *abci.ResponsePrepareProposal
+  158 | 
+  159 | 	func() {
+  160 | 		defer func() {
+<span class="t">  161 | 			if r := recover(); r != nil {</span>
+  162 | 				blockExec.saveFailedProposalBlock(state, block, &quot;prepare_proposal_panic&quot;)
+  163 | 				err = fmt.Errorf(&quot;PrepareProposal panicked: %v&quot;, r)
+  164 | 			}
+  165 | 		}()
+  166 | 
+  167 | 		rpp, err = blockExec.proxyApp.PrepareProposal(ctx, req)
+  168 | 	}()
+  169 | 	if err != nil {</pre><p class="k">Below are all 10 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/celestiaorg/celestia-core/commit/b74d5abae30c550096e5e5b22626e83c7e0c3385">b74d5abae3</a> (2025-07-03T09:03:00+00:00)</h2><p class="k">feat: add timestamp to the filenames of failed proposal blocks  (#2113)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index a2ce8fba9..dfd3d1398 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -924,9 +924,11 @@ func (blockExec *BlockExecutor) saveFailedProposalBlock(state State, block *type</span>
+ 	}
+ 
+ 	debugDir := filepath.Join(blockExec.rootDir, &quot;data&quot;, &quot;debug&quot;)
+<span class="d">-	filename := fmt.Sprintf(&quot;%s-%d-%s_failed_proposal.pb&quot;,</span>
+<span class="a">+	timestamp := time.Now().Format(&quot;20060102-150405.000&quot;)</span>
+<span class="a">+	filename := fmt.Sprintf(&quot;%s-%d-%s-%s_failed_proposal.pb&quot;,</span>
+ 		state.ChainID,
+ 		block.Height,
+<span class="a">+		timestamp,</span>
+ 		reason,
+ 	)
+ </pre><h2>Commit #2: <a href="https://github.com/celestiaorg/celestia-core/commit/694088e2402b66db7859cd60bb471c32615a742d">694088e240</a> (2025-07-07T22:01:23-04:00)</h2><p class="k">docs: replace all instances of &quot;nova&quot; with &quot;multiplexer&quot; (#2152)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index dfd3d1398..c78a49814 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -231,7 +231,7 @@ func (blockExec *BlockExecutor) ProcessProposal(</span>
+ 		ProposerAddress:    block.ProposerAddress,
+ 		NextValidatorsHash: block.NextValidatorsHash,
+ 
+<span class="d">-		// needed for v3 to sync with nova as the header is stored in state</span>
+<span class="a">+		// needed for v3 to sync with multiplexer as the header is stored in state</span>
+ 		Header: pbHeader,
+ 	})
+ 	if err != nil {
+<span class="h">@@ -304,7 +304,7 @@ func (blockExec *BlockExecutor) applyBlock(state State, blockID types.BlockID, b</span>
+ 		Misbehavior:        block.Evidence.Evidence.ToABCI(),
+ 		Txs:                txs,
+ 
+<span class="d">-		// needed for v3 to sync with nova as the header is stored in state</span>
+<span class="a">+		// needed for v3 to sync with multiplexer as the header is stored in state</span>
+ 		Header: pbHeader,
+ 	})
+ 	endTime := time.Now().UnixNano()
+<span class="h">@@ -854,7 +854,7 @@ func ExecCommitBlock(</span>
+ 		Misbehavior:        block.Evidence.Evidence.ToABCI(),
+ 		Txs:                block.Txs.ToSliceOfBytes(),
+ 
+<span class="d">-		// needed for v3 to sync with nova as the header is stored in state</span>
+<span class="a">+		// needed for v3 to sync with multiplexer as the header is stored in state</span>
+ 		Header: pbHeader,
+ 	})
+ 	if err != nil {</pre><h2>Commit #3: <a href="https://github.com/celestiaorg/celestia-core/commit/41f5526d820051bc6da99856745d45f895770a82">41f5526d82</a> (2025-07-08T14:14:05+02:00)</h2><p class="k">chore: trace prepare proposal (#2157)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index c78a49814..46378c361 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -7,6 +7,9 @@ import (</span>
+ 	&quot;path/filepath&quot;
+ 	&quot;time&quot;
+ 
+<span class="a">+	&quot;github.com/cometbft/cometbft/libs/trace&quot;</span>
+<span class="a">+	&quot;github.com/cometbft/cometbft/libs/trace/schema&quot;</span>
+<span class="a">+</span>
+ 	abci &quot;github.com/cometbft/cometbft/abci/types&quot;
+ 	cryptoenc &quot;github.com/cometbft/cometbft/crypto/encoding&quot;
+ 	&quot;github.com/cometbft/cometbft/libs/fail&quot;
+<span class="h">@@ -47,6 +50,9 @@ type BlockExecutor struct {</span>
+ 
+ 	// root directory for debug file saving
+ 	rootDir string
+<span class="a">+</span>
+<span class="a">+	// tracer optional tracer</span>
+<span class="a">+	tracer trace.Tracer</span>
+ }
+ 
+ type BlockExecutorOption func(executor *BlockExecutor)
+<span class="h">@@ -63,6 +69,12 @@ func BlockExecutorWithRootDir(rootDir string) BlockExecutorOption {</span>
+ 	}
+ }
+ 
+<span class="a">+func BlockExecutorWithTracer(tracer trace.Tracer) BlockExecutorOption {</span>
+<span class="a">+	return func(blockExec *BlockExecutor) {</span>
+<span class="a">+		blockExec.tracer = tracer</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // NewBlockExecutor returns a new BlockExecutor with a NopEventBus.
+ // Call SetEventBus to provide one.
+ func NewBlockExecutor(
+<span class="h">@@ -83,6 +95,7 @@ func NewBlockExecutor(</span>
+ 		logger:     logger,
+ 		metrics:    NopMetrics(),
+ 		blockStore: blockStore,
+<span class="a">+		tracer:     trace.NoOpTracer(),</span>
+ 	}
+ 
+ 	for _, option := range options {
+<span class="h">@@ -164,7 +177,9 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 			}
+ 		}()
+ 
+<span class="a">+		schema.WriteABCI(blockExec.tracer, schema.PrepareProposalStart, block.Height, -1)</span>
+ 		rpp, err = blockExec.proxyApp.PrepareProposal(ctx, req)
+<span class="a">+		schema.WriteABCI(blockExec.tracer, schema.PrepareProposalEnd, block.Height, -1)</span>
+ 	}()
+ 	if err != nil {
+ 		// For non-panic errors, also save the failed proposal block</pre><h2>Commit #4: <a href="https://github.com/celestiaorg/celestia-core/commit/e0c2f7b9d0aacfad44a2bbef554df97ba2a02061">e0c2f7b9d0</a> (2025-09-05T16:23:44+02:00)</h2><p class="k">feat: dynamically change all timeouts using the application (backport #2364) (#2408)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index 46378c361..ed52968b7 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -15,6 +15,7 @@ import (</span>
+ 	&quot;github.com/cometbft/cometbft/libs/fail&quot;
+ 	&quot;github.com/cometbft/cometbft/libs/log&quot;
+ 	&quot;github.com/cometbft/cometbft/mempool&quot;
+<span class="a">+	cmtstate &quot;github.com/cometbft/cometbft/proto/tendermint/state&quot;</span>
+ 	cmtproto &quot;github.com/cometbft/cometbft/proto/tendermint/types&quot;
+ 	&quot;github.com/cometbft/cometbft/proxy&quot;
+ 	&quot;github.com/cometbft/cometbft/types&quot;
+<span class="h">@@ -758,8 +759,16 @@ func updateState(</span>
+ 		LastHeightConsensusParamsChanged: lastHeightParamsChanged,
+ 		LastResultsHash:                  TxResultsHash(abciResponse.TxResults),
+ 		AppHash:                          nil,
+<span class="d">-		TimeoutCommit:                    abciResponse.TimeoutInfo.TimeoutCommit,</span>
+<span class="d">-		TimeoutPropose:                   abciResponse.TimeoutInfo.TimeoutPropose,</span>
+<span class="a">+		Timeouts: cmtstate.TimeoutInfo{</span>
+<span class="a">+			TimeoutPropose:          abciResponse.TimeoutInfo.TimeoutPropose,</span>
+<span class="a">+			TimeoutCommit:           abciResponse.TimeoutInfo.TimeoutCommit,</span>
+<span class="a">+			TimeoutProposeDelta:     abciResponse.TimeoutInfo.TimeoutProposeDelta,</span>
+<span class="a">+			TimeoutPrevote:          abciResponse.TimeoutInfo.TimeoutPrevote,</span>
+<span class="a">+			TimeoutPrevoteDelta:     abciResponse.TimeoutInfo.TimeoutPrevoteDelta,</span>
+<span class="a">+			TimeoutPrecommit:        abciResponse.TimeoutInfo.TimeoutPrecommit,</span>
+<span class="a">+			TimeoutPrecommitDelta:   abciResponse.TimeoutInfo.TimeoutPrecommitDelta,</span>
+<span class="a">+			DelayedPrecommitTimeout: abciResponse.TimeoutInfo.DelayedPrecommitTimeout,</span>
+<span class="a">+		},</span>
+ 	}, nil
+ }
+ </pre><h2>Commit #5: <a href="https://github.com/celestiaorg/celestia-core/commit/a3a8baf9ef0b4c106103348ec220c50c648da0c0">a3a8baf9ef</a> (2025-09-14T19:58:36+04:00)</h2><p class="k">perf: optimse create proposal block (#2435)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index ed52968b7..801e24d74 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -5,6 +5,8 @@ import (</span>
+ 	&quot;context&quot;
+ 	&quot;fmt&quot;
+ 	&quot;path/filepath&quot;
+<span class="a">+	&quot;runtime&quot;</span>
+<span class="a">+	&quot;sync&quot;</span>
+ 	&quot;time&quot;
+ 
+ 	&quot;github.com/cometbft/cometbft/libs/trace&quot;
+<span class="h">@@ -153,10 +155,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 
+ 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxReapBytes, maxGas)
+ 	commit := lastExtCommit.ToCommit()
+<span class="d">-	block, _, err := state.MakeBlock(height, types.MakeData(types.TxsFromCachedTxs(txs)), commit, evidence, proposerAddr)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		return nil, nil, err</span>
+<span class="d">-	}</span>
+<span class="a">+	block := state.MakeBlockWithoutPartset(height, types.MakeData(types.TxsFromCachedTxs(txs)), commit, evidence, proposerAddr)</span>
+ 	req := &amp;abci.RequestPrepareProposal{
+ 		MaxTxBytes:         maxDataBytes,
+ 		Txs:                block.Txs.ToSliceOfBytes(),
+<span class="h">@@ -169,7 +168,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 	}
+ 
+ 	var rpp *abci.ResponsePrepareProposal
+<span class="d">-</span>
+<span class="a">+	var err error</span>
+ 	func() {
+ 		defer func() {
+<span class=" m"> 			if r := recover(); r != nil {</span>
+<span class="h">@@ -199,7 +198,6 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 	}
+ 
+ 	rawNewData := rpp.GetTxs()
+<span class="d">-</span>
+ 	rejectedTxs := len(rawNewData) - len(txs)
+ 	if rejectedTxs &gt; 0 {
+ 		blockExec.metrics.RejectedTransactions.Add(float64(rejectedTxs))
+<span class="h">@@ -210,7 +208,6 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 	if err := txl.Validate(maxDataBytes); err != nil {
+ 		return nil, nil, err
+ 	}
+<span class="d">-</span>
+ 	newData := types.NewData(txl, rpp.SquareSize, rpp.DataRootHash)
+ 	block, partset, err := state.MakeBlock(height, newData, commit, evidence, proposerAddr)
+ 	if err != nil {
+<span class="h">@@ -221,10 +218,21 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 	// TODO: make sure that the hashes are correct here
+ 	// via also removing hashes that the application removed!
+ 	hashes := make([][]byte, len(newData.Txs))
+<span class="d">-	for i := 0; i &lt; len(newData.Txs); i++ {</span>
+<span class="d">-		hashes[i] = newData.Txs[i].Hash()</span>
+<span class="a">+	numWorkers := min(runtime.NumCPU()-1, len(newData.Txs))</span>
+<span class="a">+	workers := make(chan struct{}, numWorkers)</span>
+<span class="a">+	var wg sync.WaitGroup</span>
+<span class="a">+	for i, tx := range newData.Txs {</span>
+<span class="a">+		workers &lt;- struct{}{}</span>
+<span class="a">+		wg.Add(1)</span>
+<span class="a">+		go func() {</span>
+<span class="a">+			defer func() {</span>
+<span class="a">+				&lt;-workers</span>
+<span class="a">+				wg.Done()</span>
+<span class="a">+			}()</span>
+<span class="a">+			hashes[i] = tx.Hash()</span>
+<span class="a">+		}()</span>
+ 	}
+<span class="d">-</span>
+<span class="a">+	wg.Wait()</span>
+ 	block.SetCachedHashes(hashes)
+ 
+ 	return block, partset, nil</pre><h2>Commit #6: <a href="https://github.com/celestiaorg/celestia-core/commit/100eb0c9f8a7bad3973431a3be9d61cbe66894c1">100eb0c9f8</a> (2025-09-17T12:48:56-05:00)</h2><p class="k">feat: move &quot;executed block&quot; and &quot;committed state&quot; logs to DEBUG level (#2468)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index 801e24d74..fccdac981 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -351,7 +351,7 @@ func (blockExec *BlockExecutor) applyBlock(state State, blockID types.BlockID, b</span>
+ 		return state, fmt.Errorf(&quot;expected tx results length to match size of transactions in block. Expected %d, got %d&quot;, len(block.Data.Txs), len(abciResponse.TxResults)) //nolint:staticcheck
+ 	}
+ 
+<span class="d">-	blockExec.logger.Info(&quot;executed block&quot;, &quot;height&quot;, block.Height, &quot;app_hash&quot;, fmt.Sprintf(&quot;%X&quot;, abciResponse.AppHash))</span>
+<span class="a">+	blockExec.logger.Debug(&quot;executed block&quot;, &quot;height&quot;, block.Height, &quot;app_hash&quot;, fmt.Sprintf(&quot;%X&quot;, abciResponse.AppHash))</span>
+ 	// Save indexing info of the transaction.
+ 	// This needs to be done prior to saving state
+ 	// for correct crash recovery
+<span class="h">@@ -518,7 +518,7 @@ func (blockExec *BlockExecutor) Commit(</span>
+ 	}
+ 
+ 	// ResponseCommit has no error code - just data
+<span class="d">-	blockExec.logger.Info(</span>
+<span class="a">+	blockExec.logger.Debug(</span>
+ 		&quot;committed state&quot;,
+ 		&quot;height&quot;, block.Height,
+ 		&quot;block_app_hash&quot;, fmt.Sprintf(&quot;%X&quot;, block.AppHash),
+<span class="h">@@ -899,7 +899,7 @@ func ExecCommitBlock(</span>
+ 		return nil, fmt.Errorf(&quot;expected tx results length to match size of transactions in block. Expected %d, got %d&quot;, len(block.Data.Txs), len(resp.TxResults)) //nolint:staticcheck
+ 	}
+ 
+<span class="d">-	logger.Info(&quot;executed block&quot;, &quot;height&quot;, block.Height, &quot;app_hash&quot;, fmt.Sprintf(&quot;%X&quot;, resp.AppHash))</span>
+<span class="a">+	logger.Debug(&quot;executed block&quot;, &quot;height&quot;, block.Height, &quot;app_hash&quot;, fmt.Sprintf(&quot;%X&quot;, resp.AppHash))</span>
+ 
+ 	// Commit block
+ 	_, err = appConnConsensus.Commit(context.TODO())</pre><h2>Commit #7: <a href="https://github.com/celestiaorg/celestia-core/commit/3e49889ec8ec845a49ba9a22d95eb689fc101044">3e49889ec8</a> (2025-09-26T07:31:52+02:00)</h2><p class="k">feat!: unlock the state before calling abci methods (#2495)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index fccdac981..587eac857 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -240,7 +240,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 
+ func (blockExec *BlockExecutor) ProcessProposal(
+ 	block *types.Block,
+<span class="d">-	state State,</span>
+<span class="a">+	initialHeight int64,</span>
+ ) (bool, error) {
+ 	pbHeader := block.Header.ToProto()
+ 	resp, err := blockExec.proxyApp.ProcessProposal(context.TODO(), &amp;abci.RequestProcessProposal{
+<span class="h">@@ -250,7 +250,7 @@ func (blockExec *BlockExecutor) ProcessProposal(</span>
+ 		Txs:                block.Data.Txs.ToSliceOfBytes(), //nolint:staticcheck
+ 		SquareSize:         block.Data.SquareSize,           //nolint:staticcheck
+ 		DataRootHash:       block.Data.Hash(),
+<span class="d">-		ProposedLastCommit: buildLastCommitInfoFromStore(block, blockExec.store, state.InitialHeight),</span>
+<span class="a">+		ProposedLastCommit: buildLastCommitInfoFromStore(block, blockExec.store, initialHeight),</span>
+ 		Misbehavior:        block.Evidence.Evidence.ToABCI(),
+ 		ProposerAddress:    block.ProposerAddress,
+ 		NextValidatorsHash: block.NextValidatorsHash,</pre><h2>Commit #8: <a href="https://github.com/celestiaorg/celestia-core/commit/8b807c8ea124b214bd53dd8b79d2465db0d89035">8b807c8ea1</a> (2025-10-15T09:51:25-04:00)</h2><p class="k">feat: introduce trace logs (#2559)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index 587eac857..3f25c116a 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -201,7 +201,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 	rejectedTxs := len(rawNewData) - len(txs)
+ 	if rejectedTxs &gt; 0 {
+ 		blockExec.metrics.RejectedTransactions.Add(float64(rejectedTxs))
+<span class="d">-		blockExec.logger.Debug(&quot;rejected txs while creating a block&quot;, &quot;tx count&quot;, rejectedTxs)</span>
+<span class="a">+		blockExec.logger.Trace(&quot;rejected txs while creating a block&quot;, &quot;tx count&quot;, rejectedTxs)</span>
+ 	}
+ 
+ 	txl := types.ToTxs(rpp.Txs)
+<span class="h">@@ -421,7 +421,7 @@ func (blockExec *BlockExecutor) applyBlock(state State, blockID types.BlockID, b</span>
+ 		if err != nil {
+ 			blockExec.logger.Error(&quot;failed to prune blocks&quot;, &quot;retain_height&quot;, retainHeight, &quot;err&quot;, err)
+ 		} else {
+<span class="d">-			blockExec.logger.Debug(&quot;pruned blocks&quot;, &quot;pruned&quot;, pruned, &quot;retain_height&quot;, retainHeight)</span>
+<span class="a">+			blockExec.logger.Trace(&quot;pruned blocks&quot;, &quot;pruned&quot;, pruned, &quot;retain_height&quot;, retainHeight)</span>
+ 		}
+ 	}
+ </pre><h2>Commit #9: <a href="https://github.com/celestiaorg/celestia-core/commit/cfbf3012288043cf912472210ecef368bf2a42f4">cfbf301228</a> (2025-10-15T16:56:45+00:00)</h2><p class="k">feat!: extend TxStatus to include more tx info (#2543)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index 3f25c116a..972284ebd 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -356,9 +356,7 @@ func (blockExec *BlockExecutor) applyBlock(state State, blockID types.BlockID, b</span>
+ 	// This needs to be done prior to saving state
+ 	// for correct crash recovery
+ 	if blockExec.blockStore != nil {
+<span class="d">-		respCodes := getResponseCodes(abciResponse.TxResults)</span>
+<span class="d">-		logs := getLogs(abciResponse.TxResults)</span>
+<span class="d">-		if err := blockExec.blockStore.SaveTxInfo(block, respCodes, logs); err != nil {</span>
+<span class="a">+		if err := blockExec.blockStore.SaveTxInfo(block, abciResponse.TxResults); err != nil {</span>
+ 			return state, err
+ 		}
+ 	}
+<span class="h">@@ -930,24 +928,6 @@ func (blockExec *BlockExecutor) pruneBlocks(retainHeight int64, state State) (ui</span>
+ 	return amountPruned, nil
+ }
+ 
+<span class="d">-// getResponseCodes gets response codes from a list of ResponseDeliverTx.</span>
+<span class="d">-func getResponseCodes(responses []*abci.ExecTxResult) []uint32 {</span>
+<span class="d">-	responseCodes := make([]uint32, len(responses))</span>
+<span class="d">-	for i, response := range responses {</span>
+<span class="d">-		responseCodes[i] = response.Code</span>
+<span class="d">-	}</span>
+<span class="d">-	return responseCodes</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-// getLogs gets logs from a list of ResponseDeliverTx.</span>
+<span class="d">-func getLogs(responses []*abci.ExecTxResult) []string {</span>
+<span class="d">-	logs := make([]string, len(responses))</span>
+<span class="d">-	for i, response := range responses {</span>
+<span class="d">-		logs[i] = response.Log</span>
+<span class="d">-	}</span>
+<span class="d">-	return logs</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ // saveFailedProposalBlock saves a failed proposal block to the debug directory
+ func (blockExec *BlockExecutor) saveFailedProposalBlock(state State, block *types.Block, reason string) {
+ 	if blockExec.rootDir == &quot;&quot; {</pre><h2>Commit #10: <a href="https://github.com/celestiaorg/celestia-core/commit/237ebe4e1839ea0b0ed3b8c0aad6d14b894c931b">237ebe4e18</a> (2025-10-30T15:18:46+00:00)</h2><p class="k">fix: improve sticky peers and re-trigger pending queue (#2610)<br>Path after this commit: state/execution.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/state/execution.go b/state/execution.go
+index 972284ebd..1d8626ca5 100644
+<span class="d">--- a/state/execution.go</span>
+<span class="a">+++ b/state/execution.go</span>
+<span class="h">@@ -150,7 +150,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(</span>
+ 	} else {
+ 		// Reap 25% more transactions than can fit in the block to provide
+ 		// buffer for PrepareProposal to have sufficient transactions to work with
+<span class="d">-		maxReapBytes = maxDataBytes + maxDataBytes/4</span>
+<span class="a">+		maxReapBytes = maxDataBytes + (maxDataBytes / 4)</span>
+ 	}
+ 
+ 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxReapBytes, maxGas)</pre></body></html>

@@ -1,0 +1,863 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L260</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L260</h1><p><b>Repository:</b> <a href="https://github.com/primer/react">primer/react</a><br><b>File at merge:</b> packages/react/src/SegmentedControl/SegmentedControl.test.tsx, line 236<br><b>Merge commit (birth):</b> <a href="https://github.com/primer/react/commit/dbcb8f7bba145e6463e14823a352e829ffcb4c9d">dbcb8f7bba</a> (2025-02-11T16:40:16)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/primer/react/tree/06c83203cd3f200b337aa34618174934317494e2">06c83203cd</a>)</p><p><b>The line:</b></p><pre><span class="t">        {segmentData.map(({label, icon}) =&gt; (</span></pre><h2>File at the merge commit, lines 228 to 244</h2><pre>  228 |       expect(labelledButton).toHaveAccessibleName(datum.label)
+  229 |       expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)
+  230 |     }
+  231 |   })
+  232 | 
+  233 |   it(&#x27;renders icon button with aria-label and no tooltip&#x27;, () =&gt; {
+  234 |     const {getByRole} = render(
+  235 |       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;
+<span class="t">  236 |         {segmentData.map(({label, icon}) =&gt; (</span>
+  237 |           &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;
+  238 |         ))}
+  239 |       &lt;/SegmentedControl&gt;,
+  240 |     )
+  241 | 
+  242 |     for (const datum of segmentData) {
+  243 |       const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})
+  244 |       expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)</pre><p class="k">Below are all 12 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/primer/react/commit/0dbef0e4b886a096a637ae0291f3142367193159">0dbef0e4b8</a> (2025-05-14T17:31:24+00:00)</h2><p class="k">refactor: remove unused React imports with jsx-runtime usage (#6042)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index f7e4746e2..b232ca2bb 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -1,4 +1,3 @@</span>
+<span class="d">-import React from &#x27;react&#x27;</span>
+ import MatchMediaMock from &#x27;jest-matchmedia-mock&#x27;
+ import {render, fireEvent, waitFor} from &#x27;@testing-library/react&#x27;
+ import {EyeIcon, FileCodeIcon, PeopleIcon} from &#x27;@primer/octicons-react&#x27;</pre><h2>Commit #2: <a href="https://github.com/primer/react/commit/c99d42e04e0f773ce4a43a98459393ac2780ab13">c99d42e04e</a> (2025-06-23T16:53:54+00:00)</h2><p class="k">feat: add support for react compiler (#6211)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index b232ca2bb..d5630fe41 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -397,7 +397,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+       &lt;/SegmentedControl&gt;,
+     )
+ 
+<span class="d">-    expect(spy).toHaveBeenCalledTimes(2)</span>
+<span class="a">+    expect(spy).toHaveBeenCalledTimes(1)</span>
+     spy.mockRestore()
+   })
+ </pre><h2>Commit #3: <a href="https://github.com/primer/react/commit/6d64e8a8ce14f184a8eaf32690b6b1fb6661ee83">6d64e8a8ce</a> (2025-07-15T16:07:19+00:00)</h2><p class="k">Update component tests from Jest to Vitest (#6304)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index d5630fe41..7506c9fc1 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -1,14 +1,12 @@</span>
+<span class="d">-import MatchMediaMock from &#x27;jest-matchmedia-mock&#x27;</span>
+ import {render, fireEvent, waitFor} from &#x27;@testing-library/react&#x27;
+ import {EyeIcon, FileCodeIcon, PeopleIcon} from &#x27;@primer/octicons-react&#x27;
+ import userEvent from &#x27;@testing-library/user-event&#x27;
+<span class="d">-import {behavesAsComponent, checkExports} from &#x27;../utils/testing&#x27;</span>
+<span class="d">-import {SegmentedControl} from &#x27;.&#x27; // TODO: update import when we move this to the global index</span>
+<span class="a">+import {describe, expect, it, vi} from &#x27;vitest&#x27;</span>
+<span class="a">+import BaseStyles from &#x27;../BaseStyles&#x27;</span>
+ import theme from &#x27;../theme&#x27;
+<span class="d">-import {BaseStyles, ThemeProvider} from &#x27;..&#x27;</span>
+<span class="d">-import {act} from &#x27;react-test-renderer&#x27;</span>
+<span class="d">-import {viewportRanges} from &#x27;../hooks/useResponsiveValue&#x27;</span>
+<span class="a">+import ThemeProvider from &#x27;../ThemeProvider&#x27;</span>
+ import {FeatureFlags} from &#x27;../FeatureFlags&#x27;
+<span class="a">+import {SegmentedControl} from &#x27;../SegmentedControl&#x27;</span>
+ 
+ const segmentData = [
+   {
+<span class="h">@@ -34,35 +32,7 @@ const segmentData = [</span>
+   },
+ ]
+ 
+<span class="d">-let matchMedia: MatchMediaMock</span>
+<span class="d">-</span>
+ describe(&#x27;SegmentedControl&#x27;, () =&gt; {
+<span class="d">-  beforeAll(() =&gt; {</span>
+<span class="d">-    matchMedia = new MatchMediaMock()</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  afterAll(() =&gt; {</span>
+<span class="d">-    matchMedia.clear()</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  behavesAsComponent({</span>
+<span class="d">-    Component: SegmentedControl,</span>
+<span class="d">-    toRender: () =&gt; (</span>
+<span class="d">-      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d">-        {segmentData.map(({label}, index) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.Button selected={index === 0} key={label}&gt;</span>
+<span class="d">-            {label}</span>
+<span class="d">-          &lt;/SegmentedControl.Button&gt;</span>
+<span class="d">-        ))}</span>
+<span class="d">-      &lt;/SegmentedControl&gt;</span>
+<span class="d">-    ),</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  checkExports(&#x27;SegmentedControl&#x27;, {</span>
+<span class="d">-    default: undefined,</span>
+<span class="d">-    SegmentedControl,</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+   it(&#x27;renders with a selected segment - controlled&#x27;, () =&gt; {
+     const {getByText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;
+<span class="h">@@ -96,10 +66,6 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   })
+ 
+   it(&#x27;renders the dropdown variant&#x27;, () =&gt; {
+<span class="d">-    act(() =&gt; {</span>
+<span class="d">-      matchMedia.useMediaQuery(viewportRanges.narrow)</span>
+<span class="d">-    })</span>
+<span class="d">-</span>
+     const {getByText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;dropdown&#x27;}}&gt;
+         {segmentData.map(({label}, index) =&gt; (
+<span class="h">@@ -116,10 +82,6 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   })
+ 
+   it(&#x27;renders the hideLabels variant&#x27;, () =&gt; {
+<span class="d">-    act(() =&gt; {</span>
+<span class="d">-      matchMedia.useMediaQuery(viewportRanges.narrow)</span>
+<span class="d">-    })</span>
+<span class="d">-</span>
+     const {getByLabelText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;hideLabels&#x27;}}&gt;
+         {segmentData.map(({label, icon}, index) =&gt; (
+<span class="h">@@ -246,7 +208,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+ 
+   it(&#x27;calls onChange with index of clicked segment button&#x27;, async () =&gt; {
+     const user = userEvent.setup()
+<span class="d">-    const handleChange = jest.fn()</span>
+<span class="a">+    const handleChange = vi.fn()</span>
+     const {getByText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot; onChange={handleChange}&gt;
+         {segmentData.map(({label}, index) =&gt; (
+<span class="h">@@ -287,7 +249,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+ 
+   it(&#x27;calls segment button onClick if it is passed&#x27;, async () =&gt; {
+     const user = userEvent.setup()
+<span class="d">-    const handleClick = jest.fn()</span>
+<span class="a">+    const handleClick = vi.fn()</span>
+     const {getByText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;
+         {segmentData.map(({label}, index) =&gt; (
+<span class="h">@@ -308,10 +270,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   })
+ 
+   it(&#x27;calls onChange with index of clicked segment button when using the dropdown variant&#x27;, async () =&gt; {
+<span class="d">-    act(() =&gt; {</span>
+<span class="d">-      matchMedia.useMediaQuery(viewportRanges.narrow)</span>
+<span class="d">-    })</span>
+<span class="d">-    const handleChange = jest.fn()</span>
+<span class="a">+    const handleChange = vi.fn()</span>
+     const component = render(
+       &lt;ThemeProvider theme={theme}&gt;
+         &lt;BaseStyles&gt;
+<span class="h">@@ -336,10 +295,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   })
+ 
+   it(&#x27;calls segment button onClick if it is passed when using the dropdown variant&#x27;, async () =&gt; {
+<span class="d">-    act(() =&gt; {</span>
+<span class="d">-      matchMedia.useMediaQuery(viewportRanges.narrow)</span>
+<span class="d">-    })</span>
+<span class="d">-    const handleClick = jest.fn()</span>
+<span class="a">+    const handleClick = vi.fn()</span>
+     const component = render(
+       &lt;ThemeProvider theme={theme}&gt;
+         &lt;BaseStyles&gt;
+<span class="h">@@ -364,11 +320,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   })
+ 
+   it(&#x27;warns users if they try to use the hideLabels variant without a leadingIcon&#x27;, () =&gt; {
+<span class="d">-    const spy = jest.spyOn(global.console, &#x27;warn&#x27;).mockImplementation()</span>
+<span class="d">-</span>
+<span class="d">-    act(() =&gt; {</span>
+<span class="d">-      matchMedia.useMediaQuery(viewportRanges.narrow)</span>
+<span class="d">-    })</span>
+<span class="a">+    const spy = vi.spyOn(globalThis.console, &#x27;warn&#x27;).mockImplementation(() =&gt; {})</span>
+ 
+     render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;hideLabels&#x27;}}&gt;
+<span class="h">@@ -385,7 +337,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   })
+ 
+   it(&#x27;should warn the user if they neglect to specify a label for the segmented control&#x27;, () =&gt; {
+<span class="d">-    const spy = jest.spyOn(global.console, &#x27;warn&#x27;).mockImplementation()</span>
+<span class="a">+    const spy = vi.spyOn(globalThis.console, &#x27;warn&#x27;).mockImplementation(() =&gt; {})</span>
+ 
+     render(
+       &lt;SegmentedControl&gt;
+<span class="h">@@ -397,7 +349,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+       &lt;/SegmentedControl&gt;,
+     )
+ 
+<span class="d">-    expect(spy).toHaveBeenCalledTimes(1)</span>
+<span class="a">+    expect(spy).toHaveBeenCalled()</span>
+     spy.mockRestore()
+   })
+ 
+<span class="h">@@ -416,7 +368,3 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     expect(menuButton).toBeInTheDocument()
+   })
+ })
+<span class="d">-</span>
+<span class="d">-// TODO: uncomment these tests after we fix a11y for the Tooltip component</span>
+<span class="d">-// checkStoriesForAxeViolations(&#x27;examples&#x27;, &#x27;../SegmentedControl/&#x27;)</span>
+<span class="d">-// checkStoriesForAxeViolations(&#x27;SegmentedControlFeatures&#x27;, &#x27;../SegmentedControl/&#x27;)</span></pre><h2>Commit #4: <a href="https://github.com/primer/react/commit/210aaa6e8c68c6f671290ff4fbc77515182f1833">210aaa6e8c</a> (2025-07-28T13:15:46+00:00)</h2><p class="k">Clean up the feature flag for `primer_react_segmented_control_tooltip` (#6307)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index 7506c9fc1..9a7b2aac5 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -5,7 +5,6 @@ import {describe, expect, it, vi} from &#x27;vitest&#x27;</span>
+ import BaseStyles from &#x27;../BaseStyles&#x27;
+ import theme from &#x27;../theme&#x27;
+ import ThemeProvider from &#x27;../ThemeProvider&#x27;
+<span class="d">-import {FeatureFlags} from &#x27;../FeatureFlags&#x27;</span>
+ import {SegmentedControl} from &#x27;../SegmentedControl&#x27;
+ 
+ const segmentData = [
+<span class="h">@@ -144,19 +143,13 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip as label when feature flag is enabled&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip as label&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;FeatureFlags</span>
+<span class="d">-        flags={{</span>
+<span class="d">-          primer_react_segmented_control_tooltip: true,</span>
+<span class="d">-        }}</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d m">-          {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="d">-            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="d">-          ))}</span>
+<span class="d">-        &lt;/SegmentedControl&gt;</span>
+<span class="d">-      &lt;/FeatureFlags&gt;,</span>
+<span class="a">+      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a m">+        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="a">+          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+        ))}</span>
+<span class="a">+      &lt;/SegmentedControl&gt;,</span>
+     )
+ 
+     for (const datum of segmentData) {
+<span class="h">@@ -167,41 +160,20 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip description when feature flag is enabled&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip description&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;FeatureFlags</span>
+<span class="d">-        flags={{</span>
+<span class="d">-          primer_react_segmented_control_tooltip: true,</span>
+<span class="d">-        }}</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d">-          {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="d">-            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+<span class="d">-          ))}</span>
+<span class="d">-        &lt;/SegmentedControl&gt;</span>
+<span class="d">-      &lt;/FeatureFlags&gt;,</span>
+<span class="d">-    )</span>
+<span class="d">-</span>
+<span class="d">-    for (const datum of segmentData) {</span>
+<span class="d">-      const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})</span>
+<span class="d">-      const tooltipElement = getByText(datum.description)</span>
+<span class="d">-      expect(labelledButton).toHaveAttribute(&#x27;aria-describedby&#x27;, tooltipElement.id)</span>
+<span class="d">-      expect(labelledButton).toHaveAccessibleName(datum.label)</span>
+<span class="d">-      expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)</span>
+<span class="d">-    }</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  it(&#x27;renders icon button with aria-label and no tooltip&#x27;, () =&gt; {</span>
+<span class="d">-    const {getByRole} = render(</span>
+       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;
+<span class="d m">-        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+        {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="a">+          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+         ))}
+       &lt;/SegmentedControl&gt;,
+     )
+ 
+     for (const datum of segmentData) {
+       const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})
+<span class="a">+      const tooltipElement = getByText(datum.description)</span>
+<span class="a">+      expect(labelledButton).toHaveAttribute(&#x27;aria-describedby&#x27;, tooltipElement.id)</span>
+<span class="a">+      expect(labelledButton).toHaveAccessibleName(datum.label)</span>
+       expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)
+     }
+   })</pre><h2>Commit #5: <a href="https://github.com/primer/react/commit/602b29acecf2276e34c4caaf652d60ded8a09b56">602b29acec</a> (2025-07-29T04:44:38+00:00)</h2><p class="k">Revert &quot;Clean up the feature flag for `primer_react_segmented_control_tooltip`&quot; (#6412)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index 9a7b2aac5..7506c9fc1 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -5,6 +5,7 @@ import {describe, expect, it, vi} from &#x27;vitest&#x27;</span>
+ import BaseStyles from &#x27;../BaseStyles&#x27;
+ import theme from &#x27;../theme&#x27;
+ import ThemeProvider from &#x27;../ThemeProvider&#x27;
+<span class="a">+import {FeatureFlags} from &#x27;../FeatureFlags&#x27;</span>
+ import {SegmentedControl} from &#x27;../SegmentedControl&#x27;
+ 
+ const segmentData = [
+<span class="h">@@ -143,13 +144,19 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip as label&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip as label when feature flag is enabled&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d m">-        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="d">-        ))}</span>
+<span class="d">-      &lt;/SegmentedControl&gt;,</span>
+<span class="a">+      &lt;FeatureFlags</span>
+<span class="a">+        flags={{</span>
+<span class="a">+          primer_react_segmented_control_tooltip: true,</span>
+<span class="a">+        }}</span>
+<span class="a">+      &gt;</span>
+<span class="a">+        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a m">+          {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="a">+            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+          ))}</span>
+<span class="a">+        &lt;/SegmentedControl&gt;</span>
+<span class="a">+      &lt;/FeatureFlags&gt;,</span>
+     )
+ 
+     for (const datum of segmentData) {
+<span class="h">@@ -160,13 +167,19 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip description&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip description when feature flag is enabled&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d">-        {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+<span class="d">-        ))}</span>
+<span class="d">-      &lt;/SegmentedControl&gt;,</span>
+<span class="a">+      &lt;FeatureFlags</span>
+<span class="a">+        flags={{</span>
+<span class="a">+          primer_react_segmented_control_tooltip: true,</span>
+<span class="a">+        }}</span>
+<span class="a">+      &gt;</span>
+<span class="a">+        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a">+          {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="a">+            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+<span class="a">+          ))}</span>
+<span class="a">+        &lt;/SegmentedControl&gt;</span>
+<span class="a">+      &lt;/FeatureFlags&gt;,</span>
+     )
+ 
+     for (const datum of segmentData) {
+<span class="h">@@ -178,6 +191,21 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="a">+  it(&#x27;renders icon button with aria-label and no tooltip&#x27;, () =&gt; {</span>
+<span class="a">+    const {getByRole} = render(</span>
+<span class="a">+      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a m">+        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="a">+          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+        ))}</span>
+<span class="a">+      &lt;/SegmentedControl&gt;,</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    for (const datum of segmentData) {</span>
+<span class="a">+      const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})</span>
+<span class="a">+      expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)</span>
+<span class="a">+    }</span>
+<span class="a">+  })</span>
+<span class="a">+</span>
+   it(&#x27;calls onChange with index of clicked segment button&#x27;, async () =&gt; {
+     const user = userEvent.setup()
+     const handleChange = vi.fn()</pre><h2>Commit #6: <a href="https://github.com/primer/react/commit/f896b3768b6a153822323aae1491523fd60ff6d8">f896b3768b</a> (2025-10-10T21:33:53+00:00)</h2><p class="k">[a11y] When aria-disabled is set on SegmentedControl, don&#x27;t allow action (#6516)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index 7506c9fc1..9a7b2aac5 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -5,7 +5,6 @@ import {describe, expect, it, vi} from &#x27;vitest&#x27;</span>
+ import BaseStyles from &#x27;../BaseStyles&#x27;
+ import theme from &#x27;../theme&#x27;
+ import ThemeProvider from &#x27;../ThemeProvider&#x27;
+<span class="d">-import {FeatureFlags} from &#x27;../FeatureFlags&#x27;</span>
+ import {SegmentedControl} from &#x27;../SegmentedControl&#x27;
+ 
+ const segmentData = [
+<span class="h">@@ -144,19 +143,13 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip as label when feature flag is enabled&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip as label&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;FeatureFlags</span>
+<span class="d">-        flags={{</span>
+<span class="d">-          primer_react_segmented_control_tooltip: true,</span>
+<span class="d">-        }}</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d m">-          {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="d">-            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="d">-          ))}</span>
+<span class="d">-        &lt;/SegmentedControl&gt;</span>
+<span class="d">-      &lt;/FeatureFlags&gt;,</span>
+<span class="a">+      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a m">+        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="a">+          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+        ))}</span>
+<span class="a">+      &lt;/SegmentedControl&gt;,</span>
+     )
+ 
+     for (const datum of segmentData) {
+<span class="h">@@ -167,41 +160,20 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip description when feature flag is enabled&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip description&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;FeatureFlags</span>
+<span class="d">-        flags={{</span>
+<span class="d">-          primer_react_segmented_control_tooltip: true,</span>
+<span class="d">-        }}</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d">-          {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="d">-            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+<span class="d">-          ))}</span>
+<span class="d">-        &lt;/SegmentedControl&gt;</span>
+<span class="d">-      &lt;/FeatureFlags&gt;,</span>
+<span class="d">-    )</span>
+<span class="d">-</span>
+<span class="d">-    for (const datum of segmentData) {</span>
+<span class="d">-      const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})</span>
+<span class="d">-      const tooltipElement = getByText(datum.description)</span>
+<span class="d">-      expect(labelledButton).toHaveAttribute(&#x27;aria-describedby&#x27;, tooltipElement.id)</span>
+<span class="d">-      expect(labelledButton).toHaveAccessibleName(datum.label)</span>
+<span class="d">-      expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)</span>
+<span class="d">-    }</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  it(&#x27;renders icon button with aria-label and no tooltip&#x27;, () =&gt; {</span>
+<span class="d">-    const {getByRole} = render(</span>
+       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;
+<span class="d m">-        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+        {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="a">+          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+         ))}
+       &lt;/SegmentedControl&gt;,
+     )
+ 
+     for (const datum of segmentData) {
+       const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})
+<span class="a">+      const tooltipElement = getByText(datum.description)</span>
+<span class="a">+      expect(labelledButton).toHaveAttribute(&#x27;aria-describedby&#x27;, tooltipElement.id)</span>
+<span class="a">+      expect(labelledButton).toHaveAccessibleName(datum.label)</span>
+       expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)
+     }
+   })</pre><h2>Commit #7: <a href="https://github.com/primer/react/commit/930b4019744af0176755fe334f1d55d3e808f456">930b401974</a> (2025-10-12T23:39:40-04:00)</h2><p class="k">Revert &quot;[a11y] When aria-disabled is set on SegmentedControl, don&#x27;t allow action&quot; (#6986)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index 9a7b2aac5..7506c9fc1 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -5,6 +5,7 @@ import {describe, expect, it, vi} from &#x27;vitest&#x27;</span>
+ import BaseStyles from &#x27;../BaseStyles&#x27;
+ import theme from &#x27;../theme&#x27;
+ import ThemeProvider from &#x27;../ThemeProvider&#x27;
+<span class="a">+import {FeatureFlags} from &#x27;../FeatureFlags&#x27;</span>
+ import {SegmentedControl} from &#x27;../SegmentedControl&#x27;
+ 
+ const segmentData = [
+<span class="h">@@ -143,13 +144,19 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip as label&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip as label when feature flag is enabled&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d m">-        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="d">-        ))}</span>
+<span class="d">-      &lt;/SegmentedControl&gt;,</span>
+<span class="a">+      &lt;FeatureFlags</span>
+<span class="a">+        flags={{</span>
+<span class="a">+          primer_react_segmented_control_tooltip: true,</span>
+<span class="a">+        }}</span>
+<span class="a">+      &gt;</span>
+<span class="a">+        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a m">+          {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="a">+            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+          ))}</span>
+<span class="a">+        &lt;/SegmentedControl&gt;</span>
+<span class="a">+      &lt;/FeatureFlags&gt;,</span>
+     )
+ 
+     for (const datum of segmentData) {
+<span class="h">@@ -160,13 +167,19 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip description&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip description when feature flag is enabled&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d">-        {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+<span class="d">-        ))}</span>
+<span class="d">-      &lt;/SegmentedControl&gt;,</span>
+<span class="a">+      &lt;FeatureFlags</span>
+<span class="a">+        flags={{</span>
+<span class="a">+          primer_react_segmented_control_tooltip: true,</span>
+<span class="a">+        }}</span>
+<span class="a">+      &gt;</span>
+<span class="a">+        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a">+          {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="a">+            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+<span class="a">+          ))}</span>
+<span class="a">+        &lt;/SegmentedControl&gt;</span>
+<span class="a">+      &lt;/FeatureFlags&gt;,</span>
+     )
+ 
+     for (const datum of segmentData) {
+<span class="h">@@ -178,6 +191,21 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="a">+  it(&#x27;renders icon button with aria-label and no tooltip&#x27;, () =&gt; {</span>
+<span class="a">+    const {getByRole} = render(</span>
+<span class="a">+      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a m">+        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="a">+          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+        ))}</span>
+<span class="a">+      &lt;/SegmentedControl&gt;,</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    for (const datum of segmentData) {</span>
+<span class="a">+      const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})</span>
+<span class="a">+      expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)</span>
+<span class="a">+    }</span>
+<span class="a">+  })</span>
+<span class="a">+</span>
+   it(&#x27;calls onChange with index of clicked segment button&#x27;, async () =&gt; {
+     const user = userEvent.setup()
+     const handleChange = vi.fn()</pre><h2>Commit #8: <a href="https://github.com/primer/react/commit/9bad0bbb589e3b6a5a7e191563dfcde8ae38f73e">9bad0bbb58</a> (2025-10-17T16:43:47+00:00)</h2><p class="k">chore: remove ThemeProvider from stories (#7028)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index 7506c9fc1..22f173729 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -3,8 +3,6 @@ import {EyeIcon, FileCodeIcon, PeopleIcon} from &#x27;@primer/octicons-react&#x27;</span>
+ import userEvent from &#x27;@testing-library/user-event&#x27;
+ import {describe, expect, it, vi} from &#x27;vitest&#x27;
+ import BaseStyles from &#x27;../BaseStyles&#x27;
+<span class="d">-import theme from &#x27;../theme&#x27;</span>
+<span class="d">-import ThemeProvider from &#x27;../ThemeProvider&#x27;</span>
+ import {FeatureFlags} from &#x27;../FeatureFlags&#x27;
+ import {SegmentedControl} from &#x27;../SegmentedControl&#x27;
+ 
+<span class="h">@@ -272,17 +270,15 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   it(&#x27;calls onChange with index of clicked segment button when using the dropdown variant&#x27;, async () =&gt; {
+     const handleChange = vi.fn()
+     const component = render(
+<span class="d">-      &lt;ThemeProvider theme={theme}&gt;</span>
+<span class="d">-        &lt;BaseStyles&gt;</span>
+<span class="d">-          &lt;SegmentedControl aria-label=&quot;File view&quot; onChange={handleChange} variant={{narrow: &#x27;dropdown&#x27;}}&gt;</span>
+<span class="d">-            {segmentData.map(({label}, index) =&gt; (</span>
+<span class="d">-              &lt;SegmentedControl.Button selected={index === 0} key={label}&gt;</span>
+<span class="d">-                {label}</span>
+<span class="d">-              &lt;/SegmentedControl.Button&gt;</span>
+<span class="d">-            ))}</span>
+<span class="d">-          &lt;/SegmentedControl&gt;</span>
+<span class="d">-        &lt;/BaseStyles&gt;</span>
+<span class="d">-      &lt;/ThemeProvider&gt;,</span>
+<span class="a">+      &lt;BaseStyles&gt;</span>
+<span class="a">+        &lt;SegmentedControl aria-label=&quot;File view&quot; onChange={handleChange} variant={{narrow: &#x27;dropdown&#x27;}}&gt;</span>
+<span class="a">+          {segmentData.map(({label}, index) =&gt; (</span>
+<span class="a">+            &lt;SegmentedControl.Button selected={index === 0} key={label}&gt;</span>
+<span class="a">+              {label}</span>
+<span class="a">+            &lt;/SegmentedControl.Button&gt;</span>
+<span class="a">+          ))}</span>
+<span class="a">+        &lt;/SegmentedControl&gt;</span>
+<span class="a">+      &lt;/BaseStyles&gt;,</span>
+     )
+     const button = component.getByText(segmentData[0].label)
+ 
+<span class="h">@@ -297,17 +293,15 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   it(&#x27;calls segment button onClick if it is passed when using the dropdown variant&#x27;, async () =&gt; {
+     const handleClick = vi.fn()
+     const component = render(
+<span class="d">-      &lt;ThemeProvider theme={theme}&gt;</span>
+<span class="d">-        &lt;BaseStyles&gt;</span>
+<span class="d">-          &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;dropdown&#x27;}}&gt;</span>
+<span class="d">-            {segmentData.map(({label}, index) =&gt; (</span>
+<span class="d">-              &lt;SegmentedControl.Button selected={index === 0} key={label} onClick={handleClick}&gt;</span>
+<span class="d">-                {label}</span>
+<span class="d">-              &lt;/SegmentedControl.Button&gt;</span>
+<span class="d">-            ))}</span>
+<span class="d">-          &lt;/SegmentedControl&gt;</span>
+<span class="d">-        &lt;/BaseStyles&gt;</span>
+<span class="d">-      &lt;/ThemeProvider&gt;,</span>
+<span class="a">+      &lt;BaseStyles&gt;</span>
+<span class="a">+        &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;dropdown&#x27;}}&gt;</span>
+<span class="a">+          {segmentData.map(({label}, index) =&gt; (</span>
+<span class="a">+            &lt;SegmentedControl.Button selected={index === 0} key={label} onClick={handleClick}&gt;</span>
+<span class="a">+              {label}</span>
+<span class="a">+            &lt;/SegmentedControl.Button&gt;</span>
+<span class="a">+          ))}</span>
+<span class="a">+        &lt;/SegmentedControl&gt;</span>
+<span class="a">+      &lt;/BaseStyles&gt;,</span>
+     )
+     const button = component.getByText(segmentData[0].label)
+ </pre><h2>Commit #9: <a href="https://github.com/primer/react/commit/4c4c4cd4bfd7d75066df199f47a23deb86a588f2">4c4c4cd4bf</a> (2025-10-23T21:59:37+00:00)</h2><p class="k">Deprecate `leadingIcon`, add `leadingVisual` for SegmentedControl.Button (#7033)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index 22f173729..0c1fd59a9 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -83,7 +83,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     const {getByLabelText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;hideLabels&#x27;}}&gt;
+         {segmentData.map(({label, icon}, index) =&gt; (
+<span class="d">-          &lt;SegmentedControl.Button leadingIcon={icon} selected={index === 1} key={label}&gt;</span>
+<span class="a">+          &lt;SegmentedControl.Button leadingVisual={icon} selected={index === 1} key={label}&gt;</span>
+             {label}
+           &lt;/SegmentedControl.Button&gt;
+         ))}
+<span class="h">@@ -114,7 +114,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     const {getByLabelText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;
+         {segmentData.map(({label, icon}, index) =&gt; (
+<span class="d">-          &lt;SegmentedControl.Button selected={index === 0} leadingIcon={icon} key={label}&gt;</span>
+<span class="a">+          &lt;SegmentedControl.Button selected={index === 0} leadingVisual={icon} key={label}&gt;</span>
+             {label}
+           &lt;/SegmentedControl.Button&gt;
+         ))}
+<span class="h">@@ -313,7 +313,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     expect(handleClick).toHaveBeenCalled()
+   })
+ 
+<span class="d">-  it(&#x27;warns users if they try to use the hideLabels variant without a leadingIcon&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;warns users if they try to use the hideLabels variant without a leadingVisual&#x27;, () =&gt; {</span>
+     const spy = vi.spyOn(globalThis.console, &#x27;warn&#x27;).mockImplementation(() =&gt; {})
+ 
+     render(
+<span class="h">@@ -330,6 +330,36 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     spy.mockRestore()
+   })
+ 
+<span class="a">+  it(&#x27;supports deprecated leadingIcon prop for backward compatibility&#x27;, () =&gt; {</span>
+<span class="a">+    const {getByText} = render(</span>
+<span class="a">+      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a">+        &lt;SegmentedControl.Button leadingIcon={EyeIcon}&gt;Preview&lt;/SegmentedControl.Button&gt;</span>
+<span class="a">+        &lt;SegmentedControl.Button&gt;Code&lt;/SegmentedControl.Button&gt;</span>
+<span class="a">+      &lt;/SegmentedControl&gt;,</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    const button = getByText(&#x27;Preview&#x27;).closest(&#x27;button&#x27;)</span>
+<span class="a">+    expect(button).toBeDefined()</span>
+<span class="a">+    // Verify the icon is rendered</span>
+<span class="a">+    expect(button?.querySelector(&#x27;svg&#x27;)).toBeDefined()</span>
+<span class="a">+  })</span>
+<span class="a">+</span>
+<span class="a">+  it(&#x27;prioritizes leadingVisual over deprecated leadingIcon when both are provided&#x27;, () =&gt; {</span>
+<span class="a">+    const {getByRole} = render(</span>
+<span class="a">+      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a">+        &lt;SegmentedControl.Button</span>
+<span class="a">+          leadingVisual={() =&gt; &lt;EyeIcon aria-label=&quot;EyeIcon&quot; /&gt;}</span>
+<span class="a">+          leadingIcon={() =&gt; &lt;FileCodeIcon aria-label=&quot;FileCodeIcon&quot; /&gt;}</span>
+<span class="a">+        &gt;</span>
+<span class="a">+          Preview</span>
+<span class="a">+        &lt;/SegmentedControl.Button&gt;</span>
+<span class="a">+      &lt;/SegmentedControl&gt;,</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    // Should find EyeIcon, not FileCodeIcon</span>
+<span class="a">+    expect(getByRole(&#x27;img&#x27;, {name: &#x27;EyeIcon&#x27;})).toBeInTheDocument()</span>
+<span class="a">+  })</span>
+<span class="a">+</span>
+   it(&#x27;should warn the user if they neglect to specify a label for the segmented control&#x27;, () =&gt; {
+     const spy = vi.spyOn(globalThis.console, &#x27;warn&#x27;).mockImplementation(() =&gt; {})
+ </pre><h2>Commit #10: <a href="https://github.com/primer/react/commit/585c5fa4864e8bb616495622da49beec009dfbe6">585c5fa486</a> (2025-11-20T18:03:09+00:00)</h2><p class="k">Remove use of useResponsiveValue hook - SegmentedControl (#7134)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index 0c1fd59a9..284cc9a19 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -64,7 +64,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+   })
+ 
+   it(&#x27;renders the dropdown variant&#x27;, () =&gt; {
+<span class="d">-    const {getByText} = render(</span>
+<span class="a">+    const {getByRole} = render(</span>
+       &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;dropdown&#x27;}}&gt;
+         {segmentData.map(({label}, index) =&gt; (
+           &lt;SegmentedControl.Button selected={index === 1} key={label}&gt;
+<span class="h">@@ -73,14 +73,14 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+         ))}
+       &lt;/SegmentedControl&gt;,
+     )
+<span class="d">-    const button = getByText(segmentData[1].label)</span>
+<span class="a">+    const button = getByRole(&#x27;button&#x27;, {name: `${segmentData[1].label}, File view`})</span>
+ 
+     expect(button).toBeInTheDocument()
+     expect(button.closest(&#x27;button&#x27;)?.getAttribute(&#x27;aria-haspopup&#x27;)).toBe(&#x27;true&#x27;)
+   })
+ 
+   it(&#x27;renders the hideLabels variant&#x27;, () =&gt; {
+<span class="d">-    const {getByLabelText} = render(</span>
+<span class="a">+    const {getByRole} = render(</span>
+       &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;hideLabels&#x27;}}&gt;
+         {segmentData.map(({label, icon}, index) =&gt; (
+           &lt;SegmentedControl.Button leadingVisual={icon} selected={index === 1} key={label}&gt;
+<span class="h">@@ -91,8 +91,8 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     )
+ 
+     for (const datum of segmentData) {
+<span class="d">-      const labelledButton = getByLabelText(datum.label)</span>
+<span class="d">-      expect(labelledButton).toBeDefined()</span>
+<span class="a">+      const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.iconLabel})</span>
+<span class="a">+      expect(labelledButton).toBeInTheDocument()</span>
+     }
+   })
+ 
+<span class="h">@@ -280,7 +280,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+         &lt;/SegmentedControl&gt;
+       &lt;/BaseStyles&gt;,
+     )
+<span class="d">-    const button = component.getByText(segmentData[0].label)</span>
+<span class="a">+    const button = component.getByRole(&#x27;button&#x27;, {name: `${segmentData[0].label}, File view`})</span>
+ 
+     fireEvent.click(button)
+     expect(handleChange).not.toHaveBeenCalled()
+<span class="h">@@ -303,7 +303,7 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+         &lt;/SegmentedControl&gt;
+       &lt;/BaseStyles&gt;,
+     )
+<span class="d">-    const button = component.getByText(segmentData[0].label)</span>
+<span class="a">+    const button = component.getByRole(&#x27;button&#x27;, {name: `${segmentData[0].label}, File view`})</span>
+ 
+     fireEvent.click(button)
+     expect(handleClick).not.toHaveBeenCalled()
+<span class="h">@@ -313,23 +313,6 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     expect(handleClick).toHaveBeenCalled()
+   })
+ 
+<span class="d">-  it(&#x27;warns users if they try to use the hideLabels variant without a leadingVisual&#x27;, () =&gt; {</span>
+<span class="d">-    const spy = vi.spyOn(globalThis.console, &#x27;warn&#x27;).mockImplementation(() =&gt; {})</span>
+<span class="d">-</span>
+<span class="d">-    render(</span>
+<span class="d">-      &lt;SegmentedControl aria-label=&quot;File view&quot; variant={{narrow: &#x27;hideLabels&#x27;}}&gt;</span>
+<span class="d">-        {segmentData.map(({label}, index) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.Button selected={index === 1} key={label}&gt;</span>
+<span class="d">-            {label}</span>
+<span class="d">-          &lt;/SegmentedControl.Button&gt;</span>
+<span class="d">-        ))}</span>
+<span class="d">-      &lt;/SegmentedControl&gt;,</span>
+<span class="d">-    )</span>
+<span class="d">-</span>
+<span class="d">-    expect(spy).toHaveBeenCalledTimes(3)</span>
+<span class="d">-    spy.mockRestore()</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+   it(&#x27;supports deprecated leadingIcon prop for backward compatibility&#x27;, () =&gt; {
+     const {getByText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</pre><h2>Commit #11: <a href="https://github.com/primer/react/commit/c07dd71e990323a1c73ec99c44752df43d153090">c07dd71e99</a> (2025-12-01T16:08:56+00:00)</h2><p class="k">[a11y] When aria-disabled is set on SegmentedControl, don&#x27;t allow action (#7047)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index 284cc9a19..fd7aa2e19 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -3,7 +3,6 @@ import {EyeIcon, FileCodeIcon, PeopleIcon} from &#x27;@primer/octicons-react&#x27;</span>
+ import userEvent from &#x27;@testing-library/user-event&#x27;
+ import {describe, expect, it, vi} from &#x27;vitest&#x27;
+ import BaseStyles from &#x27;../BaseStyles&#x27;
+<span class="d">-import {FeatureFlags} from &#x27;../FeatureFlags&#x27;</span>
+ import {SegmentedControl} from &#x27;../SegmentedControl&#x27;
+ 
+ const segmentData = [
+<span class="h">@@ -142,19 +141,13 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip as label when feature flag is enabled&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip as label&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;FeatureFlags</span>
+<span class="d">-        flags={{</span>
+<span class="d">-          primer_react_segmented_control_tooltip: true,</span>
+<span class="d">-        }}</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d m">-          {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="d">-            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="d">-          ))}</span>
+<span class="d">-        &lt;/SegmentedControl&gt;</span>
+<span class="d">-      &lt;/FeatureFlags&gt;,</span>
+<span class="a">+      &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="a m">+        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="a">+          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+        ))}</span>
+<span class="a">+      &lt;/SegmentedControl&gt;,</span>
+     )
+ 
+     for (const datum of segmentData) {
+<span class="h">@@ -165,41 +158,20 @@ describe(&#x27;SegmentedControl&#x27;, () =&gt; {</span>
+     }
+   })
+ 
+<span class="d">-  it(&#x27;renders icon button with tooltip description when feature flag is enabled&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;renders icon button with tooltip description&#x27;, () =&gt; {</span>
+     const {getByRole, getByText} = render(
+<span class="d">-      &lt;FeatureFlags</span>
+<span class="d">-        flags={{</span>
+<span class="d">-          primer_react_segmented_control_tooltip: true,</span>
+<span class="d">-        }}</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</span>
+<span class="d">-          {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="d">-            &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+<span class="d">-          ))}</span>
+<span class="d">-        &lt;/SegmentedControl&gt;</span>
+<span class="d">-      &lt;/FeatureFlags&gt;,</span>
+<span class="d">-    )</span>
+<span class="d">-</span>
+<span class="d">-    for (const datum of segmentData) {</span>
+<span class="d">-      const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})</span>
+<span class="d">-      const tooltipElement = getByText(datum.description)</span>
+<span class="d">-      expect(labelledButton).toHaveAttribute(&#x27;aria-describedby&#x27;, tooltipElement.id)</span>
+<span class="d">-      expect(labelledButton).toHaveAccessibleName(datum.label)</span>
+<span class="d">-      expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)</span>
+<span class="d">-    }</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  it(&#x27;renders icon button with aria-label and no tooltip&#x27;, () =&gt; {</span>
+<span class="d">-    const {getByRole} = render(</span>
+       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;
+<span class="d m">-        {segmentData.map(({label, icon}) =&gt; (</span>
+<span class="d">-          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} key={label} /&gt;</span>
+<span class="a">+        {segmentData.map(({label, icon, description}) =&gt; (</span>
+<span class="a">+          &lt;SegmentedControl.IconButton icon={icon} aria-label={label} description={description} key={label} /&gt;</span>
+         ))}
+       &lt;/SegmentedControl&gt;,
+     )
+ 
+     for (const datum of segmentData) {
+       const labelledButton = getByRole(&#x27;button&#x27;, {name: datum.label})
+<span class="a">+      const tooltipElement = getByText(datum.description)</span>
+<span class="a">+      expect(labelledButton).toHaveAttribute(&#x27;aria-describedby&#x27;, tooltipElement.id)</span>
+<span class="a">+      expect(labelledButton).toHaveAccessibleName(datum.label)</span>
+       expect(labelledButton).toHaveAttribute(&#x27;aria-label&#x27;, datum.label)
+     }
+   })</pre><h2>Commit #12: <a href="https://github.com/primer/react/commit/e732a02175978436dc3c6fc39faccb75a0ed9804">e732a02175</a> (2025-12-18T04:05:52+00:00)</h2><p class="k">chore: add className testing util (#7231)<br>Path after this commit: packages/react/src/SegmentedControl/SegmentedControl.test.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx
+index fd7aa2e19..6a637d1ba 100644
+<span class="d">--- a/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="a">+++ b/packages/react/src/SegmentedControl/SegmentedControl.test.tsx</span>
+<span class="h">@@ -4,6 +4,8 @@ import userEvent from &#x27;@testing-library/user-event&#x27;</span>
+ import {describe, expect, it, vi} from &#x27;vitest&#x27;
+ import BaseStyles from &#x27;../BaseStyles&#x27;
+ import {SegmentedControl} from &#x27;../SegmentedControl&#x27;
+<span class="a">+import {implementsClassName} from &#x27;../utils/testing&#x27;</span>
+<span class="a">+import classes from &#x27;./SegmentedControl.module.css&#x27;</span>
+ 
+ const segmentData = [
+   {
+<span class="h">@@ -30,6 +32,8 @@ const segmentData = [</span>
+ ]
+ 
+ describe(&#x27;SegmentedControl&#x27;, () =&gt; {
+<span class="a">+  implementsClassName(SegmentedControl, classes.SegmentedControl)</span>
+<span class="a">+</span>
+   it(&#x27;renders with a selected segment - controlled&#x27;, () =&gt; {
+     const {getByText} = render(
+       &lt;SegmentedControl aria-label=&quot;File view&quot;&gt;</pre></body></html>

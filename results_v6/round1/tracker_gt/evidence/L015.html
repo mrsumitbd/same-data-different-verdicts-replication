@@ -1,0 +1,240 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L015</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L015</h1><p><b>Repository:</b> <a href="https://github.com/rsyslog/rsyslog">rsyslog/rsyslog</a><br><b>File at merge:</b> plugins/mmaitag/ai_provider_gemini_mock.c, line 75<br><b>Merge commit (birth):</b> <a href="https://github.com/rsyslog/rsyslog/commit/fb51433919e2b73cabe0cde03dd8ca60409d0721">fb51433919</a> (2025-07-15T15:33:07)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/rsyslog/rsyslog/tree/43bb3c6c22169eb82210187303b9c2290e268d8b">43bb3c6c22</a>)</p><p><b>The line:</b></p><pre><span class="t"> * static counter to return subsequent tags from the list on</span></pre><h2>File at the merge commit, lines 67 to 83</h2><pre>   67 | /**
+   68 |  * @brief Mock implementation of the ai_provider_classify_t function.
+   69 |  *
+   70 |  * @note This function simulates an API call by parsing a comma-separated
+   71 |  * string from the `GEMINI_MOCK_RESPONSE` environment variable
+   72 |  * (e.g., &quot;NOISE,CRITICAL,REGULAR&quot;).
+   73 |  *
+   74 |  * @note It is stateful across calls within a single test run. It uses a
+<span class="t">   75 |  * static counter to return subsequent tags from the list on</span>
+   76 |  * subsequent calls, allowing for testing of sequential message
+   77 |  * processing.
+   78 |  *
+   79 |  * @note If the environment variable is not set or runs out of tags, it
+   80 |  * returns &quot;REGULAR&quot; as a default fallback value.
+   81 |  */
+   82 | static rsRetVal
+   83 | gemini_classify_batch(ai_provider_t *prov, const char **messages, size_t n,</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/rsyslog/rsyslog/commit/4eb2674269f0f3822649d3f8bc864210da0ab702">4eb2674269</a> (2025-07-16T15:19:31+02:00)</h2><p class="k">Merge pull request #5791 from rgerhards/big_beautyful_format_change<br>Path after this commit: plugins/mmaitag/ai_provider_gemini_mock.c. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/plugins/mmaitag/ai_provider_gemini_mock.c b/plugins/mmaitag/ai_provider_gemini_mock.c
+index 62cbc7b3f..f1fb5a1f5 100644
+<span class="d">--- a/plugins/mmaitag/ai_provider_gemini_mock.c</span>
+<span class="a">+++ b/plugins/mmaitag/ai_provider_gemini_mock.c</span>
+<span class="h">@@ -21,47 +21,38 @@</span>
+  * exercised during tests.
+  */
+ typedef struct gemini_data_s {
+<span class="d">-	char *model;</span>
+<span class="d">-	char *apikey;</span>
+<span class="d">-	char *prompt;</span>
+<span class="a">+    char *model;</span>
+<span class="a">+    char *apikey;</span>
+<span class="a">+    char *prompt;</span>
+ } gemini_data_t;
+ 
+ /**
+  * @brief Implements the standard cleanup function for the mock provider.
+  */
+<span class="d">-static void</span>
+<span class="d">-gemini_cleanup(ai_provider_t *prov)</span>
+<span class="d">-{</span>
+<span class="d">-	gemini_data_t *data = (gemini_data_t*)prov-&gt;data;</span>
+<span class="d">-	if(data == NULL)</span>
+<span class="d">-		return;</span>
+<span class="d">-	free(data-&gt;model);</span>
+<span class="d">-	free(data-&gt;apikey);</span>
+<span class="d">-	free(data-&gt;prompt);</span>
+<span class="d">-	free(data);</span>
+<span class="d">-	prov-&gt;data = NULL;</span>
+<span class="a">+static void gemini_cleanup(ai_provider_t *prov) {</span>
+<span class="a">+    gemini_data_t *data = (gemini_data_t *)prov-&gt;data;</span>
+<span class="a">+    if (data == NULL) return;</span>
+<span class="a">+    free(data-&gt;model);</span>
+<span class="a">+    free(data-&gt;apikey);</span>
+<span class="a">+    free(data-&gt;prompt);</span>
+<span class="a">+    free(data);</span>
+<span class="a">+    prov-&gt;data = NULL;</span>
+ }
+ 
+ /**
+  * @brief Implements the standard init function for the mock provider.
+  */
+<span class="d">-static rsRetVal</span>
+<span class="d">-gemini_init(ai_provider_t *prov, const char *model, const char *apikey,</span>
+<span class="d">-	const char *prompt)</span>
+<span class="d">-{</span>
+<span class="d">-	gemini_data_t *data;</span>
+<span class="d">-	DEFiRet;</span>
+<span class="d">-	CHKmalloc(data = calloc(1, sizeof(*data)));</span>
+<span class="d">-	if(model)</span>
+<span class="d">-		data-&gt;model = strdup(model);</span>
+<span class="d">-	if(apikey)</span>
+<span class="d">-		data-&gt;apikey = strdup(apikey);</span>
+<span class="d">-	if(prompt)</span>
+<span class="d">-		data-&gt;prompt = strdup(prompt);</span>
+<span class="d">-	prov-&gt;data = data;</span>
+<span class="d">-	prov-&gt;cleanup = gemini_cleanup;</span>
+<span class="a">+static rsRetVal gemini_init(ai_provider_t *prov, const char *model, const char *apikey, const char *prompt) {</span>
+<span class="a">+    gemini_data_t *data;</span>
+<span class="a">+    DEFiRet;</span>
+<span class="a">+    CHKmalloc(data = calloc(1, sizeof(*data)));</span>
+<span class="a">+    if (model) data-&gt;model = strdup(model);</span>
+<span class="a">+    if (apikey) data-&gt;apikey = strdup(apikey);</span>
+<span class="a">+    if (prompt) data-&gt;prompt = strdup(prompt);</span>
+<span class="a">+    prov-&gt;data = data;</span>
+<span class="a">+    prov-&gt;cleanup = gemini_cleanup;</span>
+ finalize_it:
+<span class="d">-	RETiRet;</span>
+<span class="a">+    RETiRet;</span>
+ }
+ 
+ /**
+<span class="h">@@ -79,51 +70,48 @@ finalize_it:</span>
+  * @note If the environment variable is not set or runs out of tags, it
+  * returns &quot;REGULAR&quot; as a default fallback value.
+  */
+<span class="d">-static rsRetVal</span>
+<span class="d">-gemini_classify_batch(ai_provider_t *prov, const char **messages, size_t n,</span>
+<span class="d">-char ***tags)</span>
+<span class="d">-{</span>
+<span class="d">-	static size_t next = 0;</span>
+<span class="d">-	const char *mock = getenv(&quot;GEMINI_MOCK_RESPONSE&quot;);</span>
+<span class="d">-	(void)prov;</span>
+<span class="d">-	(void)messages;</span>
+<span class="d">-	char *tmp;</span>
+<span class="d">-	char *tok;</span>
+<span class="d">-	char *saveptr = NULL;</span>
+<span class="d">-	char **out;</span>
+<span class="d">-	size_t idx = 0;</span>
+<span class="d">-	DEFiRet;</span>
+<span class="a">+static rsRetVal gemini_classify_batch(ai_provider_t *prov, const char **messages, size_t n, char ***tags) {</span>
+<span class="a">+    static size_t next = 0;</span>
+<span class="a">+    const char *mock = getenv(&quot;GEMINI_MOCK_RESPONSE&quot;);</span>
+<span class="a">+    (void)prov;</span>
+<span class="a">+    (void)messages;</span>
+<span class="a">+    char *tmp;</span>
+<span class="a">+    char *tok;</span>
+<span class="a">+    char *saveptr = NULL;</span>
+<span class="a">+    char **out;</span>
+<span class="a">+    size_t idx = 0;</span>
+<span class="a">+    DEFiRet;</span>
+ 
+<span class="d">-	if(mock == NULL) {</span>
+<span class="d">-		LogError(0, RS_RET_ERR, &quot;mmaitag: mock provider requires &quot;</span>
+<span class="d">-		&quot;GEMINI_MOCK_RESPONSE environment variable to be set.&quot;);</span>
+<span class="d">-		ABORT_FINALIZE(RS_RET_ERR);</span>
+<span class="d">-	}</span>
+<span class="a">+    if (mock == NULL) {</span>
+<span class="a">+        LogError(0, RS_RET_ERR,</span>
+<span class="a">+                 &quot;mmaitag: mock provider requires &quot;</span>
+<span class="a">+                 &quot;GEMINI_MOCK_RESPONSE environment variable to be set.&quot;);</span>
+<span class="a">+        ABORT_FINALIZE(RS_RET_ERR);</span>
+<span class="a">+    }</span>
+ 
+<span class="d">-	CHKmalloc(tmp = strdup(mock));</span>
+<span class="a">+    CHKmalloc(tmp = strdup(mock));</span>
+ 
+<span class="d">-	// Advance to the correct starting position in the token list</span>
+<span class="d">-	tok = strtok_r(tmp, &quot;,&quot;, &amp;saveptr);</span>
+<span class="d">-	for(size_t i = 0; i &lt; next &amp;&amp; tok != NULL; ++i)</span>
+<span class="d">-		tok = strtok_r(NULL, &quot;,&quot;, &amp;saveptr);</span>
+<span class="a">+    // Advance to the correct starting position in the token list</span>
+<span class="a">+    tok = strtok_r(tmp, &quot;,&quot;, &amp;saveptr);</span>
+<span class="a">+    for (size_t i = 0; i &lt; next &amp;&amp; tok != NULL; ++i) tok = strtok_r(NULL, &quot;,&quot;, &amp;saveptr);</span>
+ 
+<span class="d">-	CHKmalloc(out = calloc(n, sizeof(char*)));</span>
+<span class="d">-	for(idx = 0 ; idx &lt; n ; ++idx) {</span>
+<span class="d">-		if(tok != NULL) {</span>
+<span class="d">-			out[idx] = strdup(tok);</span>
+<span class="d">-			tok = strtok_r(NULL, &quot;,&quot;, &amp;saveptr);</span>
+<span class="d">-		} else {</span>
+<span class="d">-			// Fallback if we run out of mock tags</span>
+<span class="d">-			out[idx] = strdup(&quot;REGULAR&quot;);</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-	next += n; // Update state for the next call</span>
+<span class="a">+    CHKmalloc(out = calloc(n, sizeof(char *)));</span>
+<span class="a">+    for (idx = 0; idx &lt; n; ++idx) {</span>
+<span class="a">+        if (tok != NULL) {</span>
+<span class="a">+            out[idx] = strdup(tok);</span>
+<span class="a">+            tok = strtok_r(NULL, &quot;,&quot;, &amp;saveptr);</span>
+<span class="a">+        } else {</span>
+<span class="a">+            // Fallback if we run out of mock tags</span>
+<span class="a">+            out[idx] = strdup(&quot;REGULAR&quot;);</span>
+<span class="a">+        }</span>
+<span class="a">+    }</span>
+<span class="a">+    next += n;  // Update state for the next call</span>
+ 
+<span class="d">-	free(tmp);</span>
+<span class="d">-	*tags = out;</span>
+<span class="a">+    free(tmp);</span>
+<span class="a">+    *tags = out;</span>
+ 
+ finalize_it:
+<span class="d">-	RETiRet;</span>
+<span class="a">+    RETiRet;</span>
+ }
+ 
+ /**
+<span class="h">@@ -133,8 +121,4 @@ finalize_it:</span>
+  * for use in testing environments.
+  */
+ ai_provider_t gemini_mock_provider = {
+<span class="d">-	.data = NULL,</span>
+<span class="d">-	.init = gemini_init,</span>
+<span class="d">-	.classify = gemini_classify_batch,</span>
+<span class="d">-	.cleanup = gemini_cleanup</span>
+<span class="d">-};</span>
+<span class="a">+    .data = NULL, .init = gemini_init, .classify = gemini_classify_batch, .cleanup = gemini_cleanup};</span></pre><h2>Commit #2: <a href="https://github.com/rsyslog/rsyslog/commit/3e64f45bb86856a21d42a2ff78d2f75675eb3c85">3e64f45bb8</a> (2025-08-22T12:45:55+02:00)</h2><p class="k">Merge pull request #6002 from rgerhards/statan2<br>Path after this commit: plugins/mmaitag/ai_provider_gemini_mock.c. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/plugins/mmaitag/ai_provider_gemini_mock.c b/plugins/mmaitag/ai_provider_gemini_mock.c
+index f1fb5a1f5..fe5bdeee3 100644
+<span class="d">--- a/plugins/mmaitag/ai_provider_gemini_mock.c</span>
+<span class="a">+++ b/plugins/mmaitag/ai_provider_gemini_mock.c</span>
+<span class="h">@@ -75,10 +75,10 @@ static rsRetVal gemini_classify_batch(ai_provider_t *prov, const char **messages</span>
+     const char *mock = getenv(&quot;GEMINI_MOCK_RESPONSE&quot;);
+     (void)prov;
+     (void)messages;
+<span class="d">-    char *tmp;</span>
+<span class="d">-    char *tok;</span>
+<span class="a">+    char *tmp = NULL;</span>
+<span class="a">+    char *tok = NULL;</span>
+     char *saveptr = NULL;
+<span class="d">-    char **out;</span>
+<span class="a">+    char **out = NULL;</span>
+     size_t idx = 0;
+     DEFiRet;
+ 
+<span class="h">@@ -96,21 +96,29 @@ static rsRetVal gemini_classify_batch(ai_provider_t *prov, const char **messages</span>
+     for (size_t i = 0; i &lt; next &amp;&amp; tok != NULL; ++i) tok = strtok_r(NULL, &quot;,&quot;, &amp;saveptr);
+ 
+     CHKmalloc(out = calloc(n, sizeof(char *)));
+<span class="a">+</span>
+     for (idx = 0; idx &lt; n; ++idx) {
+         if (tok != NULL) {
+<span class="d">-            out[idx] = strdup(tok);</span>
+<span class="a">+            CHKmalloc(out[idx] = strdup(tok));</span>
+             tok = strtok_r(NULL, &quot;,&quot;, &amp;saveptr);
+         } else {
+             // Fallback if we run out of mock tags
+<span class="d">-            out[idx] = strdup(&quot;REGULAR&quot;);</span>
+<span class="a">+            CHKmalloc(out[idx] = strdup(&quot;REGULAR&quot;));</span>
+         }
+     }
+     next += n;  // Update state for the next call
+ 
+<span class="d">-    free(tmp);</span>
+     *tags = out;
+<span class="a">+    out = NULL;</span>
+ 
+ finalize_it:
+<span class="a">+    if (out != NULL) {</span>
+<span class="a">+        for (idx = 0; idx &lt; n; ++idx) {</span>
+<span class="a">+            free(out[idx]);</span>
+<span class="a">+        }</span>
+<span class="a">+        free(out);</span>
+<span class="a">+    }</span>
+<span class="a">+    free(tmp);</span>
+     RETiRet;
+ }
+ </pre></body></html>

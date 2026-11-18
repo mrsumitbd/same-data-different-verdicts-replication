@@ -1,0 +1,1552 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L204 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L204: after the move</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-python">azure/azure-sdk-for-python</a><br><b>Original file:</b> sdk/containerservice/azure-mgmt-containerservicefleet/azure/mgmt/containerservicefleet/aio/operations/_auto_upgrade_profile_operations_operations.py (see L204.html)<br><b>Move commit:</b> <a href="https://github.com/azure/azure-sdk-for-python/commit/0faccc1a30eb541fa4558197113e52b545f161db">0faccc1a30</a> (commit #1 on L204.html)<br><b>Destination file (your label):</b> sdk/containerservice/azure-mgmt-containerservicefleet/azure/mgmt/containerservicefleet/aio/operations/_operations.py<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-python/tree/c0328981505b7d6c7b6923441ff072c8373e4d03">c032898150</a>)</p><p><b>The line:</b></p><pre><span class="t">        :class:`~azure.mgmt.containerservicefleet.aio.ContainerServiceFleetMgmtClient`&#x27;s</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 8 (lines 88, 192, 1254, 2222, 2744, 4270, 5030, 5745).</p><h2>Destination file at the move commit, lines 80 to 96</h2><pre>   80 | 
+   81 | 
+   82 | class Operations:
+   83 |     &quot;&quot;&quot;
+   84 |     .. warning::
+   85 |         **DO NOT** instantiate this class directly.
+   86 | 
+   87 |         Instead, you should access the following operations through
+<span class="t">   88 |         :class:`~azure.mgmt.containerservicefleet.aio.ContainerServiceFleetMgmtClient`&#x27;s</span>
+   89 |         :attr:`operations` attribute.
+   90 |     &quot;&quot;&quot;
+   91 | 
+   92 |     def __init__(self, *args, **kwargs) -&gt; None:
+   93 |         input_args = list(args)
+   94 |         self._client: AsyncPipelineClient = input_args.pop(0) if input_args else kwargs.pop(&quot;client&quot;)
+   95 |         self._config: ContainerServiceFleetMgmtClientConfiguration = (
+   96 |             input_args.pop(0) if input_args else kwargs.pop(&quot;config&quot;)</pre><h2>Destination file at the move commit, lines 184 to 200</h2><pre>  184 | 
+  185 | 
+  186 | class FleetsOperations:
+  187 |     &quot;&quot;&quot;
+  188 |     .. warning::
+  189 |         **DO NOT** instantiate this class directly.
+  190 | 
+  191 |         Instead, you should access the following operations through
+<span class="t">  192 |         :class:`~azure.mgmt.containerservicefleet.aio.ContainerServiceFleetMgmtClient`&#x27;s</span>
+  193 |         :attr:`fleets` attribute.
+  194 |     &quot;&quot;&quot;
+  195 | 
+  196 |     def __init__(self, *args, **kwargs) -&gt; None:
+  197 |         input_args = list(args)
+  198 |         self._client: AsyncPipelineClient = input_args.pop(0) if input_args else kwargs.pop(&quot;client&quot;)
+  199 |         self._config: ContainerServiceFleetMgmtClientConfiguration = (
+  200 |             input_args.pop(0) if input_args else kwargs.pop(&quot;config&quot;)</pre><h2>Destination file at the move commit, lines 1246 to 1262</h2><pre> 1246 | 
+ 1247 | 
+ 1248 | class FleetMembersOperations:
+ 1249 |     &quot;&quot;&quot;
+ 1250 |     .. warning::
+ 1251 |         **DO NOT** instantiate this class directly.
+ 1252 | 
+ 1253 |         Instead, you should access the following operations through
+<span class="t"> 1254 |         :class:`~azure.mgmt.containerservicefleet.aio.ContainerServiceFleetMgmtClient`&#x27;s</span>
+ 1255 |         :attr:`fleet_members` attribute.
+ 1256 |     &quot;&quot;&quot;
+ 1257 | 
+ 1258 |     def __init__(self, *args, **kwargs) -&gt; None:
+ 1259 |         input_args = list(args)
+ 1260 |         self._client: AsyncPipelineClient = input_args.pop(0) if input_args else kwargs.pop(&quot;client&quot;)
+ 1261 |         self._config: ContainerServiceFleetMgmtClientConfiguration = (
+ 1262 |             input_args.pop(0) if input_args else kwargs.pop(&quot;config&quot;)</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-python/commit/94a446dd15f4d91994214eb80e2cd23feac594fa">94a446dd15</a> (2025-12-10T14:12:14-08:00)</h2><p class="k">[AutoPR azure-mgmt-containerservicefleet]-generated-from-SDK Generation - Python-5634445 (#44246)<br>Path after this commit: sdk/containerservice/azure-mgmt-containerservicefleet/azure/mgmt/containerservicefleet/aio/operations/_operations.py. Lines with exactly this text in the file after the commit: 9. <b>Patch cut at 1500 of 2076 lines; see the commit on GitHub.</b></p><pre>diff --git a/sdk/containerservice/azure-mgmt-containerservicefleet/azure/mgmt/containerservicefleet/aio/operations/_operations.py b/sdk/containerservice/azure-mgmt-containerservicefleet/azure/mgmt/containerservicefleet/aio/operations/_operations.py
+index 1862ba11e2..bcc03afe07 100644
+<span class="d">--- a/sdk/containerservice/azure-mgmt-containerservicefleet/azure/mgmt/containerservicefleet/aio/operations/_operations.py</span>
+<span class="a">+++ b/sdk/containerservice/azure-mgmt-containerservicefleet/azure/mgmt/containerservicefleet/aio/operations/_operations.py</span>
+<span class="h">@@ -9,7 +9,7 @@</span>
+ from collections.abc import MutableMapping
+ from io import IOBase
+ import json
+<span class="d">-from typing import Any, AsyncIterator, Callable, Dict, IO, List, Optional, TypeVar, Union, cast, overload</span>
+<span class="a">+from typing import Any, AsyncIterator, Callable, IO, Optional, TypeVar, Union, cast, overload</span>
+ import urllib.parse
+ 
+ from azure.core import AsyncPipelineClient, MatchConditions
+<span class="h">@@ -44,6 +44,11 @@ from ...operations._operations import (</span>
+     build_auto_upgrade_profiles_delete_request,
+     build_auto_upgrade_profiles_get_request,
+     build_auto_upgrade_profiles_list_by_fleet_request,
+<span class="a">+    build_fleet_managed_namespaces_create_or_update_request,</span>
+<span class="a">+    build_fleet_managed_namespaces_delete_request,</span>
+<span class="a">+    build_fleet_managed_namespaces_get_request,</span>
+<span class="a">+    build_fleet_managed_namespaces_list_by_fleet_request,</span>
+<span class="a">+    build_fleet_managed_namespaces_update_request,</span>
+     build_fleet_members_begin_update_request,
+     build_fleet_members_create_request,
+     build_fleet_members_delete_request,
+<span class="h">@@ -75,8 +80,9 @@ from ...operations._operations import (</span>
+ from .._configuration import ContainerServiceFleetMgmtClientConfiguration
+ 
+ T = TypeVar(&quot;T&quot;)
+<span class="d">-ClsType = Optional[Callable[[PipelineResponse[HttpRequest, AsyncHttpResponse], T, Dict[str, Any]], Any]]</span>
+<span class="a">+ClsType = Optional[Callable[[PipelineResponse[HttpRequest, AsyncHttpResponse], T, dict[str, Any]], Any]]</span>
+ JSON = MutableMapping[str, Any]
+<span class="a">+List = list</span>
+ 
+ 
+ class Operations:
+<span class="h">@@ -175,7 +181,10 @@ class Operations:</span>
+ 
+             if response.status_code not in [200]:
+                 map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-                error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+                error = _failsafe_deserialize(</span>
+<span class="a">+                    _models.ErrorResponse,</span>
+<span class="a">+                    response,</span>
+<span class="a">+                )</span>
+                 raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+             return pipeline_response
+<span class="h">@@ -255,7 +264,10 @@ class FleetsOperations:</span>
+                 except (StreamConsumedError, StreamClosedError):
+                     pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         if _stream:
+<span class="h">@@ -335,7 +347,10 @@ class FleetsOperations:</span>
+             except (StreamConsumedError, StreamClosedError):
+                 pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         response_headers = {}
+<span class="h">@@ -562,6 +577,7 @@ class FleetsOperations:</span>
+             &quot;2024-05-02-preview&quot;,
+             &quot;2025-03-01&quot;,
+             &quot;2025-04-01-preview&quot;,
+<span class="a">+            &quot;2025-08-01-preview&quot;,</span>
+         ],
+     )
+     async def _begin_update_initial(
+<span class="h">@@ -631,7 +647,10 @@ class FleetsOperations:</span>
+             except (StreamConsumedError, StreamClosedError):
+                 pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         response_headers = {}
+<span class="h">@@ -775,6 +794,7 @@ class FleetsOperations:</span>
+             &quot;2024-05-02-preview&quot;,
+             &quot;2025-03-01&quot;,
+             &quot;2025-04-01-preview&quot;,
+<span class="a">+            &quot;2025-08-01-preview&quot;,</span>
+         ],
+     )
+     async def begin_update(
+<span class="h">@@ -917,7 +937,10 @@ class FleetsOperations:</span>
+             except (StreamConsumedError, StreamClosedError):
+                 pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         response_headers = {}
+<span class="h">@@ -1085,7 +1108,10 @@ class FleetsOperations:</span>
+ 
+             if response.status_code not in [200]:
+                 map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-                error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+                error = _failsafe_deserialize(</span>
+<span class="a">+                    _models.ErrorResponse,</span>
+<span class="a">+                    response,</span>
+<span class="a">+                )</span>
+                 raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+             return pipeline_response
+<span class="h">@@ -1169,7 +1195,10 @@ class FleetsOperations:</span>
+ 
+             if response.status_code not in [200]:
+                 map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-                error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+                error = _failsafe_deserialize(</span>
+<span class="a">+                    _models.ErrorResponse,</span>
+<span class="a">+                    response,</span>
+<span class="a">+                )</span>
+                 raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+             return pipeline_response
+<span class="h">@@ -1231,7 +1260,10 @@ class FleetsOperations:</span>
+                 except (StreamConsumedError, StreamClosedError):
+                     pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         if _stream:
+<span class="h">@@ -1322,7 +1354,10 @@ class FleetMembersOperations:</span>
+                 except (StreamConsumedError, StreamClosedError):
+                     pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         if _stream:
+<span class="h">@@ -1404,7 +1439,10 @@ class FleetMembersOperations:</span>
+             except (StreamConsumedError, StreamClosedError):
+                 pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         response_headers = {}
+<span class="h">@@ -1649,6 +1687,7 @@ class FleetMembersOperations:</span>
+             &quot;2024-05-02-preview&quot;,
+             &quot;2025-03-01&quot;,
+             &quot;2025-04-01-preview&quot;,
+<span class="a">+            &quot;2025-08-01-preview&quot;,</span>
+         ],
+     )
+     async def _begin_update_initial(
+<span class="h">@@ -1720,7 +1759,10 @@ class FleetMembersOperations:</span>
+             except (StreamConsumedError, StreamClosedError):
+                 pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         response_headers = {}
+<span class="h">@@ -1877,6 +1919,7 @@ class FleetMembersOperations:</span>
+             &quot;2024-05-02-preview&quot;,
+             &quot;2025-03-01&quot;,
+             &quot;2025-04-01-preview&quot;,
+<span class="a">+            &quot;2025-08-01-preview&quot;,</span>
+         ],
+     )
+     async def begin_update(
+<span class="h">@@ -2021,13 +2064,1018 @@ class FleetMembersOperations:</span>
+ 
+         response = pipeline_response.http_response
+ 
+<span class="d">-        if response.status_code not in [200, 202, 204]:</span>
+<span class="a">+        if response.status_code not in [200, 202, 204]:</span>
+<span class="a">+            try:</span>
+<span class="a">+                await response.read()  # Load the body in memory and close the socket</span>
+<span class="a">+            except (StreamConsumedError, StreamClosedError):</span>
+<span class="a">+                pass</span>
+<span class="a">+            map_error(status_code=response.status_code, response=response, error_map=error_map)</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+<span class="a">+            raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)</span>
+<span class="a">+</span>
+<span class="a">+        response_headers = {}</span>
+<span class="a">+        if response.status_code == 202:</span>
+<span class="a">+            response_headers[&quot;Location&quot;] = self._deserialize(&quot;str&quot;, response.headers.get(&quot;Location&quot;))</span>
+<span class="a">+            response_headers[&quot;Retry-After&quot;] = self._deserialize(&quot;int&quot;, response.headers.get(&quot;Retry-After&quot;))</span>
+<span class="a">+</span>
+<span class="a">+        deserialized = response.iter_bytes()</span>
+<span class="a">+</span>
+<span class="a">+        if cls:</span>
+<span class="a">+            return cls(pipeline_response, deserialized, response_headers)  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+        return deserialized  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+    @distributed_trace_async</span>
+<span class="a">+    async def begin_delete(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        fleet_member_name: str,</span>
+<span class="a">+        *,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[None]:</span>
+<span class="a">+        &quot;&quot;&quot;Delete a FleetMember.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param fleet_member_name: The name of the Fleet member resource. Required.</span>
+<span class="a">+        :type fleet_member_name: str</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns None</span>
+<span class="a">+        :rtype: ~azure.core.polling.AsyncLROPoller[None]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        _headers = kwargs.pop(&quot;headers&quot;, {}) or {}</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        cls: ClsType[None] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+        polling: Union[bool, AsyncPollingMethod] = kwargs.pop(&quot;polling&quot;, True)</span>
+<span class="a">+        lro_delay = kwargs.pop(&quot;polling_interval&quot;, self._config.polling_interval)</span>
+<span class="a">+        cont_token: Optional[str] = kwargs.pop(&quot;continuation_token&quot;, None)</span>
+<span class="a">+        if cont_token is None:</span>
+<span class="a">+            raw_result = await self._delete_initial(</span>
+<span class="a">+                resource_group_name=resource_group_name,</span>
+<span class="a">+                fleet_name=fleet_name,</span>
+<span class="a">+                fleet_member_name=fleet_member_name,</span>
+<span class="a">+                etag=etag,</span>
+<span class="a">+                match_condition=match_condition,</span>
+<span class="a">+                cls=lambda x, y, z: x,</span>
+<span class="a">+                headers=_headers,</span>
+<span class="a">+                params=_params,</span>
+<span class="a">+                **kwargs</span>
+<span class="a">+            )</span>
+<span class="a">+            await raw_result.http_response.read()  # type: ignore</span>
+<span class="a">+        kwargs.pop(&quot;error_map&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        def get_long_running_output(pipeline_response):  # pylint: disable=inconsistent-return-statements</span>
+<span class="a">+            if cls:</span>
+<span class="a">+                return cls(pipeline_response, None, {})  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+        path_format_arguments = {</span>
+<span class="a">+            &quot;endpoint&quot;: self._serialize.url(&quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True),</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        if polling is True:</span>
+<span class="a">+            polling_method: AsyncPollingMethod = cast(</span>
+<span class="a">+                AsyncPollingMethod, AsyncARMPolling(lro_delay, path_format_arguments=path_format_arguments, **kwargs)</span>
+<span class="a">+            )</span>
+<span class="a">+        elif polling is False:</span>
+<span class="a">+            polling_method = cast(AsyncPollingMethod, AsyncNoPolling())</span>
+<span class="a">+        else:</span>
+<span class="a">+            polling_method = polling</span>
+<span class="a">+        if cont_token:</span>
+<span class="a">+            return AsyncLROPoller[None].from_continuation_token(</span>
+<span class="a">+                polling_method=polling_method,</span>
+<span class="a">+                continuation_token=cont_token,</span>
+<span class="a">+                client=self._client,</span>
+<span class="a">+                deserialization_callback=get_long_running_output,</span>
+<span class="a">+            )</span>
+<span class="a">+        return AsyncLROPoller[None](self._client, raw_result, get_long_running_output, polling_method)  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+    @distributed_trace</span>
+<span class="a">+    def list_by_fleet(</span>
+<span class="a">+        self, resource_group_name: str, fleet_name: str, **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncItemPaged[&quot;_models.FleetMember&quot;]:</span>
+<span class="a">+        &quot;&quot;&quot;List FleetMember resources by Fleet.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :return: An iterator like instance of FleetMember</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.async_paging.AsyncItemPaged[~azure.mgmt.containerservicefleet.models.FleetMember]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        _headers = kwargs.pop(&quot;headers&quot;, {}) or {}</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        cls: ClsType[List[_models.FleetMember]] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        error_map: MutableMapping = {</span>
+<span class="a">+            401: ClientAuthenticationError,</span>
+<span class="a">+            404: ResourceNotFoundError,</span>
+<span class="a">+            409: ResourceExistsError,</span>
+<span class="a">+            304: ResourceNotModifiedError,</span>
+<span class="a">+        }</span>
+<span class="a">+        error_map.update(kwargs.pop(&quot;error_map&quot;, {}) or {})</span>
+<span class="a">+</span>
+<span class="a">+        def prepare_request(next_link=None):</span>
+<span class="a">+            if not next_link:</span>
+<span class="a">+</span>
+<span class="a">+                _request = build_fleet_members_list_by_fleet_request(</span>
+<span class="a">+                    resource_group_name=resource_group_name,</span>
+<span class="a">+                    fleet_name=fleet_name,</span>
+<span class="a">+                    subscription_id=self._config.subscription_id,</span>
+<span class="a">+                    api_version=self._config.api_version,</span>
+<span class="a">+                    headers=_headers,</span>
+<span class="a">+                    params=_params,</span>
+<span class="a">+                )</span>
+<span class="a">+                path_format_arguments = {</span>
+<span class="a">+                    &quot;endpoint&quot;: self._serialize.url(</span>
+<span class="a">+                        &quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True</span>
+<span class="a">+                    ),</span>
+<span class="a">+                }</span>
+<span class="a">+                _request.url = self._client.format_url(_request.url, **path_format_arguments)</span>
+<span class="a">+</span>
+<span class="a">+            else:</span>
+<span class="a">+                # make call to next link with the client&#x27;s api-version</span>
+<span class="a">+                _parsed_next_link = urllib.parse.urlparse(next_link)</span>
+<span class="a">+                _next_request_params = case_insensitive_dict(</span>
+<span class="a">+                    {</span>
+<span class="a">+                        key: [urllib.parse.quote(v) for v in value]</span>
+<span class="a">+                        for key, value in urllib.parse.parse_qs(_parsed_next_link.query).items()</span>
+<span class="a">+                    }</span>
+<span class="a">+                )</span>
+<span class="a">+                _next_request_params[&quot;api-version&quot;] = self._config.api_version</span>
+<span class="a">+                _request = HttpRequest(</span>
+<span class="a">+                    &quot;GET&quot;, urllib.parse.urljoin(next_link, _parsed_next_link.path), params=_next_request_params</span>
+<span class="a">+                )</span>
+<span class="a">+                path_format_arguments = {</span>
+<span class="a">+                    &quot;endpoint&quot;: self._serialize.url(</span>
+<span class="a">+                        &quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True</span>
+<span class="a">+                    ),</span>
+<span class="a">+                }</span>
+<span class="a">+                _request.url = self._client.format_url(_request.url, **path_format_arguments)</span>
+<span class="a">+</span>
+<span class="a">+            return _request</span>
+<span class="a">+</span>
+<span class="a">+        async def extract_data(pipeline_response):</span>
+<span class="a">+            deserialized = pipeline_response.http_response.json()</span>
+<span class="a">+            list_of_elem = _deserialize(List[_models.FleetMember], deserialized.get(&quot;value&quot;, []))</span>
+<span class="a">+            if cls:</span>
+<span class="a">+                list_of_elem = cls(list_of_elem)  # type: ignore</span>
+<span class="a">+            return deserialized.get(&quot;nextLink&quot;) or None, AsyncList(list_of_elem)</span>
+<span class="a">+</span>
+<span class="a">+        async def get_next(next_link=None):</span>
+<span class="a">+            _request = prepare_request(next_link)</span>
+<span class="a">+</span>
+<span class="a">+            _stream = False</span>
+<span class="a">+            pipeline_response: PipelineResponse = await self._client._pipeline.run(  # pylint: disable=protected-access</span>
+<span class="a">+                _request, stream=_stream, **kwargs</span>
+<span class="a">+            )</span>
+<span class="a">+            response = pipeline_response.http_response</span>
+<span class="a">+</span>
+<span class="a">+            if response.status_code not in [200]:</span>
+<span class="a">+                map_error(status_code=response.status_code, response=response, error_map=error_map)</span>
+<span class="a">+                error = _failsafe_deserialize(</span>
+<span class="a">+                    _models.ErrorResponse,</span>
+<span class="a">+                    response,</span>
+<span class="a">+                )</span>
+<span class="a">+                raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)</span>
+<span class="a">+</span>
+<span class="a">+            return pipeline_response</span>
+<span class="a">+</span>
+<span class="a">+        return AsyncItemPaged(get_next, extract_data)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class FleetManagedNamespacesOperations:</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    .. warning::</span>
+<span class="a">+        **DO NOT** instantiate this class directly.</span>
+<span class="a">+</span>
+<span class="a">+        Instead, you should access the following operations through</span>
+<span class="a m">+        :class:`~azure.mgmt.containerservicefleet.aio.ContainerServiceFleetMgmtClient`&#x27;s</span>
+<span class="a">+        :attr:`fleet_managed_namespaces` attribute.</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    def __init__(self, *args, **kwargs) -&gt; None:</span>
+<span class="a">+        input_args = list(args)</span>
+<span class="a">+        self._client: AsyncPipelineClient = input_args.pop(0) if input_args else kwargs.pop(&quot;client&quot;)</span>
+<span class="a">+        self._config: ContainerServiceFleetMgmtClientConfiguration = (</span>
+<span class="a">+            input_args.pop(0) if input_args else kwargs.pop(&quot;config&quot;)</span>
+<span class="a">+        )</span>
+<span class="a">+        self._serialize: Serializer = input_args.pop(0) if input_args else kwargs.pop(&quot;serializer&quot;)</span>
+<span class="a">+        self._deserialize: Deserializer = input_args.pop(0) if input_args else kwargs.pop(&quot;deserializer&quot;)</span>
+<span class="a">+</span>
+<span class="a">+    @distributed_trace_async</span>
+<span class="a">+    @api_version_validation(</span>
+<span class="a">+        method_added_on=&quot;2025-08-01-preview&quot;,</span>
+<span class="a">+        params_added_on={</span>
+<span class="a">+            &quot;2025-08-01-preview&quot;: [</span>
+<span class="a">+                &quot;api_version&quot;,</span>
+<span class="a">+                &quot;subscription_id&quot;,</span>
+<span class="a">+                &quot;resource_group_name&quot;,</span>
+<span class="a">+                &quot;fleet_name&quot;,</span>
+<span class="a">+                &quot;managed_namespace_name&quot;,</span>
+<span class="a">+                &quot;accept&quot;,</span>
+<span class="a">+            ]</span>
+<span class="a">+        },</span>
+<span class="a">+        api_versions_list=[&quot;2025-08-01-preview&quot;],</span>
+<span class="a">+    )</span>
+<span class="a">+    async def get(</span>
+<span class="a">+        self, resource_group_name: str, fleet_name: str, managed_namespace_name: str, **kwargs: Any</span>
+<span class="a">+    ) -&gt; _models.FleetManagedNamespace:</span>
+<span class="a">+        &quot;&quot;&quot;Get a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :return: FleetManagedNamespace. The FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype: ~azure.mgmt.containerservicefleet.models.FleetManagedNamespace</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        error_map: MutableMapping = {</span>
+<span class="a">+            401: ClientAuthenticationError,</span>
+<span class="a">+            404: ResourceNotFoundError,</span>
+<span class="a">+            409: ResourceExistsError,</span>
+<span class="a">+            304: ResourceNotModifiedError,</span>
+<span class="a">+        }</span>
+<span class="a">+        error_map.update(kwargs.pop(&quot;error_map&quot;, {}) or {})</span>
+<span class="a">+</span>
+<span class="a">+        _headers = kwargs.pop(&quot;headers&quot;, {}) or {}</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        cls: ClsType[_models.FleetManagedNamespace] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        _request = build_fleet_managed_namespaces_get_request(</span>
+<span class="a">+            resource_group_name=resource_group_name,</span>
+<span class="a">+            fleet_name=fleet_name,</span>
+<span class="a">+            managed_namespace_name=managed_namespace_name,</span>
+<span class="a">+            subscription_id=self._config.subscription_id,</span>
+<span class="a">+            api_version=self._config.api_version,</span>
+<span class="a">+            headers=_headers,</span>
+<span class="a">+            params=_params,</span>
+<span class="a">+        )</span>
+<span class="a">+        path_format_arguments = {</span>
+<span class="a">+            &quot;endpoint&quot;: self._serialize.url(&quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True),</span>
+<span class="a">+        }</span>
+<span class="a">+        _request.url = self._client.format_url(_request.url, **path_format_arguments)</span>
+<span class="a">+</span>
+<span class="a">+        _stream = kwargs.pop(&quot;stream&quot;, False)</span>
+<span class="a">+        pipeline_response: PipelineResponse = await self._client._pipeline.run(  # pylint: disable=protected-access</span>
+<span class="a">+            _request, stream=_stream, **kwargs</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+        response = pipeline_response.http_response</span>
+<span class="a">+</span>
+<span class="a">+        if response.status_code not in [200]:</span>
+<span class="a">+            if _stream:</span>
+<span class="a">+                try:</span>
+<span class="a">+                    await response.read()  # Load the body in memory and close the socket</span>
+<span class="a">+                except (StreamConsumedError, StreamClosedError):</span>
+<span class="a">+                    pass</span>
+<span class="a">+            map_error(status_code=response.status_code, response=response, error_map=error_map)</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+<span class="a">+            raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)</span>
+<span class="a">+</span>
+<span class="a">+        if _stream:</span>
+<span class="a">+            deserialized = response.iter_bytes()</span>
+<span class="a">+        else:</span>
+<span class="a">+            deserialized = _deserialize(_models.FleetManagedNamespace, response.json())</span>
+<span class="a">+</span>
+<span class="a">+        if cls:</span>
+<span class="a">+            return cls(pipeline_response, deserialized, {})  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+        return deserialized  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+    @api_version_validation(</span>
+<span class="a">+        method_added_on=&quot;2025-08-01-preview&quot;,</span>
+<span class="a">+        params_added_on={</span>
+<span class="a">+            &quot;2025-08-01-preview&quot;: [</span>
+<span class="a">+                &quot;api_version&quot;,</span>
+<span class="a">+                &quot;subscription_id&quot;,</span>
+<span class="a">+                &quot;resource_group_name&quot;,</span>
+<span class="a">+                &quot;fleet_name&quot;,</span>
+<span class="a">+                &quot;managed_namespace_name&quot;,</span>
+<span class="a">+                &quot;content_type&quot;,</span>
+<span class="a">+                &quot;accept&quot;,</span>
+<span class="a">+                &quot;etag&quot;,</span>
+<span class="a">+                &quot;match_condition&quot;,</span>
+<span class="a">+            ]</span>
+<span class="a">+        },</span>
+<span class="a">+        api_versions_list=[&quot;2025-08-01-preview&quot;],</span>
+<span class="a">+    )</span>
+<span class="a">+    async def _create_or_update_initial(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        resource: Union[_models.FleetManagedNamespace, JSON, IO[bytes]],</span>
+<span class="a">+        *,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncIterator[bytes]:</span>
+<span class="a">+        error_map: MutableMapping = {</span>
+<span class="a">+            401: ClientAuthenticationError,</span>
+<span class="a">+            404: ResourceNotFoundError,</span>
+<span class="a">+            409: ResourceExistsError,</span>
+<span class="a">+            304: ResourceNotModifiedError,</span>
+<span class="a">+        }</span>
+<span class="a">+        if match_condition == MatchConditions.IfNotModified:</span>
+<span class="a">+            error_map[412] = ResourceModifiedError</span>
+<span class="a">+        elif match_condition == MatchConditions.IfPresent:</span>
+<span class="a">+            error_map[412] = ResourceNotFoundError</span>
+<span class="a">+        elif match_condition == MatchConditions.IfMissing:</span>
+<span class="a">+            error_map[412] = ResourceExistsError</span>
+<span class="a">+        error_map.update(kwargs.pop(&quot;error_map&quot;, {}) or {})</span>
+<span class="a">+</span>
+<span class="a">+        _headers = case_insensitive_dict(kwargs.pop(&quot;headers&quot;, {}) or {})</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        content_type: Optional[str] = kwargs.pop(&quot;content_type&quot;, _headers.pop(&quot;Content-Type&quot;, None))</span>
+<span class="a">+        cls: ClsType[AsyncIterator[bytes]] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        content_type = content_type or &quot;application/json&quot;</span>
+<span class="a">+        _content = None</span>
+<span class="a">+        if isinstance(resource, (IOBase, bytes)):</span>
+<span class="a">+            _content = resource</span>
+<span class="a">+        else:</span>
+<span class="a">+            _content = json.dumps(resource, cls=SdkJSONEncoder, exclude_readonly=True)  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+        _request = build_fleet_managed_namespaces_create_or_update_request(</span>
+<span class="a">+            resource_group_name=resource_group_name,</span>
+<span class="a">+            fleet_name=fleet_name,</span>
+<span class="a">+            managed_namespace_name=managed_namespace_name,</span>
+<span class="a">+            subscription_id=self._config.subscription_id,</span>
+<span class="a">+            etag=etag,</span>
+<span class="a">+            match_condition=match_condition,</span>
+<span class="a">+            content_type=content_type,</span>
+<span class="a">+            api_version=self._config.api_version,</span>
+<span class="a">+            content=_content,</span>
+<span class="a">+            headers=_headers,</span>
+<span class="a">+            params=_params,</span>
+<span class="a">+        )</span>
+<span class="a">+        path_format_arguments = {</span>
+<span class="a">+            &quot;endpoint&quot;: self._serialize.url(&quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True),</span>
+<span class="a">+        }</span>
+<span class="a">+        _request.url = self._client.format_url(_request.url, **path_format_arguments)</span>
+<span class="a">+</span>
+<span class="a">+        _stream = True</span>
+<span class="a">+        pipeline_response: PipelineResponse = await self._client._pipeline.run(  # pylint: disable=protected-access</span>
+<span class="a">+            _request, stream=_stream, **kwargs</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+        response = pipeline_response.http_response</span>
+<span class="a">+</span>
+<span class="a">+        if response.status_code not in [200, 201]:</span>
+<span class="a">+            try:</span>
+<span class="a">+                await response.read()  # Load the body in memory and close the socket</span>
+<span class="a">+            except (StreamConsumedError, StreamClosedError):</span>
+<span class="a">+                pass</span>
+<span class="a">+            map_error(status_code=response.status_code, response=response, error_map=error_map)</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+<span class="a">+            raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)</span>
+<span class="a">+</span>
+<span class="a">+        response_headers = {}</span>
+<span class="a">+        if response.status_code == 201:</span>
+<span class="a">+            response_headers[&quot;Azure-AsyncOperation&quot;] = self._deserialize(</span>
+<span class="a">+                &quot;str&quot;, response.headers.get(&quot;Azure-AsyncOperation&quot;)</span>
+<span class="a">+            )</span>
+<span class="a">+            response_headers[&quot;Retry-After&quot;] = self._deserialize(&quot;int&quot;, response.headers.get(&quot;Retry-After&quot;))</span>
+<span class="a">+</span>
+<span class="a">+        deserialized = response.iter_bytes()</span>
+<span class="a">+</span>
+<span class="a">+        if cls:</span>
+<span class="a">+            return cls(pipeline_response, deserialized, response_headers)  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+        return deserialized  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+    @overload</span>
+<span class="a">+    async def begin_create_or_update(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        resource: _models.FleetManagedNamespace,</span>
+<span class="a">+        *,</span>
+<span class="a">+        content_type: str = &quot;application/json&quot;,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[_models.FleetManagedNamespace]:</span>
+<span class="a">+        &quot;&quot;&quot;Create a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :param resource: Resource create parameters. Required.</span>
+<span class="a">+        :type resource: ~azure.mgmt.containerservicefleet.models.FleetManagedNamespace</span>
+<span class="a">+        :keyword content_type: Body Parameter content-type. Content type parameter for JSON body.</span>
+<span class="a">+         Default value is &quot;application/json&quot;.</span>
+<span class="a">+        :paramtype content_type: str</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns FleetManagedNamespace. The</span>
+<span class="a">+         FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.polling.AsyncLROPoller[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    @overload</span>
+<span class="a">+    async def begin_create_or_update(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        resource: JSON,</span>
+<span class="a">+        *,</span>
+<span class="a">+        content_type: str = &quot;application/json&quot;,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[_models.FleetManagedNamespace]:</span>
+<span class="a">+        &quot;&quot;&quot;Create a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :param resource: Resource create parameters. Required.</span>
+<span class="a">+        :type resource: JSON</span>
+<span class="a">+        :keyword content_type: Body Parameter content-type. Content type parameter for JSON body.</span>
+<span class="a">+         Default value is &quot;application/json&quot;.</span>
+<span class="a">+        :paramtype content_type: str</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns FleetManagedNamespace. The</span>
+<span class="a">+         FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.polling.AsyncLROPoller[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    @overload</span>
+<span class="a">+    async def begin_create_or_update(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        resource: IO[bytes],</span>
+<span class="a">+        *,</span>
+<span class="a">+        content_type: str = &quot;application/json&quot;,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[_models.FleetManagedNamespace]:</span>
+<span class="a">+        &quot;&quot;&quot;Create a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :param resource: Resource create parameters. Required.</span>
+<span class="a">+        :type resource: IO[bytes]</span>
+<span class="a">+        :keyword content_type: Body Parameter content-type. Content type parameter for binary body.</span>
+<span class="a">+         Default value is &quot;application/json&quot;.</span>
+<span class="a">+        :paramtype content_type: str</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns FleetManagedNamespace. The</span>
+<span class="a">+         FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.polling.AsyncLROPoller[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    @distributed_trace_async</span>
+<span class="a">+    @api_version_validation(</span>
+<span class="a">+        method_added_on=&quot;2025-08-01-preview&quot;,</span>
+<span class="a">+        params_added_on={</span>
+<span class="a">+            &quot;2025-08-01-preview&quot;: [</span>
+<span class="a">+                &quot;api_version&quot;,</span>
+<span class="a">+                &quot;subscription_id&quot;,</span>
+<span class="a">+                &quot;resource_group_name&quot;,</span>
+<span class="a">+                &quot;fleet_name&quot;,</span>
+<span class="a">+                &quot;managed_namespace_name&quot;,</span>
+<span class="a">+                &quot;content_type&quot;,</span>
+<span class="a">+                &quot;accept&quot;,</span>
+<span class="a">+                &quot;etag&quot;,</span>
+<span class="a">+                &quot;match_condition&quot;,</span>
+<span class="a">+            ]</span>
+<span class="a">+        },</span>
+<span class="a">+        api_versions_list=[&quot;2025-08-01-preview&quot;],</span>
+<span class="a">+    )</span>
+<span class="a">+    async def begin_create_or_update(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        resource: Union[_models.FleetManagedNamespace, JSON, IO[bytes]],</span>
+<span class="a">+        *,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[_models.FleetManagedNamespace]:</span>
+<span class="a">+        &quot;&quot;&quot;Create a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :param resource: Resource create parameters. Is one of the following types:</span>
+<span class="a">+         FleetManagedNamespace, JSON, IO[bytes] Required.</span>
+<span class="a">+        :type resource: ~azure.mgmt.containerservicefleet.models.FleetManagedNamespace or JSON or</span>
+<span class="a">+         IO[bytes]</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns FleetManagedNamespace. The</span>
+<span class="a">+         FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.polling.AsyncLROPoller[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        _headers = case_insensitive_dict(kwargs.pop(&quot;headers&quot;, {}) or {})</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        content_type: Optional[str] = kwargs.pop(&quot;content_type&quot;, _headers.pop(&quot;Content-Type&quot;, None))</span>
+<span class="a">+        cls: ClsType[_models.FleetManagedNamespace] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+        polling: Union[bool, AsyncPollingMethod] = kwargs.pop(&quot;polling&quot;, True)</span>
+<span class="a">+        lro_delay = kwargs.pop(&quot;polling_interval&quot;, self._config.polling_interval)</span>
+<span class="a">+        cont_token: Optional[str] = kwargs.pop(&quot;continuation_token&quot;, None)</span>
+<span class="a">+        if cont_token is None:</span>
+<span class="a">+            raw_result = await self._create_or_update_initial(</span>
+<span class="a">+                resource_group_name=resource_group_name,</span>
+<span class="a">+                fleet_name=fleet_name,</span>
+<span class="a">+                managed_namespace_name=managed_namespace_name,</span>
+<span class="a">+                resource=resource,</span>
+<span class="a">+                etag=etag,</span>
+<span class="a">+                match_condition=match_condition,</span>
+<span class="a">+                content_type=content_type,</span>
+<span class="a">+                cls=lambda x, y, z: x,</span>
+<span class="a">+                headers=_headers,</span>
+<span class="a">+                params=_params,</span>
+<span class="a">+                **kwargs</span>
+<span class="a">+            )</span>
+<span class="a">+            await raw_result.http_response.read()  # type: ignore</span>
+<span class="a">+        kwargs.pop(&quot;error_map&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        def get_long_running_output(pipeline_response):</span>
+<span class="a">+            response = pipeline_response.http_response</span>
+<span class="a">+            deserialized = _deserialize(_models.FleetManagedNamespace, response.json())</span>
+<span class="a">+            if cls:</span>
+<span class="a">+                return cls(pipeline_response, deserialized, {})  # type: ignore</span>
+<span class="a">+            return deserialized</span>
+<span class="a">+</span>
+<span class="a">+        path_format_arguments = {</span>
+<span class="a">+            &quot;endpoint&quot;: self._serialize.url(&quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True),</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        if polling is True:</span>
+<span class="a">+            polling_method: AsyncPollingMethod = cast(</span>
+<span class="a">+                AsyncPollingMethod, AsyncARMPolling(lro_delay, path_format_arguments=path_format_arguments, **kwargs)</span>
+<span class="a">+            )</span>
+<span class="a">+        elif polling is False:</span>
+<span class="a">+            polling_method = cast(AsyncPollingMethod, AsyncNoPolling())</span>
+<span class="a">+        else:</span>
+<span class="a">+            polling_method = polling</span>
+<span class="a">+        if cont_token:</span>
+<span class="a">+            return AsyncLROPoller[_models.FleetManagedNamespace].from_continuation_token(</span>
+<span class="a">+                polling_method=polling_method,</span>
+<span class="a">+                continuation_token=cont_token,</span>
+<span class="a">+                client=self._client,</span>
+<span class="a">+                deserialization_callback=get_long_running_output,</span>
+<span class="a">+            )</span>
+<span class="a">+        return AsyncLROPoller[_models.FleetManagedNamespace](</span>
+<span class="a">+            self._client, raw_result, get_long_running_output, polling_method  # type: ignore</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+    @api_version_validation(</span>
+<span class="a">+        method_added_on=&quot;2025-08-01-preview&quot;,</span>
+<span class="a">+        params_added_on={</span>
+<span class="a">+            &quot;2025-08-01-preview&quot;: [</span>
+<span class="a">+                &quot;api_version&quot;,</span>
+<span class="a">+                &quot;subscription_id&quot;,</span>
+<span class="a">+                &quot;resource_group_name&quot;,</span>
+<span class="a">+                &quot;fleet_name&quot;,</span>
+<span class="a">+                &quot;managed_namespace_name&quot;,</span>
+<span class="a">+                &quot;etag&quot;,</span>
+<span class="a">+                &quot;match_condition&quot;,</span>
+<span class="a">+            ]</span>
+<span class="a">+        },</span>
+<span class="a">+        api_versions_list=[&quot;2025-08-01-preview&quot;],</span>
+<span class="a">+    )</span>
+<span class="a">+    async def _delete_initial(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        *,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncIterator[bytes]:</span>
+<span class="a">+        error_map: MutableMapping = {</span>
+<span class="a">+            401: ClientAuthenticationError,</span>
+<span class="a">+            404: ResourceNotFoundError,</span>
+<span class="a">+            409: ResourceExistsError,</span>
+<span class="a">+            304: ResourceNotModifiedError,</span>
+<span class="a">+        }</span>
+<span class="a">+        if match_condition == MatchConditions.IfNotModified:</span>
+<span class="a">+            error_map[412] = ResourceModifiedError</span>
+<span class="a">+        elif match_condition == MatchConditions.IfPresent:</span>
+<span class="a">+            error_map[412] = ResourceNotFoundError</span>
+<span class="a">+        elif match_condition == MatchConditions.IfMissing:</span>
+<span class="a">+            error_map[412] = ResourceExistsError</span>
+<span class="a">+        error_map.update(kwargs.pop(&quot;error_map&quot;, {}) or {})</span>
+<span class="a">+</span>
+<span class="a">+        _headers = kwargs.pop(&quot;headers&quot;, {}) or {}</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        cls: ClsType[AsyncIterator[bytes]] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        _request = build_fleet_managed_namespaces_delete_request(</span>
+<span class="a">+            resource_group_name=resource_group_name,</span>
+<span class="a">+            fleet_name=fleet_name,</span>
+<span class="a">+            managed_namespace_name=managed_namespace_name,</span>
+<span class="a">+            subscription_id=self._config.subscription_id,</span>
+<span class="a">+            etag=etag,</span>
+<span class="a">+            match_condition=match_condition,</span>
+<span class="a">+            api_version=self._config.api_version,</span>
+<span class="a">+            headers=_headers,</span>
+<span class="a">+            params=_params,</span>
+<span class="a">+        )</span>
+<span class="a">+        path_format_arguments = {</span>
+<span class="a">+            &quot;endpoint&quot;: self._serialize.url(&quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True),</span>
+<span class="a">+        }</span>
+<span class="a">+        _request.url = self._client.format_url(_request.url, **path_format_arguments)</span>
+<span class="a">+</span>
+<span class="a">+        _stream = True</span>
+<span class="a">+        pipeline_response: PipelineResponse = await self._client._pipeline.run(  # pylint: disable=protected-access</span>
+<span class="a">+            _request, stream=_stream, **kwargs</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+        response = pipeline_response.http_response</span>
+<span class="a">+</span>
+<span class="a">+        if response.status_code not in [202, 204]:</span>
+<span class="a">+            try:</span>
+<span class="a">+                await response.read()  # Load the body in memory and close the socket</span>
+<span class="a">+            except (StreamConsumedError, StreamClosedError):</span>
+<span class="a">+                pass</span>
+<span class="a">+            map_error(status_code=response.status_code, response=response, error_map=error_map)</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+<span class="a">+            raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)</span>
+<span class="a">+</span>
+<span class="a">+        response_headers = {}</span>
+<span class="a">+        if response.status_code == 202:</span>
+<span class="a">+            response_headers[&quot;Location&quot;] = self._deserialize(&quot;str&quot;, response.headers.get(&quot;Location&quot;))</span>
+<span class="a">+            response_headers[&quot;Retry-After&quot;] = self._deserialize(&quot;int&quot;, response.headers.get(&quot;Retry-After&quot;))</span>
+<span class="a">+</span>
+<span class="a">+        deserialized = response.iter_bytes()</span>
+<span class="a">+</span>
+<span class="a">+        if cls:</span>
+<span class="a">+            return cls(pipeline_response, deserialized, response_headers)  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+        return deserialized  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+    @distributed_trace_async</span>
+<span class="a">+    @api_version_validation(</span>
+<span class="a">+        method_added_on=&quot;2025-08-01-preview&quot;,</span>
+<span class="a">+        params_added_on={</span>
+<span class="a">+            &quot;2025-08-01-preview&quot;: [</span>
+<span class="a">+                &quot;api_version&quot;,</span>
+<span class="a">+                &quot;subscription_id&quot;,</span>
+<span class="a">+                &quot;resource_group_name&quot;,</span>
+<span class="a">+                &quot;fleet_name&quot;,</span>
+<span class="a">+                &quot;managed_namespace_name&quot;,</span>
+<span class="a">+                &quot;etag&quot;,</span>
+<span class="a">+                &quot;match_condition&quot;,</span>
+<span class="a">+            ]</span>
+<span class="a">+        },</span>
+<span class="a">+        api_versions_list=[&quot;2025-08-01-preview&quot;],</span>
+<span class="a">+    )</span>
+<span class="a">+    async def begin_delete(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        *,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[None]:</span>
+<span class="a">+        &quot;&quot;&quot;Delete a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns None</span>
+<span class="a">+        :rtype: ~azure.core.polling.AsyncLROPoller[None]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        _headers = kwargs.pop(&quot;headers&quot;, {}) or {}</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        cls: ClsType[None] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+        polling: Union[bool, AsyncPollingMethod] = kwargs.pop(&quot;polling&quot;, True)</span>
+<span class="a">+        lro_delay = kwargs.pop(&quot;polling_interval&quot;, self._config.polling_interval)</span>
+<span class="a">+        cont_token: Optional[str] = kwargs.pop(&quot;continuation_token&quot;, None)</span>
+<span class="a">+        if cont_token is None:</span>
+<span class="a">+            raw_result = await self._delete_initial(</span>
+<span class="a">+                resource_group_name=resource_group_name,</span>
+<span class="a">+                fleet_name=fleet_name,</span>
+<span class="a">+                managed_namespace_name=managed_namespace_name,</span>
+<span class="a">+                etag=etag,</span>
+<span class="a">+                match_condition=match_condition,</span>
+<span class="a">+                cls=lambda x, y, z: x,</span>
+<span class="a">+                headers=_headers,</span>
+<span class="a">+                params=_params,</span>
+<span class="a">+                **kwargs</span>
+<span class="a">+            )</span>
+<span class="a">+            await raw_result.http_response.read()  # type: ignore</span>
+<span class="a">+        kwargs.pop(&quot;error_map&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        def get_long_running_output(pipeline_response):  # pylint: disable=inconsistent-return-statements</span>
+<span class="a">+            if cls:</span>
+<span class="a">+                return cls(pipeline_response, None, {})  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+        path_format_arguments = {</span>
+<span class="a">+            &quot;endpoint&quot;: self._serialize.url(&quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True),</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        if polling is True:</span>
+<span class="a">+            polling_method: AsyncPollingMethod = cast(</span>
+<span class="a">+                AsyncPollingMethod, AsyncARMPolling(lro_delay, path_format_arguments=path_format_arguments, **kwargs)</span>
+<span class="a">+            )</span>
+<span class="a">+        elif polling is False:</span>
+<span class="a">+            polling_method = cast(AsyncPollingMethod, AsyncNoPolling())</span>
+<span class="a">+        else:</span>
+<span class="a">+            polling_method = polling</span>
+<span class="a">+        if cont_token:</span>
+<span class="a">+            return AsyncLROPoller[None].from_continuation_token(</span>
+<span class="a">+                polling_method=polling_method,</span>
+<span class="a">+                continuation_token=cont_token,</span>
+<span class="a">+                client=self._client,</span>
+<span class="a">+                deserialization_callback=get_long_running_output,</span>
+<span class="a">+            )</span>
+<span class="a">+        return AsyncLROPoller[None](self._client, raw_result, get_long_running_output, polling_method)  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+    @distributed_trace</span>
+<span class="a">+    @api_version_validation(</span>
+<span class="a">+        method_added_on=&quot;2025-08-01-preview&quot;,</span>
+<span class="a">+        params_added_on={</span>
+<span class="a">+            &quot;2025-08-01-preview&quot;: [&quot;api_version&quot;, &quot;subscription_id&quot;, &quot;resource_group_name&quot;, &quot;fleet_name&quot;, &quot;accept&quot;]</span>
+<span class="a">+        },</span>
+<span class="a">+        api_versions_list=[&quot;2025-08-01-preview&quot;],</span>
+<span class="a">+    )</span>
+<span class="a">+    def list_by_fleet(</span>
+<span class="a">+        self, resource_group_name: str, fleet_name: str, **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncItemPaged[&quot;_models.FleetManagedNamespace&quot;]:</span>
+<span class="a">+        &quot;&quot;&quot;List FleetManagedNamespace resources by Fleet.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :return: An iterator like instance of FleetManagedNamespace</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.async_paging.AsyncItemPaged[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        _headers = kwargs.pop(&quot;headers&quot;, {}) or {}</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        cls: ClsType[List[_models.FleetManagedNamespace]] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        error_map: MutableMapping = {</span>
+<span class="a">+            401: ClientAuthenticationError,</span>
+<span class="a">+            404: ResourceNotFoundError,</span>
+<span class="a">+            409: ResourceExistsError,</span>
+<span class="a">+            304: ResourceNotModifiedError,</span>
+<span class="a">+        }</span>
+<span class="a">+        error_map.update(kwargs.pop(&quot;error_map&quot;, {}) or {})</span>
+<span class="a">+</span>
+<span class="a">+        def prepare_request(next_link=None):</span>
+<span class="a">+            if not next_link:</span>
+<span class="a">+</span>
+<span class="a">+                _request = build_fleet_managed_namespaces_list_by_fleet_request(</span>
+<span class="a">+                    resource_group_name=resource_group_name,</span>
+<span class="a">+                    fleet_name=fleet_name,</span>
+<span class="a">+                    subscription_id=self._config.subscription_id,</span>
+<span class="a">+                    api_version=self._config.api_version,</span>
+<span class="a">+                    headers=_headers,</span>
+<span class="a">+                    params=_params,</span>
+<span class="a">+                )</span>
+<span class="a">+                path_format_arguments = {</span>
+<span class="a">+                    &quot;endpoint&quot;: self._serialize.url(</span>
+<span class="a">+                        &quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True</span>
+<span class="a">+                    ),</span>
+<span class="a">+                }</span>
+<span class="a">+                _request.url = self._client.format_url(_request.url, **path_format_arguments)</span>
+<span class="a">+</span>
+<span class="a">+            else:</span>
+<span class="a">+                # make call to next link with the client&#x27;s api-version</span>
+<span class="a">+                _parsed_next_link = urllib.parse.urlparse(next_link)</span>
+<span class="a">+                _next_request_params = case_insensitive_dict(</span>
+<span class="a">+                    {</span>
+<span class="a">+                        key: [urllib.parse.quote(v) for v in value]</span>
+<span class="a">+                        for key, value in urllib.parse.parse_qs(_parsed_next_link.query).items()</span>
+<span class="a">+                    }</span>
+<span class="a">+                )</span>
+<span class="a">+                _next_request_params[&quot;api-version&quot;] = self._config.api_version</span>
+<span class="a">+                _request = HttpRequest(</span>
+<span class="a">+                    &quot;GET&quot;, urllib.parse.urljoin(next_link, _parsed_next_link.path), params=_next_request_params</span>
+<span class="a">+                )</span>
+<span class="a">+                path_format_arguments = {</span>
+<span class="a">+                    &quot;endpoint&quot;: self._serialize.url(</span>
+<span class="a">+                        &quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True</span>
+<span class="a">+                    ),</span>
+<span class="a">+                }</span>
+<span class="a">+                _request.url = self._client.format_url(_request.url, **path_format_arguments)</span>
+<span class="a">+</span>
+<span class="a">+            return _request</span>
+<span class="a">+</span>
+<span class="a">+        async def extract_data(pipeline_response):</span>
+<span class="a">+            deserialized = pipeline_response.http_response.json()</span>
+<span class="a">+            list_of_elem = _deserialize(List[_models.FleetManagedNamespace], deserialized.get(&quot;value&quot;, []))</span>
+<span class="a">+            if cls:</span>
+<span class="a">+                list_of_elem = cls(list_of_elem)  # type: ignore</span>
+<span class="a">+            return deserialized.get(&quot;nextLink&quot;) or None, AsyncList(list_of_elem)</span>
+<span class="a">+</span>
+<span class="a">+        async def get_next(next_link=None):</span>
+<span class="a">+            _request = prepare_request(next_link)</span>
+<span class="a">+</span>
+<span class="a">+            _stream = False</span>
+<span class="a">+            pipeline_response: PipelineResponse = await self._client._pipeline.run(  # pylint: disable=protected-access</span>
+<span class="a">+                _request, stream=_stream, **kwargs</span>
+<span class="a">+            )</span>
+<span class="a">+            response = pipeline_response.http_response</span>
+<span class="a">+</span>
+<span class="a">+            if response.status_code not in [200]:</span>
+<span class="a">+                map_error(status_code=response.status_code, response=response, error_map=error_map)</span>
+<span class="a">+                error = _failsafe_deserialize(</span>
+<span class="a">+                    _models.ErrorResponse,</span>
+<span class="a">+                    response,</span>
+<span class="a">+                )</span>
+<span class="a">+                raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)</span>
+<span class="a">+</span>
+<span class="a">+            return pipeline_response</span>
+<span class="a">+</span>
+<span class="a">+        return AsyncItemPaged(get_next, extract_data)</span>
+<span class="a">+</span>
+<span class="a">+    @api_version_validation(</span>
+<span class="a">+        method_added_on=&quot;2025-08-01-preview&quot;,</span>
+<span class="a">+        params_added_on={</span>
+<span class="a">+            &quot;2025-08-01-preview&quot;: [</span>
+<span class="a">+                &quot;api_version&quot;,</span>
+<span class="a">+                &quot;subscription_id&quot;,</span>
+<span class="a">+                &quot;resource_group_name&quot;,</span>
+<span class="a">+                &quot;fleet_name&quot;,</span>
+<span class="a">+                &quot;managed_namespace_name&quot;,</span>
+<span class="a">+                &quot;content_type&quot;,</span>
+<span class="a">+                &quot;accept&quot;,</span>
+<span class="a">+                &quot;etag&quot;,</span>
+<span class="a">+                &quot;match_condition&quot;,</span>
+<span class="a">+            ]</span>
+<span class="a">+        },</span>
+<span class="a">+        api_versions_list=[&quot;2025-08-01-preview&quot;],</span>
+<span class="a">+    )</span>
+<span class="a">+    async def _update_initial(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        properties: Union[_models.FleetManagedNamespacePatch, JSON, IO[bytes]],</span>
+<span class="a">+        *,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncIterator[bytes]:</span>
+<span class="a">+        error_map: MutableMapping = {</span>
+<span class="a">+            401: ClientAuthenticationError,</span>
+<span class="a">+            404: ResourceNotFoundError,</span>
+<span class="a">+            409: ResourceExistsError,</span>
+<span class="a">+            304: ResourceNotModifiedError,</span>
+<span class="a">+        }</span>
+<span class="a">+        if match_condition == MatchConditions.IfNotModified:</span>
+<span class="a">+            error_map[412] = ResourceModifiedError</span>
+<span class="a">+        elif match_condition == MatchConditions.IfPresent:</span>
+<span class="a">+            error_map[412] = ResourceNotFoundError</span>
+<span class="a">+        elif match_condition == MatchConditions.IfMissing:</span>
+<span class="a">+            error_map[412] = ResourceExistsError</span>
+<span class="a">+        error_map.update(kwargs.pop(&quot;error_map&quot;, {}) or {})</span>
+<span class="a">+</span>
+<span class="a">+        _headers = case_insensitive_dict(kwargs.pop(&quot;headers&quot;, {}) or {})</span>
+<span class="a">+        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="a">+</span>
+<span class="a">+        content_type: Optional[str] = kwargs.pop(&quot;content_type&quot;, _headers.pop(&quot;Content-Type&quot;, None))</span>
+<span class="a">+        cls: ClsType[AsyncIterator[bytes]] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+</span>
+<span class="a">+        content_type = content_type or &quot;application/json&quot;</span>
+<span class="a">+        _content = None</span>
+<span class="a">+        if isinstance(properties, (IOBase, bytes)):</span>
+<span class="a">+            _content = properties</span>
+<span class="a">+        else:</span>
+<span class="a">+            _content = json.dumps(properties, cls=SdkJSONEncoder, exclude_readonly=True)  # type: ignore</span>
+<span class="a">+</span>
+<span class="a">+        _request = build_fleet_managed_namespaces_update_request(</span>
+<span class="a">+            resource_group_name=resource_group_name,</span>
+<span class="a">+            fleet_name=fleet_name,</span>
+<span class="a">+            managed_namespace_name=managed_namespace_name,</span>
+<span class="a">+            subscription_id=self._config.subscription_id,</span>
+<span class="a">+            etag=etag,</span>
+<span class="a">+            match_condition=match_condition,</span>
+<span class="a">+            content_type=content_type,</span>
+<span class="a">+            api_version=self._config.api_version,</span>
+<span class="a">+            content=_content,</span>
+<span class="a">+            headers=_headers,</span>
+<span class="a">+            params=_params,</span>
+<span class="a">+        )</span>
+<span class="a">+        path_format_arguments = {</span>
+<span class="a">+            &quot;endpoint&quot;: self._serialize.url(&quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True),</span>
+<span class="a">+        }</span>
+<span class="a">+        _request.url = self._client.format_url(_request.url, **path_format_arguments)</span>
+<span class="a">+</span>
+<span class="a">+        _stream = True</span>
+<span class="a">+        pipeline_response: PipelineResponse = await self._client._pipeline.run(  # pylint: disable=protected-access</span>
+<span class="a">+            _request, stream=_stream, **kwargs</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+        response = pipeline_response.http_response</span>
+<span class="a">+</span>
+<span class="a">+        if response.status_code not in [200, 202]:</span>
+             try:
+                 await response.read()  # Load the body in memory and close the socket
+             except (StreamConsumedError, StreamClosedError):
+                 pass
+             map_error(status_code=response.status_code, response=response, error_map=error_map)
+<span class="d">-            error = _failsafe_deserialize(_models.ErrorResponse, response.json())</span>
+<span class="a">+            error = _failsafe_deserialize(</span>
+<span class="a">+                _models.ErrorResponse,</span>
+<span class="a">+                response,</span>
+<span class="a">+            )</span>
+             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
+ 
+         response_headers = {}
+<span class="h">@@ -2042,49 +3090,193 @@ class FleetMembersOperations:</span>
+ 
+         return deserialized  # type: ignore
+ 
+<span class="a">+    @overload</span>
+<span class="a">+    async def begin_update(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        properties: _models.FleetManagedNamespacePatch,</span>
+<span class="a">+        *,</span>
+<span class="a">+        content_type: str = &quot;application/json&quot;,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[_models.FleetManagedNamespace]:</span>
+<span class="a">+        &quot;&quot;&quot;Update a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :param properties: The resource properties to be updated. Required.</span>
+<span class="a">+        :type properties: ~azure.mgmt.containerservicefleet.models.FleetManagedNamespacePatch</span>
+<span class="a">+        :keyword content_type: Body Parameter content-type. Content type parameter for JSON body.</span>
+<span class="a">+         Default value is &quot;application/json&quot;.</span>
+<span class="a">+        :paramtype content_type: str</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns FleetManagedNamespace. The</span>
+<span class="a">+         FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.polling.AsyncLROPoller[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    @overload</span>
+<span class="a">+    async def begin_update(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        properties: JSON,</span>
+<span class="a">+        *,</span>
+<span class="a">+        content_type: str = &quot;application/json&quot;,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[_models.FleetManagedNamespace]:</span>
+<span class="a">+        &quot;&quot;&quot;Update a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :param properties: The resource properties to be updated. Required.</span>
+<span class="a">+        :type properties: JSON</span>
+<span class="a">+        :keyword content_type: Body Parameter content-type. Content type parameter for JSON body.</span>
+<span class="a">+         Default value is &quot;application/json&quot;.</span>
+<span class="a">+        :paramtype content_type: str</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns FleetManagedNamespace. The</span>
+<span class="a">+         FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.polling.AsyncLROPoller[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    @overload</span>
+<span class="a">+    async def begin_update(</span>
+<span class="a">+        self,</span>
+<span class="a">+        resource_group_name: str,</span>
+<span class="a">+        fleet_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        properties: IO[bytes],</span>
+<span class="a">+        *,</span>
+<span class="a">+        content_type: str = &quot;application/json&quot;,</span>
+<span class="a">+        etag: Optional[str] = None,</span>
+<span class="a">+        match_condition: Optional[MatchConditions] = None,</span>
+<span class="a">+        **kwargs: Any</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[_models.FleetManagedNamespace]:</span>
+<span class="a">+        &quot;&quot;&quot;Update a FleetManagedNamespace.</span>
+<span class="a">+</span>
+<span class="a">+        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="a">+         Required.</span>
+<span class="a">+        :type resource_group_name: str</span>
+<span class="a">+        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="a">+        :type fleet_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :param properties: The resource properties to be updated. Required.</span>
+<span class="a">+        :type properties: IO[bytes]</span>
+<span class="a">+        :keyword content_type: Body Parameter content-type. Content type parameter for binary body.</span>
+<span class="a">+         Default value is &quot;application/json&quot;.</span>
+<span class="a">+        :paramtype content_type: str</span>
+<span class="a">+        :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is</span>
+<span class="a">+         None.</span>
+<span class="a">+        :paramtype etag: str</span>
+<span class="a">+        :keyword match_condition: The match condition to use upon the etag. Default value is None.</span>
+<span class="a">+        :paramtype match_condition: ~azure.core.MatchConditions</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns FleetManagedNamespace. The</span>
+<span class="a">+         FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.polling.AsyncLROPoller[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+<span class="a">+        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+</span>
+     @distributed_trace_async
+<span class="d">-    async def begin_delete(</span>
+<span class="a">+    @api_version_validation(</span>
+<span class="a">+        method_added_on=&quot;2025-08-01-preview&quot;,</span>
+<span class="a">+        params_added_on={</span>
+<span class="a">+            &quot;2025-08-01-preview&quot;: [</span>
+<span class="a">+                &quot;api_version&quot;,</span>
+<span class="a">+                &quot;subscription_id&quot;,</span>
+<span class="a">+                &quot;resource_group_name&quot;,</span>
+<span class="a">+                &quot;fleet_name&quot;,</span>
+<span class="a">+                &quot;managed_namespace_name&quot;,</span>
+<span class="a">+                &quot;content_type&quot;,</span>
+<span class="a">+                &quot;accept&quot;,</span>
+<span class="a">+                &quot;etag&quot;,</span>
+<span class="a">+                &quot;match_condition&quot;,</span>
+<span class="a">+            ]</span>
+<span class="a">+        },</span>
+<span class="a">+        api_versions_list=[&quot;2025-08-01-preview&quot;],</span>
+<span class="a">+    )</span>
+<span class="a">+    async def begin_update(</span>
+         self,
+         resource_group_name: str,
+         fleet_name: str,
+<span class="d">-        fleet_member_name: str,</span>
+<span class="a">+        managed_namespace_name: str,</span>
+<span class="a">+        properties: Union[_models.FleetManagedNamespacePatch, JSON, IO[bytes]],</span>
+         *,
+         etag: Optional[str] = None,
+         match_condition: Optional[MatchConditions] = None,
+         **kwargs: Any
+<span class="d">-    ) -&gt; AsyncLROPoller[None]:</span>
+<span class="d">-        &quot;&quot;&quot;Delete a FleetMember.</span>
+<span class="a">+    ) -&gt; AsyncLROPoller[_models.FleetManagedNamespace]:</span>
+<span class="a">+        &quot;&quot;&quot;Update a FleetManagedNamespace.</span>
+ 
+         :param resource_group_name: The name of the resource group. The name is case insensitive.
+          Required.
+         :type resource_group_name: str
+         :param fleet_name: The name of the Fleet resource. Required.
+         :type fleet_name: str
+<span class="d">-        :param fleet_member_name: The name of the Fleet member resource. Required.</span>
+<span class="d">-        :type fleet_member_name: str</span>
+<span class="a">+        :param managed_namespace_name: The name of the fleet managed namespace resource. Required.</span>
+<span class="a">+        :type managed_namespace_name: str</span>
+<span class="a">+        :param properties: The resource properties to be updated. Is one of the following types:</span>
+<span class="a">+         FleetManagedNamespacePatch, JSON, IO[bytes] Required.</span>
+<span class="a">+        :type properties: ~azure.mgmt.containerservicefleet.models.FleetManagedNamespacePatch or JSON</span>
+<span class="a">+         or IO[bytes]</span>
+         :keyword etag: check if resource is changed. Set None to skip checking etag. Default value is
+          None.
+         :paramtype etag: str
+         :keyword match_condition: The match condition to use upon the etag. Default value is None.
+         :paramtype match_condition: ~azure.core.MatchConditions
+<span class="d">-        :return: An instance of AsyncLROPoller that returns None</span>
+<span class="d">-        :rtype: ~azure.core.polling.AsyncLROPoller[None]</span>
+<span class="a">+        :return: An instance of AsyncLROPoller that returns FleetManagedNamespace. The</span>
+<span class="a">+         FleetManagedNamespace is compatible with MutableMapping</span>
+<span class="a">+        :rtype:</span>
+<span class="a">+         ~azure.core.polling.AsyncLROPoller[~azure.mgmt.containerservicefleet.models.FleetManagedNamespace]</span>
+         :raises ~azure.core.exceptions.HttpResponseError:
+         &quot;&quot;&quot;
+<span class="d">-        _headers = kwargs.pop(&quot;headers&quot;, {}) or {}</span>
+<span class="a">+        _headers = case_insensitive_dict(kwargs.pop(&quot;headers&quot;, {}) or {})</span>
+         _params = kwargs.pop(&quot;params&quot;, {}) or {}
+ 
+<span class="d">-        cls: ClsType[None] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="a">+        content_type: Optional[str] = kwargs.pop(&quot;content_type&quot;, _headers.pop(&quot;Content-Type&quot;, None))</span>
+<span class="a">+        cls: ClsType[_models.FleetManagedNamespace] = kwargs.pop(&quot;cls&quot;, None)</span>
+         polling: Union[bool, AsyncPollingMethod] = kwargs.pop(&quot;polling&quot;, True)
+         lro_delay = kwargs.pop(&quot;polling_interval&quot;, self._config.polling_interval)
+         cont_token: Optional[str] = kwargs.pop(&quot;continuation_token&quot;, None)
+         if cont_token is None:
+<span class="d">-            raw_result = await self._delete_initial(</span>
+<span class="a">+            raw_result = await self._update_initial(</span>
+                 resource_group_name=resource_group_name,
+                 fleet_name=fleet_name,
+<span class="d">-                fleet_member_name=fleet_member_name,</span>
+<span class="a">+                managed_namespace_name=managed_namespace_name,</span>
+<span class="a">+                properties=properties,</span>
+                 etag=etag,
+                 match_condition=match_condition,
+<span class="a">+                content_type=content_type,</span>
+                 cls=lambda x, y, z: x,
+                 headers=_headers,
+                 params=_params,
+<span class="h">@@ -2093,9 +3285,12 @@ class FleetMembersOperations:</span>
+             await raw_result.http_response.read()  # type: ignore
+         kwargs.pop(&quot;error_map&quot;, None)
+ 
+<span class="d">-        def get_long_running_output(pipeline_response):  # pylint: disable=inconsistent-return-statements</span>
+<span class="a">+        def get_long_running_output(pipeline_response):</span>
+<span class="a">+            response = pipeline_response.http_response</span>
+<span class="a">+            deserialized = _deserialize(_models.FleetManagedNamespace, response.json())</span>
+             if cls:
+<span class="d">-                return cls(pipeline_response, None, {})  # type: ignore</span>
+<span class="a">+                return cls(pipeline_response, deserialized, {})  # type: ignore</span>
+<span class="a">+            return deserialized</span>
+ 
+         path_format_arguments = {
+             &quot;endpoint&quot;: self._serialize.url(&quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True),
+<span class="h">@@ -2110,107 +3305,15 @@ class FleetMembersOperations:</span>
+         else:
+             polling_method = polling
+         if cont_token:
+<span class="d">-            return AsyncLROPoller[None].from_continuation_token(</span>
+<span class="a">+            return AsyncLROPoller[_models.FleetManagedNamespace].from_continuation_token(</span>
+                 polling_method=polling_method,
+                 continuation_token=cont_token,
+                 client=self._client,
+                 deserialization_callback=get_long_running_output,
+             )
+<span class="d">-        return AsyncLROPoller[None](self._client, raw_result, get_long_running_output, polling_method)  # type: ignore</span>
+<span class="d">-</span>
+<span class="d">-    @distributed_trace</span>
+<span class="d">-    def list_by_fleet(</span>
+<span class="d">-        self, resource_group_name: str, fleet_name: str, **kwargs: Any</span>
+<span class="d">-    ) -&gt; AsyncItemPaged[&quot;_models.FleetMember&quot;]:</span>
+<span class="d">-        &quot;&quot;&quot;List FleetMember resources by Fleet.</span>
+<span class="d">-</span>
+<span class="d">-        :param resource_group_name: The name of the resource group. The name is case insensitive.</span>
+<span class="d">-         Required.</span>
+<span class="d">-        :type resource_group_name: str</span>
+<span class="d">-        :param fleet_name: The name of the Fleet resource. Required.</span>
+<span class="d">-        :type fleet_name: str</span>
+<span class="d">-        :return: An iterator like instance of FleetMember</span>
+<span class="d">-        :rtype:</span>
+<span class="d">-         ~azure.core.async_paging.AsyncItemPaged[~azure.mgmt.containerservicefleet.models.FleetMember]</span>
+<span class="d">-        :raises ~azure.core.exceptions.HttpResponseError:</span>
+<span class="d">-        &quot;&quot;&quot;</span>
+<span class="d">-        _headers = kwargs.pop(&quot;headers&quot;, {}) or {}</span>
+<span class="d">-        _params = kwargs.pop(&quot;params&quot;, {}) or {}</span>
+<span class="d">-</span>
+<span class="d">-        cls: ClsType[List[_models.FleetMember]] = kwargs.pop(&quot;cls&quot;, None)</span>
+<span class="d">-</span>
+<span class="d">-        error_map: MutableMapping = {</span>
+<span class="d">-            401: ClientAuthenticationError,</span>
+<span class="d">-            404: ResourceNotFoundError,</span>
+<span class="d">-            409: ResourceExistsError,</span>
+<span class="d">-            304: ResourceNotModifiedError,</span>
+<span class="d">-        }</span>
+<span class="d">-        error_map.update(kwargs.pop(&quot;error_map&quot;, {}) or {})</span>
+<span class="d">-</span>
+<span class="d">-        def prepare_request(next_link=None):</span>
+<span class="d">-            if not next_link:</span>
+<span class="d">-</span>
+<span class="d">-                _request = build_fleet_members_list_by_fleet_request(</span>
+<span class="d">-                    resource_group_name=resource_group_name,</span>
+<span class="d">-                    fleet_name=fleet_name,</span>
+<span class="d">-                    subscription_id=self._config.subscription_id,</span>
+<span class="d">-                    api_version=self._config.api_version,</span>
+<span class="d">-                    headers=_headers,</span>
+<span class="d">-                    params=_params,</span>
+<span class="d">-                )</span>
+<span class="d">-                path_format_arguments = {</span>
+<span class="d">-                    &quot;endpoint&quot;: self._serialize.url(</span>
+<span class="d">-                        &quot;self._config.base_url&quot;, self._config.base_url, &quot;str&quot;, skip_quote=True</span>
+<span class="d">-                    ),</span>
+<span class="d">-                }</span></pre></body></html>

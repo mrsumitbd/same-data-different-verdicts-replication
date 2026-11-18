@@ -1,0 +1,968 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L292</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L292</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs, line 98<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/532c842e53395b5144670fb3d3bce913d520bd5e">532c842e53</a> (2025-06-11T02:29:12)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">        using var workspace = TemporaryWorkspace.Create(outputHelper);</span></pre><h2>File at the merge commit, lines 90 to 106</h2><pre>   90 |         Assert.Equal(0, exitCode);
+   91 |     }
+   92 | 
+   93 |     [Fact]
+   94 |     public async Task AddCommandSortsPackageVersions()
+   95 |     {
+   96 |         IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt;? promptedPackages = null;
+   97 |         
+<span class="t">   98 |         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+   99 |         var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {
+  100 | 
+  101 |             options.AddCommandPrompterFactory = (sp) =&gt;
+  102 |             {
+  103 |                 var interactionService = sp.GetRequiredService&lt;IInteractionService&gt;();
+  104 |                 var prompter = new TestAddCommandPrompter(interactionService);
+  105 | 
+  106 |                 prompter.PromptForIntegrationVersionCallback = (packages) =&gt;</pre><p class="k">Below are all 12 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/15229341daeb6e3288a4a3c1b0ee497f24f1d514">15229341da</a> (2025-06-17T01:22:50-04:00)</h2><p class="k">rename InteractionService to ConsoleInteractionService for disambiguation (#9908)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 9.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index 2f1223c420..3715bf83ff 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -557,7 +557,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+         var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {
+             options.InteractionServiceFactory = (sp) =&gt; {
+<span class="d">-                var testInteractionService = new TestInteractionService();</span>
+<span class="a">+                var testInteractionService = new TestConsoleInteractionService();</span>
+                 testInteractionService.DisplayErrorCallback = (message) =&gt; {
+                     displayedErrorMessage = message;
+                 };</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/912b236fad3033585ed8557ffb0af0bbafc6444e">912b236fad</a> (2025-07-01T16:57:56+10:00)</h2><p class="k">Add CLI version update notifications to Aspire CLI (#9992)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 9. Identical text added in other files in this commit: tests/Aspire.Cli.Tests/Utils/CliUpdateNotificationServiceTests.cs.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index 3715bf83ff..4c54f9d88a 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -494,6 +494,11 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+         var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {
+<span class="a">+</span>
+<span class="a">+            // Makes it easier to isolate behavior in test case by disabling one</span>
+<span class="a">+            // of the concurrent calls to the NuGetCache from the prefetcher.</span>
+<span class="a">+            options.DisabledFeatures = [KnownFeatures.UpdateNotificationsEnabled];</span>
+<span class="a">+</span>
+             options.AddCommandPrompterFactory = (sp) =&gt;
+             {
+                 var interactionService = sp.GetRequiredService&lt;IInteractionService&gt;();</pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/e1036025411d196c04020900a57ea2cdfc060134">e103602541</a> (2025-07-02T22:25:21-07:00)</h2><p class="k">Add user-friendly message when AddCommand search returns no results (#10209)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 10.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index 4c54f9d88a..febbc60426 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -591,6 +591,77 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         Assert.Equal(ExitCodeConstants.FailedToAddPackage, exitCode);
+         Assert.Contains(&quot;No integration packages were found&quot;, displayedErrorMessage);
+     }
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task AddCommand_NoMatchingPackages_DisplaysNoMatchesMessage()</span>
+<span class="a">+    {</span>
+<span class="a">+        string? displayedSubtleMessage = null;</span>
+<span class="a">+        bool promptedForIntegration = false;</span>
+<span class="a">+</span>
+<span class="a m">+        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="a">+            options.InteractionServiceFactory = (sp) =&gt; {</span>
+<span class="a">+                var testInteractionService = new TestConsoleInteractionService();</span>
+<span class="a">+                testInteractionService.DisplaySubtleMessageCallback = (message) =&gt; {</span>
+<span class="a">+                    displayedSubtleMessage = message;</span>
+<span class="a">+                };</span>
+<span class="a">+                return testInteractionService;</span>
+<span class="a">+            };</span>
+<span class="a">+</span>
+<span class="a">+            options.AddCommandPrompterFactory = (sp) =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                var interactionService = sp.GetRequiredService&lt;IInteractionService&gt;();</span>
+<span class="a">+                var prompter = new TestAddCommandPrompter(interactionService);</span>
+<span class="a">+                prompter.PromptForIntegrationCallback = (packages) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    promptedForIntegration = true;</span>
+<span class="a">+                    return packages.First();</span>
+<span class="a">+                };</span>
+<span class="a">+                return prompter;</span>
+<span class="a">+            };</span>
+<span class="a">+</span>
+<span class="a">+            options.ProjectLocatorFactory = _ =&gt; new TestProjectLocator();</span>
+<span class="a">+</span>
+<span class="a">+            options.DotNetCliRunnerFactory = (sp) =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                var runner = new TestDotNetCliRunner();</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    var dockerPackage = new NuGetPackage()</span>
+<span class="a">+                    {</span>
+<span class="a">+                        Id = &quot;Aspire.Hosting.Docker&quot;,</span>
+<span class="a">+                        Source = &quot;nuget&quot;,</span>
+<span class="a">+                        Version = &quot;9.2.0&quot;</span>
+<span class="a">+                    };</span>
+<span class="a">+</span>
+<span class="a">+                    var redisPackage = new NuGetPackage()</span>
+<span class="a">+                    {</span>
+<span class="a">+                        Id = &quot;Aspire.Hosting.Redis&quot;,</span>
+<span class="a">+                        Source = &quot;nuget&quot;,</span>
+<span class="a">+                        Version = &quot;9.2.0&quot;</span>
+<span class="a">+                    };</span>
+<span class="a">+</span>
+<span class="a">+                    return (0, new NuGetPackage[] { dockerPackage, redisPackage });</span>
+<span class="a">+                };</span>
+<span class="a">+</span>
+<span class="a">+                runner.AddPackageAsyncCallback = (projectFilePath, packageName, packageVersion, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    return 0; // Success.</span>
+<span class="a">+                };</span>
+<span class="a">+</span>
+<span class="a">+                return runner;</span>
+<span class="a">+            };</span>
+<span class="a">+        });</span>
+<span class="a">+        var provider = services.BuildServiceProvider();</span>
+<span class="a">+</span>
+<span class="a">+        var command = provider.GetRequiredService&lt;AddCommand&gt;();</span>
+<span class="a">+        var result = command.Parse(&quot;add nonexistentpackage&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        var exitCode = await result.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);</span>
+<span class="a">+        Assert.Equal(0, exitCode);</span>
+<span class="a">+        Assert.True(promptedForIntegration);</span>
+<span class="a">+        Assert.Contains(&quot;No packages matched your search term &#x27;nonexistentpackage&#x27;&quot;, displayedSubtleMessage);</span>
+<span class="a">+    }</span>
+ }
+ 
+ internal sealed class TestAddCommandPrompter(IInteractionService interactionService) : AddCommandPrompter(interactionService)</pre><h2>Commit #4: <a href="https://github.com/dotnet/aspire/commit/55a5104aec924b22e9b3610d25a56ede6a004fb7">55a5104aec</a> (2025-07-14T05:48:29-07:00)</h2><p class="k">Share more package checking code between CLI and app host (#10372)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 10.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index febbc60426..957e57493d 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -7,6 +7,7 @@ using Aspire.Cli.Tests.TestServices;</span>
+ using Aspire.Cli.Tests.Utils;
+ using Microsoft.Extensions.DependencyInjection;
+ using Xunit;
+<span class="a">+using NuGetPackage = Aspire.Shared.NuGetPackageCli;</span>
+ 
+ namespace Aspire.Cli.Tests.Commands;
+ </pre><h2>Commit #5: <a href="https://github.com/dotnet/aspire/commit/7c8b37c473b5a6aa1c0403e8580546793535bb51">7c8b37c473</a> (2025-07-14T16:42:47+00:00)</h2><p class="k">Add xmldocs to generated metadata projects (#9868)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 10.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index 957e57493d..80b9035853 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -6,7 +6,6 @@ using Aspire.Cli.Interaction;</span>
+ using Aspire.Cli.Tests.TestServices;
+ using Aspire.Cli.Tests.Utils;
+ using Microsoft.Extensions.DependencyInjection;
+<span class="d">-using Xunit;</span>
+ using NuGetPackage = Aspire.Shared.NuGetPackageCli;
+ 
+ namespace Aspire.Cli.Tests.Commands;</pre><h2>Commit #6: <a href="https://github.com/dotnet/aspire/commit/6fc27df818d4f8ae6516fb53c1834994ab252672">6fc27df818</a> (2025-07-17T17:29:37+10:00)</h2><p class="k">Improve friendly name generation for `aspire add` command add introduce pre-release package sub-menu. (#10485)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 10.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index 80b9035853..a057094081 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -30,7 +30,8 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+     public async Task AddCommandInteractiveFlowSmokeTest()
+     {
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+ 
+             options.AddCommandPrompterFactory = (sp) =&gt;
+             {
+<span class="h">@@ -94,9 +95,10 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+     public async Task AddCommandSortsPackageVersions()
+     {
+         IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt;? promptedPackages = null;
+<span class="d">-        </span>
+<span class="a">+</span>
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+ 
+             options.AddCommandPrompterFactory = (sp) =&gt;
+             {
+<span class="h">@@ -166,9 +168,10 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+     public async Task AddCommandSortsPackageVersionsWithPrerelease()
+     {
+         IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt;? promptedPackages = null;
+<span class="d">-        </span>
+<span class="a">+</span>
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+ 
+             options.AddCommandPrompterFactory = (sp) =&gt;
+             {
+<span class="h">@@ -248,7 +251,8 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         var promptedForIntegrationPackages = false;
+ 
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+ 
+             options.AddCommandPrompterFactory = (sp) =&gt;
+             {
+<span class="h">@@ -324,7 +328,8 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         var promptedForVersion = false;
+ 
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+ 
+             options.AddCommandPrompterFactory = (sp) =&gt;
+             {
+<span class="h">@@ -408,7 +413,8 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         string? addedPackageVersion = null;
+ 
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+ 
+             options.AddCommandPrompterFactory = (sp) =&gt;
+             {
+<span class="h">@@ -477,8 +483,8 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         Assert.Equal(0, exitCode);
+         Assert.Collection(
+             promptedPackages!,
+<span class="d">-            p =&gt; Assert.Equal(&quot;Aspire.Hosting.Redis&quot;, p.Package.Id),</span>
+<span class="d">-            p =&gt; Assert.Equal(&quot;Aspire.Hosting.Azure.Redis&quot;, p.Package.Id)</span>
+<span class="a">+            p =&gt; Assert.Equal(&quot;Aspire.Hosting.Azure.Redis&quot;, p.Package.Id),</span>
+<span class="a">+            p =&gt; Assert.Equal(&quot;Aspire.Hosting.Redis&quot;, p.Package.Id)</span>
+             );
+         Assert.Equal(&quot;Aspire.Hosting.Redis&quot;, addedPackageName);
+         Assert.Equal(&quot;9.2.0&quot;, addedPackageVersion);
+<span class="h">@@ -493,7 +499,8 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         const string expectedSource = &quot;https://custom-nuget-source.test/v3/index.json&quot;;
+ 
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+ 
+             // Makes it easier to isolate behavior in test case by disabling one
+             // of the concurrent calls to the NuGetCache from the prefetcher.
+<span class="h">@@ -532,7 +539,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+                 {
+                     // Capture the source used for add
+                     addUsedSource = nugetSource;
+<span class="d">-                    </span>
+<span class="a">+</span>
+                     // Simulate adding the package.
+                     return 0; // Success.
+                 };
+<span class="h">@@ -547,7 +554,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         var result = command.Parse($&quot;add redis --source {expectedSource}&quot;);
+ 
+         var exitCode = await result.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+<span class="d">-        </span>
+<span class="a">+</span>
+         // Assert
+         Assert.Equal(0, exitCode);
+         Assert.Equal(expectedSource, searchUsedSource);
+<span class="h">@@ -560,10 +567,13 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         string? displayedErrorMessage = null;
+ 
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="d">-            options.InteractionServiceFactory = (sp) =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            options.InteractionServiceFactory = (sp) =&gt;</span>
+<span class="a">+            {</span>
+                 var testInteractionService = new TestConsoleInteractionService();
+<span class="d">-                testInteractionService.DisplayErrorCallback = (message) =&gt; {</span>
+<span class="a">+                testInteractionService.DisplayErrorCallback = (message) =&gt;</span>
+<span class="a">+                {</span>
+                     displayedErrorMessage = message;
+                 };
+                 return testInteractionService;
+<span class="h">@@ -599,10 +609,13 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         bool promptedForIntegration = false;
+ 
+<span class=" m">         using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; {</span>
+<span class="d">-            options.InteractionServiceFactory = (sp) =&gt; {</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            options.InteractionServiceFactory = (sp) =&gt;</span>
+<span class="a">+            {</span>
+                 var testInteractionService = new TestConsoleInteractionService();
+<span class="d">-                testInteractionService.DisplaySubtleMessageCallback = (message) =&gt; {</span>
+<span class="a">+                testInteractionService.DisplaySubtleMessageCallback = (message) =&gt;</span>
+<span class="a">+                {</span>
+                     displayedSubtleMessage = message;
+                 };
+                 return testInteractionService;
+<span class="h">@@ -662,6 +675,26 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         Assert.True(promptedForIntegration);
+         Assert.Contains(&quot;No packages matched your search term &#x27;nonexistentpackage&#x27;&quot;, displayedSubtleMessage);
+     }
+<span class="a">+</span>
+<span class="a">+    [Theory]</span>
+<span class="a">+    [InlineData(&quot;Aspire.Hosting.Azure.Redis&quot;, &quot;azure-redis&quot;)]</span>
+<span class="a">+    [InlineData(&quot;CommunityToolkit.Aspire.Hosting.Cosmos&quot;, &quot;communitytoolkit-cosmos&quot;)]</span>
+<span class="a">+    [InlineData(&quot;Aspire.Hosting.Postgres&quot;, &quot;postgres&quot;)]</span>
+<span class="a">+    [InlineData(&quot;Acme.Aspire.Hosting.Foo.Bar&quot;, &quot;acme-foo-bar&quot;)]</span>
+<span class="a">+    [InlineData(&quot;Aspire.Hosting.Docker&quot;, &quot;docker&quot;)]</span>
+<span class="a">+    [InlineData(&quot;SomeOther.Package.Name&quot;, &quot;someother-package-name&quot;)]</span>
+<span class="a">+    public void GenerateFriendlyName_ProducesExpectedResults(string packageId, string expectedFriendlyName)</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var package = new NuGetPackage { Id = packageId, Version = &quot;1.0.0&quot;, Source = &quot;test&quot; };</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var result = AddCommand.GenerateFriendlyName(package);</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(expectedFriendlyName, result.FriendlyName);</span>
+<span class="a">+        Assert.Equal(package, result.Package);</span>
+<span class="a">+    }</span>
+ }
+ 
+ internal sealed class TestAddCommandPrompter(IInteractionService interactionService) : AddCommandPrompter(interactionService)</pre><h2>Commit #7: <a href="https://github.com/dotnet/aspire/commit/4704f1fc6d57cbbbda9c0d2cb514d2a42da4c32f">4704f1fc6d</a> (2025-08-09T22:24:27+10:00)</h2><p class="k">Add Package Channel Service API for Aspire CLI (#10801)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 10.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index a057094081..ff6c2a07b5 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -494,7 +494,6 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+     public async Task AddCommandPreservesSourceArgumentInBothCommands()
+     {
+         // Arrange
+<span class="d">-        string? searchUsedSource = null;</span>
+         string? addUsedSource = null;
+         const string expectedSource = &quot;https://custom-nuget-source.test/v3/index.json&quot;;
+ 
+<span class="h">@@ -519,9 +518,6 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+                 var runner = new TestDotNetCliRunner();
+                 runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;
+                 {
+<span class="d">-                    // Capture the source used for search</span>
+<span class="d">-                    searchUsedSource = nugetSource;</span>
+<span class="d">-</span>
+                     var redisPackage = new NuGetPackage()
+                     {
+                         Id = &quot;Aspire.Hosting.Redis&quot;,
+<span class="h">@@ -557,7 +553,6 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+         // Assert
+         Assert.Equal(0, exitCode);
+<span class="d">-        Assert.Equal(expectedSource, searchUsedSource);</span>
+         Assert.Equal(expectedSource, addUsedSource);
+     }
+ </pre><h2>Commit #8: <a href="https://github.com/dotnet/aspire/commit/ed793592f5c11f348d6f5cbd89a6881ead7910ba">ed793592f5</a> (2025-08-13T15:50:01+10:00)</h2><p class="k">Refactor AddCommand to use PackagingService with simplified channel discovery (#10899)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 8.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index ff6c2a07b5..9db079b055 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -3,6 +3,7 @@</span>
+ 
+ using Aspire.Cli.Commands;
+ using Aspire.Cli.Interaction;
+<span class="a">+using Aspire.Cli.Packaging;</span>
+ using Aspire.Cli.Tests.TestServices;
+ using Aspire.Cli.Tests.Utils;
+ using Microsoft.Extensions.DependencyInjection;
+<span class="h">@@ -91,160 +92,6 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         Assert.Equal(0, exitCode);
+     }
+ 
+<span class="d">-    [Fact]</span>
+<span class="d">-    public async Task AddCommandSortsPackageVersions()</span>
+<span class="d">-    {</span>
+<span class="d">-        IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt;? promptedPackages = null;</span>
+<span class="d">-</span>
+<span class="d m">-        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="d">-        {</span>
+<span class="d">-</span>
+<span class="d">-            options.AddCommandPrompterFactory = (sp) =&gt;</span>
+<span class="d">-            {</span>
+<span class="d">-                var interactionService = sp.GetRequiredService&lt;IInteractionService&gt;();</span>
+<span class="d">-                var prompter = new TestAddCommandPrompter(interactionService);</span>
+<span class="d">-</span>
+<span class="d">-                prompter.PromptForIntegrationVersionCallback = (packages) =&gt;</span>
+<span class="d">-                {</span>
+<span class="d">-                    promptedPackages = packages;</span>
+<span class="d">-                    return packages.First();</span>
+<span class="d">-                };</span>
+<span class="d">-</span>
+<span class="d">-                return prompter;</span>
+<span class="d">-            };</span>
+<span class="d">-</span>
+<span class="d">-            options.ProjectLocatorFactory = _ =&gt; new TestProjectLocator();</span>
+<span class="d">-</span>
+<span class="d">-            options.DotNetCliRunnerFactory = (sp) =&gt;</span>
+<span class="d">-            {</span>
+<span class="d">-                var runner = new TestDotNetCliRunner();</span>
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="d">-                {</span>
+<span class="d">-                    var redis92Package = new NuGetPackage()</span>
+<span class="d">-                    {</span>
+<span class="d">-                        Id = &quot;Aspire.Hosting.Redis&quot;,</span>
+<span class="d">-                        Source = &quot;nuget&quot;,</span>
+<span class="d">-                        Version = &quot;9.2.0&quot;</span>
+<span class="d">-                    };</span>
+<span class="d">-</span>
+<span class="d">-                    var redis93Package = new NuGetPackage()</span>
+<span class="d">-                    {</span>
+<span class="d">-                        Id = &quot;Aspire.Hosting.Redis&quot;,</span>
+<span class="d">-                        Source = &quot;nuget&quot;,</span>
+<span class="d">-                        Version = &quot;9.3.0&quot;</span>
+<span class="d">-                    };</span>
+<span class="d">-</span>
+<span class="d">-                    return (</span>
+<span class="d">-                        0, // Exit code.</span>
+<span class="d">-                        new NuGetPackage[] { redis92Package, redis93Package } // </span>
+<span class="d">-                        );</span>
+<span class="d">-                };</span>
+<span class="d">-</span>
+<span class="d">-                runner.AddPackageAsyncCallback = (projectFilePath, packageName, packageVersion, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="d">-                {</span>
+<span class="d">-                    // Simulate adding the package.</span>
+<span class="d">-                    return 0; // Success.</span>
+<span class="d">-                };</span>
+<span class="d">-</span>
+<span class="d">-                return runner;</span>
+<span class="d">-            };</span>
+<span class="d">-        });</span>
+<span class="d">-        var provider = services.BuildServiceProvider();</span>
+<span class="d">-</span>
+<span class="d">-        var command = provider.GetRequiredService&lt;AddCommand&gt;();</span>
+<span class="d">-        var result = command.Parse(&quot;add&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        var exitCode = await result.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);</span>
+<span class="d">-        Assert.Equal(0, exitCode);</span>
+<span class="d">-        Assert.Collection(</span>
+<span class="d">-            promptedPackages!,</span>
+<span class="d">-            p =&gt; Assert.Equal(&quot;9.3.0&quot;, p.Package.Version),</span>
+<span class="d">-            p =&gt; Assert.Equal(&quot;9.2.0&quot;, p.Package.Version)</span>
+<span class="d">-            );</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    [Fact]</span>
+<span class="d">-    public async Task AddCommandSortsPackageVersionsWithPrerelease()</span>
+<span class="d">-    {</span>
+<span class="d">-        IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt;? promptedPackages = null;</span>
+<span class="d">-</span>
+<span class="d m">-        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="d">-        {</span>
+<span class="d">-</span>
+<span class="d">-            options.AddCommandPrompterFactory = (sp) =&gt;</span>
+<span class="d">-            {</span>
+<span class="d">-                var interactionService = sp.GetRequiredService&lt;IInteractionService&gt;();</span>
+<span class="d">-                var prompter = new TestAddCommandPrompter(interactionService);</span>
+<span class="d">-</span>
+<span class="d">-                prompter.PromptForIntegrationVersionCallback = (packages) =&gt;</span>
+<span class="d">-                {</span>
+<span class="d">-                    promptedPackages = packages;</span>
+<span class="d">-                    return packages.First();</span>
+<span class="d">-                };</span>
+<span class="d">-</span>
+<span class="d">-                return prompter;</span>
+<span class="d">-            };</span>
+<span class="d">-</span>
+<span class="d">-            options.ProjectLocatorFactory = _ =&gt; new TestProjectLocator();</span>
+<span class="d">-</span>
+<span class="d">-            options.DotNetCliRunnerFactory = (sp) =&gt;</span>
+<span class="d">-            {</span>
+<span class="d">-                var runner = new TestDotNetCliRunner();</span>
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="d">-                {</span>
+<span class="d">-                    var redis92Package = new NuGetPackage()</span>
+<span class="d">-                    {</span>
+<span class="d">-                        Id = &quot;Aspire.Hosting.Redis&quot;,</span>
+<span class="d">-                        Source = &quot;nuget&quot;,</span>
+<span class="d">-                        Version = &quot;9.2.0&quot;</span>
+<span class="d">-                    };</span>
+<span class="d">-</span>
+<span class="d">-                    var redis94PrereleasePackage = new NuGetPackage()</span>
+<span class="d">-                    {</span>
+<span class="d">-                        Id = &quot;Aspire.Hosting.Redis&quot;,</span>
+<span class="d">-                        Source = &quot;nuget&quot;,</span>
+<span class="d">-                        Version = &quot;9.4.0-preview1.1234&quot;</span>
+<span class="d">-                    };</span>
+<span class="d">-</span>
+<span class="d">-                    var redis93Package = new NuGetPackage()</span>
+<span class="d">-                    {</span>
+<span class="d">-                        Id = &quot;Aspire.Hosting.Redis&quot;,</span>
+<span class="d">-                        Source = &quot;nuget&quot;,</span>
+<span class="d">-                        Version = &quot;9.3.0&quot;</span>
+<span class="d">-                    };</span>
+<span class="d">-</span>
+<span class="d">-                    return (</span>
+<span class="d">-                        0, // Exit code.</span>
+<span class="d">-                        new NuGetPackage[] { redis92Package, redis94PrereleasePackage, redis93Package } // </span>
+<span class="d">-                        );</span>
+<span class="d">-                };</span>
+<span class="d">-</span>
+<span class="d">-                runner.AddPackageAsyncCallback = (projectFilePath, packageName, packageVersion, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="d">-                {</span>
+<span class="d">-                    // Simulate adding the package.</span>
+<span class="d">-                    return 0; // Success.</span>
+<span class="d">-                };</span>
+<span class="d">-</span>
+<span class="d">-                return runner;</span>
+<span class="d">-            };</span>
+<span class="d">-        });</span>
+<span class="d">-        var provider = services.BuildServiceProvider();</span>
+<span class="d">-</span>
+<span class="d">-        var command = provider.GetRequiredService&lt;AddCommand&gt;();</span>
+<span class="d">-        var result = command.Parse(&quot;add&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        var exitCode = await result.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);</span>
+<span class="d">-        Assert.Equal(0, exitCode);</span>
+<span class="d">-        Assert.Collection(</span>
+<span class="d">-            promptedPackages!,</span>
+<span class="d">-            p =&gt; Assert.Equal(&quot;9.4.0-preview1.1234&quot;, p.Package.Version),</span>
+<span class="d">-            p =&gt; Assert.Equal(&quot;9.3.0&quot;, p.Package.Version),</span>
+<span class="d">-            p =&gt; Assert.Equal(&quot;9.2.0&quot;, p.Package.Version)</span>
+<span class="d">-            );</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     [Fact]
+     public async Task AddCommandDoesNotPromptForIntegrationArgumentIfSpecifiedOnCommandLine()
+     {
+<span class="h">@@ -408,7 +255,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+     [Fact]
+     public async Task AddCommandPromptsForDisambiguation()
+     {
+<span class="d">-        IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt;? promptedPackages = null;</span>
+<span class="a">+        IEnumerable&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt;? promptedPackages = null;</span>
+         string? addedPackageName = null;
+         string? addedPackageVersion = null;
+ 
+<span class="h">@@ -684,7 +531,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         var package = new NuGetPackage { Id = packageId, Version = &quot;1.0.0&quot;, Source = &quot;test&quot; };
+ 
+         // Act
+<span class="d">-        var result = AddCommand.GenerateFriendlyName(package);</span>
+<span class="a">+        var result = AddCommand.GenerateFriendlyName((package, null!)); // Null is OK for this test.</span>
+ 
+         // Assert
+         Assert.Equal(expectedFriendlyName, result.FriendlyName);
+<span class="h">@@ -694,10 +541,10 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+ internal sealed class TestAddCommandPrompter(IInteractionService interactionService) : AddCommandPrompter(interactionService)
+ {
+<span class="d">-    public Func&lt;IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt;, (string FriendlyName, NuGetPackage Package)&gt;? PromptForIntegrationCallback { get; set; }</span>
+<span class="d">-    public Func&lt;IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt;, (string FriendlyName, NuGetPackage Package)&gt;? PromptForIntegrationVersionCallback { get; set; }</span>
+<span class="a">+    public Func&lt;IEnumerable&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt;, (string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt;? PromptForIntegrationCallback { get; set; }</span>
+<span class="a">+    public Func&lt;IEnumerable&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt;, (string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt;? PromptForIntegrationVersionCallback { get; set; }</span>
+ 
+<span class="d">-    public override Task&lt;(string FriendlyName, NuGetPackage Package)&gt; PromptForIntegrationAsync(IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt; packages, CancellationToken cancellationToken)</span>
+<span class="a">+    public override Task&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt; PromptForIntegrationAsync(IEnumerable&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt; packages, CancellationToken cancellationToken)</span>
+     {
+         return PromptForIntegrationCallback switch
+         {
+<span class="h">@@ -706,7 +553,7 @@ internal sealed class TestAddCommandPrompter(IInteractionService interactionServ</span>
+         };
+     }
+ 
+<span class="d">-    public override Task&lt;(string FriendlyName, NuGetPackage Package)&gt; PromptForIntegrationVersionAsync(IEnumerable&lt;(string FriendlyName, NuGetPackage Package)&gt; packages, CancellationToken cancellationToken)</span>
+<span class="a">+    public override Task&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt; PromptForIntegrationVersionAsync(IEnumerable&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt; packages, CancellationToken cancellationToken)</span>
+     {
+         return PromptForIntegrationVersionCallback switch
+         {</pre><h2>Commit #9: <a href="https://github.com/dotnet/aspire/commit/2039a40806a41e104e63eda23bc07d2263933a6f">2039a40806</a> (2025-09-16T16:02:47-07:00)</h2><p class="k">Implement disk caching mechanism with expiry, version-aware cleanup, cache management commands, selective caching control, and testable IDiskCache interface for NuGet package search operations in Aspire CLI (#11394)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 8. Identical text added in other files in this commit: tests/Aspire.Cli.Tests/Caching/DiskCacheTests.cs.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index 9db079b055..4c0e8576cf 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -45,7 +45,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+             options.DotNetCliRunnerFactory = (sp) =&gt;
+             {
+                 var runner = new TestDotNetCliRunner();
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, useCache, options, cancellationToken) =&gt;</span>
+                 {
+                     var dockerPackage = new NuGetPackage()
+                     {
+<span class="h">@@ -120,7 +120,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+             options.DotNetCliRunnerFactory = (sp) =&gt;
+             {
+                 var runner = new TestDotNetCliRunner();
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, useCache, options, cancellationToken) =&gt;</span>
+                 {
+                     var dockerPackage = new NuGetPackage()
+                     {
+<span class="h">@@ -203,7 +203,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+             options.DotNetCliRunnerFactory = (sp) =&gt;
+             {
+                 var runner = new TestDotNetCliRunner();
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, useCache, options, cancellationToken) =&gt;</span>
+                 {
+                     var dockerPackage = new NuGetPackage()
+                     {
+<span class="h">@@ -282,7 +282,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+             options.DotNetCliRunnerFactory = (sp) =&gt;
+             {
+                 var runner = new TestDotNetCliRunner();
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, useCache, options, cancellationToken) =&gt;</span>
+                 {
+                     var dockerPackage = new NuGetPackage()
+                     {
+<span class="h">@@ -363,7 +363,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+             options.DotNetCliRunnerFactory = (sp) =&gt;
+             {
+                 var runner = new TestDotNetCliRunner();
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, useCache, options, cancellationToken) =&gt;</span>
+                 {
+                     var redisPackage = new NuGetPackage()
+                     {
+<span class="h">@@ -426,7 +426,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+             options.DotNetCliRunnerFactory = (sp) =&gt;
+             {
+                 var runner = new TestDotNetCliRunner();
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, useCache, options, cancellationToken) =&gt;</span>
+                 {
+                     return (0, Array.Empty&lt;NuGetPackage&gt;());
+                 };
+<span class="h">@@ -480,7 +480,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+             options.DotNetCliRunnerFactory = (sp) =&gt;
+             {
+                 var runner = new TestDotNetCliRunner();
+<span class="d">-                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, useCache, options, cancellationToken) =&gt;</span>
+                 {
+                     var dockerPackage = new NuGetPackage()
+                     {</pre><h2>Commit #10: <a href="https://github.com/dotnet/aspire/commit/0188e43aad1e5922d3732ffce9c6650471d0f3a9">0188e43aad</a> (2025-10-22T12:43:00-04:00)</h2><p class="k">Prompt to set apphostpath on extension activation (#12008)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 8. Identical text added in other files in this commit: tests/Aspire.Cli.Tests/Commands/ExtensionInternalCommandTests.cs.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index 4c0e8576cf..b55aacde3d 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -4,6 +4,7 @@</span>
+ using Aspire.Cli.Commands;
+ using Aspire.Cli.Interaction;
+ using Aspire.Cli.Packaging;
+<span class="a">+using Aspire.Cli.Resources;</span>
+ using Aspire.Cli.Tests.TestServices;
+ using Aspire.Cli.Tests.Utils;
+ using Microsoft.Extensions.DependencyInjection;
+<span class="h">@@ -70,7 +71,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+                     return (
+                         0, // Exit code.
+<span class="d">-                        new NuGetPackage[] { dockerPackage, redisPackage, azureRedisPackage } // </span>
+<span class="a">+                        new NuGetPackage[] { dockerPackage, redisPackage, azureRedisPackage } //</span>
+                         );
+                 };
+ 
+<span class="h">@@ -145,7 +146,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+                     return (
+                         0, // Exit code.
+<span class="d">-                        new NuGetPackage[] { dockerPackage, redisPackage, azureRedisPackage } // </span>
+<span class="a">+                        new NuGetPackage[] { dockerPackage, redisPackage, azureRedisPackage } //</span>
+                         );
+                 };
+ 
+<span class="h">@@ -228,7 +229,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+                     return (
+                         0, // Exit code.
+<span class="d">-                        new NuGetPackage[] { dockerPackage, redisPackage, azureRedisPackage } // </span>
+<span class="a">+                        new NuGetPackage[] { dockerPackage, redisPackage, azureRedisPackage } //</span>
+                         );
+                 };
+ 
+<span class="h">@@ -307,7 +308,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+                     return (
+                         0, // Exit code.
+<span class="d">-                        new NuGetPackage[] { dockerPackage, redisPackage, azureRedisPackage } // </span>
+<span class="a">+                        new NuGetPackage[] { dockerPackage, redisPackage, azureRedisPackage } //</span>
+                         );
+                 };
+ 
+<span class="h">@@ -374,7 +375,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+                     return (
+                         0, // Exit code.
+<span class="d">-                        new NuGetPackage[] { redisPackage } // </span>
+<span class="a">+                        new NuGetPackage[] { redisPackage } //</span>
+                         );
+                 };
+ 
+<span class="h">@@ -441,7 +442,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+         var exitCode = await result.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+         Assert.Equal(ExitCodeConstants.FailedToAddPackage, exitCode);
+<span class="d">-        Assert.Contains(&quot;No integration packages were found&quot;, displayedErrorMessage);</span>
+<span class="a">+        Assert.Contains(AddCommandStrings.NoIntegrationPackagesFound, displayedErrorMessage);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -515,7 +516,7 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         var exitCode = await result.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+         Assert.Equal(0, exitCode);
+         Assert.True(promptedForIntegration);
+<span class="d">-        Assert.Contains(&quot;No packages matched your search term &#x27;nonexistentpackage&#x27;&quot;, displayedSubtleMessage);</span>
+<span class="a">+        Assert.Equal(string.Format(AddCommandStrings.NoPackagesMatchedSearchTerm, &quot;nonexistentpackage&quot;), displayedSubtleMessage);</span>
+     }
+ 
+     [Theory]</pre><h2>Commit #11: <a href="https://github.com/dotnet/aspire/commit/572ed6c7d8cf17b8371db54439ee58632c4996a1">572ed6c7d8</a> (2025-10-31T22:43:59-07:00)</h2><p class="k">Filter to highest package version per channel in aspire add command (#12553)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 11.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index b55aacde3d..523af58394 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -538,6 +538,170 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         Assert.Equal(expectedFriendlyName, result.FriendlyName);
+         Assert.Equal(package, result.Package);
+     }
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task AddCommandPrompter_FiltersToHighestVersionPerPackageId()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        List&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt;? displayedPackages = null;</span>
+<span class="a">+</span>
+<span class="a m">+        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            options.InteractionServiceFactory = (sp) =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                var mockInteraction = new TestConsoleInteractionService();</span>
+<span class="a">+                mockInteraction.PromptForSelectionCallback = (message, choices, formatter, ct) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    // Capture what the prompter passes to the interaction service</span>
+<span class="a">+                    var choicesList = choices.Cast&lt;(string FriendlyName, NuGetPackage Package, PackageChannel Channel)&gt;().ToList();</span>
+<span class="a">+                    displayedPackages = choicesList;</span>
+<span class="a">+                    return choicesList.First();</span>
+<span class="a">+                };</span>
+<span class="a">+                return mockInteraction;</span>
+<span class="a">+            };</span>
+<span class="a">+        });</span>
+<span class="a">+        var provider = services.BuildServiceProvider();</span>
+<span class="a">+        var interactionService = provider.GetRequiredService&lt;IInteractionService&gt;();</span>
+<span class="a">+</span>
+<span class="a">+        var prompter = new AddCommandPrompter(interactionService);</span>
+<span class="a">+</span>
+<span class="a">+        // Create a fake channel</span>
+<span class="a">+        var fakeCache = new FakeNuGetPackageCache();</span>
+<span class="a">+        var channel = PackageChannel.CreateImplicitChannel(fakeCache);</span>
+<span class="a">+</span>
+<span class="a">+        // Create multiple versions of the same package</span>
+<span class="a">+        var packages = new[]</span>
+<span class="a">+        {</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.0.0&quot;, Source = &quot;nuget&quot; }, channel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.2.0&quot;, Source = &quot;nuget&quot; }, channel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.1.0&quot;, Source = &quot;nuget&quot; }, channel),</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        await prompter.PromptForIntegrationAsync(packages, CancellationToken.None);</span>
+<span class="a">+</span>
+<span class="a">+        // Assert - should only show highest version (9.2.0) for the package ID</span>
+<span class="a">+        Assert.NotNull(displayedPackages);</span>
+<span class="a">+        Assert.Single(displayedPackages!);</span>
+<span class="a">+        Assert.Equal(&quot;9.2.0&quot;, displayedPackages!.First().Package.Version);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task AddCommandPrompter_FiltersToHighestVersionPerChannel()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        List&lt;object&gt;? displayedChoices = null;</span>
+<span class="a">+</span>
+<span class="a m">+        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            options.InteractionServiceFactory = (sp) =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                var mockInteraction = new TestConsoleInteractionService();</span>
+<span class="a">+                mockInteraction.PromptForSelectionCallback = (message, choices, formatter, ct) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    // Capture what the prompter passes to the interaction service</span>
+<span class="a">+                    var choicesList = choices.Cast&lt;object&gt;().ToList();</span>
+<span class="a">+                    displayedChoices = choicesList;</span>
+<span class="a">+                    return choicesList.First();</span>
+<span class="a">+                };</span>
+<span class="a">+                return mockInteraction;</span>
+<span class="a">+            };</span>
+<span class="a">+        });</span>
+<span class="a">+        var provider = services.BuildServiceProvider();</span>
+<span class="a">+        var interactionService = provider.GetRequiredService&lt;IInteractionService&gt;();</span>
+<span class="a">+</span>
+<span class="a">+        var prompter = new AddCommandPrompter(interactionService);</span>
+<span class="a">+</span>
+<span class="a">+        // Create a fake channel</span>
+<span class="a">+        var fakeCache = new FakeNuGetPackageCache();</span>
+<span class="a">+        var channel = PackageChannel.CreateImplicitChannel(fakeCache);</span>
+<span class="a">+</span>
+<span class="a">+        // Create multiple versions of the same package from same channel</span>
+<span class="a">+        var packages = new[]</span>
+<span class="a">+        {</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.0.0&quot;, Source = &quot;nuget&quot; }, channel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.2.0&quot;, Source = &quot;nuget&quot; }, channel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.1.0&quot;, Source = &quot;nuget&quot; }, channel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.0.1-preview.1&quot;, Source = &quot;nuget&quot; }, channel),</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        await prompter.PromptForIntegrationVersionAsync(packages, CancellationToken.None);</span>
+<span class="a">+</span>
+<span class="a">+        // Assert - For implicit channel, should only show highest version (9.2.0) directly</span>
+<span class="a">+        // The root menu shows: (string Label, Func&lt;...&gt; Action) tuples</span>
+<span class="a">+        Assert.NotNull(displayedChoices);</span>
+<span class="a">+        Assert.Single(displayedChoices!); // Only one choice for implicit channel</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task AddCommandPrompter_ShowsHighestVersionPerChannelWhenMultipleChannels()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        List&lt;object&gt;? displayedChoices = null;</span>
+<span class="a">+</span>
+<span class="a m">+        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            options.InteractionServiceFactory = (sp) =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                var mockInteraction = new TestConsoleInteractionService();</span>
+<span class="a">+                mockInteraction.PromptForSelectionCallback = (message, choices, formatter, ct) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    // Capture what the prompter passes to the interaction service</span>
+<span class="a">+                    var choicesList = choices.Cast&lt;object&gt;().ToList();</span>
+<span class="a">+                    displayedChoices = choicesList;</span>
+<span class="a">+                    return choicesList.First();</span>
+<span class="a">+                };</span>
+<span class="a">+                return mockInteraction;</span>
+<span class="a">+            };</span>
+<span class="a">+        });</span>
+<span class="a">+        var provider = services.BuildServiceProvider();</span>
+<span class="a">+        var interactionService = provider.GetRequiredService&lt;IInteractionService&gt;();</span>
+<span class="a">+</span>
+<span class="a">+        var prompter = new AddCommandPrompter(interactionService);</span>
+<span class="a">+</span>
+<span class="a">+        // Create two different channels</span>
+<span class="a">+        var fakeCache = new FakeNuGetPackageCache();</span>
+<span class="a">+        var implicitChannel = PackageChannel.CreateImplicitChannel(fakeCache);</span>
+<span class="a">+        </span>
+<span class="a">+        var mappings = new[] { new PackageMapping(&quot;Aspire*&quot;, &quot;https://preview-feed&quot;) };</span>
+<span class="a">+        var explicitChannel = PackageChannel.CreateExplicitChannel(&quot;preview&quot;, PackageChannelQuality.Prerelease, mappings, fakeCache);</span>
+<span class="a">+</span>
+<span class="a">+        // Create packages from different channels with different versions</span>
+<span class="a">+        var packages = new[]</span>
+<span class="a">+        {</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.0.0&quot;, Source = &quot;nuget&quot; }, implicitChannel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.1.0&quot;, Source = &quot;nuget&quot; }, implicitChannel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;9.2.0&quot;, Source = &quot;nuget&quot; }, implicitChannel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;10.0.0-preview.1&quot;, Source = &quot;preview-feed&quot; }, explicitChannel),</span>
+<span class="a">+            (&quot;redis&quot;, new NuGetPackage { Id = &quot;Aspire.Hosting.Redis&quot;, Version = &quot;10.0.0-preview.2&quot;, Source = &quot;preview-feed&quot; }, explicitChannel),</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        await prompter.PromptForIntegrationVersionAsync(packages, CancellationToken.None);</span>
+<span class="a">+</span>
+<span class="a">+        // Assert - should show 2 root choices: one for implicit channel, one submenu for explicit channel</span>
+<span class="a">+        Assert.NotNull(displayedChoices);</span>
+<span class="a">+        Assert.Equal(2, displayedChoices!.Count);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    private sealed class FakeNuGetPackageCache : Aspire.Cli.NuGet.INuGetPackageCache</span>
+<span class="a">+    {</span>
+<span class="a">+        public Task&lt;IEnumerable&lt;NuGetPackage&gt;&gt; GetTemplatePackagesAsync(DirectoryInfo workingDirectory, bool prerelease, FileInfo? nugetConfigFile, CancellationToken cancellationToken) </span>
+<span class="a">+            =&gt; Task.FromResult&lt;IEnumerable&lt;NuGetPackage&gt;&gt;([]);</span>
+<span class="a">+        </span>
+<span class="a">+        public Task&lt;IEnumerable&lt;NuGetPackage&gt;&gt; GetIntegrationPackagesAsync(DirectoryInfo workingDirectory, bool prerelease, FileInfo? nugetConfigFile, CancellationToken cancellationToken) </span>
+<span class="a">+            =&gt; Task.FromResult&lt;IEnumerable&lt;NuGetPackage&gt;&gt;([]);</span>
+<span class="a">+        </span>
+<span class="a">+        public Task&lt;IEnumerable&lt;NuGetPackage&gt;&gt; GetCliPackagesAsync(DirectoryInfo workingDirectory, bool prerelease, FileInfo? nugetConfigFile, CancellationToken cancellationToken) </span>
+<span class="a">+            =&gt; Task.FromResult&lt;IEnumerable&lt;NuGetPackage&gt;&gt;([]);</span>
+<span class="a">+        </span>
+<span class="a">+        public Task&lt;IEnumerable&lt;NuGetPackage&gt;&gt; GetPackagesAsync(DirectoryInfo workingDirectory, string packageId, Func&lt;string, bool&gt;? filter, bool prerelease, FileInfo? nugetConfigFile, bool useCache, CancellationToken cancellationToken) </span>
+<span class="a">+            =&gt; Task.FromResult&lt;IEnumerable&lt;NuGetPackage&gt;&gt;([]);</span>
+<span class="a">+    }</span>
+ }
+ 
+ internal sealed class TestAddCommandPrompter(IInteractionService interactionService) : AddCommandPrompter(interactionService)</pre><h2>Commit #12: <a href="https://github.com/dotnet/aspire/commit/0efbd303404fe0ffa65e3be525e53549d8fb0878">0efbd30340</a> (2025-12-09T18:50:13+11:00)</h2><p class="k">Remove channel prompt from aspire new, add, and update commands (#13395)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs. Lines with exactly this text in the file after the commit: 12. Identical text added in other files in this commit: tests/Aspire.Cli.Tests/Commands/UpdateCommandTests.cs.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs
+index 523af58394..43f40c96fa 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/AddCommandTests.cs</span>
+<span class="h">@@ -628,12 +628,11 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         };
+ 
+         // Act
+<span class="d">-        await prompter.PromptForIntegrationVersionAsync(packages, CancellationToken.None);</span>
+<span class="a">+        var result = await prompter.PromptForIntegrationVersionAsync(packages, CancellationToken.None);</span>
+ 
+<span class="d">-        // Assert - For implicit channel, should only show highest version (9.2.0) directly</span>
+<span class="d">-        // The root menu shows: (string Label, Func&lt;...&gt; Action) tuples</span>
+<span class="d">-        Assert.NotNull(displayedChoices);</span>
+<span class="d">-        Assert.Single(displayedChoices!); // Only one choice for implicit channel</span>
+<span class="a">+        // Assert - For implicit channel with no explicit channels, should automatically select highest version without prompting</span>
+<span class="a">+        Assert.Null(displayedChoices); // No prompt should be shown</span>
+<span class="a">+        Assert.Equal(&quot;9.2.0&quot;, result.Package.Version); // Should return highest version</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -688,19 +687,62 @@ public class AddCommandTests(ITestOutputHelper outputHelper)</span>
+         Assert.Equal(2, displayedChoices!.Count);
+     }
+ 
+<span class="d">-    private sealed class FakeNuGetPackageCache : Aspire.Cli.NuGet.INuGetPackageCache</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task AddCommand_WithoutHives_UsesImplicitChannelWithoutPrompting()</span>
+     {
+<span class="d">-        public Task&lt;IEnumerable&lt;NuGetPackage&gt;&gt; GetTemplatePackagesAsync(DirectoryInfo workingDirectory, bool prerelease, FileInfo? nugetConfigFile, CancellationToken cancellationToken) </span>
+<span class="d">-            =&gt; Task.FromResult&lt;IEnumerable&lt;NuGetPackage&gt;&gt;([]);</span>
+<span class="a">+        // Arrange</span>
+<span class="a m">+        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+         
+<span class="d">-        public Task&lt;IEnumerable&lt;NuGetPackage&gt;&gt; GetIntegrationPackagesAsync(DirectoryInfo workingDirectory, bool prerelease, FileInfo? nugetConfigFile, CancellationToken cancellationToken) </span>
+<span class="d">-            =&gt; Task.FromResult&lt;IEnumerable&lt;NuGetPackage&gt;&gt;([]);</span>
+<span class="a">+        var selectedPackageId = string.Empty;</span>
+         
+<span class="d">-        public Task&lt;IEnumerable&lt;NuGetPackage&gt;&gt; GetCliPackagesAsync(DirectoryInfo workingDirectory, bool prerelease, FileInfo? nugetConfigFile, CancellationToken cancellationToken) </span>
+<span class="d">-            =&gt; Task.FromResult&lt;IEnumerable&lt;NuGetPackage&gt;&gt;([]);</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            options.ProjectLocatorFactory = _ =&gt; new TestProjectLocator();</span>
+<span class="a">+</span>
+<span class="a">+            options.InteractionServiceFactory = _ =&gt; new TestConsoleInteractionService()</span>
+<span class="a">+            {</span>
+<span class="a">+                PromptForSelectionCallback = (message, choices, formatter, ct) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    return choices.Cast&lt;object&gt;().First();</span>
+<span class="a">+                }</span>
+<span class="a">+            };</span>
+<span class="a">+</span>
+<span class="a">+            options.DotNetCliRunnerFactory = (sp) =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                var runner = new TestDotNetCliRunner();</span>
+<span class="a">+                runner.SearchPackagesAsyncCallback = (dir, query, prerelease, take, skip, nugetSource, useCache, options, cancellationToken) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    var redisPackage = new NuGetPackage()</span>
+<span class="a">+                    {</span>
+<span class="a">+                        Id = &quot;Aspire.Hosting.Redis&quot;,</span>
+<span class="a">+                        Source = &quot;nuget&quot;,</span>
+<span class="a">+                        Version = &quot;9.2.0&quot;</span>
+<span class="a">+                    };</span>
+<span class="a">+</span>
+<span class="a">+                    return (0, new NuGetPackage[] { redisPackage });</span>
+<span class="a">+                };</span>
+<span class="a">+</span>
+<span class="a">+                runner.AddPackageAsyncCallback = (projectFilePath, packageName, packageVersion, nugetSource, options, cancellationToken) =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    selectedPackageId = packageName;</span>
+<span class="a">+                    return 0;</span>
+<span class="a">+                };</span>
+<span class="a">+</span>
+<span class="a">+                return runner;</span>
+<span class="a">+            };</span>
+<span class="a">+        });</span>
+         
+<span class="d">-        public Task&lt;IEnumerable&lt;NuGetPackage&gt;&gt; GetPackagesAsync(DirectoryInfo workingDirectory, string packageId, Func&lt;string, bool&gt;? filter, bool prerelease, FileInfo? nugetConfigFile, bool useCache, CancellationToken cancellationToken) </span>
+<span class="d">-            =&gt; Task.FromResult&lt;IEnumerable&lt;NuGetPackage&gt;&gt;([]);</span>
+<span class="a">+        var provider = services.BuildServiceProvider();</span>
+<span class="a">+</span>
+<span class="a">+        // Act - without hives, should automatically select from implicit channel without prompting</span>
+<span class="a">+        var command = provider.GetRequiredService&lt;AddCommand&gt;();</span>
+<span class="a">+        var result = command.Parse(&quot;add redis&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        var exitCode = await result.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(0, exitCode);</span>
+<span class="a">+        Assert.Equal(&quot;Aspire.Hosting.Redis&quot;, selectedPackageId);</span>
+     }
+ }
+ </pre></body></html>

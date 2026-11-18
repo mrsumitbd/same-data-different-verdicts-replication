@@ -1,0 +1,51 @@
+Task 1: Kaplan-Meier, two panels (Def 1 syntactic, Def 2 AST-structural)
+input: data/survival_events_line_v6confnv_analysis.csv (644,177 lines after observation window)
+data end (administrative censoring): 2025-12-31 23:59:59; merge inclusion cutoff: < 2025-08-01 00:00:00
+
+Follow-up and merge (birth) dates per group:
+group                 lines  max follow-up (d)       earliest merge         latest merge  min follow-up (d)  max event day
+Human-supervised    177,787              280.7  2025-03-26 06:56:39  2025-07-30 17:01:41              154.3          264.4
+Devin                87,634              369.0  2024-12-28 00:30:39  2025-07-30 19:00:25              154.2          357.0
+Human baseline      378,756              364.2  2025-01-01 19:16:42  2025-06-28 03:26:17              186.9          348.8
+Max follow-up = data end - earliest merge of the group (censored lines run to the data end).
+
+Lines still at risk (duration >= d) per group:
+group                  d150     d200     d245     d250     d265     d280     d300     d340
+Human-supervised    146,627   64,905      573      573      571      570        0        0
+Devin                71,256   30,415   18,886   18,519   16,218   12,909    9,611    4,559
+Human baseline      297,099  242,056  181,775  179,188  143,233   69,893   51,041   13,751
+
+Merge-month distribution of PRs per group (PR counts):
+two_tier  Human-supervised  Devin  Human baseline
+birth_dt                                         
+2024-12                  0      6               0
+2025-01                  0     48             174
+2025-02                  0     55             215
+2025-03                  1     64             208
+2025-04                  1     71             255
+2025-05                212     64             251
+2025-06                480     42             224
+2025-07                361     62               0
+
+KM survival (retention probability) at days 30 and 40, 95% CI:
+  Def 1  Human-supervised   day 30: 0.8883 [0.8868, 0.8897]
+  Def 1  Human-supervised   day 40: 0.8790 [0.8774, 0.8805]
+  Def 1  Devin              day 30: 0.8823 [0.8802, 0.8844]
+  Def 1  Devin              day 40: 0.8735 [0.8713, 0.8757]
+  Def 1  Human baseline     day 30: 0.9044 [0.9035, 0.9054]
+  Def 1  Human baseline     day 40: 0.8934 [0.8924, 0.8944]
+  Def 2  Human-supervised   day 30: 0.9078 [0.9064, 0.9091]
+  Def 2  Human-supervised   day 40: 0.9015 [0.9001, 0.9029]
+  Def 2  Devin              day 30: 0.9193 [0.9175, 0.9211]
+  Def 2  Devin              day 40: 0.9129 [0.9110, 0.9148]
+  Def 2  Human baseline     day 30: 0.9360 [0.9352, 0.9368]
+  Def 2  Human baseline     day 40: 0.9277 [0.9269, 0.9286]
+
+Curve cut per group and panel: last time with >= 1% of the group's lines at risk (duration >= t):
+panel                            group                 lines  cut day  lines at risk  PRs at risk  repos  PRs in group  KM S(cut)  max dur
+Definition 1 (syntactic)         Human-supervised    177,787    232.0    2,734 (1.54%)            6      3          1055     0.7663    280.7
+Definition 1 (syntactic)         Devin                87,634    359.0    1,348 (1.54%)           11      5           412     0.6891    369.0
+Definition 1 (syntactic)         Human baseline      378,756    356.3    4,399 (1.16%)           24     16          1327     0.6871    364.2
+Definition 2 (AST-structural)    Human-supervised    177,787    232.0    2,734 (1.54%)            6      3          1055     0.8312    280.7
+Definition 2 (AST-structural)    Devin                87,634    359.0    1,348 (1.54%)           11      5           412     0.7613    369.0
+Definition 2 (AST-structural)    Human baseline      378,756    356.3    4,399 (1.16%)           24     16          1327     0.7538    364.2

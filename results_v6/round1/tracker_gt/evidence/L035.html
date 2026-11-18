@@ -1,0 +1,57 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L035</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L035</h1><p><b>Repository:</b> <a href="https://github.com/f/mcptools">f/mcptools</a><br><b>File at merge:</b> cmd/mcptools/commands/call_test.go, line 99<br><b>Merge commit (birth):</b> <a href="https://github.com/f/mcptools/commit/a906e6a55610fb8b8ddc287a71e6411946434def">a906e6a556</a> (2025-04-05T13:28:25)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/f/mcptools/tree/e7bd7246118384095ba22fd219ff38a1bf1cb792">e7bd724611</a>)</p><p><b>The line:</b></p><pre><span class="t">	// Verify output contains expected content</span></pre><h2>File at the merge commit, lines 91 to 103</h2><pre>   91 | 
+   92 | 	// Execute command with resource
+   93 | 	cmd.SetArgs([]string{&quot;resource:test-resource&quot;, &quot;server&quot;, &quot;arg&quot;})
+   94 | 	err := cmd.Execute()
+   95 | 	if err != nil {
+   96 | 		t.Errorf(&quot;cmd.Execute() error = %v&quot;, err)
+   97 | 	}
+   98 | 
+<span class="t">   99 | 	// Verify output contains expected content</span>
+  100 | 	output := buf.String()
+  101 | 	expectedOutput := &quot;Resource content&quot;
+  102 | 	assertContains(t, output, expectedOutput)
+  103 | }</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/f/mcptools/commit/84dca51a5678619a0ed1c7fe1297cd9601a08509">84dca51a56</a> (2025-04-07T16:26:18+03:00)</h2><p class="k">Merge pull request #30 from ayakut16/tests/commands<br>Path after this commit: cmd/mcptools/commands/call_test.go. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/cmd/mcptools/commands/call_test.go b/cmd/mcptools/commands/call_test.go
+index b9c0112..bdeef1e 100644
+<span class="d">--- a/cmd/mcptools/commands/call_test.go</span>
+<span class="a">+++ b/cmd/mcptools/commands/call_test.go</span>
+<span class="h">@@ -63,15 +63,13 @@ func TestCallCmdRun_Tool(t *testing.T) {</span>
+ }
+ 
+ func TestCallCmdRun_Resource(t *testing.T) {
+<span class="d">-	t.Skip(&quot;Skipping resource command test as resources are not working as expected&quot;)</span>
+<span class="d">-</span>
+ 	// Create a mock client that returns successful response
+ 	mockResponse := map[string]any{
+<span class="d">-		&quot;resources&quot;: []any{</span>
+<span class="a">+		&quot;contents&quot;: []any{</span>
+ 			map[string]any{
+<span class="d">-				&quot;uri&quot;:         &quot;test-resource&quot;,</span>
+<span class="d">-				&quot;type&quot;:        &quot;text&quot;,</span>
+<span class="d">-				&quot;description&quot;: &quot;Test resource description&quot;,</span>
+<span class="a">+				&quot;uri&quot;:      &quot;test://foo&quot;,</span>
+<span class="a">+				&quot;mimeType&quot;: &quot;text/plain&quot;,</span>
+<span class="a">+				&quot;text&quot;:     &quot;bar&quot;,</span>
+ 			},
+ 		},
+ 	}
+<span class="h">@@ -90,7 +88,7 @@ func TestCallCmdRun_Resource(t *testing.T) {</span>
+ 	cmd.SetOut(buf)
+ 
+ 	// Execute command with resource
+<span class="d">-	cmd.SetArgs([]string{&quot;resource:test-resource&quot;, &quot;server&quot;, &quot;arg&quot;})</span>
+<span class="a">+	cmd.SetArgs([]string{&quot;resource:test-resource&quot;, &quot;-f&quot;, &quot;json&quot;, &quot;server&quot;, &quot;arg&quot;})</span>
+ 	err := cmd.Execute()
+ 	if err != nil {
+ 		t.Errorf(&quot;cmd.Execute() error = %v&quot;, err)
+<span class="h">@@ -98,6 +96,6 @@ func TestCallCmdRun_Resource(t *testing.T) {</span>
+ 
+<span class=" m"> 	// Verify output contains expected content</span>
+ 	output := buf.String()
+<span class="d">-	expectedOutput := &quot;Resource content&quot;</span>
+<span class="a">+	expectedOutput := `{&quot;contents&quot;:[{&quot;mimeType&quot;:&quot;text/plain&quot;,&quot;text&quot;:&quot;bar&quot;,&quot;uri&quot;:&quot;test://foo&quot;}]}`</span>
+ 	assertContains(t, output, expectedOutput)
+ }</pre></body></html>

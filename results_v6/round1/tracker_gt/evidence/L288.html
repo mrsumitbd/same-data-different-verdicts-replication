@@ -1,0 +1,130 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L288</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L288</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/android">dotnet/android</a><br><b>File at merge:</b> src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs, line 210<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/android/commit/8d739f498b8872a3fae3e29019538801eb30ef61">8d739f498b</a> (2025-02-28T20:01:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/android/tree/bb5968d700eaea7c4aae25e7c671c73efebc777f">bb5968d700</a>)</p><p><b>The line:</b></p><pre><span class="t">		il.Emit (OpCodes.Pop); // classIndex</span></pre><h2>File at the merge commit, lines 202 to 218</h2><pre>  202 | 		for (int i = 0; i &lt; targets.Length; i++) {
+  203 | 			il.Append (targets [i]); // call
+  204 | 			il.Emit (OpCodes.Ret);
+  205 | 		}
+  206 | 
+  207 | 		// no hit? this shouldn&#x27;t happen
+  208 | 		il.Append (defaultTarget);
+  209 | 		il.Emit (OpCodes.Pop); // methodIndex
+<span class="t">  210 | 		il.Emit (OpCodes.Pop); // classIndex</span>
+  211 | 		il.Emit (OpCodes.Ldc_I4_M1);
+  212 | 		il.Emit (OpCodes.Conv_I);
+  213 | 		il.Emit (OpCodes.Ret);
+  214 | 	}
+  215 | 
+  216 | 	TypeReference ImportReference (ModuleDefinition module, Type type)
+  217 | 	{
+  218 | 		if (!typeReferenceCache.TryGetValue (module, out var cache)) {</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/android/commit/8ce221c53372294dd1863e4378540f8e88f667d9">8ce221c533</a> (2025-03-26T14:11:23-04:00)</h2><p class="k">[Xamarin.Android.Build.Tasks] Avoid br.s in generated lookup tables (#9969)<br>Path after this commit: src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs b/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs
+index 17ed80a69..fa71ce15b 100644
+<span class="d">--- a/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs</span>
+<span class="a">+++ b/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs</span>
+<span class="h">@@ -74,25 +74,20 @@ class ManagedMarshalMethodsLookupGenerator</span>
+ 			targets [methodLookup.Index] = Instruction.Create (OpCodes.Ldftn, methodLookup.NativeCallbackWrapper);
+ 		}
+ 
+<span class="d">-		var invalidUcoTarget = Instruction.Create (OpCodes.Nop);</span>
+<span class="d">-</span>
+ 		var il = getFunctionPointerMethod.Body.GetILProcessor ();
+ 		il.Emit (OpCodes.Ldarg, methodIndexParameter);
+ 		il.Emit (OpCodes.Switch, targets);
+ 
+<span class="d">-		il.Emit (OpCodes.Br_S, invalidUcoTarget);</span>
+<span class="a">+		// The default target</span>
+<span class="a">+		il.Emit (OpCodes.Ldc_I4_M1);</span>
+<span class="a">+		il.Emit (OpCodes.Conv_I);</span>
+<span class="a">+		il.Emit (OpCodes.Ret);</span>
+ 
+ 		for (var k = 0; k &lt; targets.Length; k++) {
+ 			il.Append (targets [k]);
+ 			il.Emit (OpCodes.Ret);
+ 		}
+ 
+<span class="d">-		// no hit? this shouldn&#x27;t happen</span>
+<span class="d">-		il.Append (invalidUcoTarget);</span>
+<span class="d">-		il.Emit (OpCodes.Ldc_I4_M1);</span>
+<span class="d">-		il.Emit (OpCodes.Conv_I);</span>
+<span class="d">-		il.Emit (OpCodes.Ret);</span>
+<span class="d">-</span>
+ 		// in the case of private/private protected/protected nested types, we need to generate proxy method(s) in the parent type(s)
+ 		// so that we can call the actual GetFunctionPointer method from our assembly-level GetFunctionPointer method
+ 		while (declaringType.IsNested &amp;&amp; (declaringType.IsNestedPrivate || declaringType.IsNestedFamily || declaringType.IsNestedFamilyAndAssembly)) {
+<span class="h">@@ -153,21 +148,17 @@ class ManagedMarshalMethodsLookupGenerator</span>
+ 		il.Emit (OpCodes.Ldarg, classIndexParameter);
+ 		il.Emit (OpCodes.Switch, targets);
+ 
+<span class="d">-		var defaultTarget = Instruction.Create (OpCodes.Nop);</span>
+<span class="d">-		il.Emit (OpCodes.Br, defaultTarget);</span>
+<span class="a">+		// &quot;Default target&quot;</span>
+<span class="a">+		il.Emit (OpCodes.Pop); // methodIndex</span>
+<span class="a">+		il.Emit (OpCodes.Ldc_I4_M1);</span>
+<span class="a">+		il.Emit (OpCodes.Conv_I);</span>
+<span class="a">+		il.Emit (OpCodes.Ret);</span>
+ 
+ 		for (int i = 0; i &lt; targets.Length; i++) {
+ 			il.Append (targets [i]); // call
+ 			il.Emit (OpCodes.Ret);
+ 		}
+ 
+<span class="d">-		// no hit? this shouldn&#x27;t happen</span>
+<span class="d">-		il.Append (defaultTarget);</span>
+<span class="d">-		il.Emit (OpCodes.Pop); // methodIndex</span>
+<span class="d">-		il.Emit (OpCodes.Ldc_I4_M1);</span>
+<span class="d">-		il.Emit (OpCodes.Conv_I);</span>
+<span class="d">-		il.Emit (OpCodes.Ret);</span>
+<span class="d">-</span>
+ 		return getFunctionPointerMethod;
+ 	}
+ 
+<span class="h">@@ -196,21 +187,17 @@ class ManagedMarshalMethodsLookupGenerator</span>
+ 		il.Emit (OpCodes.Ldarg_0); // assemblyIndex
+ 		il.Emit (OpCodes.Switch, targets);
+ 
+<span class="d">-		var defaultTarget = Instruction.Create (OpCodes.Nop);</span>
+<span class="d">-		il.Emit (OpCodes.Br_S, defaultTarget);</span>
+<span class="d">-</span>
+<span class="d">-		for (int i = 0; i &lt; targets.Length; i++) {</span>
+<span class="d">-			il.Append (targets [i]); // call</span>
+<span class="d">-			il.Emit (OpCodes.Ret);</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// no hit? this shouldn&#x27;t happen</span>
+<span class="d">-		il.Append (defaultTarget);</span>
+<span class="a">+		// The default target</span>
+ 		il.Emit (OpCodes.Pop); // methodIndex
+<span class=" m"> 		il.Emit (OpCodes.Pop); // classIndex</span>
+ 		il.Emit (OpCodes.Ldc_I4_M1);
+ 		il.Emit (OpCodes.Conv_I);
+ 		il.Emit (OpCodes.Ret);
+<span class="a">+</span>
+<span class="a">+		for (int i = 0; i &lt; targets.Length; i++) {</span>
+<span class="a">+			il.Append (targets [i]); // call</span>
+<span class="a">+			il.Emit (OpCodes.Ret);</span>
+<span class="a">+		}</span>
+ 	}
+ 
+ 	TypeReference ImportReference (ModuleDefinition module, Type type)</pre><h2>Commit #2: <a href="https://github.com/dotnet/android/commit/395189c1af402a052bb7ee7c4cdf42d5bbfe73d1">395189c1af</a> (2025-04-30T12:31:36-10:00)</h2><p class="k">[XABT] Make NRT opt-out instead of opt-in. (#10093)<br>Path after this commit: src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs b/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs
+index fa71ce15b..3238f92ee 100644
+<span class="d">--- a/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs</span>
+<span class="a">+++ b/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs</span>
+<span class="h">@@ -1,3 +1,5 @@</span>
+<span class="a">+#nullable disable</span>
+<span class="a">+</span>
+ using System;
+ using System.Collections.Generic;
+ </pre><h2>Commit #3: <a href="https://github.com/dotnet/android/commit/acfdf8aa026a681350992e4817500517a358c033">acfdf8aa02</a> (2025-07-10T11:30:57-05:00)</h2><p class="k">[xabt] Replace `String.Compare()` calls with a helper method (#10274)<br>Path after this commit: src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs b/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs
+index 3238f92ee..1c1709567 100644
+<span class="d">--- a/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs</span>
+<span class="a">+++ b/src/Xamarin.Android.Build.Tasks/Utilities/ManagedMarshalMethodsLookupGenerator.cs</span>
+<span class="h">@@ -220,7 +220,7 @@ class ManagedMarshalMethodsLookupGenerator</span>
+ 		log.LogDebugMessage ($&quot;[{targetArch}] Looking for method &#x27;{methodName}&#x27; with {parametersCount} params in type {type}&quot;);
+ 		foreach (MethodDefinition method in type.Methods) {
+ 			log.LogDebugMessage ($&quot;[{targetArch}]   method: {method.Name}&quot;);
+<span class="d">-			if (method.Parameters.Count == parametersCount &amp;&amp; String.Compare (methodName, method.Name, StringComparison.Ordinal) == 0) {</span>
+<span class="a">+			if (method.Parameters.Count == parametersCount &amp;&amp; MonoAndroidHelper.StringEquals (methodName, method.Name)) {</span>
+ 				log.LogDebugMessage ($&quot;[{targetArch}]     match!&quot;);
+ 				return method;
+ 			}</pre></body></html>

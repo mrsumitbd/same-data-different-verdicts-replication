@@ -1,0 +1,145 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L233</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L233</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>File at merge:</b> packages/models/src/settings/index.ts, line 13<br><b>Merge commit (birth):</b> <a href="https://github.com/onlook-dev/onlook/commit/e11c5f4fed2a2783a065b4e2ea4028eae78df051">e11c5f4fed</a> (2025-02-16T07:39:24)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">export interface ChatSettings {</span></pre><h2>File at the merge commit, lines 5 to 21</h2><pre>    5 |     id?: string;
+    6 |     enableAnalytics?: boolean;
+    7 |     ideType?: IdeType;
+    8 |     signInMethod?: string;
+    9 |     shouldWarnDelete?: boolean;
+   10 |     chatSettings?: ChatSettings;
+   11 | }
+   12 | 
+<span class="t">   13 | export interface ChatSettings {</span>
+   14 |     showSuggestions: boolean;
+   15 |     autoApplyCode: boolean;
+   16 |     expandCodeBlocks: boolean;
+   17 | }
+   18 | 
+   19 | export interface ProjectsCache {
+   20 |     projects: Project[];
+   21 | }</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/c22fda315f370b2c94cbf0c8708a9489984e5cea">c22fda315f</a> (2025-02-16T19:32:29-05:00)</h2><p class="k">Refactor user manager and subscriptions (#1400)<br>Path after this commit: packages/models/src/settings/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/models/src/settings/index.ts b/packages/models/src/settings/index.ts
+index b430ad59..fe115b60 100644
+<span class="d">--- a/packages/models/src/settings/index.ts</span>
+<span class="a">+++ b/packages/models/src/settings/index.ts</span>
+<span class="h">@@ -4,10 +4,14 @@ import { type Project } from &#x27;../projects&#x27;;</span>
+ export interface UserSettings {
+     id?: string;
+     enableAnalytics?: boolean;
+<span class="d">-    ideType?: IdeType;</span>
+     signInMethod?: string;
+<span class="a">+    editor?: EditorSettings;</span>
+<span class="a">+    chat?: ChatSettings;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+export interface EditorSettings {</span>
+     shouldWarnDelete?: boolean;
+<span class="d">-    chatSettings?: ChatSettings;</span>
+<span class="a">+    ideType?: IdeType;</span>
+ }
+ 
+<span class=" m"> export interface ChatSettings {</span></pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/cd94a669bfd986d02b6e3d0d040ee9cc2f79529d">cd94a669bf</a> (2025-03-03T21:41:06-05:00)</h2><p class="k">Add toggle for chat with AI floating button (#1495)<br>Path after this commit: packages/models/src/settings/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/models/src/settings/index.ts b/packages/models/src/settings/index.ts
+index fe115b60..de454ad9 100644
+<span class="d">--- a/packages/models/src/settings/index.ts</span>
+<span class="a">+++ b/packages/models/src/settings/index.ts</span>
+<span class="h">@@ -18,6 +18,7 @@ export interface ChatSettings {</span>
+     showSuggestions: boolean;
+     autoApplyCode: boolean;
+     expandCodeBlocks: boolean;
+<span class="a">+    showMiniChat: boolean;</span>
+ }
+ 
+ export interface ProjectsCache {</pre><h2>Commit #3: <a href="https://github.com/onlook-dev/onlook/commit/7351cc0ef92f16ba686827368d1e3237b449e391">7351cc0ef9</a> (2025-03-11T15:13:44-04:00)</h2><p class="k">Add setting to toggle bun replace command functionality (#1576)<br>Path after this commit: packages/models/src/settings/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/models/src/settings/index.ts b/packages/models/src/settings/index.ts
+index de454ad9..9abacbfd 100644
+<span class="d">--- a/packages/models/src/settings/index.ts</span>
+<span class="a">+++ b/packages/models/src/settings/index.ts</span>
+<span class="h">@@ -12,6 +12,7 @@ export interface UserSettings {</span>
+ export interface EditorSettings {
+     shouldWarnDelete?: boolean;
+     ideType?: IdeType;
+<span class="a">+    enableBunReplace?: boolean;</span>
+ }
+ 
+<span class=" m"> export interface ChatSettings {</span></pre><h2>Commit #4: <a href="https://github.com/onlook-dev/onlook/commit/7a19b7b48f59946eb9151af25ecc01a8fee6db67">7a19b7b48f</a> (2025-03-11T21:37:28-04:00)</h2><p class="k">Add advanced settings for build flags and custom projects path (#1582)<br>Path after this commit: packages/models/src/settings/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/models/src/settings/index.ts b/packages/models/src/settings/index.ts
+index 9abacbfd..46b5265f 100644
+<span class="d">--- a/packages/models/src/settings/index.ts</span>
+<span class="a">+++ b/packages/models/src/settings/index.ts</span>
+<span class="h">@@ -13,6 +13,8 @@ export interface EditorSettings {</span>
+     shouldWarnDelete?: boolean;
+     ideType?: IdeType;
+     enableBunReplace?: boolean;
+<span class="a">+    buildFlags?: string;</span>
+<span class="a">+    newProjectPath?: string;</span>
+ }
+ 
+<span class=" m"> export interface ChatSettings {</span></pre><h2>Commit #5: <a href="https://github.com/onlook-dev/onlook/commit/f7a8060cc456b1968464e5bde9d8fca16648eb1e">f7a8060cc4</a> (2025-05-14T19:16:52-04:00)</h2><p class="k">Migrate to web version (#1837)<br>Path after this commit: packages/models/src/settings/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/models/src/settings/index.ts b/packages/models/src/settings/index.ts
+index 46b5265f..92521e8a 100644
+<span class="d">--- a/packages/models/src/settings/index.ts</span>
+<span class="a">+++ b/packages/models/src/settings/index.ts</span>
+<span class="h">@@ -1,5 +1,4 @@</span>
+ import { IdeType } from &#x27;../ide&#x27;;
+<span class="d">-import { type Project } from &#x27;../projects&#x27;;</span>
+ 
+ export interface UserSettings {
+     id?: string;
+<span class="h">@@ -24,10 +23,6 @@ export interface ChatSettings {</span>
+     showMiniChat: boolean;
+ }
+ 
+<span class="d">-export interface ProjectsCache {</span>
+<span class="d">-    projects: Project[];</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ export interface UserMetadata {
+     id: string;
+     name?: string;</pre><h2>Commit #6: <a href="https://github.com/onlook-dev/onlook/commit/53b7f84552e9169d88f521c0ee17f4e80847be86">53b7f84552</a> (2025-05-23T13:50:45-04:00)</h2><p class="k">feat: add chat settings (#1911)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: packages/models/src/user/settings.ts.</p><pre>diff --git a/packages/models/src/settings/index.ts b/packages/models/src/settings/index.ts
+deleted file mode 100644
+index 92521e8a..00000000
+<span class="d">--- a/packages/models/src/settings/index.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,45 +0,0 @@</span>
+<span class="d">-import { IdeType } from &#x27;../ide&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-export interface UserSettings {</span>
+<span class="d">-    id?: string;</span>
+<span class="d">-    enableAnalytics?: boolean;</span>
+<span class="d">-    signInMethod?: string;</span>
+<span class="d">-    editor?: EditorSettings;</span>
+<span class="d">-    chat?: ChatSettings;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export interface EditorSettings {</span>
+<span class="d">-    shouldWarnDelete?: boolean;</span>
+<span class="d">-    ideType?: IdeType;</span>
+<span class="d">-    enableBunReplace?: boolean;</span>
+<span class="d">-    buildFlags?: string;</span>
+<span class="d">-    newProjectPath?: string;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d m">-export interface ChatSettings {</span>
+<span class="d">-    showSuggestions: boolean;</span>
+<span class="d">-    autoApplyCode: boolean;</span>
+<span class="d">-    expandCodeBlocks: boolean;</span>
+<span class="d">-    showMiniChat: boolean;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export interface UserMetadata {</span>
+<span class="d">-    id: string;</span>
+<span class="d">-    name?: string;</span>
+<span class="d">-    email?: string;</span>
+<span class="d">-    avatarUrl?: string;</span>
+<span class="d">-    plan?: string;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export interface AuthTokens {</span>
+<span class="d">-    accessToken: string;</span>
+<span class="d">-    refreshToken: string;</span>
+<span class="d">-    expiresAt: string;</span>
+<span class="d">-    expiresIn: string;</span>
+<span class="d">-    providerToken: string;</span>
+<span class="d">-    tokenType: string;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export interface AppState {</span>
+<span class="d">-    activeProjectId: string | null;</span>
+<span class="d">-}</span></pre></body></html>

@@ -1,0 +1,9 @@
+E3. Per-agent within-repository HR vs human (line, Definition 1, identity tracking, all lines)
+Engine: lifelines CoxPHFitter (Efron), numpy default_rng(42), 500 repository resamples, percentile CIs
+(same as the headline within-repository bootstrap, src/analyze_rq1_master.py step 4).
+
+Devin           lines  87,634 PRs  412 repos with agent+human  31  HR 1.059 boot95 [0.409, 2.076] (includes 1); valid draws 500, p_boot 0.764
+GitHub Copilot  lines  67,398 PRs  489 repos with agent+human  53  HR 0.653 boot95 [0.459, 0.954] (excludes 1); valid draws 500, p_boot 0.036
+OpenAI Codex    lines  48,867 PRs  491 repos with agent+human  63  HR 0.831 boot95 [0.468, 1.218] (includes 1); valid draws 500, p_boot 0.388
+Cursor          lines  13,340 PRs   44 repos with agent+human  16  HR 0.379 boot95 [0.150, 3.695] (includes 1); valid draws 500, p_boot 0.676
+Claude Code     lines  48,182 PRs   31 repos with agent+human  13  HR 0.934 boot95 [0.136, 1.950] (includes 1); valid draws 500, p_boot 0.720

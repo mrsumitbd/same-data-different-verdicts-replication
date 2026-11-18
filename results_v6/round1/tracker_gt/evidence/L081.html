@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L081</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L081</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/runtime">dotnet/runtime</a><br><b>File at merge:</b> src/libraries/System.Private.DataContractSerialization/src/System/Runtime/Serialization/Json/DataContractJsonSerializer.cs, line 220<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/runtime/commit/a2b08f1752373fe6755d5a70e028fd74c085cc2f">a2b08f1752</a> (2025-07-26T11:21:30)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/runtime/tree/32fcc41afe5747cf674ca6c62de087ab5fd332eb">32fcc41afe</a>)</p><p><b>The line:</b></p><pre><span class="t">        /// Sets the serialization surrogate provider.</span></pre><h2>File at the merge commit, lines 212 to 228</h2><pre>  212 |         /// &lt;/summary&gt;
+  213 |         /// &lt;returns&gt;The current &lt;see cref=&quot;ISerializationSurrogateProvider&quot;/&gt; instance, or &lt;see langword=&quot;null&quot;/&gt; if no provider is set.&lt;/returns&gt;
+  214 |         public ISerializationSurrogateProvider? GetSerializationSurrogateProvider()
+  215 |         {
+  216 |             return SerializationSurrogateProvider;
+  217 |         }
+  218 | 
+  219 |         /// &lt;summary&gt;
+<span class="t">  220 |         /// Sets the serialization surrogate provider.</span>
+  221 |         /// &lt;/summary&gt;
+  222 |         /// &lt;param name=&quot;provider&quot;&gt;The &lt;see cref=&quot;ISerializationSurrogateProvider&quot;/&gt; to use for serialization, or &lt;see langword=&quot;null&quot;/&gt; to remove the current provider.&lt;/param&gt;
+  223 |         public void SetSerializationSurrogateProvider(ISerializationSurrogateProvider? provider)
+  224 |         {
+  225 |             SerializationSurrogateProvider = provider;
+  226 |         }
+  227 | 
+  228 |         [RequiresDynamicCode(DataContract.SerializerAOTWarning)]</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

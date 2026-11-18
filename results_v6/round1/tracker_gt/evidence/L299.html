@@ -1,0 +1,93 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L299</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L299</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/android">dotnet/android</a><br><b>File at merge:</b> src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs, line 8<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/android/commit/ea399edb872588c16b124c4b9ab2232243b93016">ea399edb87</a> (2025-03-18T18:28:17)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/android/tree/bb5968d700eaea7c4aae25e7c671c73efebc777f">bb5968d700</a>)</p><p><b>The line:</b></p><pre><span class="t">using Java.Interop.Tools.JavaCallableWrappers.Adapters;</span></pre><h2>File at the merge commit, lines 1 to 16</h2><pre>    1 | #nullable enable
+    2 | using System;
+    3 | using System.Collections.Generic;
+    4 | using System.Diagnostics;
+    5 | using System.IO;
+    6 | using System.Linq;
+    7 | using Java.Interop.Tools.JavaCallableWrappers;
+<span class="t">    8 | using Java.Interop.Tools.JavaCallableWrappers.Adapters;</span>
+    9 | using Java.Interop.Tools.JavaCallableWrappers.CallableWrapperMembers;
+   10 | using Java.Interop.Tools.TypeNameMappings;
+   11 | using Microsoft.Android.Build.Tasks;
+   12 | using Microsoft.Build.Framework;
+   13 | using Microsoft.Build.Utilities;
+   14 | using PackageNamingPolicyEnum = Java.Interop.Tools.TypeNameMappings.PackageNamingPolicy;
+   15 | 
+   16 | namespace Xamarin.Android.Tasks;</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/android/commit/787a2a6238942094f4a3fc62fb5595b46efa21ce">787a2a6238</a> (2025-04-08T15:23:24-04:00)</h2><p class="k">[XABT] Move scanning for ACW map JLOs to `FindJavaObjectsStep`. (#9930)<br>Path after this commit: src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: src/Xamarin.Android.Build.Tasks/Utilities/JavaObjectsXmlFile.cs.</p><pre>diff --git a/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs b/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs
+index 10ac11e43..0133b84d9 100644
+<span class="d">--- a/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs</span>
+<span class="a">+++ b/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs</span>
+<span class="h">@@ -5,7 +5,6 @@ using System.Diagnostics;</span>
+ using System.IO;
+ using System.Linq;
+ using Java.Interop.Tools.JavaCallableWrappers;
+<span class="d m">-using Java.Interop.Tools.JavaCallableWrappers.Adapters;</span>
+ using Java.Interop.Tools.JavaCallableWrappers.CallableWrapperMembers;
+ using Java.Interop.Tools.TypeNameMappings;
+ using Microsoft.Android.Build.Tasks;
+<span class="h">@@ -63,16 +62,21 @@ public class GenerateJavaCallableWrappers : AndroidTask</span>
+ 		var sw = Stopwatch.StartNew ();
+ 
+ 		foreach (var assembly in assemblies) {
+<span class="d">-			var assemblyPath = assembly.ItemSpec;</span>
+<span class="d">-			var assemblyName = Path.GetFileNameWithoutExtension (assemblyPath);</span>
+<span class="d">-			var wrappersPath = Path.Combine (Path.GetDirectoryName (assemblyPath), $&quot;{assemblyName}.jlo.xml&quot;);</span>
+<span class="a">+			var wrappersPath = JavaObjectsXmlFile.GetJavaObjectsXmlFilePath (assembly.ItemSpec);</span>
+ 
+ 			if (!File.Exists (wrappersPath)) {
+ 				Log.LogError ($&quot;&#x27;{wrappersPath}&#x27; not found.&quot;);
+ 				return;
+ 			}
+ 
+<span class="d">-			wrappers.AddRange (XmlImporter.Import (wrappersPath, out var _));</span>
+<span class="a">+			var xml = JavaObjectsXmlFile.Import (wrappersPath, JavaObjectsXmlFileReadType.JavaCallableWrappers);</span>
+<span class="a">+</span>
+<span class="a">+			if (xml.JavaCallableWrappers.Count == 0) {</span>
+<span class="a">+				Log.LogDebugMessage ($&quot;&#x27;{wrappersPath}&#x27; is empty, skipping.&quot;);</span>
+<span class="a">+				continue;</span>
+<span class="a">+			}</span>
+<span class="a">+</span>
+<span class="a">+			wrappers.AddRange (xml.JavaCallableWrappers);</span>
+ 		}
+ 
+ 		Log.LogDebugMessage ($&quot;Deserialized {wrappers.Count} Java callable wrappers in {sw.ElapsedMilliseconds}ms&quot;);</pre><h2>Commit #2: <a href="https://github.com/dotnet/android/commit/395189c1af402a052bb7ee7c4cdf42d5bbfe73d1">395189c1af</a> (2025-04-30T12:31:36-10:00)</h2><p class="k">[XABT] Make NRT opt-out instead of opt-in. (#10093)<br>Path after this commit: src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs b/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs
+index 0133b84d9..39b57b438 100644
+<span class="d">--- a/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs</span>
+<span class="a">+++ b/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs</span>
+<span class="h">@@ -1,4 +1,3 @@</span>
+<span class="d">-#nullable enable</span>
+ using System;
+ using System.Collections.Generic;
+ using System.Diagnostics;</pre><h2>Commit #3: <a href="https://github.com/dotnet/android/commit/868acb2ceab4f97a5c261e8288500f2e3e2f8901">868acb2cea</a> (2025-07-16T08:52:09-05:00)</h2><p class="k">[xabt] Fix NRT annotations in MSBuild Tasks, part 3 (#10298)<br>Path after this commit: src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs b/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs
+index 39b57b438..0133b84d9 100644
+<span class="d">--- a/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs</span>
+<span class="a">+++ b/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs</span>
+<span class="h">@@ -1,3 +1,4 @@</span>
+<span class="a">+#nullable enable</span>
+ using System;
+ using System.Collections.Generic;
+ using System.Diagnostics;</pre><h2>Commit #4: <a href="https://github.com/dotnet/android/commit/209d8465c54691b352707b1db3bfda5c5da0df99">209d8465c5</a> (2025-07-24T13:47:15-05:00)</h2><p class="k">[xabt] Fix NRT annotations in Xamarin.Android.Build.Tasks, part 1 (#10327)<br>Path after this commit: src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs b/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs
+index 0133b84d9..ca59e9492 100644
+<span class="d">--- a/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs</span>
+<span class="a">+++ b/src/Xamarin.Android.Build.Tasks/Tasks/GenerateJavaCallableWrappers.cs</span>
+<span class="h">@@ -22,13 +22,13 @@ public class GenerateJavaCallableWrappers : AndroidTask</span>
+ 	public override string TaskPrefix =&gt; &quot;JCW&quot;;
+ 
+ 	[Required]
+<span class="d">-	public string CodeGenerationTarget { get; set; } = string.Empty;</span>
+<span class="a">+	public string CodeGenerationTarget { get; set; } = &quot;&quot;;</span>
+ 
+ 	[Required]
+<span class="d">-	public string OutputDirectory { get; set; } = string.Empty;</span>
+<span class="a">+	public string OutputDirectory { get; set; } = &quot;&quot;;</span>
+ 
+ 	[Required]
+<span class="d">-	public string PackageNamingPolicy { get; set; } = string.Empty;</span>
+<span class="a">+	public string PackageNamingPolicy { get; set; } = &quot;&quot;;</span>
+ 
+ 	[Required]
+ 	public ITaskItem [] ResolvedAssemblies { get; set; } = [];</pre></body></html>

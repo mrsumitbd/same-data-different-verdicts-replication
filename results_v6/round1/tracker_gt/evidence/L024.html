@@ -1,0 +1,107 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L024</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L024</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/vscode">microsoft/vscode</a><br><b>File at merge:</b> src/vs/workbench/contrib/tasks/common/taskSystem.ts, line 37<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/vscode/commit/4e49ab990271e55c727398702b763066693690f8">4e49ab9902</a> (2025-06-20T15:58:20)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/vscode/tree/99d8a2706e687a31c8d147586668454d399bb208">99d8a2706e</a>)</p><p><b>The line:</b></p><pre><span class="t">	constructor(task: Task, resolver: ITaskResolver, trigger: string) {</span></pre><h2>File at the merge commit, lines 29 to 45</h2><pre>   29 | 	readonly task: Task;
+   30 | 	readonly resolver: ITaskResolver;
+   31 | 	readonly trigger: string;
+   32 | 	resolvedVariables?: IResolvedVariables;
+   33 | 	systemInfo?: ITaskSystemInfo;
+   34 | 	workspaceFolder?: IWorkspaceFolder;
+   35 | 	shellLaunchConfig?: IShellLaunchConfig;
+   36 | 
+<span class="t">   37 | 	constructor(task: Task, resolver: ITaskResolver, trigger: string) {</span>
+   38 | 		this.task = task;
+   39 | 		this.resolver = resolver;
+   40 | 		this.trigger = trigger;
+   41 | 	}
+   42 | 
+   43 | 	public verify(): boolean {
+   44 | 		let verified = false;
+   45 | 		if (this.trigger &amp;&amp; this.resolvedVariables &amp;&amp; this.workspaceFolder &amp;&amp; (this.shellLaunchConfig !== undefined)) {</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/vscode/commit/a4723778b48d0db4bc37003fdf809be0abc1c766">a4723778b4</a> (2025-07-22T01:57:47+02:00)</h2><p class="k">migrate run task, get task output to core, fix bugs (#256774)<br>Path after this commit: src/vs/workbench/contrib/tasks/common/taskSystem.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/contrib/tasks/common/taskSystem.ts b/src/vs/workbench/contrib/tasks/common/taskSystem.ts
+index 941c24be201..ac59a08ad82 100644
+<span class="d">--- a/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="a">+++ b/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="h">@@ -151,6 +151,7 @@ export interface ITaskSystem {</span>
+ 	customExecutionComplete(task: Task, result: number): Promise&lt;void&gt;;
+ 	isTaskVisible(task: Task): boolean;
+ 	getTaskForTerminal(instanceId: number): Task | undefined;
+<span class="a">+	getTerminalForTask(task: Task): URI | undefined;</span>
+ 	getFirstInstance(task: Task): Task | undefined;
+ 	get lastTask(): VerifiedTask | undefined;
+ 	set lastTask(task: VerifiedTask);</pre><h2>Commit #2: <a href="https://github.com/microsoft/vscode/commit/1c315969f4920a40706d0d88632614d98109a858">1c315969f4</a> (2025-08-13T18:02:05+00:00)</h2><p class="k">allow agent to run compound tasks (#261347)<br>Path after this commit: src/vs/workbench/contrib/tasks/common/taskSystem.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/contrib/tasks/common/taskSystem.ts b/src/vs/workbench/contrib/tasks/common/taskSystem.ts
+index ac59a08ad82..3deca5a3ff2 100644
+<span class="d">--- a/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="a">+++ b/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="h">@@ -151,7 +151,7 @@ export interface ITaskSystem {</span>
+ 	customExecutionComplete(task: Task, result: number): Promise&lt;void&gt;;
+ 	isTaskVisible(task: Task): boolean;
+ 	getTaskForTerminal(instanceId: number): Task | undefined;
+<span class="d">-	getTerminalForTask(task: Task): URI | undefined;</span>
+<span class="a">+	getTerminalsForTasks(tasks: Task | Task[]): URI[] | undefined;</span>
+ 	getFirstInstance(task: Task): Task | undefined;
+ 	get lastTask(): VerifiedTask | undefined;
+ 	set lastTask(task: VerifiedTask);</pre><h2>Commit #3: <a href="https://github.com/microsoft/vscode/commit/2db7aa70ee3e250a2fcdb4dbbd85dd524d2fb7a2">2db7aa70ee</a> (2025-08-22T03:13:28+02:00)</h2><p class="k">improve task problem monitoring (#262796)<br>Path after this commit: src/vs/workbench/contrib/tasks/common/taskSystem.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/contrib/tasks/common/taskSystem.ts b/src/vs/workbench/contrib/tasks/common/taskSystem.ts
+index 3deca5a3ff2..8bd94d8b3f6 100644
+<span class="d">--- a/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="a">+++ b/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="h">@@ -13,6 +13,7 @@ import { Task, ITaskEvent, KeyedTaskIdentifier } from &#x27;./tasks.js&#x27;;</span>
+ import { ConfigurationTarget } from &#x27;../../../../platform/configuration/common/configuration.js&#x27;;
+ 
+ import { IShellLaunchConfig } from &#x27;../../../../platform/terminal/common/terminal.js&#x27;;
+<span class="a">+import { IMarkerData } from &#x27;../../../../platform/markers/common/markers.js&#x27;;</span>
+ 
+ export const enum TaskErrors {
+ 	NotConfigured,
+<span class="h">@@ -152,6 +153,7 @@ export interface ITaskSystem {</span>
+ 	isTaskVisible(task: Task): boolean;
+ 	getTaskForTerminal(instanceId: number): Task | undefined;
+ 	getTerminalsForTasks(tasks: Task | Task[]): URI[] | undefined;
+<span class="a">+	getTaskProblems(instanceId: number): Map&lt;string, { resources: URI[]; markers: IMarkerData[] }&gt; | undefined;</span>
+ 	getFirstInstance(task: Task): Task | undefined;
+ 	get lastTask(): VerifiedTask | undefined;
+ 	set lastTask(task: VerifiedTask);</pre><h2>Commit #4: <a href="https://github.com/microsoft/vscode/commit/9553c0719cb72f4cd86e02039c3dfaed8d558122">9553c0719c</a> (2025-10-09T14:36:20-07:00)</h2><p class="k">Merge pull request #270651 from mjbvz/dev/mjbvz/semantic-swan<br>Path after this commit: src/vs/workbench/contrib/tasks/common/taskSystem.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/contrib/tasks/common/taskSystem.ts b/src/vs/workbench/contrib/tasks/common/taskSystem.ts
+index 8bd94d8b3f6..1b8a9a4ad4d 100644
+<span class="d">--- a/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="a">+++ b/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="h">@@ -136,7 +136,7 @@ export interface ITaskSystemInfoResolver {</span>
+ }
+ 
+ export interface ITaskSystem {
+<span class="d">-	onDidStateChange: Event&lt;ITaskEvent&gt;;</span>
+<span class="a">+	readonly onDidStateChange: Event&lt;ITaskEvent&gt;;</span>
+ 	reconnect(task: Task, resolver: ITaskResolver): ITaskExecuteResult;
+ 	run(task: Task, resolver: ITaskResolver): ITaskExecuteResult;
+ 	rerun(): ITaskExecuteResult | undefined;</pre><h2>Commit #5: <a href="https://github.com/microsoft/vscode/commit/0dd482b0e9aec74c4752b1df9893de8bfb00fbaf">0dd482b0e9</a> (2025-11-03T06:27:10-08:00)</h2><p class="k">Merge pull request #274743 from microsoft/tyriar/singleormany<br>Path after this commit: src/vs/workbench/contrib/tasks/common/taskSystem.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/contrib/tasks/common/taskSystem.ts b/src/vs/workbench/contrib/tasks/common/taskSystem.ts
+index 1b8a9a4ad4d..10d600380fb 100644
+<span class="d">--- a/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="a">+++ b/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="h">@@ -14,6 +14,7 @@ import { ConfigurationTarget } from &#x27;../../../../platform/configuration/common/c</span>
+ 
+ import { IShellLaunchConfig } from &#x27;../../../../platform/terminal/common/terminal.js&#x27;;
+ import { IMarkerData } from &#x27;../../../../platform/markers/common/markers.js&#x27;;
+<span class="a">+import type { SingleOrMany } from &#x27;../../../../base/common/types.js&#x27;;</span>
+ 
+ export const enum TaskErrors {
+ 	NotConfigured,
+<span class="h">@@ -152,7 +153,7 @@ export interface ITaskSystem {</span>
+ 	customExecutionComplete(task: Task, result: number): Promise&lt;void&gt;;
+ 	isTaskVisible(task: Task): boolean;
+ 	getTaskForTerminal(instanceId: number): Task | undefined;
+<span class="d">-	getTerminalsForTasks(tasks: Task | Task[]): URI[] | undefined;</span>
+<span class="a">+	getTerminalsForTasks(tasks: SingleOrMany&lt;Task&gt;): URI[] | undefined;</span>
+ 	getTaskProblems(instanceId: number): Map&lt;string, { resources: URI[]; markers: IMarkerData[] }&gt; | undefined;
+ 	getFirstInstance(task: Task): Task | undefined;
+ 	get lastTask(): VerifiedTask | undefined;</pre><h2>Commit #6: <a href="https://github.com/microsoft/vscode/commit/40386f82cf8faa57a00bd3c62b18621abd1e90f7">40386f82cf</a> (2025-11-12T09:57:02-08:00)</h2><p class="k">Fix task rerun (#276823)<br>Path after this commit: src/vs/workbench/contrib/tasks/common/taskSystem.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/contrib/tasks/common/taskSystem.ts b/src/vs/workbench/contrib/tasks/common/taskSystem.ts
+index 10d600380fb..5b5a12c84f5 100644
+<span class="d">--- a/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="a">+++ b/src/vs/workbench/contrib/tasks/common/taskSystem.ts</span>
+<span class="h">@@ -152,7 +152,7 @@ export interface ITaskSystem {</span>
+ 	revealTask(task: Task): boolean;
+ 	customExecutionComplete(task: Task, result: number): Promise&lt;void&gt;;
+ 	isTaskVisible(task: Task): boolean;
+<span class="d">-	getTaskForTerminal(instanceId: number): Task | undefined;</span>
+<span class="a">+	getTaskForTerminal(instanceId: number): Promise&lt;Task | undefined&gt;;</span>
+ 	getTerminalsForTasks(tasks: SingleOrMany&lt;Task&gt;): URI[] | undefined;
+ 	getTaskProblems(instanceId: number): Map&lt;string, { resources: URI[]; markers: IMarkerData[] }&gt; | undefined;
+ 	getFirstInstance(task: Task): Task | undefined;</pre></body></html>

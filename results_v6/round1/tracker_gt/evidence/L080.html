@@ -1,0 +1,215 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L080</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L080</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/runtime">dotnet/runtime</a><br><b>File at merge:</b> src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs, line 50<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/runtime/commit/c02569bcf67543806f6b0ba8923ff3a313f830f2">c02569bcf6</a> (2025-06-30T18:23:47)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/runtime/tree/32fcc41afe5747cf674ca6c62de087ab5fd332eb">32fcc41afe</a>)</p><p><b>The line:</b></p><pre><span class="t">            Assert.Equal(3381, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + ECDSA-P256 (72)</span></pre><h2>File at the merge commit, lines 42 to 58</h2><pre>   42 |             Assert.Equal(3821, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + RSA4096 (512)
+   43 | 
+   44 |             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA4096Pkcs15;
+   45 |             Assert.Equal(&quot;MLDSA65-RSA4096-PKCS15-SHA512&quot;, algorithm.Name);
+   46 |             Assert.Equal(3821, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + RSA4096 (512)
+   47 | 
+   48 |             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaP256;
+   49 |             Assert.Equal(&quot;MLDSA65-ECDSA-P256-SHA512&quot;, algorithm.Name);
+<span class="t">   50 |             Assert.Equal(3381, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + ECDSA-P256 (72)</span>
+   51 | 
+   52 |             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaP384;
+   53 |             Assert.Equal(&quot;MLDSA65-ECDSA-P384-SHA512&quot;, algorithm.Name);
+   54 |             Assert.Equal(3413, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + ECDSA-P384 (104)
+   55 | 
+   56 |             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaBrainpoolP256r1;
+   57 |             Assert.Equal(&quot;MLDSA65-ECDSA-brainpoolP256r1-SHA512&quot;, algorithm.Name);
+   58 |             Assert.Equal(3381, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + ECDSA-brainpoolP256r1 (72)</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/runtime/commit/d71abb0a5397b501af7bce54fec36dfea17aba29">d71abb0a53</a> (2025-07-18T11:02:36-07:00)</h2><p class="k">Composite ML-DSA + RSA Managed Composer (#117259)<br>Path after this commit: src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs b/src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs
+index 15e54c330f6..2c312d55101 100644
+<span class="d">--- a/src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs</span>
+<span class="a">+++ b/src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs</span>
+<span class="h">@@ -15,75 +15,75 @@ namespace System.Security.Cryptography.Tests</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa44WithRSA2048Pss;
+             Assert.Equal(&quot;MLDSA44-RSA2048-PSS-SHA256&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(2676, algorithm.MaxSignatureSizeInBytes); // MLDsa44 (2420) + RSA2048 (256)</span>
+<span class="a">+            Assert.Equal(32 + 2420 + 256, algorithm.MaxSignatureSizeInBytes); // Randomizer + ML-DSA + Traditional Signature</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa44WithRSA2048Pkcs15;
+             Assert.Equal(&quot;MLDSA44-RSA2048-PKCS15-SHA256&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(2676, algorithm.MaxSignatureSizeInBytes); // MLDsa44 (2420) + RSA2048 (256)</span>
+<span class="a">+            Assert.Equal(32 + 2420 + 256, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa44WithEd25519;
+             Assert.Equal(&quot;MLDSA44-Ed25519-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(2484, algorithm.MaxSignatureSizeInBytes); // MLDsa44 (2420) + Ed25519 (64)</span>
+<span class="a">+            Assert.Equal(32 + 2420 + 64, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa44WithECDsaP256;
+             Assert.Equal(&quot;MLDSA44-ECDSA-P256-SHA256&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(2492, algorithm.MaxSignatureSizeInBytes); // MLDsa44 (2420) + ECDSA-P256 (72)</span>
+<span class="a">+            Assert.Equal(32 + 2420 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA3072Pss;
+             Assert.Equal(&quot;MLDSA65-RSA3072-PSS-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(3693, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + RSA3072 (384)</span>
+<span class="a">+            Assert.Equal(32 + 3309 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA3072Pkcs15;
+             Assert.Equal(&quot;MLDSA65-RSA3072-PKCS15-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(3693, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + RSA3072 (384)</span>
+<span class="a">+            Assert.Equal(32 + 3309 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA4096Pss;
+             Assert.Equal(&quot;MLDSA65-RSA4096-PSS-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(3821, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + RSA4096 (512)</span>
+<span class="a">+            Assert.Equal(32 + 3309 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA4096Pkcs15;
+             Assert.Equal(&quot;MLDSA65-RSA4096-PKCS15-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(3821, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + RSA4096 (512)</span>
+<span class="a">+            Assert.Equal(32 + 3309 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaP256;
+             Assert.Equal(&quot;MLDSA65-ECDSA-P256-SHA512&quot;, algorithm.Name);
+<span class="d m">-            Assert.Equal(3381, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + ECDSA-P256 (72)</span>
+<span class="a">+            Assert.Equal(32 + 3309 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaP384;
+             Assert.Equal(&quot;MLDSA65-ECDSA-P384-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(3413, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + ECDSA-P384 (104)</span>
+<span class="a">+            Assert.Equal(32 + 3309 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaBrainpoolP256r1;
+             Assert.Equal(&quot;MLDSA65-ECDSA-brainpoolP256r1-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(3381, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + ECDSA-brainpoolP256r1 (72)</span>
+<span class="a">+            Assert.Equal(32 + 3309 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithEd25519;
+             Assert.Equal(&quot;MLDSA65-Ed25519-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(3373, algorithm.MaxSignatureSizeInBytes); // MLDsa65 (3309) + Ed25519 (64)</span>
+<span class="a">+            Assert.Equal(32 + 3309 + 64, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithECDsaP384;
+             Assert.Equal(&quot;MLDSA87-ECDSA-P384-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(4731, algorithm.MaxSignatureSizeInBytes); // MLDsa87 (4627) + ECDSA-P384 (104)</span>
+<span class="a">+            Assert.Equal(32 + 4627 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithECDsaBrainpoolP384r1;
+             Assert.Equal(&quot;MLDSA87-ECDSA-brainpoolP384r1-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(4731, algorithm.MaxSignatureSizeInBytes); // MLDsa87 (4627) + ECDSA-brainpoolP384r1 (104)</span>
+<span class="a">+            Assert.Equal(32 + 4627 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithEd448;
+             Assert.Equal(&quot;MLDSA87-Ed448-SHAKE256&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(4741, algorithm.MaxSignatureSizeInBytes); // MLDsa87 (4627) + Ed448 (114)</span>
+<span class="a">+            Assert.Equal(32 + 4627 + 114, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithRSA3072Pss;
+             Assert.Equal(&quot;MLDSA87-RSA3072-PSS-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(5011, algorithm.MaxSignatureSizeInBytes); // MLDsa87 (4627) + RSA3072 (384)</span>
+<span class="a">+            Assert.Equal(32 + 4627 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithRSA4096Pss;
+             Assert.Equal(&quot;MLDSA87-RSA4096-PSS-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(5139, algorithm.MaxSignatureSizeInBytes); // MLDsa87 (4627) + RSA4096 (512)</span>
+<span class="a">+            Assert.Equal(32 + 4627 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithECDsaP521;
+             Assert.Equal(&quot;MLDSA87-ECDSA-P521-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(4766, algorithm.MaxSignatureSizeInBytes); // MLDsa87 (4627) + ECDSA-P521 (139)</span>
+<span class="a">+            Assert.Equal(32 + 4627 + 139, algorithm.MaxSignatureSizeInBytes);</span>
+         }
+ 
+         [Fact]</pre><h2>Commit #2: <a href="https://github.com/dotnet/runtime/commit/7ab1ed36c5f74ccc0adf5815e1ff46124c7a9d7b">7ab1ed36c5</a> (2025-09-25T19:21:21+00:00)</h2><p class="k">Update Composite ML-DSA to draft 8 (#120077)<br>Path after this commit: src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs b/src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs
+index 2c312d55101..1d76ff234ff 100644
+<span class="d">--- a/src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs</span>
+<span class="a">+++ b/src/libraries/Common/tests/System/Security/Cryptography/CompositeMLDsaAlgorithmTests.cs</span>
+<span class="h">@@ -15,75 +15,75 @@ namespace System.Security.Cryptography.Tests</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa44WithRSA2048Pss;
+             Assert.Equal(&quot;MLDSA44-RSA2048-PSS-SHA256&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 2420 + 256, algorithm.MaxSignatureSizeInBytes); // Randomizer + ML-DSA + Traditional Signature</span>
+<span class="a">+            Assert.Equal(2420 + 256, algorithm.MaxSignatureSizeInBytes); // ML-DSA + Traditional Signature</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa44WithRSA2048Pkcs15;
+             Assert.Equal(&quot;MLDSA44-RSA2048-PKCS15-SHA256&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 2420 + 256, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(2420 + 256, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa44WithEd25519;
+             Assert.Equal(&quot;MLDSA44-Ed25519-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 2420 + 64, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(2420 + 64, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa44WithECDsaP256;
+             Assert.Equal(&quot;MLDSA44-ECDSA-P256-SHA256&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 2420 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(2420 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA3072Pss;
+             Assert.Equal(&quot;MLDSA65-RSA3072-PSS-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 3309 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(3309 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA3072Pkcs15;
+             Assert.Equal(&quot;MLDSA65-RSA3072-PKCS15-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 3309 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(3309 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA4096Pss;
+             Assert.Equal(&quot;MLDSA65-RSA4096-PSS-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 3309 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(3309 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithRSA4096Pkcs15;
+             Assert.Equal(&quot;MLDSA65-RSA4096-PKCS15-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 3309 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(3309 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaP256;
+             Assert.Equal(&quot;MLDSA65-ECDSA-P256-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 3309 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(3309 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaP384;
+             Assert.Equal(&quot;MLDSA65-ECDSA-P384-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 3309 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(3309 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithECDsaBrainpoolP256r1;
+             Assert.Equal(&quot;MLDSA65-ECDSA-brainpoolP256r1-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 3309 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(3309 + 72, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa65WithEd25519;
+             Assert.Equal(&quot;MLDSA65-Ed25519-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 3309 + 64, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(3309 + 64, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithECDsaP384;
+             Assert.Equal(&quot;MLDSA87-ECDSA-P384-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 4627 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(4627 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithECDsaBrainpoolP384r1;
+             Assert.Equal(&quot;MLDSA87-ECDSA-brainpoolP384r1-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 4627 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(4627 + 104, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithEd448;
+             Assert.Equal(&quot;MLDSA87-Ed448-SHAKE256&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 4627 + 114, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(4627 + 114, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithRSA3072Pss;
+             Assert.Equal(&quot;MLDSA87-RSA3072-PSS-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 4627 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(4627 + 384, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithRSA4096Pss;
+             Assert.Equal(&quot;MLDSA87-RSA4096-PSS-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 4627 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(4627 + 512, algorithm.MaxSignatureSizeInBytes);</span>
+ 
+             algorithm = CompositeMLDsaAlgorithm.MLDsa87WithECDsaP521;
+             Assert.Equal(&quot;MLDSA87-ECDSA-P521-SHA512&quot;, algorithm.Name);
+<span class="d">-            Assert.Equal(32 + 4627 + 139, algorithm.MaxSignatureSizeInBytes);</span>
+<span class="a">+            Assert.Equal(4627 + 139, algorithm.MaxSignatureSizeInBytes);</span>
+         }
+ 
+         [Fact]</pre></body></html>

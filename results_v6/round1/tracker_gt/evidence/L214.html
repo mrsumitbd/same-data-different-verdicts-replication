@@ -1,0 +1,121 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L214</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L214</h1><p><b>Repository:</b> <a href="https://github.com/antiwork/gumroad">antiwork/gumroad</a><br><b>File at merge:</b> spec/services/exports/purchase_export_service_spec.rb, line 285<br><b>Merge commit (birth):</b> <a href="https://github.com/antiwork/gumroad/commit/42d168b3c01977a0dada516f90a0b119600c751a">42d168b3c0</a> (2025-06-23T16:16:29)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/antiwork/gumroad/tree/841de7d7b8f8d4c47f52dce8d9320d49edb249ca">841de7d7b8</a>)</p><p><b>The line:</b></p><pre><span class="t">          { country: &quot;AU&quot;, rate: 0.10, excluded: nil, expected_type: &quot;GST&quot; },</span></pre><h2>File at the merge commit, lines 277 to 293</h2><pre>  277 |         expect(field_value(row, &quot;Net Total ($)&quot;)).to eq(&quot;99.69&quot;)
+  278 |         expect(field_value(totals_row, &quot;Net Total ($)&quot;)).to eq(&quot;99.69&quot;)
+  279 |         expect(field_value(row, &quot;Tax Included in Price?&quot;)).to eq(&quot;0&quot;)
+  280 |       end
+  281 | 
+  282 |       describe &quot;tax type&quot; do
+  283 |         tax_type_test_cases = [
+  284 |           { country: &quot;IT&quot;, rate: 0.22, excluded: nil, expected_type: &quot;VAT&quot; },
+<span class="t">  285 |           { country: &quot;AU&quot;, rate: 0.10, excluded: nil, expected_type: &quot;GST&quot; },</span>
+  286 |           { country: &quot;SG&quot;, rate: 0.07, excluded: nil, expected_type: &quot;GST&quot; },
+  287 |           { country: &quot;US&quot;, rate: 0.085, excluded: true, expected_type: &quot;Sales tax&quot; },
+  288 |           { country: &quot;US&quot;, rate: 0.085, excluded: false, expected_type: &quot;Sales tax&quot; },
+  289 |           { country: nil, rate: nil, excluded: true, expected_type: &quot;Sales tax&quot; },
+  290 |         ]
+  291 | 
+  292 |         tax_type_test_cases.each do |test_case|
+  293 |           country = test_case[:country]</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/antiwork/gumroad/commit/5c1d7ff26812e02dea05ada6e44421117e8c4ecf">5c1d7ff268</a> (2025-07-18T05:12:37-04:00)</h2><p class="k">Add license key activation count to CSV export (#654)<br>Path after this commit: spec/services/exports/purchase_export_service_spec.rb. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/spec/services/exports/purchase_export_service_spec.rb b/spec/services/exports/purchase_export_service_spec.rb
+index c1d54cb81..73c067c90 100644
+<span class="d">--- a/spec/services/exports/purchase_export_service_spec.rb</span>
+<span class="a">+++ b/spec/services/exports/purchase_export_service_spec.rb</span>
+<span class="h">@@ -512,6 +512,31 @@ describe Exports::PurchaseExportService do</span>
+       expect(field_value(last_data_row, &quot;License Key&quot;)).to eq(giftee_purchase.license_key)
+     end
+ 
+<span class="a">+    it &quot;includes license key activation count&quot; do</span>
+<span class="a">+      @product.update!(is_licensed: true)</span>
+<span class="a">+      @purchase.create_license!</span>
+<span class="a">+</span>
+<span class="a">+      expect(field_value(last_data_row, &quot;License Key Activation Count&quot;)).to eq(&quot;0&quot;)</span>
+<span class="a">+</span>
+<span class="a">+      @purchase.license.update!(uses: 5)</span>
+<span class="a">+      expect(field_value(last_data_row, &quot;License Key Activation Count&quot;)).to eq(&quot;5&quot;)</span>
+<span class="a">+    end</span>
+<span class="a">+</span>
+<span class="a">+    it &quot;includes license key activation count for giftee&quot; do</span>
+<span class="a">+      @product.update!(is_licensed: true)</span>
+<span class="a">+      @purchase.update!(is_gift_sender_purchase: true)</span>
+<span class="a">+      giftee_purchase = create(:purchase, :gift_receiver, link: @product)</span>
+<span class="a">+      create(:gift, link: @product, gifter_purchase: @purchase, giftee_purchase:)</span>
+<span class="a">+      giftee_purchase.create_license!</span>
+<span class="a">+      giftee_purchase.license.update!(uses: 3)</span>
+<span class="a">+</span>
+<span class="a">+      expect(field_value(last_data_row, &quot;License Key Activation Count&quot;)).to eq(&quot;3&quot;)</span>
+<span class="a">+    end</span>
+<span class="a">+</span>
+<span class="a">+    it &quot;shows nil for license key activation count when no license exists&quot; do</span>
+<span class="a">+      expect(field_value(last_data_row, &quot;License Key Activation Count&quot;)).to be_nil</span>
+<span class="a">+    end</span>
+<span class="a">+</span>
+     it &quot;shows whether the purchase is associated to a sent abandoned cart email&quot; do
+       expect(field_value(last_data_row, &quot;Sent Abandoned Cart Email?&quot;)).to eq(&quot;0&quot;)
+       cart = create(:cart, order: create(:order, purchases: [@purchase]))</pre><h2>Commit #2: <a href="https://github.com/antiwork/gumroad/commit/5289702fe85354499295596d3910ce9ace664641">5289702fe8</a> (2025-10-09T15:32:04-04:00)</h2><p class="k">Show tax collected by Gumroad in payout and sales CSVs (#1567)<br>Path after this commit: spec/services/exports/purchase_export_service_spec.rb. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/spec/services/exports/purchase_export_service_spec.rb b/spec/services/exports/purchase_export_service_spec.rb
+index 73c067c90..9317232dc 100644
+<span class="d">--- a/spec/services/exports/purchase_export_service_spec.rb</span>
+<span class="a">+++ b/spec/services/exports/purchase_export_service_spec.rb</span>
+<span class="h">@@ -279,6 +279,28 @@ describe Exports::PurchaseExportService do</span>
+         expect(field_value(row, &quot;Tax Included in Price?&quot;)).to eq(&quot;0&quot;)
+       end
+ 
+<span class="a">+      it &quot;has subtotal that does not include the tax collected by Gumroad&quot; do</span>
+<span class="a">+        @purchase.was_purchase_taxable = true</span>
+<span class="a">+        @purchase.was_tax_excluded_from_price = true</span>
+<span class="a">+        @purchase.gumroad_tax_cents = 1_80</span>
+<span class="a">+        @purchase.save!</span>
+<span class="a">+</span>
+<span class="a">+        row = last_data_row</span>
+<span class="a">+        expect(field_value(row, &quot;Subtotal ($)&quot;)).to eq(&quot;100.0&quot;)</span>
+<span class="a">+        expect(field_value(totals_row, &quot;Subtotal ($)&quot;)).to eq(&quot;100.0&quot;)</span>
+<span class="a">+        expect(field_value(row, &quot;Taxes ($)&quot;)).to eq(&quot;1.8&quot;)</span>
+<span class="a">+        expect(field_value(totals_row, &quot;Taxes ($)&quot;)).to eq(&quot;1.8&quot;)</span>
+<span class="a">+        expect(field_value(row, &quot;Shipping ($)&quot;)).to eq(&quot;0.0&quot;)</span>
+<span class="a">+        expect(field_value(totals_row, &quot;Shipping ($)&quot;)).to eq(&quot;0.0&quot;)</span>
+<span class="a">+        expect(field_value(row, &quot;Sale Price ($)&quot;)).to eq(&quot;100.0&quot;)</span>
+<span class="a">+        expect(field_value(totals_row, &quot;Sale Price ($)&quot;)).to eq(&quot;100.0&quot;)</span>
+<span class="a">+        expect(field_value(row, &quot;Fees ($)&quot;)).to eq(&quot;0.31&quot;)</span>
+<span class="a">+        expect(field_value(totals_row, &quot;Fees ($)&quot;)).to eq(&quot;0.31&quot;)</span>
+<span class="a">+        expect(field_value(row, &quot;Net Total ($)&quot;)).to eq(&quot;99.69&quot;)</span>
+<span class="a">+        expect(field_value(totals_row, &quot;Net Total ($)&quot;)).to eq(&quot;99.69&quot;)</span>
+<span class="a">+        expect(field_value(row, &quot;Tax Included in Price?&quot;)).to eq(&quot;0&quot;)</span>
+<span class="a">+      end</span>
+<span class="a">+</span>
+       describe &quot;tax type&quot; do
+         tax_type_test_cases = [
+           { country: &quot;IT&quot;, rate: 0.22, excluded: nil, expected_type: &quot;VAT&quot; },</pre><h2>Commit #3: <a href="https://github.com/antiwork/gumroad/commit/a2934837f23e2a15e88f3aed5aa26853358447f7">a2934837f2</a> (2025-11-13T16:58:03-05:00)</h2><p class="k">Add &quot;License Key Enabled?&quot; column to Sales CSV export (#2004)<br>Path after this commit: spec/services/exports/purchase_export_service_spec.rb. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/spec/services/exports/purchase_export_service_spec.rb b/spec/services/exports/purchase_export_service_spec.rb
+index 9317232dc..4539ad99d 100644
+<span class="d">--- a/spec/services/exports/purchase_export_service_spec.rb</span>
+<span class="a">+++ b/spec/services/exports/purchase_export_service_spec.rb</span>
+<span class="h">@@ -514,6 +514,17 @@ describe Exports::PurchaseExportService do</span>
+       expect { generate_csv }.to raise_error(StandardError, /not JSON safe/)
+     end
+ 
+<span class="a">+    it &quot;shows whether the license key is enabled (not disabled)&quot; do</span>
+<span class="a">+      expect(field_value(last_data_row, &quot;License Key Enabled?&quot;)).to eq(&quot;0&quot;)</span>
+<span class="a">+</span>
+<span class="a">+      @product.update!(is_licensed: true)</span>
+<span class="a">+      @purchase.create_license!</span>
+<span class="a">+      expect(field_value(last_data_row, &quot;License Key Enabled?&quot;)).to eq(&quot;1&quot;)</span>
+<span class="a">+</span>
+<span class="a">+      @purchase.license.disable!</span>
+<span class="a">+      expect(field_value(last_data_row, &quot;License Key Enabled?&quot;)).to eq(&quot;0&quot;)</span>
+<span class="a">+    end</span>
+<span class="a">+</span>
+     it &quot;includes licence key&quot; do
+       @product.update!(is_licensed: true)
+       @purchase.create_license!</pre><h2>Commit #4: <a href="https://github.com/antiwork/gumroad/commit/11be11c7425c0893418a76d779815f1fb8fab5f5">11be11c742</a> (2025-11-14T15:26:58-05:00)</h2><p class="k">Do not set &quot;License Key Enabled?&quot; when license is not created for the sale (#2028)<br>Path after this commit: spec/services/exports/purchase_export_service_spec.rb. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/spec/services/exports/purchase_export_service_spec.rb b/spec/services/exports/purchase_export_service_spec.rb
+index 4539ad99d..18e639de6 100644
+<span class="d">--- a/spec/services/exports/purchase_export_service_spec.rb</span>
+<span class="a">+++ b/spec/services/exports/purchase_export_service_spec.rb</span>
+<span class="h">@@ -515,7 +515,7 @@ describe Exports::PurchaseExportService do</span>
+     end
+ 
+     it &quot;shows whether the license key is enabled (not disabled)&quot; do
+<span class="d">-      expect(field_value(last_data_row, &quot;License Key Enabled?&quot;)).to eq(&quot;0&quot;)</span>
+<span class="a">+      expect(field_value(last_data_row, &quot;License Key Enabled?&quot;)).to eq(nil)</span>
+ 
+       @product.update!(is_licensed: true)
+       @purchase.create_license!</pre></body></html>

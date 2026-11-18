@@ -1,0 +1,176 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L002</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L002</h1><p><b>Repository:</b> <a href="https://github.com/reflex-dev/reflex">reflex-dev/reflex</a><br><b>File at merge:</b> tests/integration/test_client_storage.py, line 834<br><b>Merge commit (birth):</b> <a href="https://github.com/reflex-dev/reflex/commit/0c40fdd4743442a2d5dcf1987807c9015fb4b0d3">0c40fdd474</a> (2025-07-22T19:20:05)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/reflex-dev/reflex/tree/5b3aa272183504eae277ef61f72c162d72a290a5">5b3aa27218</a>)</p><p><b>The line:</b></p><pre><span class="t">        poll_for_token()</span></pre><h2>File at the merge commit, lines 826 to 842</h2><pre>  826 |             json_value: JSON string to set as the cookie value.
+  827 |         &quot;&quot;&quot;
+  828 |         poll_for_token()
+  829 |         element = driver.find_element(By.ID, cookie_id)
+  830 |         set_sub(cookie_id, json_value)
+  831 |         AppHarness.expect(lambda: element.text == json_value)
+  832 | 
+  833 |         driver.refresh()
+<span class="t">  834 |         poll_for_token()</span>
+  835 |         element = driver.find_element(By.ID, cookie_id)
+  836 |         AppHarness.expect(lambda: element.text == json_value)
+  837 | 
+  838 |     json_dict = &#x27;{&quot;access_token&quot;: &quot;redacted&quot;, &quot;refresh_token&quot;: &quot;redacted&quot;, &quot;created_at&quot;: 1234567890, &quot;expires_in&quot;: 3600}&#x27;
+  839 |     _assert_json_cookie_with_refresh(&quot;c1&quot;, json_dict)
+  840 | 
+  841 |     json_array = &#x27;[&quot;item1&quot;, &quot;item2&quot;, &quot;item3&quot;]&#x27;
+  842 |     _assert_json_cookie_with_refresh(&quot;c2&quot;, json_array)</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/reflex-dev/reflex/commit/cb0ddfaf43b7ba775dc4859c7fc749b69c4b3018">cb0ddfaf43</a> (2025-10-08T11:20:31-07:00)</h2><p class="k">split manager (#5852)<br>Path after this commit: tests/integration/test_client_storage.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/integration/test_client_storage.py b/tests/integration/test_client_storage.py
+index 994fa265b..313f527d6 100644
+<span class="d">--- a/tests/integration/test_client_storage.py</span>
+<span class="a">+++ b/tests/integration/test_client_storage.py</span>
+<span class="h">@@ -11,13 +11,10 @@ from selenium.webdriver.common.by import By</span>
+ from selenium.webdriver.remote.webdriver import WebDriver
+ 
+ from reflex.constants.state import FIELD_MARKER
+<span class="d">-from reflex.state import (</span>
+<span class="d">-    State,</span>
+<span class="d">-    StateManagerDisk,</span>
+<span class="d">-    StateManagerMemory,</span>
+<span class="d">-    StateManagerRedis,</span>
+<span class="d">-    _substate_key,</span>
+<span class="d">-)</span>
+<span class="a">+from reflex.istate.manager.disk import StateManagerDisk</span>
+<span class="a">+from reflex.istate.manager.memory import StateManagerMemory</span>
+<span class="a">+from reflex.istate.manager.redis import StateManagerRedis</span>
+<span class="a">+from reflex.state import State, _substate_key</span>
+ from reflex.testing import AppHarness
+ 
+ from . import utils</pre><h2>Commit #2: <a href="https://github.com/reflex-dev/reflex/commit/2cc6884d21655ff8f93f5525a8629291bb186593">2cc6884d21</a> (2025-10-15T17:17:09-07:00)</h2><p class="k">ENG-7948: StateManagerDisk deferred write queue (#5883)<br>Path after this commit: tests/integration/test_client_storage.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/integration/test_client_storage.py b/tests/integration/test_client_storage.py
+index 313f527d6..98d2ceb60 100644
+<span class="d">--- a/tests/integration/test_client_storage.py</span>
+<span class="a">+++ b/tests/integration/test_client_storage.py</span>
+<span class="h">@@ -650,9 +650,18 @@ async def test_client_side_state(</span>
+         )
+     elif isinstance(client_side.state_manager, (StateManagerMemory, StateManagerDisk)):
+         del client_side.state_manager.states[token]
+<span class="d">-    if isinstance(client_side.state_manager, StateManagerDisk):</span>
+<span class="d">-        client_side.state_manager.token_expiration = 0</span>
+<span class="d">-        client_side.state_manager._purge_expired_states()</span>
+<span class="a">+    if (</span>
+<span class="a">+        client_side.app_instance is not None</span>
+<span class="a">+        and (app_state_manager := client_side.app_instance.state_manager) is not None</span>
+<span class="a">+        and isinstance(app_state_manager, StateManagerDisk)</span>
+<span class="a">+    ):</span>
+<span class="a">+        # Purge the backend&#x27;s disk manager</span>
+<span class="a">+        del app_state_manager.states[token]</span>
+<span class="a">+        del app_state_manager._write_queue[token]</span>
+<span class="a">+        og_token_expiration = app_state_manager.token_expiration</span>
+<span class="a">+        app_state_manager.token_expiration = 0</span>
+<span class="a">+        app_state_manager._purge_expired_states()</span>
+<span class="a">+        app_state_manager.token_expiration = og_token_expiration</span>
+ 
+     # Ensure the state is gone (not hydrated)
+     async def poll_for_not_hydrated():</pre><h2>Commit #3: <a href="https://github.com/reflex-dev/reflex/commit/046cd9bb165f9e4847acaba38b1050c01f408a53">046cd9bb16</a> (2025-10-15T18:38:40-07:00)</h2><p class="k">0816dev (#5891)<br>Path after this commit: tests/integration/test_client_storage.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/integration/test_client_storage.py b/tests/integration/test_client_storage.py
+index 98d2ceb60..638687a1d 100644
+<span class="d">--- a/tests/integration/test_client_storage.py</span>
+<span class="a">+++ b/tests/integration/test_client_storage.py</span>
+<span class="h">@@ -351,12 +351,15 @@ async def test_client_side_state(</span>
+     set_sub_sub(&quot;s1s&quot;, &quot;s1s value&quot;)
+ 
+     state_name = client_side.get_full_state_name([&quot;_client_side_state&quot;])
+<span class="d">-    sub_state_name = client_side.get_full_state_name(</span>
+<span class="d">-        [&quot;_client_side_state&quot;, &quot;_client_side_sub_state&quot;]</span>
+<span class="d">-    )</span>
+<span class="d">-    sub_sub_state_name = client_side.get_full_state_name(</span>
+<span class="d">-        [&quot;_client_side_state&quot;, &quot;_client_side_sub_state&quot;, &quot;_client_side_sub_sub_state&quot;]</span>
+<span class="d">-    )</span>
+<span class="a">+    sub_state_name = client_side.get_full_state_name([</span>
+<span class="a">+        &quot;_client_side_state&quot;,</span>
+<span class="a">+        &quot;_client_side_sub_state&quot;,</span>
+<span class="a">+    ])</span>
+<span class="a">+    sub_sub_state_name = client_side.get_full_state_name([</span>
+<span class="a">+        &quot;_client_side_state&quot;,</span>
+<span class="a">+        &quot;_client_side_sub_state&quot;,</span>
+<span class="a">+        &quot;_client_side_sub_sub_state&quot;,</span>
+<span class="a">+    ])</span>
+ 
+     exp_cookies = {
+         f&quot;{sub_state_name}.c1&quot; + FIELD_MARKER: {
+<span class="h">@@ -790,8 +793,7 @@ async def test_client_side_state(</span>
+     assert l1s.text == &quot;&quot;
+ 
+ 
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-async def test_json_cookie_values(</span>
+<span class="a">+def test_json_cookie_values(</span>
+     client_side: AppHarness,
+     driver: WebDriver,
+ ):</pre><h2>Commit #4: <a href="https://github.com/reflex-dev/reflex/commit/e53b65dbb8ce5e853c4b239b237b614cf61b5f30">e53b65dbb8</a> (2025-10-22T11:35:01-07:00)</h2><p class="k">avoid racey flakes in test_client_storage (#5920)<br>Path after this commit: tests/integration/test_client_storage.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/integration/test_client_storage.py b/tests/integration/test_client_storage.py
+index 638687a1d..88d71804b 100644
+<span class="d">--- a/tests/integration/test_client_storage.py</span>
+<span class="a">+++ b/tests/integration/test_client_storage.py</span>
+<span class="h">@@ -659,8 +659,8 @@ async def test_client_side_state(</span>
+         and isinstance(app_state_manager, StateManagerDisk)
+     ):
+         # Purge the backend&#x27;s disk manager
+<span class="d">-        del app_state_manager.states[token]</span>
+<span class="d">-        del app_state_manager._write_queue[token]</span>
+<span class="a">+        app_state_manager.states.pop(token, None)</span>
+<span class="a">+        app_state_manager._write_queue.pop(token, None)</span>
+         og_token_expiration = app_state_manager.token_expiration
+         app_state_manager.token_expiration = 0
+         app_state_manager._purge_expired_states()</pre><h2>Commit #5: <a href="https://github.com/reflex-dev/reflex/commit/488a3882c507481917080e1f5d25966818af5337">488a3882c5</a> (2025-12-18T11:09:26-08:00)</h2><p class="k">hide __getattribute__ from type checking (#6056)<br>Path after this commit: tests/integration/test_client_storage.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/integration/test_client_storage.py b/tests/integration/test_client_storage.py
+index 88d71804b..481e0c62d 100644
+<span class="d">--- a/tests/integration/test_client_storage.py</span>
+<span class="a">+++ b/tests/integration/test_client_storage.py</span>
+<span class="h">@@ -669,6 +669,7 @@ async def test_client_side_state(</span>
+     # Ensure the state is gone (not hydrated)
+     async def poll_for_not_hydrated():
+         state = await client_side.get_state(_substate_key(token or &quot;&quot;, state_name))
+<span class="a">+        assert isinstance(state, State)</span>
+         return not state.is_hydrated
+ 
+     assert await AppHarness._poll_for_async(poll_for_not_hydrated)
+<span class="h">@@ -723,30 +724,30 @@ async def test_client_side_state(</span>
+ 
+     async def poll_for_c1_set():
+         sub_state = await get_sub_state()
+<span class="d">-        return sub_state.c1 == &quot;c1 post expire&quot;</span>
+<span class="a">+        return sub_state.c1 == &quot;c1 post expire&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+ 
+     assert await AppHarness._poll_for_async(poll_for_c1_set)
+     sub_state = await get_sub_state()
+<span class="d">-    assert sub_state.c1 == &quot;c1 post expire&quot;</span>
+<span class="d">-    assert sub_state.c2 == &quot;c2 value&quot;</span>
+<span class="d">-    assert sub_state.c3 == &quot;&quot;</span>
+<span class="d">-    assert sub_state.c4 == &quot;c4 value&quot;</span>
+<span class="d">-    assert sub_state.c5 == &quot;c5 value&quot;</span>
+<span class="d">-    assert sub_state.c6 == &quot;c6 value&quot;</span>
+<span class="d">-    assert sub_state.c7 == &quot;c7 value&quot;</span>
+<span class="d">-    assert sub_state.l1 == &quot;l1 value&quot;</span>
+<span class="d">-    assert sub_state.l2 == &quot;l2 value&quot;</span>
+<span class="d">-    assert sub_state.l3 == &quot;l3 value&quot;</span>
+<span class="d">-    assert sub_state.l4 == &quot;l4 value&quot;</span>
+<span class="d">-    assert sub_state.s1 == &quot;s1 value&quot;</span>
+<span class="d">-    assert sub_state.s2 == &quot;s2 value&quot;</span>
+<span class="d">-    assert sub_state.s3 == &quot;s3 value&quot;</span>
+<span class="a">+    assert sub_state.c1 == &quot;c1 post expire&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.c2 == &quot;c2 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.c3 == &quot;&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.c4 == &quot;c4 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.c5 == &quot;c5 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.c6 == &quot;c6 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.c7 == &quot;c7 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.l1 == &quot;l1 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.l2 == &quot;l2 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.l3 == &quot;l3 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.l4 == &quot;l4 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.s1 == &quot;s1 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.s2 == &quot;s2 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_state.s3 == &quot;s3 value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+     sub_sub_state = sub_state.substates[
+         client_side.get_state_name(&quot;_client_side_sub_sub_state&quot;)
+     ]
+<span class="d">-    assert sub_sub_state.c1s == &quot;c1s value&quot;</span>
+<span class="d">-    assert sub_sub_state.l1s == &quot;l1s value&quot;</span>
+<span class="d">-    assert sub_sub_state.s1s == &quot;s1s value&quot;</span>
+<span class="a">+    assert sub_sub_state.c1s == &quot;c1s value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_sub_state.l1s == &quot;l1s value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+<span class="a">+    assert sub_sub_state.s1s == &quot;s1s value&quot;  # pyright: ignore[reportAttributeAccessIssue]</span>
+ 
+     # clear the cookie jar and local storage, ensure state reset to default
+     driver.delete_all_cookies()</pre></body></html>

@@ -1,0 +1,49 @@
+======================================================================
+Modification events: line-number tracking (v2) vs identity tracking (v6confnv)
+======================================================================
+
+v2: 161,832 modification events
+v2 event mix by tier (% of events):
+death_magnitude   content change  file deletion  no recorded change
+two_tier                                                           
+fully_autonomous            11.6           56.7                31.7
+human                        8.9           49.4                41.7
+human_supervised            10.4           22.8                66.8
+overall: no recorded change 46.9%, file deletion 43.4%, content change 9.7%
+
+v2 "file deletion" events (70,254; 504 death commits) by file status in the death commit:
+status
+file removed                          18425
+file list truncated                   17171
+renamed (same file name, new path)    16537
+other                                  9616
+commit not in diff cache               8505
+
+v6confnv: 644,177 units, 149,468 modification events
+v6confnv event_type mix by tier (% of units):
+event_type        censored  content_modified  file_deleted  line_deleted
+two_tier                                                                
+fully_autonomous      78.5              13.0           6.3           2.2
+human                 75.0              14.8           7.0           3.2
+human_supervised      79.9              12.8           3.1           4.2
+v6confnv event_type mix by tier (% of modification events):
+event_type        content_modified  file_deleted  line_deleted
+two_tier                                                      
+fully_autonomous              60.5          29.2          10.3
+human                         59.3          27.8          12.9
+human_supervised              63.7          15.5          20.8
+
+whitespace-only share of content modifications: 18.8% overall; by tier: fully_autonomous 21.0%, human 18.4%, human_supervised 18.9%
+
+Definition 2 among modifications (% by tier):
+ast_death         leaf-only  structural  unclassified
+two_tier                                             
+fully_autonomous       11.8        71.3          16.9
+human                   4.7        75.5          19.8
+human_supervised        5.8        78.0          16.1
+unclassified reasons (% of unclassified by tier):
+ast_exclusion_reason  module_level_complex  no_enclosing_node  parse_failed_birth  parse_failed_death  unknown_extension  unsupported_language
+two_tier                                                                                                                                      
+fully_autonomous                       0.4               49.3                48.8                 1.3                0.0                   0.1
+human                                  0.6               58.2                36.5                 3.4                0.0                   1.3
+human_supervised                       1.5               51.5                41.6                 1.9                0.0                   3.6

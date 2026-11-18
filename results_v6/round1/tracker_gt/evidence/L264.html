@@ -1,0 +1,279 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L264</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L264</h1><p><b>Repository:</b> <a href="https://github.com/567-labs/instructor">567-labs/instructor</a><br><b>File at merge:</b> tests/llm/test_mistral/test_stream.py, line 38<br><b>Merge commit (birth):</b> <a href="https://github.com/567-labs/instructor/commit/0f3af272f537efbb4a2d0ec909209da0d25c56f5">0f3af272f5</a> (2025-03-19T02:27:31)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/567-labs/instructor/tree/1f621067bea51aae30799a84c4be0d08017cb316">1f621067be</a>)</p><p><b>The line:</b></p><pre><span class="t">        model=model,</span></pre><h2>File at the merge commit, lines 30 to 46</h2><pre>   30 |     assert iterations == 2
+   31 | 
+   32 | 
+   33 | @pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))
+   34 | @pytest.mark.asyncio
+   35 | async def test_mistral_iterable_model_async(model, mode, aclient):
+   36 |     aclient = instructor.from_mistral(aclient, mode=mode, use_async=True)
+   37 |     model = aclient.chat.completions.create_iterable(
+<span class="t">   38 |         model=model,</span>
+   39 |         response_model=UserExtract,
+   40 |         max_retries=1,
+   41 |         messages=[
+   42 |             {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Make two people up&quot;},
+   43 |         ],
+   44 |     )
+   45 |     iterations = 0
+   46 |     async for m in model:</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/567-labs/instructor/commit/fd391e1e06d2746b059636332ec6061552ed6d9d">fd391e1e06</a> (2025-05-08T05:47:18-07:00)</h2><p class="k">fix: added support for calling streaming from the create method (#1502)<br>Path after this commit: tests/llm/test_mistral/test_stream.py. Lines with exactly this text in the file after the commit: 7. Identical text added in other files in this commit: tests/llm/test_anthropic/test_stream.py, tests/llm/test_genai/test_invalid_schema.py, tests/llm/test_openai/test_stream.py.</p><pre>diff --git a/tests/llm/test_mistral/test_stream.py b/tests/llm/test_mistral/test_stream.py
+index 9da367be..60bb9c1f 100644
+<span class="d">--- a/tests/llm/test_mistral/test_stream.py</span>
+<span class="a">+++ b/tests/llm/test_mistral/test_stream.py</span>
+<span class="h">@@ -12,6 +12,19 @@ class UserExtract(BaseModel):</span>
+     age: int
+ 
+ 
+<span class="a">+from typing import Union, Literal</span>
+<span class="a">+from collections.abc import Iterable</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class Weather(BaseModel):</span>
+<span class="a">+    location: str</span>
+<span class="a">+    units: Literal[&quot;imperial&quot;, &quot;metric&quot;]</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class GoogleSearch(BaseModel):</span>
+<span class="a">+    query: str</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ @pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))
+ def test_mistral_iterable_model(model, mode, client):
+     client = instructor.from_mistral(client, mode=mode)
+<span class="h">@@ -30,6 +43,67 @@ def test_mistral_iterable_model(model, mode, client):</span>
+     assert iterations == 2
+ 
+ 
+<span class="a">+@pytest.mark.parametrize(</span>
+<span class="a">+    &quot;model, mode&quot;, product(models, [instructor.Mode.MISTRAL_STRUCTURED_OUTPUTS])</span>
+<span class="a">+)</span>
+<span class="a">+def test_mistral_iterable_union_model(model, mode, client):</span>
+<span class="a">+    client = instructor.from_mistral(client, mode=mode)</span>
+<span class="a">+    model = client.chat.completions.create_iterable(</span>
+<span class="a m">+        model=model,</span>
+<span class="a">+        messages=[</span>
+<span class="a">+            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You must always use tools&quot;},</span>
+<span class="a">+            {</span>
+<span class="a">+                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="a">+                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="a">+            },</span>
+<span class="a">+        ],</span>
+<span class="a">+        response_model=Union[Weather, GoogleSearch],</span>
+<span class="a">+    )</span>
+<span class="a">+    for m in model:</span>
+<span class="a">+        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+@pytest.mark.asyncio</span>
+<span class="a">+@pytest.mark.parametrize(</span>
+<span class="a">+    &quot;model, mode&quot;, product(models, [instructor.Mode.MISTRAL_STRUCTURED_OUTPUTS])</span>
+<span class="a">+)</span>
+<span class="a">+async def test_mistral_async_iterable_union_model(model, mode, aclient):</span>
+<span class="a">+    client = instructor.from_mistral(aclient, mode=mode, use_async=True)</span>
+<span class="a">+    model = client.chat.completions.create_iterable(</span>
+<span class="a m">+        model=model,</span>
+<span class="a">+        messages=[</span>
+<span class="a">+            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You must always use tools&quot;},</span>
+<span class="a">+            {</span>
+<span class="a">+                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="a">+                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="a">+            },</span>
+<span class="a">+        ],</span>
+<span class="a">+        response_model=Union[Weather, GoogleSearch],</span>
+<span class="a">+    )</span>
+<span class="a">+    async for m in model:</span>
+<span class="a">+        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+@pytest.mark.parametrize(</span>
+<span class="a">+    &quot;model, mode&quot;, product(models, [instructor.Mode.MISTRAL_STRUCTURED_OUTPUTS])</span>
+<span class="a">+)</span>
+<span class="a">+def test_mistral_sync_iterable_union_model(model, mode, client):</span>
+<span class="a">+    client = instructor.from_mistral(client, mode=mode)</span>
+<span class="a">+    model = client.chat.completions.create(</span>
+<span class="a m">+        model=model,</span>
+<span class="a">+        messages=[</span>
+<span class="a">+            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You must always use tools&quot;},</span>
+<span class="a">+            {</span>
+<span class="a">+                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="a">+                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="a">+            },</span>
+<span class="a">+        ],</span>
+<span class="a">+        response_model=Iterable[Union[Weather, GoogleSearch]],</span>
+<span class="a">+    )</span>
+<span class="a">+    for m in model:</span>
+<span class="a">+        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ @pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))
+ @pytest.mark.asyncio
+ async def test_mistral_iterable_model_async(model, mode, aclient):</pre><h2>Commit #2: <a href="https://github.com/567-labs/instructor/commit/cbe04e3ca1fd3b9752f2e591b134e97b49cfc389">cbe04e3ca1</a> (2025-11-12T00:03:21-05:00)</h2><p class="k">Standardize provider factory methods in codebase (#1898)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/llm/test_mistral/test_stream.py b/tests/llm/test_mistral/test_stream.py
+deleted file mode 100644
+index 60bb9c1f..00000000
+<span class="d">--- a/tests/llm/test_mistral/test_stream.py</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,162 +0,0 @@</span>
+<span class="d">-from itertools import product</span>
+<span class="d">-from pydantic import BaseModel</span>
+<span class="d">-import pytest</span>
+<span class="d">-import instructor</span>
+<span class="d">-from instructor.dsl.partial import Partial</span>
+<span class="d">-</span>
+<span class="d">-from .util import models, modes</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class UserExtract(BaseModel):</span>
+<span class="d">-    name: str</span>
+<span class="d">-    age: int</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-from typing import Union, Literal</span>
+<span class="d">-from collections.abc import Iterable</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class Weather(BaseModel):</span>
+<span class="d">-    location: str</span>
+<span class="d">-    units: Literal[&quot;imperial&quot;, &quot;metric&quot;]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class GoogleSearch(BaseModel):</span>
+<span class="d">-    query: str</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))</span>
+<span class="d">-def test_mistral_iterable_model(model, mode, client):</span>
+<span class="d">-    client = instructor.from_mistral(client, mode=mode)</span>
+<span class="d">-    model = client.chat.completions.create_iterable(</span>
+<span class="d m">-        model=model,</span>
+<span class="d">-        response_model=UserExtract,</span>
+<span class="d">-        max_retries=1,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Make two people up&quot;},</span>
+<span class="d">-        ],</span>
+<span class="d">-    )</span>
+<span class="d">-    iterations = 0</span>
+<span class="d">-    for m in model:</span>
+<span class="d">-        assert isinstance(m, UserExtract)</span>
+<span class="d">-        iterations += 1</span>
+<span class="d">-    assert iterations == 2</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(</span>
+<span class="d">-    &quot;model, mode&quot;, product(models, [instructor.Mode.MISTRAL_STRUCTURED_OUTPUTS])</span>
+<span class="d">-)</span>
+<span class="d">-def test_mistral_iterable_union_model(model, mode, client):</span>
+<span class="d">-    client = instructor.from_mistral(client, mode=mode)</span>
+<span class="d">-    model = client.chat.completions.create_iterable(</span>
+<span class="d m">-        model=model,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You must always use tools&quot;},</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-        ],</span>
+<span class="d">-        response_model=Union[Weather, GoogleSearch],</span>
+<span class="d">-    )</span>
+<span class="d">-    for m in model:</span>
+<span class="d">-        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-@pytest.mark.parametrize(</span>
+<span class="d">-    &quot;model, mode&quot;, product(models, [instructor.Mode.MISTRAL_STRUCTURED_OUTPUTS])</span>
+<span class="d">-)</span>
+<span class="d">-async def test_mistral_async_iterable_union_model(model, mode, aclient):</span>
+<span class="d">-    client = instructor.from_mistral(aclient, mode=mode, use_async=True)</span>
+<span class="d">-    model = client.chat.completions.create_iterable(</span>
+<span class="d m">-        model=model,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You must always use tools&quot;},</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-        ],</span>
+<span class="d">-        response_model=Union[Weather, GoogleSearch],</span>
+<span class="d">-    )</span>
+<span class="d">-    async for m in model:</span>
+<span class="d">-        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(</span>
+<span class="d">-    &quot;model, mode&quot;, product(models, [instructor.Mode.MISTRAL_STRUCTURED_OUTPUTS])</span>
+<span class="d">-)</span>
+<span class="d">-def test_mistral_sync_iterable_union_model(model, mode, client):</span>
+<span class="d">-    client = instructor.from_mistral(client, mode=mode)</span>
+<span class="d">-    model = client.chat.completions.create(</span>
+<span class="d m">-        model=model,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You must always use tools&quot;},</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-        ],</span>
+<span class="d">-        response_model=Iterable[Union[Weather, GoogleSearch]],</span>
+<span class="d">-    )</span>
+<span class="d">-    for m in model:</span>
+<span class="d">-        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))</span>
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-async def test_mistral_iterable_model_async(model, mode, aclient):</span>
+<span class="d">-    aclient = instructor.from_mistral(aclient, mode=mode, use_async=True)</span>
+<span class="d">-    model = aclient.chat.completions.create_iterable(</span>
+<span class="d m">-        model=model,</span>
+<span class="d">-        response_model=UserExtract,</span>
+<span class="d">-        max_retries=1,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Make two people up&quot;},</span>
+<span class="d">-        ],</span>
+<span class="d">-    )</span>
+<span class="d">-    iterations = 0</span>
+<span class="d">-    async for m in model:</span>
+<span class="d">-        assert isinstance(m, UserExtract)</span>
+<span class="d">-        iterations += 1</span>
+<span class="d">-    assert iterations == 2</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model,mode&quot;, product(models, modes))</span>
+<span class="d">-def test_mistral_partial_model(model, mode, client):</span>
+<span class="d">-    client = instructor.from_mistral(client, mode=mode)</span>
+<span class="d">-    model = client.chat.completions.create(</span>
+<span class="d m">-        model=model,</span>
+<span class="d">-        response_model=Partial[UserExtract],</span>
+<span class="d">-        max_retries=2,</span>
+<span class="d">-        stream=True,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Jason Liu is 12 years old&quot;},</span>
+<span class="d">-        ],</span>
+<span class="d">-    )</span>
+<span class="d">-    iterations = 0</span>
+<span class="d">-    for m in model:</span>
+<span class="d">-        iterations += 1</span>
+<span class="d">-        assert isinstance(m, UserExtract)</span>
+<span class="d">-    assert iterations &gt;= 1</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model,mode&quot;, product(models, modes))</span>
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-async def test_mistral_partial_model_async(model, mode, aclient):</span>
+<span class="d">-    aclient = instructor.from_mistral(aclient, mode=mode, use_async=True)</span>
+<span class="d">-    model = await aclient.chat.completions.create(</span>
+<span class="d m">-        model=model,</span>
+<span class="d">-        response_model=Partial[UserExtract],</span>
+<span class="d">-        max_retries=2,</span>
+<span class="d">-        stream=True,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Jason Liu is 12 years old&quot;},</span>
+<span class="d">-        ],</span>
+<span class="d">-    )</span>
+<span class="d">-    iterations = 0</span>
+<span class="d">-    async for m in model:</span>
+<span class="d">-        iterations += 1</span>
+<span class="d">-        assert isinstance(m, UserExtract)</span>
+<span class="d">-    assert iterations &gt;= 1</span></pre></body></html>

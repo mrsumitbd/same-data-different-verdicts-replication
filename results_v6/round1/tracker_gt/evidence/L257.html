@@ -1,0 +1,70 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L257</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L257</h1><p><b>Repository:</b> <a href="https://github.com/mlflow/mlflow">mlflow/mlflow</a><br><b>File at merge:</b> tests/evaluate/logging/test_evaluation.py, line 164<br><b>Merge commit (birth):</b> <a href="https://github.com/mlflow/mlflow/commit/373ce0b91241205bc1b4911450e5d8235c08c862">373ce0b912</a> (2025-02-24T06:54:35)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/mlflow/mlflow/tree/2d9aa6f84737e25967ac6a78ecb4100ff69b0fc4">2d9aa6f847</a>)</p><p><b>The line:</b></p><pre><span class="t">    assert entity.assessments == [a._to_entity(&quot;eval1&quot;) for a in assessments]</span></pre><h2>File at the merge commit, lines 156 to 172</h2><pre>  156 |     assert entity.run_id == &quot;run1&quot;
+  157 |     assert entity.inputs_id == evaluation.inputs_id
+  158 |     assert entity.inputs == inputs
+  159 |     assert entity.outputs == outputs
+  160 |     assert entity.request_id == &quot;req1&quot;
+  161 |     assert entity.targets == {&quot;target1&quot;: 1.0}
+  162 |     assert entity.error_code == &quot;E001&quot;
+  163 |     assert entity.error_message == &quot;An error occurred&quot;
+<span class="t">  164 |     assert entity.assessments == [a._to_entity(&quot;eval1&quot;) for a in assessments]</span>
+  165 |     assert entity.metrics == metrics
+  166 |     assert entity.tags == [
+  167 |         EvaluationTag(key=&quot;tag1&quot;, value=&quot;value1&quot;),
+  168 |         EvaluationTag(key=&quot;tag2&quot;, value=&quot;value2&quot;),
+  169 |     ]
+  170 | 
+  171 | 
+  172 | def test_evaluation_inputs_id_uniqueness():</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/mlflow/mlflow/commit/1542bb61682876094a187f13a197e7fe07db3172">1542bb6168</a> (2025-10-11T14:47:32+09:00)</h2><p class="k">Migrate @mock.patch decorators to context managers in 5 test files (#18253)<br>Path after this commit: tests/evaluate/logging/test_evaluation.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/evaluate/logging/test_evaluation.py b/tests/evaluate/logging/test_evaluation.py
+index 686620bb2..96402c223 100644
+<span class="d">--- a/tests/evaluate/logging/test_evaluation.py</span>
+<span class="a">+++ b/tests/evaluate/logging/test_evaluation.py</span>
+<span class="h">@@ -1,5 +1,3 @@</span>
+<span class="d">-from unittest.mock import patch</span>
+<span class="d">-</span>
+ from mlflow.entities import Metric
+ from mlflow.evaluation import Assessment, Evaluation
+ from mlflow.evaluation.assessment import AssessmentSource
+<span class="h">@@ -125,8 +123,7 @@ def test_evaluation_to_from_dictionary():</span>
+     assert recreated_evaluation == evaluation
+ 
+ 
+<span class="d">-@patch(&quot;time.time&quot;, return_value=1234567890)</span>
+<span class="d">-def test_evaluation_to_entity(mock_time):</span>
+<span class="a">+def test_evaluation_to_entity():</span>
+     inputs = {&quot;feature1&quot;: 1.0, &quot;feature2&quot;: 2.0}
+     outputs = {&quot;prediction&quot;: 0.5}
+     assessments = [</pre><h2>Commit #2: <a href="https://github.com/mlflow/mlflow/commit/bb3b629e01facc0583d709549e5fa751cfe7ef5d">bb3b629e01</a> (2025-10-11T18:54:30+09:00)</h2><p class="k">Migrate last 5 test files from @mock.patch decorators to context managers (#18257)<br>Path after this commit: tests/evaluate/logging/test_evaluation.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/evaluate/logging/test_evaluation.py b/tests/evaluate/logging/test_evaluation.py
+index 96402c223..d1a3fa3a4 100644
+<span class="d">--- a/tests/evaluate/logging/test_evaluation.py</span>
+<span class="a">+++ b/tests/evaluate/logging/test_evaluation.py</span>
+<span class="h">@@ -1,3 +1,5 @@</span>
+<span class="a">+from unittest import mock</span>
+<span class="a">+</span>
+ from mlflow.entities import Metric
+ from mlflow.evaluation import Assessment, Evaluation
+ from mlflow.evaluation.assessment import AssessmentSource
+<span class="h">@@ -148,7 +150,10 @@ def test_evaluation_to_entity():</span>
+         error_message=&quot;An error occurred&quot;,
+     )
+ 
+<span class="d">-    entity = evaluation._to_entity(run_id=&quot;run1&quot;, evaluation_id=&quot;eval1&quot;)</span>
+<span class="a">+    # Freeze time to ensure consistent timestamp in entity</span>
+<span class="a">+    with mock.patch(&quot;time.time&quot;, return_value=1234567890):</span>
+<span class="a">+        entity = evaluation._to_entity(run_id=&quot;run1&quot;, evaluation_id=&quot;eval1&quot;)</span>
+<span class="a">+        expected_assessments = [a._to_entity(&quot;eval1&quot;) for a in assessments]</span>
+     assert entity.evaluation_id == &quot;eval1&quot;
+     assert entity.run_id == &quot;run1&quot;
+     assert entity.inputs_id == evaluation.inputs_id
+<span class="h">@@ -158,7 +163,7 @@ def test_evaluation_to_entity():</span>
+     assert entity.targets == {&quot;target1&quot;: 1.0}
+     assert entity.error_code == &quot;E001&quot;
+     assert entity.error_message == &quot;An error occurred&quot;
+<span class="d m">-    assert entity.assessments == [a._to_entity(&quot;eval1&quot;) for a in assessments]</span>
+<span class="a">+    assert entity.assessments == expected_assessments</span>
+     assert entity.metrics == metrics
+     assert entity.tags == [
+         EvaluationTag(key=&quot;tag1&quot;, value=&quot;value1&quot;),</pre></body></html>

@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L073</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L073</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-net">azure/azure-sdk-for-net</a><br><b>File at merge:</b> eng/packages/http-client-csharp-mgmt/emitter/src/index.ts, line 1<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-sdk-for-net/commit/9c62645dfca717adf1487ebecc79c958a77d7cde">9c62645dfc</a> (2025-03-24T04:04:28)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-net/tree/bac518d3adcf30853ec4211f736b905dde075813">bac518d3ad</a>)</p><p><b>The line:</b></p><pre><span class="t">// Copyright (c) Microsoft Corporation. All rights reserved.</span></pre><h2>File at the merge commit, lines 1 to 4</h2><pre><span class="t">    1 | // Copyright (c) Microsoft Corporation. All rights reserved.</span>
+    2 | // Licensed under the MIT License. See License.txt in the project root for license information.
+    3 | 
+    4 | export * from &quot;./emitter.js&quot;;</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-net/commit/fe08fe89e713ad65ca12614683d5e146a6eaf789">fe08fe89e7</a> (2025-04-17T21:28:53-07:00)</h2><p class="k">Use tspd in emitters (#49477)<br>Path after this commit: eng/packages/http-client-csharp-mgmt/emitter/src/index.ts. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: eng/packages/http-client-csharp-mgmt/emitter/src/lib/lib.ts, eng/packages/http-client-csharp/emitter/src/lib/lib.ts.</p><pre>diff --git a/eng/packages/http-client-csharp-mgmt/emitter/src/index.ts b/eng/packages/http-client-csharp-mgmt/emitter/src/index.ts
+index a40d9eaffe1..e184c496d17 100644
+<span class="d">--- a/eng/packages/http-client-csharp-mgmt/emitter/src/index.ts</span>
+<span class="a">+++ b/eng/packages/http-client-csharp-mgmt/emitter/src/index.ts</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class=" m"> // Copyright (c) Microsoft Corporation. All rights reserved.</span>
+ // Licensed under the MIT License. See License.txt in the project root for license information.
+ 
+<span class="d">-export * from &quot;./emitter.js&quot;;</span>
+<span class="a">+export { $lib } from &quot;./lib/lib.js&quot;;</span></pre><h2>Commit #2: <a href="https://github.com/azure/azure-sdk-for-net/commit/d4f330bb1230e400c8a1db98619233ca3982f964">d4f330bb12</a> (2025-04-24T07:46:54+08:00)</h2><p class="k">Bump MTG version for mgmt (#49499)<br>Path after this commit: eng/packages/http-client-csharp-mgmt/emitter/src/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/packages/http-client-csharp-mgmt/emitter/src/index.ts b/eng/packages/http-client-csharp-mgmt/emitter/src/index.ts
+index e184c496d17..ecaa90822b4 100644
+<span class="d">--- a/eng/packages/http-client-csharp-mgmt/emitter/src/index.ts</span>
+<span class="a">+++ b/eng/packages/http-client-csharp-mgmt/emitter/src/index.ts</span>
+<span class="h">@@ -2,3 +2,4 @@</span>
+ // Licensed under the MIT License. See License.txt in the project root for license information.
+ 
+ export { $lib } from &quot;./lib/lib.js&quot;;
+<span class="a">+export { $onEmit } from &quot;./emitter.js&quot;;</span></pre></body></html>

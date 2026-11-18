@@ -1,0 +1,74 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L149</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L149</h1><p><b>Repository:</b> <a href="https://github.com/tokens-studio/figma-plugin">tokens-studio/figma-plugin</a><br><b>File at merge:</b> packages/tokens-studio-for-figma/src/app/components/Callout.tsx, line 22<br><b>Merge commit (birth):</b> <a href="https://github.com/tokens-studio/figma-plugin/commit/d3765b563c4f237fda9e022dc6439f85c8b7daf8">d3765b563c</a> (2025-06-04T13:32:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/tokens-studio/figma-plugin/tree/d64d894a3596897e2c4242a15baff7408ac2675e">d64d894a35</a>)</p><p><b>The line:</b></p><pre><span class="t">  heading, description, action, secondaryAction, id,</span></pre><h2>File at the merge commit, lines 14 to 30</h2><pre>   14 |   }
+   15 |   secondaryAction?: {
+   16 |     text: React.ReactNode
+   17 |     onClick: React.ComponentProps&lt;typeof Button&gt;[&#x27;onClick&#x27;]
+   18 |   }
+   19 | };
+   20 | 
+   21 | export default function Callout({
+<span class="t">   22 |   heading, description, action, secondaryAction, id,</span>
+   23 | }: Props) {
+   24 |   return (
+   25 |     &lt;Box css={{
+   26 |       backgroundColor: &#x27;$dangerBg&#x27;, border: &#x27;1px solid&#x27;, borderColor: &#x27;$dangerBorder&#x27;, padding: &#x27;$5&#x27;, borderRadius: &#x27;$small&#x27;,
+   27 |     }}
+   28 |     &gt;
+   29 |       &lt;Stack direction=&quot;row&quot; gap={4}&gt;
+   30 |         &lt;Box css={{ color: &#x27;$dangerFg&#x27;, marginTop: &#x27;$3&#x27; }}&gt;</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/tokens-studio/figma-plugin/commit/ef2df33871f72729183f144468c084ed2014964b">ef2df33871</a> (2025-08-12T17:41:24+05:30)</h2><p class="k">add ability to display invalid json errors while syncing with providers (#3488)<br>Path after this commit: packages/tokens-studio-for-figma/src/app/components/Callout.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/tokens-studio-for-figma/src/app/components/Callout.tsx b/packages/tokens-studio-for-figma/src/app/components/Callout.tsx
+index b7b4a0ff..58d0355a 100644
+<span class="d">--- a/packages/tokens-studio-for-figma/src/app/components/Callout.tsx</span>
+<span class="a">+++ b/packages/tokens-studio-for-figma/src/app/components/Callout.tsx</span>
+<span class="h">@@ -8,7 +8,7 @@ type Props = {</span>
+   id: string
+   heading: React.ReactNode
+   description: React.ReactNode
+<span class="d">-  action: {</span>
+<span class="a">+  action?: {</span>
+     text: React.ReactNode
+     onClick: React.ComponentProps&lt;typeof Button&gt;[&#x27;onClick&#x27;]
+   }
+<span class="h">@@ -35,21 +35,25 @@ export default function Callout({</span>
+             &lt;Heading&gt;{heading}&lt;/Heading&gt;
+             &lt;Text muted size=&quot;xsmall&quot;&gt;{description}&lt;/Text&gt;
+           &lt;/Stack&gt;
+<span class="d">-          &lt;Stack direction=&quot;row&quot; gap={2}&gt;</span>
+<span class="d">-            &lt;Button data-testid={id} size=&quot;small&quot; variant=&quot;primary&quot; onClick={action.onClick}&gt;</span>
+<span class="d">-              {action.text}</span>
+<span class="d">-            &lt;/Button&gt;</span>
+<span class="d">-            {secondaryAction &amp;&amp; (</span>
+<span class="d">-              &lt;Button</span>
+<span class="d">-                data-testid={`${id}-secondary`}</span>
+<span class="d">-                size=&quot;small&quot;</span>
+<span class="d">-                variant=&quot;secondary&quot;</span>
+<span class="d">-                onClick={secondaryAction.onClick}</span>
+<span class="d">-              &gt;</span>
+<span class="d">-                {secondaryAction.text}</span>
+<span class="d">-              &lt;/Button&gt;</span>
+<span class="d">-            )}</span>
+<span class="d">-          &lt;/Stack&gt;</span>
+<span class="a">+          {(action || secondaryAction) &amp;&amp; (</span>
+<span class="a">+            &lt;Stack direction=&quot;row&quot; gap={2}&gt;</span>
+<span class="a">+              {action &amp;&amp; (</span>
+<span class="a">+                &lt;Button data-testid={id} size=&quot;small&quot; variant=&quot;primary&quot; onClick={action.onClick}&gt;</span>
+<span class="a">+                  {action.text}</span>
+<span class="a">+                &lt;/Button&gt;</span>
+<span class="a">+              )}</span>
+<span class="a">+              {secondaryAction &amp;&amp; (</span>
+<span class="a">+                &lt;Button</span>
+<span class="a">+                  data-testid={`${id}-secondary`}</span>
+<span class="a">+                  size=&quot;small&quot;</span>
+<span class="a">+                  variant=&quot;secondary&quot;</span>
+<span class="a">+                  onClick={secondaryAction.onClick}</span>
+<span class="a">+                &gt;</span>
+<span class="a">+                  {secondaryAction.text}</span>
+<span class="a">+                &lt;/Button&gt;</span>
+<span class="a">+              )}</span>
+<span class="a">+            &lt;/Stack&gt;</span>
+<span class="a">+          )}</span>
+         &lt;/Stack&gt;
+       &lt;/Stack&gt;
+     &lt;/Box&gt;</pre></body></html>

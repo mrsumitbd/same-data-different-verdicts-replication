@@ -1,0 +1,252 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L183</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L183</h1><p><b>Repository:</b> <a href="https://github.com/reflex-dev/reflex">reflex-dev/reflex</a><br><b>File at merge:</b> tests/integration/test_exception_handlers.py, line 162<br><b>Merge commit (birth):</b> <a href="https://github.com/reflex-dev/reflex/commit/9c6cb1279b22efe62a9a127581799f3f1a53cbf7">9c6cb1279b</a> (2025-07-16T21:08:31)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/reflex-dev/reflex/tree/5b3aa272183504eae277ef61f72c162d72a290a5">5b3aa27218</a>)</p><p><b>The line:</b></p><pre><span class="t">    assert &quot;ReferenceError&quot; in captured_default_handler_output</span></pre><h2>File at the merge commit, lines 154 to 170</h2><pre>  154 | 
+  155 |     reset_button.click()
+  156 | 
+  157 |     # Wait for the error to be logged
+  158 |     time.sleep(2)
+  159 | 
+  160 |     captured_default_handler_output = get_reflex_output()
+  161 |     assert &quot;induce_frontend_error&quot; in captured_default_handler_output
+<span class="t">  162 |     assert &quot;ReferenceError&quot; in captured_default_handler_output</span>
+  163 | 
+  164 | 
+  165 | def test_backend_exception_handler_during_runtime(
+  166 |     driver: WebDriver,
+  167 |     get_reflex_output: Callable[[], str],
+  168 | ):
+  169 |     &quot;&quot;&quot;Test calling backend exception handler during runtime.
+  170 | </pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/reflex-dev/reflex/commit/f1eaab5380aa395f890a12009e8c276dcbf26caf">f1eaab5380</a> (2025-07-21T13:58:02-07:00)</h2><p class="k">Revert app harness subprocess (#5610)<br>Path after this commit: tests/integration/test_exception_handlers.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/integration/test_exception_handlers.py b/tests/integration/test_exception_handlers.py
+index e85ab3158..6430bc746 100644
+<span class="d">--- a/tests/integration/test_exception_handlers.py</span>
+<span class="a">+++ b/tests/integration/test_exception_handlers.py</span>
+<span class="h">@@ -3,7 +3,7 @@</span>
+ from __future__ import annotations
+ 
+ import time
+<span class="d">-from collections.abc import Callable, Generator</span>
+<span class="a">+from collections.abc import Generator</span>
+ 
+ import pytest
+ from selenium.webdriver.common.by import By
+<span class="h">@@ -13,6 +13,8 @@ from selenium.webdriver.support.ui import WebDriverWait</span>
+ 
+ from reflex.testing import AppHarness, AppHarnessProd
+ 
+<span class="a">+pytestmark = [pytest.mark.ignore_console_error]</span>
+<span class="a">+</span>
+ 
+ def TestApp():
+     &quot;&quot;&quot;A test app for event exception handler integration.&quot;&quot;&quot;
+<span class="h">@@ -84,8 +86,6 @@ def test_app(</span>
+         app_name=f&quot;testapp_{app_harness_env.__name__.lower()}&quot;,
+         app_source=TestApp,
+     ) as harness:
+<span class="d">-        # disable console.error checking for this test</span>
+<span class="d">-        harness.reflex_process_error_log_path = None</span>
+         yield harness
+ 
+ 
+<span class="h">@@ -108,35 +108,9 @@ def driver(test_app: AppHarness) -&gt; Generator[WebDriver, None, None]:</span>
+         driver.quit()
+ 
+ 
+<span class="d">-@pytest.fixture</span>
+<span class="d">-def get_reflex_output(test_app: AppHarness) -&gt; Callable[[], str]:</span>
+<span class="d">-    &quot;&quot;&quot;Get the output of the reflex process.</span>
+<span class="d">-</span>
+<span class="d">-    Args:</span>
+<span class="d">-        test_app: harness for TestApp app</span>
+<span class="d">-</span>
+<span class="d">-    Returns:</span>
+<span class="d">-        The output of the reflex process.</span>
+<span class="d">-    &quot;&quot;&quot;</span>
+<span class="d">-    assert test_app.reflex_process is not None, &quot;app is not running&quot;</span>
+<span class="d">-    assert test_app.reflex_process_log_path is not None, (</span>
+<span class="d">-        &quot;reflex process log path is not set&quot;</span>
+<span class="d">-    )</span>
+<span class="d">-    initial_offset = test_app.reflex_process_log_path.stat().st_size</span>
+<span class="d">-</span>
+<span class="d">-    def f() -&gt; str:</span>
+<span class="d">-        assert test_app.reflex_process_log_path is not None, (</span>
+<span class="d">-            &quot;reflex process log path is not set&quot;</span>
+<span class="d">-        )</span>
+<span class="d">-        return test_app.reflex_process_log_path.read_bytes()[initial_offset:].decode(</span>
+<span class="d">-            &quot;utf-8&quot;</span>
+<span class="d">-        )</span>
+<span class="d">-</span>
+<span class="d">-    return f</span>
+<span class="d">-</span>
+<span class="d">-</span>
+ def test_frontend_exception_handler_during_runtime(
+<span class="d">-    driver: WebDriver, get_reflex_output: Callable[[], str]</span>
+<span class="a">+    driver: WebDriver,</span>
+<span class="a">+    capsys,</span>
+ ):
+     &quot;&quot;&quot;Test calling frontend exception handler during runtime.
+ 
+<span class="h">@@ -145,7 +119,7 @@ def test_frontend_exception_handler_during_runtime(</span>
+ 
+     Args:
+         driver: WebDriver instance.
+<span class="d">-        get_reflex_output: Function to get the reflex process output.</span>
+<span class="a">+        capsys: pytest fixture for capturing stdout and stderr.</span>
+ 
+     &quot;&quot;&quot;
+     reset_button = WebDriverWait(driver, 20).until(
+<span class="h">@@ -157,14 +131,14 @@ def test_frontend_exception_handler_during_runtime(</span>
+     # Wait for the error to be logged
+     time.sleep(2)
+ 
+<span class="d">-    captured_default_handler_output = get_reflex_output()</span>
+<span class="d">-    assert &quot;induce_frontend_error&quot; in captured_default_handler_output</span>
+<span class="d m">-    assert &quot;ReferenceError&quot; in captured_default_handler_output</span>
+<span class="a">+    captured_default_handler_output = capsys.readouterr()</span>
+<span class="a">+    assert &quot;induce_frontend_error&quot; in captured_default_handler_output.out</span>
+<span class="a">+    assert &quot;ReferenceError&quot; in captured_default_handler_output.out</span>
+ 
+ 
+ def test_backend_exception_handler_during_runtime(
+     driver: WebDriver,
+<span class="d">-    get_reflex_output: Callable[[], str],</span>
+<span class="a">+    capsys,</span>
+ ):
+     &quot;&quot;&quot;Test calling backend exception handler during runtime.
+ 
+<span class="h">@@ -173,7 +147,7 @@ def test_backend_exception_handler_during_runtime(</span>
+ 
+     Args:
+         driver: WebDriver instance.
+<span class="d">-        get_reflex_output: Function to get the reflex process output.</span>
+<span class="a">+        capsys: pytest fixture for capturing stdout and stderr.</span>
+ 
+     &quot;&quot;&quot;
+     reset_button = WebDriverWait(driver, 20).until(
+<span class="h">@@ -185,15 +159,15 @@ def test_backend_exception_handler_during_runtime(</span>
+     # Wait for the error to be logged
+     time.sleep(2)
+ 
+<span class="d">-    captured_default_handler_output = get_reflex_output()</span>
+<span class="d">-    assert &quot;divide_by_number&quot; in captured_default_handler_output</span>
+<span class="d">-    assert &quot;ZeroDivisionError&quot; in captured_default_handler_output</span>
+<span class="a">+    captured_default_handler_output = capsys.readouterr()</span>
+<span class="a">+    assert &quot;divide_by_number&quot; in captured_default_handler_output.out</span>
+<span class="a">+    assert &quot;ZeroDivisionError&quot; in captured_default_handler_output.out</span>
+ 
+ 
+ def test_frontend_exception_handler_with_react(
+     test_app: AppHarness,
+     driver: WebDriver,
+<span class="d">-    get_reflex_output: Callable[[], str],</span>
+<span class="a">+    capsys,</span>
+ ):
+     &quot;&quot;&quot;Test calling frontend exception handler during runtime.
+ 
+<span class="h">@@ -202,7 +176,7 @@ def test_frontend_exception_handler_with_react(</span>
+     Args:
+         test_app: harness for TestApp app
+         driver: WebDriver instance.
+<span class="d">-        get_reflex_output: Function to get the reflex process output.</span>
+<span class="a">+        capsys: pytest fixture for capturing stdout and stderr.</span>
+ 
+     &quot;&quot;&quot;
+     reset_button = WebDriverWait(driver, 20).until(
+<span class="h">@@ -214,11 +188,11 @@ def test_frontend_exception_handler_with_react(</span>
+     # Wait for the error to be logged
+     time.sleep(2)
+ 
+<span class="d">-    captured_default_handler_output = get_reflex_output()</span>
+<span class="a">+    captured_default_handler_output = capsys.readouterr()</span>
+     if isinstance(test_app, AppHarnessProd):
+<span class="d">-        assert &quot;Error: Minified React error #31&quot; in captured_default_handler_output</span>
+<span class="a">+        assert &quot;Error: Minified React error #31&quot; in captured_default_handler_output.out</span>
+     else:
+         assert (
+             &quot;Error: Objects are not valid as a React child (found: object with keys \n{invalid})&quot;
+<span class="d">-            in captured_default_handler_output</span>
+<span class="a">+            in captured_default_handler_output.out</span>
+         )</pre><h2>Commit #2: <a href="https://github.com/reflex-dev/reflex/commit/39a07b6b15d9c56f5996c79b1aac35f9f1e046d1">39a07b6b15</a> (2025-08-28T18:44:47-07:00)</h2><p class="k">deprecate state_auto_setters=True (#5739)<br>Path after this commit: tests/integration/test_exception_handlers.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/integration/test_exception_handlers.py b/tests/integration/test_exception_handlers.py
+index 6430bc746..08c19415d 100644
+<span class="d">--- a/tests/integration/test_exception_handlers.py</span>
+<span class="a">+++ b/tests/integration/test_exception_handlers.py</span>
+<span class="h">@@ -28,6 +28,10 @@ def TestApp():</span>
+ 
+         react_error: bool = False
+ 
+<span class="a">+        @rx.event</span>
+<span class="a">+        def set_react_error(self, value: bool):</span>
+<span class="a">+            self.react_error = value</span>
+<span class="a">+</span>
+         def divide_by_number(self, number: int):
+             &quot;&quot;&quot;Divide by number and print the result.
+ 
+<span class="h">@@ -54,7 +58,7 @@ def TestApp():</span>
+             ),
+             rx.button(
+                 &quot;induce_react_error&quot;,
+<span class="d">-                on_click=TestAppState.set_react_error(True),  # pyright: ignore [reportAttributeAccessIssue]</span>
+<span class="a">+                on_click=TestAppState.set_react_error(True),</span>
+                 id=&quot;induce-react-error-btn&quot;,
+             ),
+             rx.box(</pre><h2>Commit #3: <a href="https://github.com/reflex-dev/reflex/commit/f226bb8763c139526dc11975e8c4bf645f7b0143">f226bb8763</a> (2025-09-17T10:02:26-07:00)</h2><p class="k">ENG-7619: make console errors go to stderr (#5789)<br>Path after this commit: tests/integration/test_exception_handlers.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/integration/test_exception_handlers.py b/tests/integration/test_exception_handlers.py
+index 08c19415d..8c24cfaa4 100644
+<span class="d">--- a/tests/integration/test_exception_handlers.py</span>
+<span class="a">+++ b/tests/integration/test_exception_handlers.py</span>
+<span class="h">@@ -114,7 +114,7 @@ def driver(test_app: AppHarness) -&gt; Generator[WebDriver, None, None]:</span>
+ 
+ def test_frontend_exception_handler_during_runtime(
+     driver: WebDriver,
+<span class="d">-    capsys,</span>
+<span class="a">+    capsys: pytest.CaptureFixture[str],</span>
+ ):
+     &quot;&quot;&quot;Test calling frontend exception handler during runtime.
+ 
+<span class="h">@@ -136,13 +136,13 @@ def test_frontend_exception_handler_during_runtime(</span>
+     time.sleep(2)
+ 
+     captured_default_handler_output = capsys.readouterr()
+<span class="d">-    assert &quot;induce_frontend_error&quot; in captured_default_handler_output.out</span>
+<span class="d">-    assert &quot;ReferenceError&quot; in captured_default_handler_output.out</span>
+<span class="a">+    assert &quot;induce_frontend_error&quot; in captured_default_handler_output.err</span>
+<span class="a">+    assert &quot;ReferenceError&quot; in captured_default_handler_output.err</span>
+ 
+ 
+ def test_backend_exception_handler_during_runtime(
+     driver: WebDriver,
+<span class="d">-    capsys,</span>
+<span class="a">+    capsys: pytest.CaptureFixture[str],</span>
+ ):
+     &quot;&quot;&quot;Test calling backend exception handler during runtime.
+ 
+<span class="h">@@ -164,14 +164,14 @@ def test_backend_exception_handler_during_runtime(</span>
+     time.sleep(2)
+ 
+     captured_default_handler_output = capsys.readouterr()
+<span class="d">-    assert &quot;divide_by_number&quot; in captured_default_handler_output.out</span>
+<span class="d">-    assert &quot;ZeroDivisionError&quot; in captured_default_handler_output.out</span>
+<span class="a">+    assert &quot;divide_by_number&quot; in captured_default_handler_output.err</span>
+<span class="a">+    assert &quot;ZeroDivisionError&quot; in captured_default_handler_output.err</span>
+ 
+ 
+ def test_frontend_exception_handler_with_react(
+     test_app: AppHarness,
+     driver: WebDriver,
+<span class="d">-    capsys,</span>
+<span class="a">+    capsys: pytest.CaptureFixture[str],</span>
+ ):
+     &quot;&quot;&quot;Test calling frontend exception handler during runtime.
+ 
+<span class="h">@@ -194,9 +194,9 @@ def test_frontend_exception_handler_with_react(</span>
+ 
+     captured_default_handler_output = capsys.readouterr()
+     if isinstance(test_app, AppHarnessProd):
+<span class="d">-        assert &quot;Error: Minified React error #31&quot; in captured_default_handler_output.out</span>
+<span class="a">+        assert &quot;Error: Minified React error #31&quot; in captured_default_handler_output.err</span>
+     else:
+         assert (
+             &quot;Error: Objects are not valid as a React child (found: object with keys \n{invalid})&quot;
+<span class="d">-            in captured_default_handler_output.out</span>
+<span class="a">+            in captured_default_handler_output.err</span>
+         )</pre></body></html>

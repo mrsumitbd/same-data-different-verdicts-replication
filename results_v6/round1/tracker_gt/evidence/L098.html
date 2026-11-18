@@ -1,0 +1,222 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L098</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L098</h1><p><b>Repository:</b> <a href="https://github.com/neondatabase/neon">neondatabase/neon</a><br><b>File at merge:</b> safekeeper/src/timeline.rs, line 398<br><b>Merge commit (birth):</b> <a href="https://github.com/neondatabase/neon/commit/df7e301a5401ac1da2792b00ace7323f913b4fc1">df7e301a54</a> (2025-06-06T11:54:07)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/neondatabase/neon/tree/015b1c7cb3259a6fcd5039bc2bd46a462e163ae8">015b1c7cb3</a>)</p><p><b>The line:</b></p><pre><span class="t">    #[error(&quot;Timeline {0} has been deleted&quot;)]</span></pre><h2>File at the merge commit, lines 390 to 406</h2><pre>  390 | }
+  391 | 
+  392 | #[derive(Debug, thiserror::Error)]
+  393 | pub enum TimelineError {
+  394 |     #[error(&quot;Timeline {0} was cancelled and cannot be used anymore&quot;)]
+  395 |     Cancelled(TenantTimelineId),
+  396 |     #[error(&quot;Timeline {0} was not found in global map&quot;)]
+  397 |     NotFound(TenantTimelineId),
+<span class="t">  398 |     #[error(&quot;Timeline {0} has been deleted&quot;)]</span>
+  399 |     Deleted(TenantTimelineId),
+  400 |     #[error(&quot;Timeline {0} creation is in progress&quot;)]
+  401 |     CreationInProgress(TenantTimelineId),
+  402 |     #[error(&quot;Timeline {0} exists on disk, but wasn&#x27;t loaded on startup&quot;)]
+  403 |     Invalid(TenantTimelineId),
+  404 |     #[error(&quot;Timeline {0} is already exists&quot;)]
+  405 |     AlreadyExists(TenantTimelineId),
+  406 |     #[error(&quot;Timeline {0} is not initialized, wal_seg_size is zero&quot;)]</pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/neondatabase/neon/commit/c746678bbc215937e5b3dbead0697386e0815780">c746678bbc</a> (2025-06-30T08:30:05+00:00)</h2><p class="k">storcon: implement safekeeper_migrate handler (#11849)<br>Path after this commit: safekeeper/src/timeline.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/safekeeper/src/timeline.rs b/safekeeper/src/timeline.rs
+index 2bee41537..0a2787686 100644
+<span class="d">--- a/safekeeper/src/timeline.rs</span>
+<span class="a">+++ b/safekeeper/src/timeline.rs</span>
+<span class="h">@@ -190,7 +190,14 @@ impl StateSK {</span>
+         &amp;mut self,
+         to: Configuration,
+     ) -&gt; Result&lt;TimelineMembershipSwitchResponse&gt; {
+<span class="d">-        self.state_mut().membership_switch(to).await</span>
+<span class="a">+        let result = self.state_mut().membership_switch(to).await?;</span>
+<span class="a">+</span>
+<span class="a">+        Ok(TimelineMembershipSwitchResponse {</span>
+<span class="a">+            previous_conf: result.previous_conf,</span>
+<span class="a">+            current_conf: result.current_conf,</span>
+<span class="a">+            term: self.state().acceptor_state.term,</span>
+<span class="a">+            flush_lsn: self.flush_lsn(),</span>
+<span class="a">+        })</span>
+     }
+ 
+     /// Close open WAL files to release FDs.</pre><h2>Commit #2: <a href="https://github.com/neondatabase/neon/commit/4db934407a062e16f4adcfcf731ec39cf0025882">4db934407a</a> (2025-07-03T14:32:53+00:00)</h2><p class="k">SK changes #1 (#12448)<br>Path after this commit: safekeeper/src/timeline.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/safekeeper/src/timeline.rs b/safekeeper/src/timeline.rs
+index 0a2787686..95b5fe6d5 100644
+<span class="d">--- a/safekeeper/src/timeline.rs</span>
+<span class="a">+++ b/safekeeper/src/timeline.rs</span>
+<span class="h">@@ -26,7 +26,9 @@ use utils::id::{NodeId, TenantId, TenantTimelineId};</span>
+ use utils::lsn::Lsn;
+ use utils::sync::gate::Gate;
+ 
+<span class="d">-use crate::metrics::{FullTimelineInfo, MISC_OPERATION_SECONDS, WalStorageMetrics};</span>
+<span class="a">+use crate::metrics::{</span>
+<span class="a">+    FullTimelineInfo, MISC_OPERATION_SECONDS, WAL_STORAGE_LIMIT_ERRORS, WalStorageMetrics,</span>
+<span class="a">+};</span>
+ use crate::rate_limit::RateLimiter;
+ use crate::receive_wal::WalReceivers;
+ use crate::safekeeper::{AcceptorProposerMessage, ProposerAcceptorMessage, SafeKeeper, TermLsn};
+<span class="h">@@ -1050,6 +1052,39 @@ impl WalResidentTimeline {</span>
+         Ok(ss)
+     }
+ 
+<span class="a">+    // BEGIN HADRON</span>
+<span class="a">+    // Check if disk usage by WAL segment files for this timeline exceeds the configured limit.</span>
+<span class="a">+    fn hadron_check_disk_usage(</span>
+<span class="a">+        &amp;self,</span>
+<span class="a">+        shared_state_locked: &amp;mut WriteGuardSharedState&lt;&#x27;_&gt;,</span>
+<span class="a">+    ) -&gt; Result&lt;()&gt; {</span>
+<span class="a">+        // The disk usage is calculated based on the number of segments between `last_removed_segno`</span>
+<span class="a">+        // and the current flush LSN segment number. `last_removed_segno` is advanced after</span>
+<span class="a">+        // unneeded WAL files are physically removed from disk (see `update_wal_removal_end()`</span>
+<span class="a">+        // in `timeline_manager.rs`).</span>
+<span class="a">+        let max_timeline_disk_usage_bytes = self.conf.max_timeline_disk_usage_bytes;</span>
+<span class="a">+        if max_timeline_disk_usage_bytes &gt; 0 {</span>
+<span class="a">+            let last_removed_segno = self.last_removed_segno.load(Ordering::Relaxed);</span>
+<span class="a">+            let flush_lsn = shared_state_locked.sk.flush_lsn();</span>
+<span class="a">+            let wal_seg_size = shared_state_locked.sk.state().server.wal_seg_size as u64;</span>
+<span class="a">+            let current_segno = flush_lsn.segment_number(wal_seg_size as usize);</span>
+<span class="a">+</span>
+<span class="a">+            let segno_count = current_segno - last_removed_segno;</span>
+<span class="a">+            let disk_usage_bytes = segno_count * wal_seg_size;</span>
+<span class="a">+</span>
+<span class="a">+            if disk_usage_bytes &gt; max_timeline_disk_usage_bytes {</span>
+<span class="a">+                WAL_STORAGE_LIMIT_ERRORS.inc();</span>
+<span class="a">+                bail!(</span>
+<span class="a">+                    &quot;WAL storage utilization exceeds configured limit of {} bytes: current disk usage: {} bytes&quot;,</span>
+<span class="a">+                    max_timeline_disk_usage_bytes,</span>
+<span class="a">+                    disk_usage_bytes</span>
+<span class="a">+                );</span>
+<span class="a">+            }</span>
+<span class="a">+        }</span>
+<span class="a">+        Ok(())</span>
+<span class="a">+    }</span>
+<span class="a">+    // END HADRON</span>
+<span class="a">+</span>
+     /// Pass arrived message to the safekeeper.
+     pub async fn process_msg(
+         &amp;self,
+<span class="h">@@ -1062,6 +1097,13 @@ impl WalResidentTimeline {</span>
+         let mut rmsg: Option&lt;AcceptorProposerMessage&gt;;
+         {
+             let mut shared_state = self.write_shared_state().await;
+<span class="a">+            // BEGIN HADRON</span>
+<span class="a">+            // Errors from the `hadron_check_disk_usage()` function fail the process_msg() function, which</span>
+<span class="a">+            // gets propagated upward and terminates the entire WalAcceptor. This will cause postgres to</span>
+<span class="a">+            // disconnect from the safekeeper and reestablish another connection. Postgres will keep retrying</span>
+<span class="a">+            // safekeeper connections every second until it can successfully propose WAL to the SK again.</span>
+<span class="a">+            self.hadron_check_disk_usage(&amp;mut shared_state)?;</span>
+<span class="a">+            // END HADRON</span>
+             rmsg = shared_state.sk.safekeeper().process_msg(msg).await?;
+ 
+             // if this is AppendResponse, fill in proper hot standby feedback.</pre><h2>Commit #3: <a href="https://github.com/neondatabase/neon/commit/fc10bb9438fa58efebde744179725bd55bbf9ee1">fc10bb9438</a> (2025-07-07T09:22:03+00:00)</h2><p class="k">storage: rename term -&gt; last_log_term in TimelineMembershipSwitchResponse  (#12481)<br>Path after this commit: safekeeper/src/timeline.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/safekeeper/src/timeline.rs b/safekeeper/src/timeline.rs
+index 95b5fe6d5..dbe510a01 100644
+<span class="d">--- a/safekeeper/src/timeline.rs</span>
+<span class="a">+++ b/safekeeper/src/timeline.rs</span>
+<span class="h">@@ -197,7 +197,7 @@ impl StateSK {</span>
+         Ok(TimelineMembershipSwitchResponse {
+             previous_conf: result.previous_conf,
+             current_conf: result.current_conf,
+<span class="d">-            term: self.state().acceptor_state.term,</span>
+<span class="a">+            last_log_term: self.state().acceptor_state.term,</span>
+             flush_lsn: self.flush_lsn(),
+         })
+     }</pre><h2>Commit #4: <a href="https://github.com/neondatabase/neon/commit/8b18d8b31b608a54ce936f5eb893e2ae11a52a04">8b18d8b31b</a> (2025-07-16T14:43:17+00:00)</h2><p class="k">safekeeper: add global disk usage utilization limit (#12605)<br>Path after this commit: safekeeper/src/timeline.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/safekeeper/src/timeline.rs b/safekeeper/src/timeline.rs
+index dbe510a01..a1a0aab9f 100644
+<span class="d">--- a/safekeeper/src/timeline.rs</span>
+<span class="a">+++ b/safekeeper/src/timeline.rs</span>
+<span class="h">@@ -29,6 +29,8 @@ use utils::sync::gate::Gate;</span>
+ use crate::metrics::{
+     FullTimelineInfo, MISC_OPERATION_SECONDS, WAL_STORAGE_LIMIT_ERRORS, WalStorageMetrics,
+ };
+<span class="a">+</span>
+<span class="a">+use crate::hadron::GLOBAL_DISK_LIMIT_EXCEEDED;</span>
+ use crate::rate_limit::RateLimiter;
+ use crate::receive_wal::WalReceivers;
+ use crate::safekeeper::{AcceptorProposerMessage, ProposerAcceptorMessage, SafeKeeper, TermLsn};
+<span class="h">@@ -1081,6 +1083,11 @@ impl WalResidentTimeline {</span>
+                 );
+             }
+         }
+<span class="a">+</span>
+<span class="a">+        if GLOBAL_DISK_LIMIT_EXCEEDED.load(Ordering::Relaxed) {</span>
+<span class="a">+            bail!(&quot;Global disk usage exceeded limit&quot;);</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         Ok(())
+     }
+     // END HADRON</pre><h2>Commit #5: <a href="https://github.com/neondatabase/neon/commit/133f16e9b5de4743070638ae704501a6b6c6fd4a">133f16e9b5</a> (2025-07-22T14:58:20+00:00)</h2><p class="k">storcon: finish safekeeper migration gracefully (#12528)<br>Path after this commit: safekeeper/src/timeline.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/safekeeper/src/timeline.rs b/safekeeper/src/timeline.rs
+index a1a0aab9f..b8774b30e 100644
+<span class="d">--- a/safekeeper/src/timeline.rs</span>
+<span class="a">+++ b/safekeeper/src/timeline.rs</span>
+<span class="h">@@ -427,6 +427,9 @@ impl From&lt;TimelineError&gt; for ApiError {</span>
+             TimelineError::NotFound(ttid) =&gt; {
+                 ApiError::NotFound(anyhow!(&quot;timeline {} not found&quot;, ttid).into())
+             }
+<span class="a">+            TimelineError::Deleted(ttid) =&gt; {</span>
+<span class="a">+                ApiError::NotFound(anyhow!(&quot;timeline {} deleted&quot;, ttid).into())</span>
+<span class="a">+            }</span>
+             _ =&gt; ApiError::InternalServerError(anyhow!(&quot;{}&quot;, te)),
+         }
+     }</pre><h2>Commit #6: <a href="https://github.com/neondatabase/neon/commit/94cb9a79d979e6892167526387cf605e33e90423">94cb9a79d9</a> (2025-07-23T11:01:04+00:00)</h2><p class="k">safekeeper: generation aware timeline tombstones (#12482)<br>Path after this commit: safekeeper/src/timeline.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/safekeeper/src/timeline.rs b/safekeeper/src/timeline.rs
+index b8774b30e..43b5b3a8d 100644
+<span class="d">--- a/safekeeper/src/timeline.rs</span>
+<span class="a">+++ b/safekeeper/src/timeline.rs</span>
+<span class="h">@@ -594,7 +594,7 @@ impl Timeline {</span>
+ 
+     /// Cancel the timeline, requesting background activity to stop. Closing
+     /// the `self.gate` waits for that.
+<span class="d">-    pub async fn cancel(&amp;self) {</span>
+<span class="a">+    pub fn cancel(&amp;self) {</span>
+         info!(&quot;timeline {} shutting down&quot;, self.ttid);
+         self.cancel.cancel();
+     }
+<span class="h">@@ -914,6 +914,13 @@ impl Timeline {</span>
+         to: Configuration,
+     ) -&gt; Result&lt;TimelineMembershipSwitchResponse&gt; {
+         let mut state = self.write_shared_state().await;
+<span class="a">+        // Ensure we don&#x27;t race with exclude/delete requests by checking the cancellation</span>
+<span class="a">+        // token under the write_shared_state lock.</span>
+<span class="a">+        // Exclude/delete cancel the timeline under the shared state lock,</span>
+<span class="a">+        // so the timeline cannot be deleted in the middle of the membership switch.</span>
+<span class="a">+        if self.is_cancelled() {</span>
+<span class="a">+            bail!(TimelineError::Cancelled(self.ttid));</span>
+<span class="a">+        }</span>
+         state.sk.membership_switch(to).await
+     }
+ </pre><h2>Commit #7: <a href="https://github.com/neondatabase/neon/commit/07c3cfd2a0935d91eb9da859b65ce6a28a4d5c04">07c3cfd2a0</a> (2025-07-29T20:40:07+00:00)</h2><p class="k">[BRC-2905] Feed back PS-detected data corruption signals to SK and PG… (#12748)<br>Path after this commit: safekeeper/src/timeline.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/safekeeper/src/timeline.rs b/safekeeper/src/timeline.rs
+index 43b5b3a8d..e083a4942 100644
+<span class="d">--- a/safekeeper/src/timeline.rs</span>
+<span class="a">+++ b/safekeeper/src/timeline.rs</span>
+<span class="h">@@ -839,6 +839,7 @@ impl Timeline {</span>
+ 
+         let WalSendersTimelineMetricValues {
+             ps_feedback_counter,
+<span class="a">+            ps_corruption_detected,</span>
+             last_ps_feedback,
+             interpreted_wal_reader_tasks,
+         } = self.walsenders.info_for_metrics();
+<span class="h">@@ -847,6 +848,7 @@ impl Timeline {</span>
+         Some(FullTimelineInfo {
+             ttid: self.ttid,
+             ps_feedback_count: ps_feedback_counter,
+<span class="a">+            ps_corruption_detected,</span>
+             last_ps_feedback,
+             wal_backup_active: self.wal_backup_active.load(Ordering::Relaxed),
+             timeline_is_active: self.broker_active.load(Ordering::Relaxed),</pre><h2>Commit #8: <a href="https://github.com/neondatabase/neon/commit/edd60730c89433dd8b6990bdaf9fdad34213c411">edd60730c8</a> (2025-07-31T09:29:25+00:00)</h2><p class="k">safekeeper: use last_log_term in mconf switch + choose most advanced sk in pull timeline (#12778)<br>Path after this commit: safekeeper/src/timeline.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/safekeeper/src/timeline.rs b/safekeeper/src/timeline.rs
+index e083a4942..25ac8e5bd 100644
+<span class="d">--- a/safekeeper/src/timeline.rs</span>
+<span class="a">+++ b/safekeeper/src/timeline.rs</span>
+<span class="h">@@ -195,12 +195,14 @@ impl StateSK {</span>
+         to: Configuration,
+     ) -&gt; Result&lt;TimelineMembershipSwitchResponse&gt; {
+         let result = self.state_mut().membership_switch(to).await?;
+<span class="a">+        let flush_lsn = self.flush_lsn();</span>
+<span class="a">+        let last_log_term = self.state().acceptor_state.get_last_log_term(flush_lsn);</span>
+ 
+         Ok(TimelineMembershipSwitchResponse {
+             previous_conf: result.previous_conf,
+             current_conf: result.current_conf,
+<span class="d">-            last_log_term: self.state().acceptor_state.term,</span>
+<span class="d">-            flush_lsn: self.flush_lsn(),</span>
+<span class="a">+            last_log_term,</span>
+<span class="a">+            flush_lsn,</span>
+         })
+     }
+ </pre></body></html>

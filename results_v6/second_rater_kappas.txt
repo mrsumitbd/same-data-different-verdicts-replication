@@ -1,0 +1,16 @@
+Second-rater agreement (Cohen's kappa, 95% bootstrap interval, 2,000 resamples, seed 42)
+
+Task                                        Items  Kappa  95% interval
+Human-baseline attribution review             100  0.916  [0.826, 0.981]
+AST rule (leaf-only vs structural)            100  0.920  [0.838, 0.980]
+Commit intent                                 100  0.680  [0.570, 0.787]
+Tracker ground truth                          100  0.872  [0.784, 0.950]
+  (status only: modified or retained)              0.849  [0.745, 0.941]
+Self-modification (Copilot and Devin)          40  0.839  [0.674, 0.961]
+
+The attribution audit of the earlier study (100 of its 325 PRs, kappa 0.85 [0.76, 0.93])
+is reported with that study's replication package.
+
+The second rater's labels are not distributed. The scripts that drew the samples
+(src/make_second_rater_sheets.py) and computed these values (src/score_second_rater.py)
+are included.

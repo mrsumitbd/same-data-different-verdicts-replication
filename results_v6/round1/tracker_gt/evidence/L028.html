@@ -1,0 +1,283 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L028</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L028</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/glaredb_wasm/src/runtime.rs, line 31<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/a700816fae36429def28e6d5698473428ba68f95">a700816fae</a> (2025-04-08T19:34:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">        let http_fs = HttpFileSystem::new(client.clone());</span></pre><h2>File at the merge commit, lines 23 to 39</h2><pre>   23 | 
+   24 | impl WasmSystemRuntime {
+   25 |     pub fn try_new() -&gt; Result&lt;Self&gt; {
+   26 |         let mut dispatch = FileSystemDispatch::empty();
+   27 | 
+   28 |         // Register http filesystem.
+   29 |         let client = reqwest::Client::new();
+   30 |         let client = WasmHttpClient::new(client);
+<span class="t">   31 |         let http_fs = HttpFileSystem::new(client.clone());</span>
+   32 |         dispatch.register_filesystem(http_fs);
+   33 | 
+   34 |         // Register s3 filesystem.
+   35 |         let s3_fs = S3FileSystem::new(client, &quot;us-east-1&quot;);
+   36 |         dispatch.register_filesystem(s3_fs);
+   37 | 
+   38 |         // TODO: Shared memory fs
+   39 | </pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/748096cf21cb860c8fc23fb576f1bdc3f8e49892">748096cf21</a> (2025-04-25T17:31:59-04:00)</h2><p class="k">chore: Stub origin fs (#3725)<br>Path after this commit: crates/glaredb_wasm/src/runtime.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_wasm/src/runtime.rs b/crates/glaredb_wasm/src/runtime.rs
+index 18e0a7a7..734cb22f 100644
+<span class="d">--- a/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="a">+++ b/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="h">@@ -35,6 +35,10 @@ impl WasmSystemRuntime {</span>
+         let s3_fs = S3FileSystem::new(client, &quot;us-east-1&quot;);
+         dispatch.register_filesystem(s3_fs);
+ 
+<span class="a">+        // TODO: When it works, aka we need web workers.</span>
+<span class="a">+        // // Register origin filesystem.</span>
+<span class="a">+        // dispatch.register_filesystem(OriginFileSystem {});</span>
+<span class="a">+</span>
+         // TODO: Shared memory fs
+ 
+         Ok(WasmSystemRuntime {</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/7ec3666ff916e34b73efe87813d97b258579fcdf">7ec3666ff9</a> (2025-05-11T17:46:28-04:00)</h2><p class="k">feat: Read-only, unauthenticated gcs access (#3794)<br>Path after this commit: crates/glaredb_wasm/src/runtime.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_wasm/src/runtime.rs b/crates/glaredb_wasm/src/runtime.rs
+index 734cb22f..3643b110 100644
+<span class="d">--- a/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="a">+++ b/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="h">@@ -8,6 +8,7 @@ use glaredb_core::runtime::profile_buffer::{ProfileBuffer, ProfileSink};</span>
+ use glaredb_core::runtime::system::SystemRuntime;
+ use glaredb_error::Result;
+ use glaredb_http::filesystem::HttpFileSystem;
+<span class="a">+use glaredb_http::gcs::filesystem::GcsFileSystem;</span>
+ use glaredb_http::s3::filesystem::S3FileSystem;
+ use parking_lot::Mutex;
+ use tracing::debug;
+<span class="h">@@ -32,9 +33,12 @@ impl WasmSystemRuntime {</span>
+         dispatch.register_filesystem(http_fs);
+ 
+         // Register s3 filesystem.
+<span class="d">-        let s3_fs = S3FileSystem::new(client, &quot;us-east-1&quot;);</span>
+<span class="a">+        let s3_fs = S3FileSystem::new(client.clone(), &quot;us-east-1&quot;);</span>
+         dispatch.register_filesystem(s3_fs);
+ 
+<span class="a">+        let gcs_fs = GcsFileSystem::new(client);</span>
+<span class="a">+        dispatch.register_filesystem(gcs_fs);</span>
+<span class="a">+</span>
+         // TODO: When it works, aka we need web workers.
+         // // Register origin filesystem.
+         // dispatch.register_filesystem(OriginFileSystem {});</pre><h2>Commit #3: <a href="https://github.com/glaredb/glaredb/commit/d7814c4191684fba1b752c9b935a7ef3dd9cc40e">d7814c4191</a> (2025-05-30T11:51:25-04:00)</h2><p class="k">chore: Remove separate waker structs (#3872)<br>Path after this commit: crates/glaredb_wasm/src/runtime.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_wasm/src/runtime.rs b/crates/glaredb_wasm/src/runtime.rs
+index 3643b110..97e460df 100644
+<span class="d">--- a/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="a">+++ b/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="h">@@ -110,6 +110,16 @@ pub(crate) struct WasmTaskState {</span>
+     pipeline: Mutex&lt;ExecutablePartitionPipeline&gt;,
+ }
+ 
+<span class="a">+impl Wake for WasmTaskState {</span>
+<span class="a">+    fn wake(self: Arc&lt;Self&gt;) {</span>
+<span class="a">+        let task = WasmPartitionPipelineTask { state: self };</span>
+<span class="a">+        spawn_local(async move { task.execute() })</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    fn wake_by_ref(self: &amp;Arc&lt;Self&gt;) {</span>
+<span class="a">+        Arc::clone(self).wake()</span>
+<span class="a">+    }</span>
+<span class="a">+}</span>
+ #[derive(Debug, Clone)]
+ pub(crate) struct WasmPartitionPipelineTask {
+     state: Arc&lt;WasmTaskState&gt;,
+<span class="h">@@ -117,10 +127,7 @@ pub(crate) struct WasmPartitionPipelineTask {</span>
+ 
+ impl WasmPartitionPipelineTask {
+     fn execute(&amp;self) {
+<span class="d">-        let waker: Waker = Arc::new(WasmWaker {</span>
+<span class="d">-            state: self.state.clone(),</span>
+<span class="d">-        })</span>
+<span class="d">-        .into();</span>
+<span class="a">+        let waker: Waker = self.state.clone().into();</span>
+         let mut cx = Context::from_waker(&amp;waker);
+ 
+         let mut pipeline = self.state.pipeline.lock();
+<span class="h">@@ -157,21 +164,3 @@ impl QueryHandle for WasmQueryHandle {</span>
+         &amp;self.profiles
+     }
+ }
+<span class="d">-</span>
+<span class="d">-#[derive(Debug)]</span>
+<span class="d">-struct WasmWaker {</span>
+<span class="d">-    state: Arc&lt;WasmTaskState&gt;,</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-impl Wake for WasmWaker {</span>
+<span class="d">-    fn wake_by_ref(self: &amp;Arc&lt;Self&gt;) {</span>
+<span class="d">-        self.clone().wake()</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    fn wake(self: Arc&lt;Self&gt;) {</span>
+<span class="d">-        let task = WasmPartitionPipelineTask {</span>
+<span class="d">-            state: self.state.clone(),</span>
+<span class="d">-        };</span>
+<span class="d">-        spawn_local(async move { task.execute() })</span>
+<span class="d">-    }</span>
+<span class="d">-}</span></pre><h2>Commit #4: <a href="https://github.com/glaredb/glaredb/commit/bcc8005ae882edaa996eed6fb7760c1b094d68a9">bcc8005ae8</a> (2025-05-30T18:47:52-04:00)</h2><p class="k">chore: Rework task state to avoid executing completed pipelines (#3875)<br>Path after this commit: crates/glaredb_wasm/src/runtime.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_wasm/src/runtime.rs b/crates/glaredb_wasm/src/runtime.rs
+index 97e460df..fb3468e5 100644
+<span class="d">--- a/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="a">+++ b/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="h">@@ -6,7 +6,7 @@ use glaredb_core::runtime::filesystem::dispatch::FileSystemDispatch;</span>
+ use glaredb_core::runtime::pipeline::{ErrorSink, PipelineRuntime, QueryHandle};
+ use glaredb_core::runtime::profile_buffer::{ProfileBuffer, ProfileSink};
+ use glaredb_core::runtime::system::SystemRuntime;
+<span class="d">-use glaredb_error::Result;</span>
+<span class="a">+use glaredb_error::{DbError, Result};</span>
+ use glaredb_http::filesystem::HttpFileSystem;
+ use glaredb_http::gcs::filesystem::GcsFileSystem;
+ use glaredb_http::s3::filesystem::S3FileSystem;
+<span class="h">@@ -83,66 +83,113 @@ impl PipelineRuntime for WasmExecutor {</span>
+         let states: Vec&lt;_&gt; = pipelines
+             .into_iter()
+             .zip(profile_sinks)
+<span class="d">-            .map(|(pipeline, profile_sink)| WasmPartitionPipelineTask {</span>
+<span class="d">-                state: Arc::new(WasmTaskState {</span>
+<span class="a">+            .map(|(pipeline, profile_sink)| {</span>
+<span class="a">+                Arc::new(WasmTaskState {</span>
+                     profile_sink,
+                     errors: errors.clone(),
+                     pipeline: Mutex::new(pipeline),
+<span class="d">-                }),</span>
+<span class="a">+                    sched_state: Mutex::new(WasmScheduleState {</span>
+<span class="a">+                        running: false,</span>
+<span class="a">+                        pending: false,</span>
+<span class="a">+                        completed: false,</span>
+<span class="a">+                        canceled: false,</span>
+<span class="a">+                    }),</span>
+<span class="a">+                })</span>
+             })
+             .collect();
+ 
+<span class="d">-        // TODO: Put references into query handle to allow canceling.</span>
+<span class="d">-</span>
+         for state in &amp;states {
+<span class="d">-            let state = state.clone();</span>
+<span class="d">-            spawn_local(async move { state.execute() })</span>
+<span class="a">+            state.clone().schedule();</span>
+         }
+ 
+         Arc::new(WasmQueryHandle { profiles, states })
+     }
+ }
+ 
+<span class="a">+#[derive(Debug)]</span>
+<span class="a">+pub(crate) struct WasmScheduleState {</span>
+<span class="a">+    pub(crate) running: bool,</span>
+<span class="a">+    pub(crate) pending: bool,</span>
+<span class="a">+    pub(crate) completed: bool,</span>
+<span class="a">+    pub(crate) canceled: bool,</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ #[derive(Debug)]
+ pub(crate) struct WasmTaskState {
+     profile_sink: ProfileSink,
+     errors: Arc&lt;dyn ErrorSink&gt;,
+     pipeline: Mutex&lt;ExecutablePartitionPipeline&gt;,
+<span class="a">+    sched_state: Mutex&lt;WasmScheduleState&gt;,</span>
+ }
+ 
+ impl Wake for WasmTaskState {
+     fn wake(self: Arc&lt;Self&gt;) {
+<span class="d">-        let task = WasmPartitionPipelineTask { state: self };</span>
+<span class="d">-        spawn_local(async move { task.execute() })</span>
+<span class="a">+        self.schedule();</span>
+     }
+ 
+     fn wake_by_ref(self: &amp;Arc&lt;Self&gt;) {
+         Arc::clone(self).wake()
+     }
+ }
+<span class="d">-#[derive(Debug, Clone)]</span>
+<span class="d">-pub(crate) struct WasmPartitionPipelineTask {</span>
+<span class="d">-    state: Arc&lt;WasmTaskState&gt;,</span>
+<span class="d">-}</span>
+ 
+<span class="d">-impl WasmPartitionPipelineTask {</span>
+<span class="d">-    fn execute(&amp;self) {</span>
+<span class="d">-        let waker: Waker = self.state.clone().into();</span>
+<span class="a">+impl WasmTaskState {</span>
+<span class="a">+    fn schedule(self: Arc&lt;Self&gt;) {</span>
+<span class="a">+        let mut sched_guard = self.sched_state.lock();</span>
+<span class="a">+        if sched_guard.completed {</span>
+<span class="a">+            return;</span>
+<span class="a">+        }</span>
+<span class="a">+        if sched_guard.canceled {</span>
+<span class="a">+            self.errors.set_error(DbError::new(&quot;Query canceled&quot;));</span>
+<span class="a">+            return;</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        if sched_guard.running {</span>
+<span class="a">+            sched_guard.pending = true;</span>
+<span class="a">+        } else {</span>
+<span class="a">+            sched_guard.running = true;</span>
+<span class="a">+            std::mem::drop(sched_guard);</span>
+<span class="a">+</span>
+<span class="a">+            let state = self.clone();</span>
+<span class="a">+            spawn_local(async move {</span>
+<span class="a">+                loop {</span>
+<span class="a">+                    let completed = state.execute();</span>
+<span class="a">+</span>
+<span class="a">+                    let mut sched_guard = state.sched_state.lock();</span>
+<span class="a">+                    sched_guard.completed = completed;</span>
+<span class="a">+                    if sched_guard.pending {</span>
+<span class="a">+                        sched_guard.pending = false;</span>
+<span class="a">+                        // Continue...</span>
+<span class="a">+                    } else {</span>
+<span class="a">+                        // Nom more work.</span>
+<span class="a">+                        sched_guard.running = false;</span>
+<span class="a">+                        break;</span>
+<span class="a">+                    }</span>
+<span class="a">+                }</span>
+<span class="a">+            });</span>
+<span class="a">+        }</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    fn execute(self: &amp;Arc&lt;Self&gt;) -&gt; bool {</span>
+<span class="a">+        let mut pipeline = self.pipeline.lock();</span>
+<span class="a">+</span>
+<span class="a">+        let waker: Waker = self.clone().into();</span>
+         let mut cx = Context::from_waker(&amp;waker);
+ 
+<span class="d">-        let mut pipeline = self.state.pipeline.lock();</span>
+         match pipeline.poll_execute::&lt;PerformanceInstant&gt;(&amp;mut cx) {
+             Poll::Ready(Ok(profile)) =&gt; {
+                 // Pushing through the pipeline was successful.
+<span class="d">-                self.state.profile_sink.put(profile);</span>
+<span class="a">+                self.profile_sink.put(profile);</span>
+<span class="a">+                true</span>
+             }
+             Poll::Ready(Err(e)) =&gt; {
+<span class="d">-                self.state.errors.set_error(e);</span>
+<span class="a">+                self.errors.set_error(e);</span>
+<span class="a">+                false</span>
+             }
+             Poll::Pending =&gt; {
+<span class="d">-                // Exit the loop. Waker was already stored in the pending</span>
+<span class="a">+                // Waker was already stored in the pending</span>
+                 // sink/source, we&#x27;ll be woken back up when there&#x27;s more
+                 // this operator chain can start executing.
+<span class="a">+                false</span>
+             }
+         }
+     }
+<span class="h">@@ -152,7 +199,7 @@ impl WasmPartitionPipelineTask {</span>
+ pub struct WasmQueryHandle {
+     profiles: ProfileBuffer,
+     #[allow(unused)]
+<span class="d">-    states: Vec&lt;WasmPartitionPipelineTask&gt;,</span>
+<span class="a">+    states: Vec&lt;Arc&lt;WasmTaskState&gt;&gt;,</span>
+ }
+ 
+ impl QueryHandle for WasmQueryHandle {</pre><h2>Commit #5: <a href="https://github.com/glaredb/glaredb/commit/2a0335318fe03a6d3ca338764bd1a218c0074f8f">2a0335318f</a> (2025-05-31T19:03:04-04:00)</h2><p class="k">fix: Check completed bool when looping execute (#3885)<br>Path after this commit: crates/glaredb_wasm/src/runtime.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_wasm/src/runtime.rs b/crates/glaredb_wasm/src/runtime.rs
+index fb3468e5..6c29b6c8 100644
+<span class="d">--- a/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="a">+++ b/crates/glaredb_wasm/src/runtime.rs</span>
+<span class="h">@@ -158,6 +158,10 @@ impl WasmTaskState {</span>
+                     sched_guard.completed = completed;
+                     if sched_guard.pending {
+                         sched_guard.pending = false;
+<span class="a">+                        // Only continue if we&#x27;re not complete.</span>
+<span class="a">+                        if completed {</span>
+<span class="a">+                            break;</span>
+<span class="a">+                        }</span>
+                         // Continue...
+                     } else {
+                         // Nom more work.</pre></body></html>

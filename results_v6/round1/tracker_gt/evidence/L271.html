@@ -1,0 +1,141 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L271</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L271</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/glaredb_http/src/s3/list.rs, line 87<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/a700816fae36429def28e6d5698473428ba68f95">a700816fae</a> (2025-04-08T19:34:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">            contents: vec![S3ListContents {</span></pre><h2>File at the merge commit, lines 79 to 95</h2><pre>   79 | 
+   80 |         let resp: S3ListResponse = quick_xml::de::from_str(input).unwrap();
+   81 | 
+   82 |         let expected = S3ListResponse {
+   83 |             is_truncated: true,
+   84 |             next_continuation_token: Some(
+   85 |                 &quot;1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36Hy4vbOwM=&quot;.to_string(),
+   86 |             ),
+<span class="t">   87 |             contents: vec![S3ListContents {</span>
+   88 |                 key: &quot;my-image.jpg&quot;.to_string(),
+   89 |                 last_modified: DateTime::parse_from_rfc3339(&quot;2009-10-12T17:50:30.000Z&quot;)
+   90 |                     .unwrap()
+   91 |                     .to_utc(),
+   92 |                 size: 434234,
+   93 |             }],
+   94 |         };
+   95 | </pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/6e85bab3e252ccc06a32ea30ac9d52909dbefc9c">6e85bab3e2</a> (2025-05-14T14:33:52-04:00)</h2><p class="k">feat: Initial S3 globbing (#3802)<br>Path after this commit: crates/glaredb_http/src/s3/list.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_http/src/s3/list.rs b/crates/glaredb_http/src/s3/list.rs
+index d8d38288..6c56703a 100644
+<span class="d">--- a/crates/glaredb_http/src/s3/list.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/s3/list.rs</span>
+<span class="h">@@ -6,7 +6,8 @@ use serde::{Deserialize, Serialize};</span>
+ pub struct S3ListResponse {
+     pub is_truncated: bool,
+     pub next_continuation_token: Option&lt;String&gt;,
+<span class="d">-    pub contents: Vec&lt;S3ListContents&gt;,</span>
+<span class="a">+    pub contents: Option&lt;Vec&lt;S3ListContents&gt;&gt;,</span>
+<span class="a">+    pub common_prefixes: Option&lt;Vec&lt;S3Prefix&gt;&gt;,</span>
+ }
+ 
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+<span class="h">@@ -17,6 +18,12 @@ pub struct S3ListContents {</span>
+     pub size: usize,
+ }
+ 
+<span class="a">+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]</span>
+<span class="a">+#[serde(rename_all = &quot;PascalCase&quot;)]</span>
+<span class="a">+pub struct S3Prefix {</span>
+<span class="a">+    pub prefix: String,</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+<span class="h">@@ -45,13 +52,14 @@ mod tests {</span>
+         let expected = S3ListResponse {
+             is_truncated: false,
+             next_continuation_token: None,
+<span class="d m">-            contents: vec![S3ListContents {</span>
+<span class="a">+            contents: Some(vec![S3ListContents {</span>
+                 key: &quot;my-image.jpg&quot;.to_string(),
+                 last_modified: DateTime::parse_from_rfc3339(&quot;2009-10-12T17:50:30.000Z&quot;)
+                     .unwrap()
+                     .to_utc(),
+                 size: 434234,
+<span class="d">-            }],</span>
+<span class="a">+            }]),</span>
+<span class="a">+            common_prefixes: None,</span>
+         };
+ 
+         assert_eq!(expected, resp);
+<span class="h">@@ -84,13 +92,14 @@ mod tests {</span>
+             next_continuation_token: Some(
+                 &quot;1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36Hy4vbOwM=&quot;.to_string(),
+             ),
+<span class="d m">-            contents: vec![S3ListContents {</span>
+<span class="a">+            contents: Some(vec![S3ListContents {</span>
+                 key: &quot;my-image.jpg&quot;.to_string(),
+                 last_modified: DateTime::parse_from_rfc3339(&quot;2009-10-12T17:50:30.000Z&quot;)
+                     .unwrap()
+                     .to_utc(),
+                 size: 434234,
+<span class="d">-            }],</span>
+<span class="a">+            }]),</span>
+<span class="a">+            common_prefixes: None,</span>
+         };
+ 
+         assert_eq!(expected, resp);</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/0b015bae4a5ddaab469db36413cf2245c58c0b73">0b015bae4a</a> (2025-05-14T19:27:22-04:00)</h2><p class="k">fix: Handle parsing object store paths manually when determining glob segments (#3804)<br>Path after this commit: crates/glaredb_http/src/s3/list.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_http/src/s3/list.rs b/crates/glaredb_http/src/s3/list.rs
+index 6c56703a..0a3313bc 100644
+<span class="d">--- a/crates/glaredb_http/src/s3/list.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/s3/list.rs</span>
+<span class="h">@@ -3,25 +3,25 @@ use serde::{Deserialize, Serialize};</span>
+ 
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+ #[serde(rename_all = &quot;PascalCase&quot;)]
+<span class="d">-pub struct S3ListResponse {</span>
+<span class="a">+pub struct S3ListResponse&lt;&#x27;a&gt; {</span>
+     pub is_truncated: bool,
+<span class="d">-    pub next_continuation_token: Option&lt;String&gt;,</span>
+<span class="d">-    pub contents: Option&lt;Vec&lt;S3ListContents&gt;&gt;,</span>
+<span class="d">-    pub common_prefixes: Option&lt;Vec&lt;S3Prefix&gt;&gt;,</span>
+<span class="a">+    pub next_continuation_token: Option&lt;&amp;&#x27;a str&gt;,</span>
+<span class="a">+    pub contents: Option&lt;Vec&lt;S3ListContents&lt;&#x27;a&gt;&gt;&gt;,</span>
+<span class="a">+    pub common_prefixes: Option&lt;Vec&lt;S3Prefix&lt;&#x27;a&gt;&gt;&gt;,</span>
+ }
+ 
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+ #[serde(rename_all = &quot;PascalCase&quot;)]
+<span class="d">-pub struct S3ListContents {</span>
+<span class="d">-    pub key: String,</span>
+<span class="a">+pub struct S3ListContents&lt;&#x27;a&gt; {</span>
+<span class="a">+    pub key: &amp;&#x27;a str,</span>
+     pub last_modified: DateTime&lt;Utc&gt;,
+     pub size: usize,
+ }
+ 
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+ #[serde(rename_all = &quot;PascalCase&quot;)]
+<span class="d">-pub struct S3Prefix {</span>
+<span class="d">-    pub prefix: String,</span>
+<span class="a">+pub struct S3Prefix&lt;&#x27;a&gt; {</span>
+<span class="a">+    pub prefix: &amp;&#x27;a str,</span>
+ }
+ 
+ #[cfg(test)]
+<span class="h">@@ -53,7 +53,7 @@ mod tests {</span>
+             is_truncated: false,
+             next_continuation_token: None,
+             contents: Some(vec![S3ListContents {
+<span class="d">-                key: &quot;my-image.jpg&quot;.to_string(),</span>
+<span class="a">+                key: &quot;my-image.jpg&quot;,</span>
+                 last_modified: DateTime::parse_from_rfc3339(&quot;2009-10-12T17:50:30.000Z&quot;)
+                     .unwrap()
+                     .to_utc(),
+<span class="h">@@ -89,11 +89,9 @@ mod tests {</span>
+ 
+         let expected = S3ListResponse {
+             is_truncated: true,
+<span class="d">-            next_continuation_token: Some(</span>
+<span class="d">-                &quot;1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36Hy4vbOwM=&quot;.to_string(),</span>
+<span class="d">-            ),</span>
+<span class="a">+            next_continuation_token: Some(&quot;1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36Hy4vbOwM=&quot;),</span>
+             contents: Some(vec![S3ListContents {
+<span class="d">-                key: &quot;my-image.jpg&quot;.to_string(),</span>
+<span class="a">+                key: &quot;my-image.jpg&quot;,</span>
+                 last_modified: DateTime::parse_from_rfc3339(&quot;2009-10-12T17:50:30.000Z&quot;)
+                     .unwrap()
+                     .to_utc(),</pre></body></html>

@@ -1,0 +1,6 @@
+window,tier,n_agent,n_human,mr_agent,mr_human,delta_pp,logrank_p,hr,hr_ci_low,hr_ci_high
+5 months (baseline),human_supervised,177787,378756,0.2013,0.2505,-4.91,0.0,0.8884,0.8775,0.8994
+5 months (baseline),fully_autonomous,87634,378756,0.2147,0.2505,-3.58,0.0,0.896,0.8821,0.9102
+8 months,human_supervised,1032,245450,0.1134,0.253,-13.96,0.0,0.4351,0.363,0.5217
+8 months,fully_autonomous,33252,245450,0.3944,0.253,14.14,0.0,1.7206,1.6884,1.7534
+10 months,fully_autonomous,16183,71528,0.4864,0.3126,17.38,0.0,1.8348,1.7882,1.8826

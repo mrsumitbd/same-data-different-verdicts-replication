@@ -1,0 +1,170 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L286</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L286</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs, line 30<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/bfa8ae0b7738727b8c8654bf48a924b84d89fbcd">bfa8ae0b77</a> (2025-06-11T03:23:45)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">            var azPath = FindFullPathFromPath(&quot;az&quot;);</span></pre><h2>File at the merge commit, lines 22 to 38</h2><pre>   22 |         if (bicepPath is not null)
+   23 |         {
+   24 |             commandPath = bicepPath;
+   25 |             arguments = $&quot;build \&quot;{bicepFilePath}\&quot; --stdout&quot;;
+   26 |         }
+   27 |         else
+   28 |         {
+   29 |             // Fall back to az bicep if bicep command is not available
+<span class="t">   30 |             var azPath = FindFullPathFromPath(&quot;az&quot;);</span>
+   31 |             if (azPath is null)
+   32 |             {
+   33 |                 throw new AzureCliNotOnPathException();
+   34 |             }
+   35 |             commandPath = azPath;
+   36 |             arguments = $&quot;bicep build --file \&quot;{bicepFilePath}\&quot; --stdout&quot;;
+   37 |         }
+   38 | </pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/95be0add072907674a06e3c001e0d07faedff430">95be0add07</a> (2025-08-21T16:48:48-07:00)</h2><p class="k">Support deploying compute images and resources (#11030)<br>Path after this commit: src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs b/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs
+index 8a8aa52ce4..8a3fe99187 100644
+<span class="d">--- a/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs</span>
+<span class="h">@@ -70,7 +70,7 @@ internal sealed class BicepCliCompiler : IBicepCompiler</span>
+         }
+     }
+ 
+<span class="d">-    private static string? FindFullPathFromPath(string command)</span>
+<span class="a">+    internal static string? FindFullPathFromPath(string command)</span>
+     {
+         return FindFullPathFromPath(command, Environment.GetEnvironmentVariable(&quot;PATH&quot;), File.Exists);
+     }</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/71ea2e14358139940a06d35f1c83f766d650ad08">71ea2e1435</a> (2025-11-12T22:17:37-08:00)</h2><p class="k">Add ILogger to BicepCliCompiler with ContainerRuntimeBase-style logging (#12908)<br>Path after this commit: src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs b/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs
+index 8a3fe99187..0d983117a2 100644
+<span class="d">--- a/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs</span>
+<span class="h">@@ -4,6 +4,7 @@</span>
+ using System.Diagnostics;
+ using System.Text;
+ using Aspire.Hosting.Dcp.Process;
+<span class="a">+using Microsoft.Extensions.Logging;</span>
+ 
+ namespace Aspire.Hosting.Azure.Provisioning.Internal;
+ 
+<span class="h">@@ -12,6 +13,13 @@ namespace Aspire.Hosting.Azure.Provisioning.Internal;</span>
+ /// &lt;/summary&gt;
+ internal sealed class BicepCliCompiler : IBicepCompiler
+ {
+<span class="a">+    private readonly ILogger&lt;BicepCliCompiler&gt; _logger;</span>
+<span class="a">+</span>
+<span class="a">+    public BicepCliCompiler(ILogger&lt;BicepCliCompiler&gt; logger)</span>
+<span class="a">+    {</span>
+<span class="a">+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     public async Task&lt;string&gt; CompileBicepToArmAsync(string bicepFilePath, CancellationToken cancellationToken = default)
+     {
+         // Try bicep command first for better performance
+<span class="h">@@ -40,19 +48,33 @@ internal sealed class BicepCliCompiler : IBicepCompiler</span>
+         var templateSpec = new ProcessSpec(commandPath)
+         {
+             Arguments = arguments,
+<span class="d">-            OnOutputData = data =&gt; armTemplateContents.AppendLine(data),</span>
+<span class="d">-            OnErrorData = data =&gt; { }, // Error handling will be done by the caller</span>
+<span class="a">+            OnOutputData = data =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                _logger.LogDebug(&quot;{CommandPath} (stdout): {Output}&quot;, commandPath, data);</span>
+<span class="a">+                armTemplateContents.AppendLine(data);</span>
+<span class="a">+            },</span>
+<span class="a">+            OnErrorData = data =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                _logger.LogDebug(&quot;{CommandPath} (stderr): {Error}&quot;, commandPath, data);</span>
+<span class="a">+            },</span>
+         };
+ 
+<span class="d">-        if (!await ExecuteCommand(templateSpec).ConfigureAwait(false))</span>
+<span class="a">+        _logger.LogDebug(&quot;Running {CommandPath} with arguments: {Arguments}&quot;, commandPath, arguments);</span>
+<span class="a">+</span>
+<span class="a">+        var exitCode = await ExecuteCommand(templateSpec).ConfigureAwait(false);</span>
+<span class="a">+</span>
+<span class="a">+        if (exitCode != 0)</span>
+         {
+<span class="a">+            _logger.LogError(&quot;Bicep compilation for {BicepFilePath} failed with exit code {ExitCode}.&quot;, bicepFilePath, exitCode);</span>
+             throw new InvalidOperationException($&quot;Failed to compile bicep file: {bicepFilePath}&quot;);
+         }
+ 
+<span class="a">+        _logger.LogInformation(&quot;Bicep compilation for {BicepFilePath} succeeded.&quot;, bicepFilePath);</span>
+<span class="a">+</span>
+         return armTemplateContents.ToString();
+     }
+ 
+<span class="d">-    private static async Task&lt;bool&gt; ExecuteCommand(ProcessSpec processSpec)</span>
+<span class="a">+    private static async Task&lt;int&gt; ExecuteCommand(ProcessSpec processSpec)</span>
+     {
+         var sw = Stopwatch.StartNew();
+         var (task, disposable) = ProcessUtil.Run(processSpec);
+<span class="h">@@ -62,7 +84,7 @@ internal sealed class BicepCliCompiler : IBicepCompiler</span>
+             var result = await task.ConfigureAwait(false);
+             sw.Stop();
+ 
+<span class="d">-            return result.ExitCode == 0;</span>
+<span class="a">+            return result.ExitCode;</span>
+         }
+         finally
+         {</pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/3698b05dc69998d6f6b8a486beecf3ba4fadf95c">3698b05dc6</a> (2025-11-18T03:11:34+00:00)</h2><p class="k">Change BicepCliCompiler success log from Information to Debug (#12952)<br>Path after this commit: src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs b/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs
+index 0d983117a2..2442f0024a 100644
+<span class="d">--- a/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs</span>
+<span class="h">@@ -69,7 +69,7 @@ internal sealed class BicepCliCompiler : IBicepCompiler</span>
+             throw new InvalidOperationException($&quot;Failed to compile bicep file: {bicepFilePath}&quot;);
+         }
+ 
+<span class="d">-        _logger.LogInformation(&quot;Bicep compilation for {BicepFilePath} succeeded.&quot;, bicepFilePath);</span>
+<span class="a">+        _logger.LogDebug(&quot;Bicep compilation for {BicepFilePath} succeeded.&quot;, bicepFilePath);</span>
+ 
+         return armTemplateContents.ToString();
+     }</pre><h2>Commit #4: <a href="https://github.com/dotnet/aspire/commit/a25cb82d6b0028a4bb4c23643681df53023e1be1">a25cb82d6b</a> (2025-12-01T07:08:12+00:00)</h2><p class="k">Fix CLI tool detection on Windows by searching PATH with PATHEXT extensions (#13262)<br>Path after this commit: src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs b/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs
+index 2442f0024a..405cf5dbed 100644
+<span class="d">--- a/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting.Azure/Provisioning/Internal/BicepCompiler.cs</span>
+<span class="h">@@ -23,7 +23,7 @@ internal sealed class BicepCliCompiler : IBicepCompiler</span>
+     public async Task&lt;string&gt; CompileBicepToArmAsync(string bicepFilePath, CancellationToken cancellationToken = default)
+     {
+         // Try bicep command first for better performance
+<span class="d">-        var bicepPath = FindFullPathFromPath(&quot;bicep&quot;);</span>
+<span class="a">+        var bicepPath = PathLookupHelper.FindFullPathFromPath(&quot;bicep&quot;);</span>
+         string commandPath;
+         string arguments;
+ 
+<span class="h">@@ -35,7 +35,7 @@ internal sealed class BicepCliCompiler : IBicepCompiler</span>
+         else
+         {
+             // Fall back to az bicep if bicep command is not available
+<span class="d m">-            var azPath = FindFullPathFromPath(&quot;az&quot;);</span>
+<span class="a">+            var azPath = PathLookupHelper.FindFullPathFromPath(&quot;az&quot;);</span>
+             if (azPath is null)
+             {
+                 throw new AzureCliNotOnPathException();
+<span class="h">@@ -91,31 +91,4 @@ internal sealed class BicepCliCompiler : IBicepCompiler</span>
+             await disposable.DisposeAsync().ConfigureAwait(false);
+         }
+     }
+<span class="d">-</span>
+<span class="d">-    internal static string? FindFullPathFromPath(string command)</span>
+<span class="d">-    {</span>
+<span class="d">-        return FindFullPathFromPath(command, Environment.GetEnvironmentVariable(&quot;PATH&quot;), File.Exists);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    private static string? FindFullPathFromPath(string command, string? pathVariable, Func&lt;string, bool&gt; fileExists)</span>
+<span class="d">-    {</span>
+<span class="d">-        Debug.Assert(!string.IsNullOrWhiteSpace(command));</span>
+<span class="d">-</span>
+<span class="d">-        if (OperatingSystem.IsWindows())</span>
+<span class="d">-        {</span>
+<span class="d">-            command += &quot;.cmd&quot;;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        foreach (var directory in (pathVariable ?? string.Empty).Split(Path.PathSeparator))</span>
+<span class="d">-        {</span>
+<span class="d">-            var fullPath = Path.Combine(directory, command);</span>
+<span class="d">-</span>
+<span class="d">-            if (fileExists(fullPath))</span>
+<span class="d">-            {</span>
+<span class="d">-                return fullPath;</span>
+<span class="d">-            }</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        return null;</span>
+<span class="d">-    }</span>
+ }</pre></body></html>

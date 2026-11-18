@@ -1,0 +1,112 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L267</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L267</h1><p><b>Repository:</b> <a href="https://github.com/elsa-workflows/elsa-core">elsa-workflows/elsa-core</a><br><b>File at merge:</b> src/modules/Elsa.Hangfire/Features/HangfireFeature.cs, line 34<br><b>Merge commit (birth):</b> <a href="https://github.com/elsa-workflows/elsa-core/commit/c8d7882c3336af593f14c791031207747cd45f15">c8d7882c33</a> (2025-01-11T18:13:11)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/elsa-workflows/elsa-core/tree/2c4aadff8b0345cb30e822c4986882b80ca335b8">2c4aadff8b</a>)</p><p><b>The line:</b></p><pre><span class="t">    /// &lt;/summary&gt;</span></pre><h2>File at the merge commit, lines 26 to 42</h2><pre>   26 |     
+   27 |     /// &lt;summary&gt;
+   28 |     /// A delegate that creates a job storage instance.
+   29 |     /// &lt;/summary&gt;
+   30 |     private Func&lt;JobStorage&gt; _createJobStorage  = () =&gt; new MemoryStorage();
+   31 |     
+   32 |     /// &lt;summary&gt;
+   33 |     /// Configures Hangfire.
+<span class="t">   34 |     /// &lt;/summary&gt;</span>
+   35 |     public HangfireFeature ConfigureHangfire(Action&lt;IServiceProvider, IGlobalConfiguration&gt; configure)
+   36 |     {
+   37 |         _configureHangfire += configure;
+   38 |         return this;
+   39 |     } 
+   40 |     
+   41 |     /// &lt;summary&gt;
+   42 |     /// Configures Hangfire&#x27;s background job server options.</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/elsa-workflows/elsa-core/commit/609f33e79016990dbe64d8b8e81eff5043c86efb">609f33e790</a> (2025-05-22T11:42:45+01:00)</h2><p class="k">Merge pull request #6664 from KnibbsyMan/task/move-modules-to-extensions<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: src/modules/Elsa.Http/Activities/HttpEndpoint.cs, src/modules/Elsa.Http/Extensions/StringValueExtensions.cs.</p><pre>diff --git a/src/modules/Elsa.Hangfire/Features/HangfireFeature.cs b/src/modules/Elsa.Hangfire/Features/HangfireFeature.cs
+deleted file mode 100644
+index 0162ccd11..000000000
+<span class="d">--- a/src/modules/Elsa.Hangfire/Features/HangfireFeature.cs</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,85 +0,0 @@</span>
+<span class="d">-using Elsa.Features.Abstractions;</span>
+<span class="d">-using Elsa.Features.Attributes;</span>
+<span class="d">-using Elsa.Features.Services;</span>
+<span class="d">-using Elsa.Workflows.Runtime.Features;</span>
+<span class="d">-using Hangfire;</span>
+<span class="d">-using Hangfire.MemoryStorage;</span>
+<span class="d">-using Newtonsoft.Json;</span>
+<span class="d">-</span>
+<span class="d">-namespace Elsa.Hangfire.Features;</span>
+<span class="d">-</span>
+<span class="d">-/// &lt;summary&gt;</span>
+<span class="d">-/// Sets up Hangfire. If you&#x27;re setting up Hangfire yourself, then you should not enable this feature.</span>
+<span class="d m">-/// &lt;/summary&gt;</span>
+<span class="d">-[DependsOn(typeof(WorkflowRuntimeFeature))] // Ensure that the workflow runtime feature&#x27;s hosted services have executed before Hangfire Server starts.</span>
+<span class="d">-public class HangfireFeature(IModule module) : FeatureBase(module)</span>
+<span class="d">-{</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// A delegate that configures Hangfire.</span>
+<span class="d m">-    /// &lt;/summary&gt;</span>
+<span class="d">-    private Action&lt;IServiceProvider, IGlobalConfiguration&gt; _configureHangfire = (_, _) =&gt; { };</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// A delegate that configures Hangfire&#x27;s background job server options.</span>
+<span class="d m">-    /// &lt;/summary&gt;</span>
+<span class="d">-    private Action&lt;IServiceProvider, BackgroundJobServerOptions&gt; _configureBackgroundServerOptions = (_, _) =&gt; { };</span>
+<span class="d">-    </span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// A delegate that creates a job storage instance.</span>
+<span class="d m">-    /// &lt;/summary&gt;</span>
+<span class="d">-    private Func&lt;JobStorage&gt; _createJobStorage  = () =&gt; new MemoryStorage();</span>
+<span class="d">-    </span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Configures Hangfire.</span>
+<span class="d m">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public HangfireFeature ConfigureHangfire(Action&lt;IServiceProvider, IGlobalConfiguration&gt; configure)</span>
+<span class="d">-    {</span>
+<span class="d">-        _configureHangfire += configure;</span>
+<span class="d">-        return this;</span>
+<span class="d">-    } </span>
+<span class="d">-    </span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Configures Hangfire&#x27;s background job server options.</span>
+<span class="d m">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public HangfireFeature ConfigureBackgroundServerOptions(Action&lt;IServiceProvider, BackgroundJobServerOptions&gt; configure)</span>
+<span class="d">-    {</span>
+<span class="d">-        _configureBackgroundServerOptions += configure;</span>
+<span class="d">-        return this;</span>
+<span class="d">-    }</span>
+<span class="d">-    </span>
+<span class="d">-    public HangfireFeature UseMemoryStorage()</span>
+<span class="d">-    {</span>
+<span class="d">-        return UseJobStorage(new MemoryStorage());</span>
+<span class="d">-    }</span>
+<span class="d">-    </span>
+<span class="d">-    public HangfireFeature UseJobStorage(JobStorage storage)</span>
+<span class="d">-    {</span>
+<span class="d">-        _createJobStorage = () =&gt; storage;</span>
+<span class="d">-        return this;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;inheritdoc /&gt;</span>
+<span class="d">-    public override void Apply()</span>
+<span class="d">-    {</span>
+<span class="d">-        var jobStorage = _createJobStorage();</span>
+<span class="d">-        </span>
+<span class="d">-        Action&lt;IServiceProvider, IGlobalConfiguration&gt; configAction = (sp, cfg) =&gt;</span>
+<span class="d">-        {</span>
+<span class="d">-            cfg.UseSimpleAssemblyNameTypeSerializer();</span>
+<span class="d">-            cfg.UseRecommendedSerializerSettings(json =&gt; json.TypeNameHandling = TypeNameHandling.Objects);</span>
+<span class="d">-            cfg.UseStorage(jobStorage);</span>
+<span class="d">-        };</span>
+<span class="d">-        </span>
+<span class="d">-        Action&lt;IServiceProvider, BackgroundJobServerOptions&gt; serverOptionsAction = (sp, options) =&gt;</span>
+<span class="d">-        {</span>
+<span class="d">-            options.WorkerCount = 1;</span>
+<span class="d">-            options.SchedulePollingInterval = TimeSpan.FromSeconds(1);</span>
+<span class="d">-        };</span>
+<span class="d">-        </span>
+<span class="d">-        configAction += _configureHangfire;</span>
+<span class="d">-        serverOptionsAction += _configureBackgroundServerOptions;</span>
+<span class="d">-        </span>
+<span class="d">-        Services.AddHangfire(configAction);</span>
+<span class="d">-        Services.AddHangfireServer(serverOptionsAction, jobStorage);</span>
+<span class="d">-    }</span>
+<span class="d">-}</span>
+\ No newline at end of file</pre></body></html>

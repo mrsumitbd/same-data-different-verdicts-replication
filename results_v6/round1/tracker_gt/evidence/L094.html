@@ -1,0 +1,72 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L094</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L094</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/testfx">microsoft/testfx</a><br><b>File at merge:</b> src/TestFramework/TestFramework/Interfaces/ITestMethod.cs, line 60<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/testfx/commit/68d9c6507cd7de7a1fb18166690308fca60d7bf4">68d9c6507c</a> (2025-03-31T12:28:47)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/testfx/tree/4e84b8461ead6927f6323338a9f13bb4c09aabc4">4e84b8461e</a>)</p><p><b>The line:</b></p><pre><span class="t">    /// Invokes the test method.</span></pre><h2>File at the merge commit, lines 52 to 68</h2><pre>   52 |     /// Result of test method invocation.
+   53 |     /// &lt;/returns&gt;
+   54 |     /// &lt;remarks&gt;
+   55 |     /// This call handles asynchronous test methods in a blocking way.
+   56 |     /// &lt;/remarks&gt;
+   57 |     TestResult Invoke(object[]? arguments);
+   58 | 
+   59 |     /// &lt;summary&gt;
+<span class="t">   60 |     /// Invokes the test method.</span>
+   61 |     /// &lt;/summary&gt;
+   62 |     /// &lt;param name=&quot;arguments&quot;&gt;
+   63 |     /// Arguments to pass to test method. (E.g. For data driven).
+   64 |     /// &lt;/param&gt;
+   65 |     /// &lt;returns&gt;
+   66 |     /// Result of test method invocation.
+   67 |     /// &lt;/returns&gt;
+   68 |     /// &lt;remarks&gt;</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/testfx/commit/eb5b6faddef438da605c707b063443d90a027762">eb5b6fadde</a> (2025-10-02T07:30:45+02:00)</h2><p class="k">Merge rel/4.0 to main (#6647)<br>Path after this commit: src/TestFramework/TestFramework/Interfaces/ITestMethod.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/TestFramework/TestFramework/Interfaces/ITestMethod.cs b/src/TestFramework/TestFramework/Interfaces/ITestMethod.cs
+index 9367729a3..993079ee3 100644
+<span class="d">--- a/src/TestFramework/TestFramework/Interfaces/ITestMethod.cs</span>
+<span class="a">+++ b/src/TestFramework/TestFramework/Interfaces/ITestMethod.cs</span>
+<span class="h">@@ -42,20 +42,6 @@ public interface ITestMethod</span>
+     /// &lt;/remarks&gt;
+     MethodInfo MethodInfo { get; }
+ 
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d m">-    /// Invokes the test method.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    /// &lt;param name=&quot;arguments&quot;&gt;</span>
+<span class="d">-    /// Arguments to pass to test method. (E.g. For data driven).</span>
+<span class="d">-    /// &lt;/param&gt;</span>
+<span class="d">-    /// &lt;returns&gt;</span>
+<span class="d">-    /// Result of test method invocation.</span>
+<span class="d">-    /// &lt;/returns&gt;</span>
+<span class="d">-    /// &lt;remarks&gt;</span>
+<span class="d">-    /// This call handles asynchronous test methods in a blocking way.</span>
+<span class="d">-    /// &lt;/remarks&gt;</span>
+<span class="d">-    TestResult Invoke(object[]? arguments);</span>
+<span class="d">-</span>
+     /// &lt;summary&gt;
+<span class=" m">     /// Invokes the test method.</span>
+     /// &lt;/summary&gt;
+<span class="h">@@ -73,24 +59,18 @@ public interface ITestMethod</span>
+     /// &lt;summary&gt;
+     /// Get all attributes of the test method.
+     /// &lt;/summary&gt;
+<span class="d">-    /// &lt;param name=&quot;inherit&quot;&gt;</span>
+<span class="d">-    /// Whether attribute defined in parent class is valid.</span>
+<span class="d">-    /// &lt;/param&gt;</span>
+     /// &lt;returns&gt;
+     /// All attributes.
+     /// &lt;/returns&gt;
+<span class="d">-    Attribute[]? GetAllAttributes(bool inherit);</span>
+<span class="a">+    Attribute[]? GetAllAttributes();</span>
+ 
+     /// &lt;summary&gt;
+     /// Get attribute of specific type.
+     /// &lt;/summary&gt;
+     /// &lt;typeparam name=&quot;TAttributeType&quot;&gt; System.Attribute type. &lt;/typeparam&gt;
+<span class="d">-    /// &lt;param name=&quot;inherit&quot;&gt;</span>
+<span class="d">-    /// Whether attribute defined in parent class is valid.</span>
+<span class="d">-    /// &lt;/param&gt;</span>
+     /// &lt;returns&gt;
+     /// The attributes of the specified type.
+     /// &lt;/returns&gt;
+<span class="d">-    TAttributeType[] GetAttributes&lt;TAttributeType&gt;(bool inherit)</span>
+<span class="a">+    TAttributeType[] GetAttributes&lt;TAttributeType&gt;()</span>
+         where TAttributeType : Attribute;
+ }</pre></body></html>

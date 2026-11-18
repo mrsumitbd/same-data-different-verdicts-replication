@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L269</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L269</h1><p><b>Repository:</b> <a href="https://github.com/pterm/pterm">pterm/pterm</a><br><b>File at merge:</b> progressbar_printer_test.go, line 248<br><b>Merge commit (birth):</b> <a href="https://github.com/pterm/pterm/commit/36a8bd9413a26bb1eff23776b1a5b192f41e4f44">36a8bd9413</a> (2025-06-07T23:05:33)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/pterm/pterm/tree/d5706ff0d019c42d5a7fba103539cf0e35f1f6cc">d5706ff0d0</a>)</p><p><b>The line:</b></p><pre><span class="t">				time.Sleep(time.Second) // Required otherwise the goroutine doesn&#x27;t run and the text isn&#x27;t outputted</span></pre><h2>File at the merge commit, lines 240 to 256</h2><pre>  240 | 			expectOutputToContain: &quot;Updated text&quot;,
+  241 | 		},
+  242 | 	}
+  243 | 
+  244 | 	for testTitle, testCase := range testCases {
+  245 | 		t.Run(testTitle, func(t *testing.T) {
+  246 | 			stderr, err := testza.CaptureStderr(func(w io.Writer) error {
+  247 | 				pb, err := pterm.DefaultProgressbar.WithTitle(&quot;Hello world&quot;).WithWriter(os.Stderr).Start()
+<span class="t">  248 | 				time.Sleep(time.Second) // Required otherwise the goroutine doesn&#x27;t run and the text isn&#x27;t outputted</span>
+  249 | 				testza.AssertNoError(t, err)
+  250 | 				testCase.action(pb)
+  251 | 				time.Sleep(time.Second) // Required otherwise the goroutine doesn&#x27;t run and the text isn&#x27;t updated
+  252 | 				return nil
+  253 | 			})
+  254 | 
+  255 | 			testza.AssertNoError(t, err)
+  256 | 			testza.AssertContains(t, stderr, &quot;Hello world&quot;)</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

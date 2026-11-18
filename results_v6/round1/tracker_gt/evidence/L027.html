@@ -1,0 +1,238 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L027</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L027</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/testfx">microsoft/testfx</a><br><b>File at merge:</b> test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs, line 57<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/testfx/commit/d4e613fa2988ed05264b27c08607d0430edc122e">d4e613fa29</a> (2025-07-16T11:45:38)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/testfx/tree/4e84b8461ead6927f6323338a9f13bb4c09aabc4">4e84b8461e</a>)</p><p><b>The line:</b></p><pre><span class="t">                [ClassInitialize]</span></pre><h2>File at the merge commit, lines 49 to 65</h2><pre>   49 |     public async Task ClassInitializeWithUnusedTestContext_DiagnosticIsSuppressed()
+   50 |     {
+   51 |         string code = &quot;&quot;&quot;
+   52 |             using Microsoft.VisualStudio.TestTools.UnitTesting;
+   53 | 
+   54 |             [TestClass]
+   55 |             public class SomeClass
+   56 |             {
+<span class="t">   57 |                 [ClassInitialize]</span>
+   58 |                 public static void Initialize(TestContext [|context|])
+   59 |                 {
+   60 |                     // TestContext parameter is unused but required by MSTest
+   61 |                 }
+   62 |             }
+   63 |             &quot;&quot;&quot;;
+   64 | 
+   65 |         // Verify issue is reported without suppressor</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/testfx/commit/0667d906348fca34017f19d0db11781fdd3546d1">0667d90634</a> (2025-07-28T08:13:50+02:00)</h2><p class="k">Fix suppressors tests (#6172)<br>Path after this commit: test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: test/UnitTests/MSTest.Analyzers.UnitTests/UseAsyncSuffixTestFixtureMethodSuppressorTests.cs.</p><pre>diff --git a/test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs b/test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs
+index df1c94ea0..b60b8d640 100644
+<span class="d">--- a/test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs</span>
+<span class="a">+++ b/test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs</span>
+<span class="h">@@ -25,7 +25,7 @@ public sealed class UnusedParameterSuppressorTests</span>
+             public class SomeClass
+             {
+                 [AssemblyInitialize]
+<span class="d">-                public static void Initialize(TestContext [|context|])</span>
+<span class="a">+                public static void Initialize(TestContext {|#0:context|})</span>
+                 {
+                     // TestContext parameter is unused but required by MSTest
+                 }
+<span class="h">@@ -36,12 +36,26 @@ public sealed class UnusedParameterSuppressorTests</span>
+         await new VerifyCS.Test
+         {
+             TestState = { Sources = { code } },
+<span class="a">+            ExpectedDiagnostics =</span>
+<span class="a">+            {</span>
+<span class="a">+                VerifyCS.Diagnostic(WarnForUnusedParameters.Rule)</span>
+<span class="a">+                    .WithLocation(0)</span>
+<span class="a">+                    .WithArguments(&quot;context&quot;)</span>
+<span class="a">+                    .WithIsSuppressed(false),</span>
+<span class="a">+            },</span>
+         }.RunAsync();
+ 
+         // Verify issue is suppressed with suppressor
+         await new TestWithSuppressor
+         {
+             TestState = { Sources = { code } },
+<span class="a">+            ExpectedDiagnostics =</span>
+<span class="a">+            {</span>
+<span class="a">+                VerifyCS.Diagnostic(WarnForUnusedParameters.Rule)</span>
+<span class="a">+                    .WithLocation(0)</span>
+<span class="a">+                    .WithArguments(&quot;context&quot;)</span>
+<span class="a">+                    .WithIsSuppressed(true),</span>
+<span class="a">+            },</span>
+         }.RunAsync();
+     }
+ 
+<span class="h">@@ -55,7 +69,7 @@ public sealed class UnusedParameterSuppressorTests</span>
+             public class SomeClass
+             {
+<span class=" m">                 [ClassInitialize]</span>
+<span class="d">-                public static void Initialize(TestContext [|context|])</span>
+<span class="a">+                public static void Initialize(TestContext {|#0:context|})</span>
+                 {
+                     // TestContext parameter is unused but required by MSTest
+                 }
+<span class="h">@@ -66,12 +80,26 @@ public sealed class UnusedParameterSuppressorTests</span>
+         await new VerifyCS.Test
+         {
+             TestState = { Sources = { code } },
+<span class="a">+            ExpectedDiagnostics =</span>
+<span class="a">+            {</span>
+<span class="a">+                VerifyCS.Diagnostic(WarnForUnusedParameters.Rule)</span>
+<span class="a">+                    .WithLocation(0)</span>
+<span class="a">+                    .WithArguments(&quot;context&quot;)</span>
+<span class="a">+                    .WithIsSuppressed(false),</span>
+<span class="a">+            },</span>
+         }.RunAsync();
+ 
+         // Verify issue is suppressed with suppressor
+         await new TestWithSuppressor
+         {
+             TestState = { Sources = { code } },
+<span class="a">+            ExpectedDiagnostics =</span>
+<span class="a">+            {</span>
+<span class="a">+                VerifyCS.Diagnostic(WarnForUnusedParameters.Rule)</span>
+<span class="a">+                    .WithLocation(0)</span>
+<span class="a">+                    .WithArguments(&quot;context&quot;)</span>
+<span class="a">+                    .WithIsSuppressed(true),</span>
+<span class="a">+            },</span>
+         }.RunAsync();
+     }
+ 
+<span class="h">@@ -85,7 +113,7 @@ public sealed class UnusedParameterSuppressorTests</span>
+             public class SomeClass
+             {
+                 [TestMethod]
+<span class="d">-                public void TestMethod(int [|unusedParam|])</span>
+<span class="a">+                public void TestMethod(int {|#0:unusedParam|})</span>
+                 {
+                     // This should not be suppressed
+                 }
+<span class="h">@@ -96,12 +124,26 @@ public sealed class UnusedParameterSuppressorTests</span>
+         await new VerifyCS.Test
+         {
+             TestState = { Sources = { code } },
+<span class="a">+            ExpectedDiagnostics =</span>
+<span class="a">+            {</span>
+<span class="a">+                VerifyCS.Diagnostic(WarnForUnusedParameters.Rule)</span>
+<span class="a">+                    .WithLocation(0)</span>
+<span class="a">+                    .WithArguments(&quot;unusedParam&quot;)</span>
+<span class="a">+                    .WithIsSuppressed(false),</span>
+<span class="a">+            },</span>
+         }.RunAsync();
+ 
+         // Verify issue is still reported with suppressor (not suppressed)
+         await new TestWithSuppressor
+         {
+             TestState = { Sources = { code } },
+<span class="a">+            ExpectedDiagnostics =</span>
+<span class="a">+            {</span>
+<span class="a">+                VerifyCS.Diagnostic(WarnForUnusedParameters.Rule)</span>
+<span class="a">+                    .WithLocation(0)</span>
+<span class="a">+                    .WithArguments(&quot;unusedParam&quot;)</span>
+<span class="a">+                    .WithIsSuppressed(false),</span>
+<span class="a">+            },</span>
+         }.RunAsync();
+     }
+ 
+<span class="h">@@ -114,7 +156,7 @@ public sealed class UnusedParameterSuppressorTests</span>
+             [TestClass]
+             public class SomeClass
+             {
+<span class="d">-                public void RegularMethod(TestContext [|context|])</span>
+<span class="a">+                public void RegularMethod(TestContext {|#0:context|})</span>
+                 {
+                     // This should not be suppressed as it&#x27;s not AssemblyInitialize or ClassInitialize
+                 }
+<span class="h">@@ -125,12 +167,26 @@ public sealed class UnusedParameterSuppressorTests</span>
+         await new VerifyCS.Test
+         {
+             TestState = { Sources = { code } },
+<span class="a">+            ExpectedDiagnostics =</span>
+<span class="a">+            {</span>
+<span class="a">+                VerifyCS.Diagnostic(WarnForUnusedParameters.Rule)</span>
+<span class="a">+                    .WithLocation(0)</span>
+<span class="a">+                    .WithArguments(&quot;context&quot;)</span>
+<span class="a">+                    .WithIsSuppressed(false),</span>
+<span class="a">+            },</span>
+         }.RunAsync();
+ 
+         // Verify issue is still reported with suppressor (not suppressed)
+         await new TestWithSuppressor
+         {
+             TestState = { Sources = { code } },
+<span class="a">+            ExpectedDiagnostics =</span>
+<span class="a">+            {</span>
+<span class="a">+                VerifyCS.Diagnostic(WarnForUnusedParameters.Rule)</span>
+<span class="a">+                    .WithLocation(0)</span>
+<span class="a">+                    .WithArguments(&quot;context&quot;)</span>
+<span class="a">+                    .WithIsSuppressed(false),</span>
+<span class="a">+            },</span>
+         }.RunAsync();
+     }
+ </pre><h2>Commit #2: <a href="https://github.com/microsoft/testfx/commit/a4bd1ac899aca2972c09e26b460b7406e62b1fda">a4bd1ac899</a> (2025-07-28T12:28:58+00:00)</h2><p class="k">Add GlobalTestInitializeAttribute and GlobalTestCleanupAttribute (#6132)<br>Path after this commit: test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: test/IntegrationTests/MSTest.Acceptance.IntegrationTests/LifecycleTests.cs.</p><pre>diff --git a/test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs b/test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs
+index b60b8d640..d62049990 100644
+<span class="d">--- a/test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs</span>
+<span class="a">+++ b/test/UnitTests/MSTest.Analyzers.UnitTests/UnusedParameterSuppressorTests.cs</span>
+<span class="h">@@ -103,6 +103,66 @@ public sealed class UnusedParameterSuppressorTests</span>
+         }.RunAsync();
+     }
+ 
+<span class="a">+    [TestMethod]</span>
+<span class="a">+    public async Task GlobalTestInitializeWithUnusedTestContext_DiagnosticIsSuppressed()</span>
+<span class="a">+    {</span>
+<span class="a">+        string code = &quot;&quot;&quot;</span>
+<span class="a">+            using Microsoft.VisualStudio.TestTools.UnitTesting;</span>
+<span class="a">+</span>
+<span class="a">+            [TestClass]</span>
+<span class="a">+            public static class SomeClass</span>
+<span class="a">+            {</span>
+<span class="a">+                [GlobalTestInitialize]</span>
+<span class="a">+                public static void Initialize(TestContext [|context|])</span>
+<span class="a">+                {</span>
+<span class="a">+                    // TestContext parameter is unused but required by MSTest</span>
+<span class="a">+                }</span>
+<span class="a">+            }</span>
+<span class="a">+            &quot;&quot;&quot;;</span>
+<span class="a">+</span>
+<span class="a">+        // Verify issue is reported without suppressor</span>
+<span class="a">+        await new VerifyCS.Test</span>
+<span class="a">+        {</span>
+<span class="a">+            TestState = { Sources = { code } },</span>
+<span class="a">+        }.RunAsync();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify issue is suppressed with suppressor</span>
+<span class="a">+        await new TestWithSuppressor</span>
+<span class="a">+        {</span>
+<span class="a">+            TestState = { Sources = { code } },</span>
+<span class="a">+        }.RunAsync();</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [TestMethod]</span>
+<span class="a">+    public async Task GlobalTestCleanupWithUnusedTestContext_DiagnosticIsSuppressed()</span>
+<span class="a">+    {</span>
+<span class="a">+        string code = &quot;&quot;&quot;</span>
+<span class="a">+            using Microsoft.VisualStudio.TestTools.UnitTesting;</span>
+<span class="a">+</span>
+<span class="a">+            [TestClass]</span>
+<span class="a">+            public static class SomeClass</span>
+<span class="a">+            {</span>
+<span class="a">+                [GlobalTestCleanup]</span>
+<span class="a">+                public static void Cleanup(TestContext [|context|])</span>
+<span class="a">+                {</span>
+<span class="a">+                    // TestContext parameter is unused but required by MSTest</span>
+<span class="a">+                }</span>
+<span class="a">+            }</span>
+<span class="a">+            &quot;&quot;&quot;;</span>
+<span class="a">+</span>
+<span class="a">+        // Verify issue is reported without suppressor</span>
+<span class="a">+        await new VerifyCS.Test</span>
+<span class="a">+        {</span>
+<span class="a">+            TestState = { Sources = { code } },</span>
+<span class="a">+        }.RunAsync();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify issue is suppressed with suppressor</span>
+<span class="a">+        await new TestWithSuppressor</span>
+<span class="a">+        {</span>
+<span class="a">+            TestState = { Sources = { code } },</span>
+<span class="a">+        }.RunAsync();</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     [TestMethod]
+     public async Task TestMethodWithUnusedParameter_DiagnosticIsNotSuppressed()
+     {</pre></body></html>

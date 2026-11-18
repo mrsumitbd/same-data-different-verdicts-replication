@@ -1,0 +1,200 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L209</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L209</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>File at merge:</b> apps/forms/app/(dev)/canvas/editor.tsx, line 7<br><b>Merge commit (birth):</b> <a href="https://github.com/gridaco/grida/commit/9df432d2ca604dc5c9ed05db48303695cc722ead">9df432d2ca</a> (2025-02-16T10:45:40)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t">  // Renderer process</span></pre><h2>File at the merge commit, lines 1 to 15</h2><pre>    1 | &quot;use client&quot;;
+    2 | import dynamic from &quot;next/dynamic&quot;;
+    3 | import { useEffect, useState } from &quot;react&quot;;
+    4 | import &quot;../../desktop.css&quot;;
+    5 | 
+    6 | function isElectron(): boolean {
+<span class="t">    7 |   // Renderer process</span>
+    8 |   if (
+    9 |     typeof window !== &quot;undefined&quot; &amp;&amp;
+   10 |     typeof window.process === &quot;object&quot; &amp;&amp;
+   11 |     // @ts-expect-error electron type
+   12 |     window.process.type === &quot;renderer&quot;
+   13 |   ) {
+   14 |     return true;
+   15 |   }</pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gridaco/grida/commit/bbcd77569c65a8956f1bc7dcd08f384aa8646fc5">bbcd77569c</a> (2025-02-20T13:55:20+09:00)</h2><p class="k">Merge pull request #255 from gridaco/desktop<br>Path after this commit: apps/forms/app/(dev)/canvas/editor.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/forms/app/(dev)/canvas/editor.tsx b/apps/forms/app/(dev)/canvas/editor.tsx
+index f4384e89d..514995af7 100644
+<span class="d">--- a/apps/forms/app/(dev)/canvas/editor.tsx</span>
+<span class="a">+++ b/apps/forms/app/(dev)/canvas/editor.tsx</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+ &quot;use client&quot;;
+ import dynamic from &quot;next/dynamic&quot;;
+<span class="d">-import { useEffect, useState } from &quot;react&quot;;</span>
+<span class="a">+import React, { useEffect, useState } from &quot;react&quot;;</span>
+ import &quot;../../desktop.css&quot;;
+ 
+ function isElectron(): boolean {
+<span class="h">@@ -58,7 +58,9 @@ const PlaygroundCanvas = dynamic(</span>
+   }
+ );
+ 
+<span class="d">-export default function Editor() {</span>
+<span class="a">+export default function Editor(</span>
+<span class="a">+  props: React.ComponentProps&lt;typeof PlaygroundCanvas&gt;</span>
+<span class="a">+) {</span>
+   useEffect(() =&gt; {
+     addEventListener(&quot;beforeunload&quot;, (event) =&gt; {
+       event.preventDefault();
+<span class="h">@@ -70,7 +72,7 @@ export default function Editor() {</span>
+     &lt;div className=&quot;w-full h-full flex flex-col overflow-hidden&quot;&gt;
+       &lt;DesktopDragArea /&gt;
+       &lt;div className=&quot;flex-1 overflow-hidden&quot;&gt;
+<span class="d">-        &lt;PlaygroundCanvas /&gt;</span>
+<span class="a">+        &lt;PlaygroundCanvas {...props} /&gt;</span>
+       &lt;/div&gt;
+     &lt;/div&gt;
+   );</pre><h2>Commit #2: <a href="https://github.com/gridaco/grida/commit/d53d9763b86aed1def5c06d485b49bf165be7bcc">d53d9763b8</a> (2025-02-20T20:17:01+09:00)</h2><p class="k">mv apps/forms -&gt; editor<br>Path after this commit: editor/app/(dev)/canvas/editor.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/forms/app/(dev)/canvas/editor.tsx b/editor/app/(dev)/canvas/editor.tsx
+similarity index 100%
+rename from apps/forms/app/(dev)/canvas/editor.tsx
+rename to editor/app/(dev)/canvas/editor.tsx</pre><h2>Commit #3: <a href="https://github.com/gridaco/grida/commit/c7d96550e01e7a9e7553bb83ea24b7ed6c8ab866">c7d96550e0</a> (2025-02-21T18:58:14+09:00)</h2><p class="k">Merge pull request #257 from gridaco/desktop<br>Path after this commit: editor/app/(dev)/canvas/editor.tsx. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: editor/components/desktop-drag-area.tsx.</p><pre>diff --git a/editor/app/(dev)/canvas/editor.tsx b/editor/app/(dev)/canvas/editor.tsx
+index 514995af7..8f5be8a5d 100644
+<span class="d">--- a/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="h">@@ -1,55 +1,7 @@</span>
+ &quot;use client&quot;;
+ import dynamic from &quot;next/dynamic&quot;;
+ import React, { useEffect, useState } from &quot;react&quot;;
+<span class="d">-import &quot;../../desktop.css&quot;;</span>
+<span class="d">-</span>
+<span class="d">-function isElectron(): boolean {</span>
+<span class="d m">-  // Renderer process</span>
+<span class="d">-  if (</span>
+<span class="d">-    typeof window !== &quot;undefined&quot; &amp;&amp;</span>
+<span class="d">-    typeof window.process === &quot;object&quot; &amp;&amp;</span>
+<span class="d">-    // @ts-expect-error electron type</span>
+<span class="d">-    window.process.type === &quot;renderer&quot;</span>
+<span class="d">-  ) {</span>
+<span class="d">-    return true;</span>
+<span class="d">-  }</span>
+<span class="d">-</span>
+<span class="d">-  // Main process</span>
+<span class="d">-  if (</span>
+<span class="d">-    typeof process !== &quot;undefined&quot; &amp;&amp;</span>
+<span class="d">-    typeof process.versions === &quot;object&quot; &amp;&amp;</span>
+<span class="d">-    !!process.versions.electron</span>
+<span class="d">-  ) {</span>
+<span class="d">-    return true;</span>
+<span class="d">-  }</span>
+<span class="d">-</span>
+<span class="d">-  // Detect the user agent when the `nodeIntegration` option is set to false</span>
+<span class="d">-  if (</span>
+<span class="d">-    typeof navigator === &quot;object&quot; &amp;&amp;</span>
+<span class="d">-    typeof navigator.userAgent === &quot;string&quot; &amp;&amp;</span>
+<span class="d">-    navigator.userAgent.indexOf(&quot;Electron&quot;) &gt;= 0</span>
+<span class="d">-  ) {</span>
+<span class="d">-    return true;</span>
+<span class="d">-  }</span>
+<span class="d">-</span>
+<span class="d">-  return false;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-function useIsElectron() {</span>
+<span class="d">-  const [_isElectron, setIsElectron] = useState&lt;boolean&gt;(false);</span>
+<span class="d">-  useEffect(() =&gt; {</span>
+<span class="d">-    setIsElectron(isElectron());</span>
+<span class="d">-  }, []);</span>
+<span class="d">-</span>
+<span class="d">-  return _isElectron;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-function DesktopDragArea() {</span>
+<span class="d">-  const isElectron = useIsElectron();</span>
+<span class="d">-</span>
+<span class="d">-  if (!isElectron) return null;</span>
+<span class="d">-  return &lt;div className=&quot;w-full min-h-9 h-9 desktop-drag-area border-b&quot; /&gt;;</span>
+<span class="d">-}</span>
+<span class="a">+import { DesktopDragArea } from &quot;@/components/desktop-drag-area&quot;;</span>
+ 
+ const PlaygroundCanvas = dynamic(
+   () =&gt; import(&quot;@/scaffolds/playground-canvas/playground&quot;),
+<span class="h">@@ -70,7 +22,7 @@ export default function Editor(</span>
+ 
+   return (
+     &lt;div className=&quot;w-full h-full flex flex-col overflow-hidden&quot;&gt;
+<span class="d">-      &lt;DesktopDragArea /&gt;</span>
+<span class="a">+      &lt;DesktopDragArea className=&quot;border-b&quot; /&gt;</span>
+       &lt;div className=&quot;flex-1 overflow-hidden&quot;&gt;
+         &lt;PlaygroundCanvas {...props} /&gt;
+       &lt;/div&gt;</pre><h2>Commit #4: <a href="https://github.com/gridaco/grida/commit/a80c7520fc7fc8072969d1c289798825c02efdc8">a80c7520fc</a> (2025-02-27T05:14:09+09:00)</h2><p class="k">Merge pull request #262 from gridaco/desktop<br>Path after this commit: editor/app/(dev)/canvas/editor.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/editor/app/(dev)/canvas/editor.tsx b/editor/app/(dev)/canvas/editor.tsx
+index 8f5be8a5d..f3dc321b6 100644
+<span class="d">--- a/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ &quot;use client&quot;;
+ import dynamic from &quot;next/dynamic&quot;;
+ import React, { useEffect, useState } from &quot;react&quot;;
+<span class="d">-import { DesktopDragArea } from &quot;@/components/desktop-drag-area&quot;;</span>
+<span class="a">+import { DesktopDragArea } from &quot;@/host/desktop-drag-area&quot;;</span>
+ 
+ const PlaygroundCanvas = dynamic(
+   () =&gt; import(&quot;@/scaffolds/playground-canvas/playground&quot;),</pre><h2>Commit #5: <a href="https://github.com/gridaco/grida/commit/c01ca78183f062bb3b88f0f0b6fdbcf38f14cffa">c01ca78183</a> (2025-05-05T12:38:17+00:00)</h2><p class="k">Merge pull request #306 from gridaco/model/west<br>Path after this commit: editor/app/(dev)/canvas/editor.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/editor/app/(dev)/canvas/editor.tsx b/editor/app/(dev)/canvas/editor.tsx
+index f3dc321b6..3aa21ce52 100644
+<span class="d">--- a/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="h">@@ -1,7 +1,8 @@</span>
+ &quot;use client&quot;;
+ import dynamic from &quot;next/dynamic&quot;;
+<span class="d">-import React, { useEffect, useState } from &quot;react&quot;;</span>
+<span class="a">+import React from &quot;react&quot;;</span>
+ import { DesktopDragArea } from &quot;@/host/desktop-drag-area&quot;;
+<span class="a">+import { useUnsavedChangesWarning } from &quot;@/hooks/use-unsaved-changes-warning&quot;;</span>
+ 
+ const PlaygroundCanvas = dynamic(
+   () =&gt; import(&quot;@/scaffolds/playground-canvas/playground&quot;),
+<span class="h">@@ -13,12 +14,7 @@ const PlaygroundCanvas = dynamic(</span>
+ export default function Editor(
+   props: React.ComponentProps&lt;typeof PlaygroundCanvas&gt;
+ ) {
+<span class="d">-  useEffect(() =&gt; {</span>
+<span class="d">-    addEventListener(&quot;beforeunload&quot;, (event) =&gt; {</span>
+<span class="d">-      event.preventDefault();</span>
+<span class="d">-      return &quot;&quot;;</span>
+<span class="d">-    });</span>
+<span class="d">-  }, []);</span>
+<span class="a">+  useUnsavedChangesWarning(() =&gt; true);</span>
+ 
+   return (
+     &lt;div className=&quot;w-full h-full flex flex-col overflow-hidden&quot;&gt;</pre><h2>Commit #6: <a href="https://github.com/gridaco/grida/commit/da52c8e3749550c3eb92c472499319350b002162">da52c8e374</a> (2025-05-20T11:10:22+00:00)</h2><p class="k">Merge pull request #340 from gridaco/canary<br>Path after this commit: editor/app/(dev)/canvas/editor.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/editor/app/(dev)/canvas/editor.tsx b/editor/app/(dev)/canvas/editor.tsx
+index 3aa21ce52..53cac7301 100644
+<span class="d">--- a/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ &quot;use client&quot;;
+ import dynamic from &quot;next/dynamic&quot;;
+ import React from &quot;react&quot;;
+<span class="d">-import { DesktopDragArea } from &quot;@/host/desktop-drag-area&quot;;</span>
+<span class="a">+import { DesktopDragArea } from &quot;@/host/desktop&quot;;</span>
+ import { useUnsavedChangesWarning } from &quot;@/hooks/use-unsaved-changes-warning&quot;;
+ 
+ const PlaygroundCanvas = dynamic(</pre><h2>Commit #7: <a href="https://github.com/gridaco/grida/commit/b1d0793ccfe17cf67857f188423063c18eb98212">b1d0793ccf</a> (2025-10-14T17:21:45+09:00)</h2><p class="k">Merge pull request #431 from gridaco/canary<br>Path after this commit: editor/app/(dev)/canvas/editor.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/editor/app/(dev)/canvas/editor.tsx b/editor/app/(dev)/canvas/editor.tsx
+index 53cac7301..97c7388f0 100644
+<span class="d">--- a/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="h">@@ -5,7 +5,7 @@ import { DesktopDragArea } from &quot;@/host/desktop&quot;;</span>
+ import { useUnsavedChangesWarning } from &quot;@/hooks/use-unsaved-changes-warning&quot;;
+ 
+ const PlaygroundCanvas = dynamic(
+<span class="d">-  () =&gt; import(&quot;@/scaffolds/playground-canvas/playground&quot;),</span>
+<span class="a">+  () =&gt; import(&quot;@/grida-canvas-hosted/playground/playground&quot;),</span>
+   {
+     ssr: false,
+   }</pre><h2>Commit #8: <a href="https://github.com/gridaco/grida/commit/51b60c21a38b294203cd66efedbc8d96ed81d00b">51b60c21a3</a> (2025-12-01T09:20:53+09:00)</h2><p class="k">Merge pull request #448 from gridaco/canary<br>Path after this commit: editor/app/(dev)/canvas/editor.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/editor/app/(dev)/canvas/editor.tsx b/editor/app/(dev)/canvas/editor.tsx
+index 97c7388f0..62a15fb2e 100644
+<span class="d">--- a/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/editor.tsx</span>
+<span class="h">@@ -14,7 +14,10 @@ const PlaygroundCanvas = dynamic(</span>
+ export default function Editor(
+   props: React.ComponentProps&lt;typeof PlaygroundCanvas&gt;
+ ) {
+<span class="d">-  useUnsavedChangesWarning(() =&gt; true);</span>
+<span class="a">+  useUnsavedChangesWarning(() =&gt; {</span>
+<span class="a">+    // on by default, off in development</span>
+<span class="a">+    return process.env.NODE_ENV === &quot;development&quot; ? false : true;</span>
+<span class="a">+  });</span>
+ 
+   return (
+     &lt;div className=&quot;w-full h-full flex flex-col overflow-hidden&quot;&gt;</pre></body></html>

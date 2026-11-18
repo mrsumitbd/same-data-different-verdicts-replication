@@ -1,0 +1,55 @@
+Tier-weighted test of intent by tier on the labelled commits (RQ2), no-vendored v6 corpus
+labelled commits: 618; corpus: 5,303 (data/death_commit_messages_v6confnv.csv)
+weights w = N_(stratum,tier) / n_(stratum,tier):
+                          N corpus  n labelled  weight
+stratum two_tier                                      
+new     fully_autonomous       159          18    8.83
+        human                 1297         151    8.59
+        human_supervised       708          81    8.74
+old     fully_autonomous       465          76    6.12
+        human                 1955         173   11.30
+        human_supervised       719         119    6.04
+
+Rao-Scott first-order corrected chi-square (Kish deff), weighted permutation p (tier permuted within stratum, 5,000 permutations), Bonferroni x2 over the two tier tests; unweighted p for comparison.
+
+--- gold (human labels)
+  human_supervised  n=524 deff=1.05  X2_RS=8.42 df=3 p=0.0381 (Bonf 0.0762)  V=0.127  perm p=0.0392 (Bonf 0.0784)  | unweighted p=0.0382
+      weighted shares corr/perf/adap/prev %  human_supervised: 28.1/19.3/42.0/10.6  human: 21.1/30.0/41.8/7.1
+  fully_autonomous  n=418 deff=1.04  X2_RS=3.17 df=3 p=0.366 (Bonf 0.732)  V=0.087  perm p=0.406 (Bonf 0.812)  | unweighted p=0.309
+      weighted shares corr/perf/adap/prev %  fully_autonomous: 19.3/22.3/46.3/12.1  human: 21.1/30.0/41.8/7.1
+
+--- deepseek
+  human_supervised  n=524 deff=1.05  X2_RS=9.52 df=3 p=0.0231 (Bonf 0.0462)  V=0.135  perm p=0.0246 (Bonf 0.0492)  | unweighted p=0.015
+      weighted shares corr/perf/adap/prev %  human_supervised: 26.8/16.5/50.9/5.8  human: 20.5/27.5/49.0/3.0
+  fully_autonomous  n=418 deff=1.04  X2_RS=0.28 df=3 p=0.963 (Bonf 1)  V=0.026  perm p=0.963 (Bonf 1)  | unweighted p=0.939
+      weighted shares corr/perf/adap/prev %  fully_autonomous: 18.4/27.7/50.0/3.9  human: 20.5/27.5/49.0/3.0
+
+--- gpt_oss
+  human_supervised  n=524 deff=1.05  X2_RS=12.50 df=3 p=0.00586 (Bonf 0.0117)  V=0.154  perm p=0.005 (Bonf 0.01)  | unweighted p=0.00474
+      weighted shares corr/perf/adap/prev %  human_supervised: 23.9/14.6/55.0/6.4  human: 18.0/28.2/50.3/3.5
+  fully_autonomous  n=418 deff=1.04  X2_RS=1.51 df=3 p=0.68 (Bonf 1)  V=0.060  perm p=0.693 (Bonf 1)  | unweighted p=0.617
+      weighted shares corr/perf/adap/prev %  fully_autonomous: 15.9/31.0/46.7/6.3  human: 18.0/28.2/50.3/3.5
+
+--- minimax
+  human_supervised  n=524 deff=1.05  X2_RS=7.47 df=3 p=0.0584 (Bonf 0.117)  V=0.119  perm p=0.0536 (Bonf 0.107)  | unweighted p=0.0561
+      weighted shares corr/perf/adap/prev %  human_supervised: 26.6/17.9/49.2/6.2  human: 22.8/26.3/48.3/2.6
+  fully_autonomous  n=418 deff=1.04  X2_RS=0.21 df=3 p=0.976 (Bonf 1)  V=0.022  perm p=0.975 (Bonf 1)  | unweighted p=0.984
+      weighted shares corr/perf/adap/prev %  fully_autonomous: 23.6/28.1/45.3/2.9  human: 22.8/26.3/48.3/2.6
+
+--- majority
+  human_supervised  n=524 deff=1.05  X2_RS=10.70 df=3 p=0.0135 (Bonf 0.027)  V=0.143  perm p=0.0128 (Bonf 0.0256)  | unweighted p=0.0108
+      weighted shares corr/perf/adap/prev %  human_supervised: 25.8/16.9/51.1/6.2  human: 20.3/28.2/48.8/2.6
+  fully_autonomous  n=418 deff=1.04  X2_RS=0.14 df=3 p=0.987 (Bonf 1)  V=0.018  perm p=0.99 (Bonf 1)  | unweighted p=0.983
+      weighted shares corr/perf/adap/prev %  fully_autonomous: 20.3/30.1/46.7/2.9  human: 20.3/28.2/48.8/2.6
+
+--- dawid_skene
+  human_supervised  n=524 deff=1.05  X2_RS=10.70 df=3 p=0.0135 (Bonf 0.027)  V=0.143  perm p=0.0128 (Bonf 0.0256)  | unweighted p=0.0108
+      weighted shares corr/perf/adap/prev %  human_supervised: 25.8/16.9/51.1/6.2  human: 20.3/28.2/48.8/2.6
+  fully_autonomous  n=418 deff=1.04  X2_RS=0.14 df=3 p=0.987 (Bonf 1)  V=0.018  perm p=0.99 (Bonf 1)  | unweighted p=0.983
+      weighted shares corr/perf/adap/prev %  fully_autonomous: 20.3/30.1/46.7/2.9  human: 20.3/28.2/48.8/2.6
+
+--- keyword
+  human_supervised  n=468 deff=1.05  X2_RS=7.63 df=3 p=0.0543 (Bonf 0.109)  V=0.128  perm p=0.0544 (Bonf 0.109)  | unweighted p=0.0517
+      weighted shares corr/perf/adap/prev %  human_supervised: 45.0/11.1/33.3/10.7  human: 37.9/22.0/30.3/9.8
+  fully_autonomous  n=380 deff=1.04  X2_RS=1.11 df=3 p=0.775 (Bonf 1)  V=0.054  perm p=0.793 (Bonf 1)  | unweighted p=0.684
+      weighted shares corr/perf/adap/prev %  fully_autonomous: 34.6/18.3/35.7/11.4  human: 37.9/22.0/30.3/9.8

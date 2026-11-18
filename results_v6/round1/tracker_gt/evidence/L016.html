@@ -1,0 +1,176 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L016</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L016</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/applicationinsights-js">microsoft/applicationinsights-js</a><br><b>File at merge:</b> channels/applicationinsights-channel-js/src/Sender.ts, line 705<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/applicationinsights-js/commit/93a37130062dfdb3ab66fab11b143d6a74bbef31">93a3713006</a> (2025-05-03T00:33:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/applicationinsights-js/tree/c46c683dd5cb6de509417eb8997693e1254279d6">c46c683dd5</a>)</p><p><b>The line:</b></p><pre><span class="t">                            //         statsbeat.count(200, payload, _endpointUrl);</span></pre><h2>File at the merge commit, lines 697 to 713</h2><pre>  697 |                             if (!payloadArr) {
+  698 |                                 return;
+  699 |                             }
+  700 |                             //const responseText = _getResponseText(xdr);
+  701 |                             // let statsbeat = _getStatsBeat();
+  702 |                             // if (statsbeat) {
+  703 |                             //     if (xdr &amp;&amp; (responseText + &quot;&quot; === &quot;200&quot; || responseText === &quot;&quot;)) {
+  704 |                             //         _consecutiveErrors = 0;
+<span class="t">  705 |                             //         statsbeat.count(200, payload, _endpointUrl);</span>
+  706 |                             //     } else {
+  707 |                             //         const results = parseResponse(responseText);
+  708 |                         
+  709 |                             //         if (results &amp;&amp; results.itemsReceived &amp;&amp; results.itemsReceived &gt; results.itemsAccepted
+  710 |                             //             &amp;&amp; !_isRetryDisabled) {
+  711 |                             //             statsbeat.count(206, payload, _endpointUrl);
+  712 |                             //         } else {
+  713 |                             //             statsbeat.count(499, payload, _endpointUrl);</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/applicationinsights-js/commit/8edf49ba995f1634f2ba63dc3e1f9c927e0a3701">8edf49ba99</a> (2025-07-30T12:26:40-07:00)</h2><p class="k">Fix flush method root cause - handle async callbacks in _doSend with proper error handling (#2633)<br>Path after this commit: channels/applicationinsights-channel-js/src/Sender.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/channels/applicationinsights-channel-js/src/Sender.ts b/channels/applicationinsights-channel-js/src/Sender.ts
+index e32fb69c..6f08dcda 100644
+<span class="d">--- a/channels/applicationinsights-channel-js/src/Sender.ts</span>
+<span class="a">+++ b/channels/applicationinsights-channel-js/src/Sender.ts</span>
+<span class="h">@@ -14,7 +14,7 @@ import {</span>
+     isArray, isBeaconsSupported, isFeatureEnabled, isFetchSupported, isNullOrUndefined, mergeEvtNamespace, objExtend, onConfigChange,
+     parseResponse, prependTransports, runTargetUnload
+ } from &quot;@microsoft/applicationinsights-core-js&quot;;
+<span class="d">-import { IPromise } from &quot;@nevware21/ts-async&quot;;</span>
+<span class="a">+import { IPromise, createPromise, doAwaitResponse, doAwait } from &quot;@nevware21/ts-async&quot;;</span>
+ import {
+     ITimerHandler, getInst, isFunction, isNumber, isPromiseLike, isString, isTruthy, mathFloor, mathMax, mathMin, objDeepFreeze, objDefine,
+     scheduleTimeout
+<span class="h">@@ -210,13 +210,30 @@ export class Sender extends BaseTelemetryPlugin implements IChannelControls {</span>
+                 }
+             };
+         
+<span class="d">-            _self.flush = (isAsync: boolean = true, callBack?: (flushComplete?: boolean) =&gt; void, sendReason?: SendRequestReason) =&gt; {</span>
+<span class="a">+            _self.flush = (isAsync: boolean = true, callBack?: (flushComplete?: boolean) =&gt; void, sendReason?: SendRequestReason): boolean | void | IPromise&lt;boolean&gt; =&gt; {</span>
+                 if (!_paused) {
+                     // Clear the normal schedule timer as we are going to try and flush ASAP
+                     _clearScheduledTimer();
+ 
+                     try {
+<span class="d">-                        return _self.triggerSend(isAsync, null, sendReason || SendRequestReason.ManualFlush);</span>
+<span class="a">+                        let result = _self.triggerSend(isAsync, null, sendReason || SendRequestReason.ManualFlush);</span>
+<span class="a">+                        </span>
+<span class="a">+                        // Handles non-promise and always called if the returned promise resolves or rejects</span>
+<span class="a">+                        return doAwaitResponse(result as any, (rsp) =&gt; {</span>
+<span class="a">+                            if (callBack) {</span>
+<span class="a">+                                callBack(!rsp.rejected);</span>
+<span class="a">+                                return true;</span>
+<span class="a">+                            }</span>
+<span class="a">+                            </span>
+<span class="a">+                            // When async=true and no callback, return a promise</span>
+<span class="a">+                            if (isAsync) {</span>
+<span class="a">+                                return createPromise&lt;boolean&gt;((resolve) =&gt; {</span>
+<span class="a">+                                    resolve(!rsp.rejected);</span>
+<span class="a">+                                });</span>
+<span class="a">+                            }</span>
+<span class="a">+                            </span>
+<span class="a">+                            return result;</span>
+<span class="a">+                        });</span>
+                     } catch (e) {
+                         _throwInternal(_self.diagLog(), eLoggingSeverity.CRITICAL,
+                             _eInternalMessageId.FlushFailed,
+<span class="h">@@ -539,10 +556,10 @@ export class Sender extends BaseTelemetryPlugin implements IChannelControls {</span>
+         
+             /**
+              * Immediately send buffered data
+<span class="d">-             * @param async - Indicates if the events should be sent asynchronously</span>
+<span class="a">+             * @param isAsync - Indicates if the events should be sent asynchronously</span>
+              * @param forcedSender - Indicates the forcedSender, undefined if not passed
+              */
+<span class="d">-            _self.triggerSend = (async = true, forcedSender?: SenderFunction, sendReason?: SendRequestReason) =&gt; {</span>
+<span class="a">+            _self.triggerSend = (isAsync = true, forcedSender?: SenderFunction, sendReason?: SendRequestReason) =&gt; {</span>
+                 let result: void | IPromise&lt;boolean&gt;;
+                 if (!_paused) {
+                     try {
+<span class="h">@@ -554,13 +571,13 @@ export class Sender extends BaseTelemetryPlugin implements IChannelControls {</span>
+                             if (buffer.count() &gt; 0) {
+                                 const payload = buffer.getItems();
+             
+<span class="d">-                                _notifySendRequest(sendReason||SendRequestReason.Undefined, async);</span>
+<span class="a">+                                _notifySendRequest(sendReason||SendRequestReason.Undefined, isAsync);</span>
+             
+                                 // invoke send
+                                 if (forcedSender) {
+<span class="d">-                                    result = forcedSender.call(_self, payload, async);</span>
+<span class="a">+                                    result = forcedSender.call(_self, payload, isAsync);</span>
+                                 } else {
+<span class="d">-                                    result = _self._sender(payload, async);</span>
+<span class="a">+                                    result = _self._sender(payload, isAsync);</span>
+                                 }
+                             }
+             
+<span class="h">@@ -1010,9 +1027,28 @@ export class Sender extends BaseTelemetryPlugin implements IChannelControls {</span>
+                         _self._buffer.markAsSent(payload);
+                     }
+ 
+<span class="a">+                    let result: void | IPromise&lt;boolean&gt;;</span>
+<span class="a">+                    let callbackExecuted = false;</span>
+<span class="a">+                    let resolveFn: any;</span>
+<span class="a">+                    let rejectFn: any;</span>
+<span class="a">+                    </span>
+                     _sendPostMgr.preparePayload((processedPayload: IPayloadData) =&gt; {
+<span class="d">-                        return sendPostFunc(processedPayload, onComplete, !isAsync);</span>
+<span class="a">+                        result = sendPostFunc(processedPayload, onComplete, !isAsync);</span>
+<span class="a">+                        callbackExecuted = true;</span>
+<span class="a">+                        if (resolveFn) {</span>
+<span class="a">+                            doAwait(result as any, resolveFn, rejectFn);</span>
+<span class="a">+                        }</span>
+                     }, _zipPayload, payloadData, !isAsync);
+<span class="a">+                    </span>
+<span class="a">+                    if (callbackExecuted) {</span>
+<span class="a">+                        return result;</span>
+<span class="a">+                    }</span>
+<span class="a">+                    </span>
+<span class="a">+                    // Callback was not executed synchronously, so we need to return a promise</span>
+<span class="a">+                    return createPromise&lt;boolean&gt;((resolve, reject) =&gt; {</span>
+<span class="a">+                        resolveFn = resolve;</span>
+<span class="a">+                        rejectFn = reject;</span>
+<span class="a">+                    });</span>
+                 }
+                 return null;
+             }
+<span class="h">@@ -1436,7 +1472,7 @@ export class Sender extends BaseTelemetryPlugin implements IChannelControls {</span>
+      * you DO NOT pass a callback function then a [IPromise](https://nevware21.github.io/ts-async/typedoc/interfaces/IPromise.html)
+      * will be returned which will resolve once the flush is complete. The actual implementation of the `IPromise`
+      * will be a native Promise (if supported) or the default as supplied by [ts-async library](https://github.com/nevware21/ts-async)
+<span class="d">-     * @param async - send data asynchronously when true</span>
+<span class="a">+     * @param isAsync - send data asynchronously when true</span>
+      * @param callBack - if specified, notify caller when send is complete, the channel should return true to indicate to the caller that it will be called.
+      * If the caller doesn&#x27;t return true the caller should assume that it may never be called.
+      * @param sendReason - specify the reason that you are calling &quot;flush&quot; defaults to ManualFlush (1) if not specified
+<span class="h">@@ -1444,9 +1480,9 @@ export class Sender extends BaseTelemetryPlugin implements IChannelControls {</span>
+      * should assume that any provided callback will never be called, Nothing or if occurring asynchronously a
+      * [IPromise](https://nevware21.github.io/ts-async/typedoc/interfaces/IPromise.html) which will be resolved once the unload is complete,
+      * the [IPromise](https://nevware21.github.io/ts-async/typedoc/interfaces/IPromise.html) will only be returned when no callback is provided
+<span class="d">-     * and async is true.</span>
+<span class="a">+     * and isAsync is true.</span>
+      */
+<span class="d">-    public flush(async: boolean = true, callBack?: (flushComplete?: boolean) =&gt; void): void | IPromise&lt;boolean&gt; {</span>
+<span class="a">+    public flush(isAsync: boolean = true, callBack?: (flushComplete?: boolean) =&gt; void, sendReason?: SendRequestReason): boolean | void | IPromise&lt;boolean&gt; {</span>
+         // @DynamicProtoStub -- DO NOT add any code as this will be removed during packaging
+     }
+ 
+<span class="h">@@ -1482,13 +1518,13 @@ export class Sender extends BaseTelemetryPlugin implements IChannelControls {</span>
+      * an [IPromise](https://nevware21.github.io/ts-async/typedoc/interfaces/IPromise.html) that will resolve once the
+      * send is complete. The actual implementation of the `IPromise` will be a native Promise (if supported) or the default
+      * as supplied by [ts-async library](https://github.com/nevware21/ts-async)
+<span class="d">-     * @param async - Indicates if the events should be sent asynchronously</span>
+<span class="a">+     * @param isAsync - Indicates if the events should be sent asynchronously</span>
+      * @param forcedSender - Indicates the forcedSender, undefined if not passed
+      * @returns - Nothing or optionally, if occurring asynchronously a [IPromise](https://nevware21.github.io/ts-async/typedoc/interfaces/IPromise.html)
+      * which will be resolved (or reject) once the send is complete, the [IPromise](https://nevware21.github.io/ts-async/typedoc/interfaces/IPromise.html)
+<span class="d">-     * should only be returned when async is true.</span>
+<span class="a">+     * should only be returned when isAsync is true.</span>
+      */
+<span class="d">-    public triggerSend(async = true, forcedSender?: SenderFunction, sendReason?: SendRequestReason): void | IPromise&lt;boolean&gt; {</span>
+<span class="a">+    public triggerSend(isAsync = true, forcedSender?: SenderFunction, sendReason?: SendRequestReason): void | IPromise&lt;boolean&gt; {</span>
+         // @DynamicProtoStub -- DO NOT add any code as this will be removed during packaging
+     }
+ </pre><h2>Commit #2: <a href="https://github.com/microsoft/applicationinsights-js/commit/388ad52c9c63574ce1a18aca3e15f54fc94f3182">388ad52c9c</a> (2025-08-04T12:54:23-07:00)</h2><p class="k">[Feature] Implement cookie caching when disabled and automatic flushing when enabled with backward compatibility option (#2632)<br>Path after this commit: channels/applicationinsights-channel-js/src/Sender.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/channels/applicationinsights-channel-js/src/Sender.ts b/channels/applicationinsights-channel-js/src/Sender.ts
+index 6f08dcda..5722b890 100644
+<span class="d">--- a/channels/applicationinsights-channel-js/src/Sender.ts</span>
+<span class="a">+++ b/channels/applicationinsights-channel-js/src/Sender.ts</span>
+<span class="h">@@ -14,7 +14,7 @@ import {</span>
+     isArray, isBeaconsSupported, isFeatureEnabled, isFetchSupported, isNullOrUndefined, mergeEvtNamespace, objExtend, onConfigChange,
+     parseResponse, prependTransports, runTargetUnload
+ } from &quot;@microsoft/applicationinsights-core-js&quot;;
+<span class="d">-import { IPromise, createPromise, doAwaitResponse, doAwait } from &quot;@nevware21/ts-async&quot;;</span>
+<span class="a">+import { IPromise, createPromise, doAwait, doAwaitResponse } from &quot;@nevware21/ts-async&quot;;</span>
+ import {
+     ITimerHandler, getInst, isFunction, isNumber, isPromiseLike, isString, isTruthy, mathFloor, mathMax, mathMin, objDeepFreeze, objDefine,
+     scheduleTimeout</pre></body></html>

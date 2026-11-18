@@ -1,0 +1,64 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L217</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L217</h1><p><b>Repository:</b> <a href="https://github.com/dkrivoruchko/screenstream">dkrivoruchko/screenstream</a><br><b>File at merge:</b> rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt, line 35<br><b>Merge commit (birth):</b> <a href="https://github.com/dkrivoruchko/screenstream/commit/444909abd8da2798579529b319775502e6016e4e">444909abd8</a> (2025-04-09T09:13:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dkrivoruchko/screenstream/tree/287af10d50740947174352f72fbd7231f96cbcf1">287af10d50</a>)</p><p><b>The line:</b></p><pre><span class="t">    @RequiresPermission(Manifest.permission.RECORD_AUDIO)</span></pre><h2>File at the merge commit, lines 27 to 43</h2><pre>   27 |         get() = audioCapture.isMuted()
+   28 | 
+   29 |     var volume: Float
+   30 |         get() = audioCapture.micVolume
+   31 |         set(value) {
+   32 |             audioCapture.micVolume = value
+   33 |         }
+   34 | 
+<span class="t">   35 |     @RequiresPermission(Manifest.permission.RECORD_AUDIO)</span>
+   36 |     override fun checkIfConfigurationSupported() = audioCapture.checkIfConfigurationSupported()
+   37 | 
+   38 |     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
+   39 |     override fun start() {
+   40 |         val config = AudioPlaybackCaptureConfiguration.Builder(mediaProjection)
+   41 |             .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+   42 |             .addMatchingUsage(AudioAttributes.USAGE_GAME)
+   43 |             .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dkrivoruchko/screenstream/commit/07ae89eacf3873aa0cc6d78467d1587deeaa7b63">07ae89eacf</a> (2025-04-21T11:42:26+03:00)</h2><p class="k">RTSP: Audio controls: Mic and Device Mute/Volume<br>Path after this commit: rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt b/rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt
+index c1d41276..35407f48 100644
+<span class="d">--- a/rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt</span>
+<span class="a">+++ b/rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt</span>
+<span class="h">@@ -48,7 +48,7 @@ internal class InternalAudioSource(</span>
+ 
+     override fun stop() = audioCapture.stop()
+ 
+<span class="d">-    fun mute() = audioCapture.mute()</span>
+<span class="d">-</span>
+<span class="d">-    fun unMute() = audioCapture.unMute()</span>
+<span class="a">+    internal fun setMute(mute: Boolean) {</span>
+<span class="a">+        if (mute) audioCapture.mute() else audioCapture.unMute()</span>
+<span class="a">+    }</span>
+ }
+\ No newline at end of file</pre><h2>Commit #2: <a href="https://github.com/dkrivoruchko/screenstream/commit/6f43b9998d3f67c6d81dfee87b969a25a98a8370">6f43b9998d</a> (2025-12-31T10:02:28+02:00)</h2><p class="k">RTSP Server mode (#342)<br>Path after this commit: rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt. Lines with exactly this text in the file after the commit: 2. Identical text added in other files in this commit: rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/AudioCapture.kt.</p><pre>diff --git a/rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt b/rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt
+index 35407f48..f06d85fc 100644
+<span class="d">--- a/rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt</span>
+<span class="a">+++ b/rtsp/src/main/java/info/dvkr/screenstream/rtsp/internal/audio/InternalAudioSource.kt</span>
+<span class="h">@@ -32,8 +32,16 @@ internal class InternalAudioSource(</span>
+             audioCapture.micVolume = value
+         }
+ 
+<span class="a">+    @Throws</span>
+<span class=" m">     @RequiresPermission(Manifest.permission.RECORD_AUDIO)</span>
+<span class="d">-    override fun checkIfConfigurationSupported() = audioCapture.checkIfConfigurationSupported()</span>
+<span class="a">+    override fun checkIfConfigurationSupported() {</span>
+<span class="a">+        val config = AudioPlaybackCaptureConfiguration.Builder(mediaProjection)</span>
+<span class="a">+            .addMatchingUsage(AudioAttributes.USAGE_MEDIA)</span>
+<span class="a">+            .addMatchingUsage(AudioAttributes.USAGE_GAME)</span>
+<span class="a">+            .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)</span>
+<span class="a">+            .build()</span>
+<span class="a">+        audioCapture.checkIfConfigurationSupported(config)</span>
+<span class="a">+    }</span>
+ 
+<span class=" m">     @RequiresPermission(Manifest.permission.RECORD_AUDIO)</span>
+     override fun start() {
+<span class="h">@@ -51,4 +59,4 @@ internal class InternalAudioSource(</span>
+     internal fun setMute(mute: Boolean) {
+         if (mute) audioCapture.mute() else audioCapture.unMute()
+     }
+<span class="d">-}</span>
+\ No newline at end of file
+<span class="a">+}</span></pre></body></html>

@@ -1,0 +1,414 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L207</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L207</h1><p><b>Repository:</b> <a href="https://github.com/assistant-ui/assistant-ui">assistant-ui/assistant-ui</a><br><b>File at merge:</b> python/assistant-stream/src/assistant_stream/create_run.py, line 68<br><b>Merge commit (birth):</b> <a href="https://github.com/assistant-ui/assistant-ui/commit/08fc0ecbe027b6005f56f43e76e6c4b03dc5e59b">08fc0ecbe0</a> (2025-01-16T20:27:53)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/assistant-ui/assistant-ui/tree/2ba61c86c2ac00aae75dbe6c0333106fd4529f44">2ba61c86c2</a>)</p><p><b>The line:</b></p><pre><span class="t">    def add_error(self, error: str) -&gt; None:</span></pre><h2>File at the merge commit, lines 60 to 76</h2><pre>   60 |     def add_data(self, data: Any) -&gt; None:
+   61 |         &quot;&quot;&quot;Emit an event to the main stream.&quot;&quot;&quot;
+   62 | 
+   63 |         self._loop.call_soon_threadsafe(
+   64 |             self._queue.put_nowait,
+   65 |             DataChunk(data=data),
+   66 |         )
+   67 | 
+<span class="t">   68 |     def add_error(self, error: str) -&gt; None:</span>
+   69 |         &quot;&quot;&quot;Emit an event to the main stream.&quot;&quot;&quot;
+   70 | 
+   71 |         self._loop.call_soon_threadsafe(
+   72 |             self._queue.put_nowait,
+   73 |             ErrorChunk(error=error),
+   74 |         )
+   75 | 
+   76 | </pre><p class="k">Below are all 9 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/assistant-ui/assistant-ui/commit/7a53dadf2bc01861fce146b40ea802cc7f2eedfc">7a53dadf2b</a> (2025-01-23T12:14:10-08:00)</h2><p class="k">fix(assistant-stream): raise on errors (#1422)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index 62d0e92c4..5d7d3da3e 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -85,6 +85,7 @@ async def create_run(</span>
+             await callback(controller)
+         except Exception as e:
+             controller.add_error(str(e))
+<span class="a">+            raise</span>
+         finally:
+             for dispose in controller._dispose_callbacks:
+                 dispose()</pre><h2>Commit #2: <a href="https://github.com/assistant-ui/assistant-ui/commit/c4d7b29d0f7ecd43ae2461c5686029ddc29be761">c4d7b29d0f</a> (2025-04-02T00:58:01-07:00)</h2><p class="k">feat: tool call artifacts (#1772)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index 5d7d3da3e..7fae49eaa 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -4,6 +4,7 @@ from assistant_stream.assistant_stream_chunk import (</span>
+     AssistantStreamChunk,
+     TextDeltaChunk,
+     ToolResultChunk,
+<span class="a">+    ToolArtifactChunk,</span>
+     DataChunk,
+     ErrorChunk,
+ )
+<span class="h">@@ -47,6 +48,17 @@ class RunController:</span>
+             ),
+         )
+ 
+<span class="a">+    def unstable_add_tool_artifact(self, tool_call_id: str, artifact: Any) -&gt; None:</span>
+<span class="a">+        &quot;&quot;&quot;Add a tool artifact to the stream.&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+        self._loop.call_soon_threadsafe(</span>
+<span class="a">+            self._queue.put_nowait,</span>
+<span class="a">+            ToolArtifactChunk(</span>
+<span class="a">+                tool_call_id=tool_call_id,</span>
+<span class="a">+                artifact=artifact,</span>
+<span class="a">+            ),</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+     def add_stream(self, stream: AsyncGenerator[AssistantStreamChunk, None]) -&gt; None:
+         &quot;&quot;&quot;Append a substream to the main stream.&quot;&quot;&quot;
+ </pre><h2>Commit #3: <a href="https://github.com/assistant-ui/assistant-ui/commit/a22bc7ae826ed1251f9245f975b02c1d3e93e492">a22bc7ae82</a> (2025-04-07T16:31:11-07:00)</h2><p class="k">refactor: merge setResult and setArtifact to setResponse (#1788)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index 7fae49eaa..8ce8e56d7 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -48,17 +48,6 @@ class RunController:</span>
+             ),
+         )
+ 
+<span class="d">-    def unstable_add_tool_artifact(self, tool_call_id: str, artifact: Any) -&gt; None:</span>
+<span class="d">-        &quot;&quot;&quot;Add a tool artifact to the stream.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-        self._loop.call_soon_threadsafe(</span>
+<span class="d">-            self._queue.put_nowait,</span>
+<span class="d">-            ToolArtifactChunk(</span>
+<span class="d">-                tool_call_id=tool_call_id,</span>
+<span class="d">-                artifact=artifact,</span>
+<span class="d">-            ),</span>
+<span class="d">-        )</span>
+<span class="d">-</span>
+     def add_stream(self, stream: AsyncGenerator[AssistantStreamChunk, None]) -&gt; None:
+         &quot;&quot;&quot;Append a substream to the main stream.&quot;&quot;&quot;
+ </pre><h2>Commit #4: <a href="https://github.com/assistant-ui/assistant-ui/commit/7030f90d6c551f5123496b3ce72cd8cac1d2699e">7030f90d6c</a> (2025-04-22T14:43:39-07:00)</h2><p class="k">fix: remove broken ToolArtifactChunk import from Python assistant_stream/create_run.py (#1891)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index 8ce8e56d7..5d7d3da3e 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -4,7 +4,6 @@ from assistant_stream.assistant_stream_chunk import (</span>
+     AssistantStreamChunk,
+     TextDeltaChunk,
+     ToolResultChunk,
+<span class="d">-    ToolArtifactChunk,</span>
+     DataChunk,
+     ErrorChunk,
+ )</pre><h2>Commit #5: <a href="https://github.com/assistant-ui/assistant-ui/commit/286088ad70f44b0d4e373762636a85ea7cb16ee6">286088ad70</a> (2025-05-20T13:58:42-07:00)</h2><p class="k">feat(assistant-stream): ObjectStream (#1912)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index 5d7d3da3e..1d97f7ecd 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import asyncio
+<span class="d">-from typing import Any, AsyncGenerator, Callable, Coroutine</span>
+<span class="a">+from typing import Any, AsyncGenerator, Callable, Coroutine, List</span>
+ from assistant_stream.assistant_stream_chunk import (
+     AssistantStreamChunk,
+     TextDeltaChunk,
+<span class="h">@@ -12,19 +12,21 @@ from assistant_stream.modules.tool_call import (</span>
+     ToolCallController,
+     generate_openai_style_tool_call_id,
+ )
+<span class="a">+from assistant_stream.state_manager import StateManager</span>
+ 
+ 
+ class RunController:
+     def __init__(self, queue):
+         self._queue = queue
+<span class="d">-        self._loop = asyncio.get_event_loop()</span>
+<span class="a">+        self._loop = asyncio.get_running_loop()</span>
+         self._dispose_callbacks = []
+         self._stream_tasks = []
+<span class="a">+        self._state_manager = StateManager(self._put_chunk_nowait)</span>
+ 
+     def append_text(self, text_delta: str) -&gt; None:
+         &quot;&quot;&quot;Append a text delta to the stream.&quot;&quot;&quot;
+         chunk = TextDeltaChunk(text_delta=text_delta)
+<span class="d">-        self._loop.call_soon_threadsafe(self._queue.put_nowait, chunk)</span>
+<span class="a">+        self._flush_and_put_chunk(chunk)</span>
+ 
+     async def add_tool_call(
+         self, tool_name: str, tool_call_id: str = generate_openai_style_tool_call_id()
+<span class="h">@@ -33,44 +35,83 @@ class RunController:</span>
+ 
+         stream, controller = await create_tool_call(tool_name, tool_call_id)
+         self._dispose_callbacks.append(controller.close)
+<span class="a">+</span>
+         self.add_stream(stream)
+         return controller
+ 
+     def add_tool_result(self, tool_call_id: str, result: Any) -&gt; None:
+         &quot;&quot;&quot;Add a tool result to the stream.&quot;&quot;&quot;
+<span class="d">-</span>
+<span class="d">-        self._loop.call_soon_threadsafe(</span>
+<span class="d">-            self._queue.put_nowait,</span>
+<span class="d">-            ToolResultChunk(</span>
+<span class="d">-                tool_call_id=tool_call_id,</span>
+<span class="d">-                result=result,</span>
+<span class="d">-            ),</span>
+<span class="a">+        chunk = ToolResultChunk(</span>
+<span class="a">+            tool_call_id=tool_call_id,</span>
+<span class="a">+            result=result,</span>
+         )
+<span class="a">+        self._flush_and_put_chunk(chunk)</span>
+ 
+     def add_stream(self, stream: AsyncGenerator[AssistantStreamChunk, None]) -&gt; None:
+         &quot;&quot;&quot;Append a substream to the main stream.&quot;&quot;&quot;
+ 
+         async def reader():
+             async for chunk in stream:
+<span class="d">-                await self._queue.put(chunk)</span>
+<span class="a">+                self._flush_and_put_chunk(chunk)</span>
+ 
+         task = asyncio.create_task(reader())
+         self._stream_tasks.append(task)
+ 
+     def add_data(self, data: Any) -&gt; None:
+         &quot;&quot;&quot;Emit an event to the main stream.&quot;&quot;&quot;
+<span class="d">-</span>
+<span class="d">-        self._loop.call_soon_threadsafe(</span>
+<span class="d">-            self._queue.put_nowait,</span>
+<span class="d">-            DataChunk(data=data),</span>
+<span class="d">-        )</span>
+<span class="a">+        chunk = DataChunk(data=data)</span>
+<span class="a">+        self._flush_and_put_chunk(chunk)</span>
+ 
+<span class=" m">     def add_error(self, error: str) -&gt; None:</span>
+<span class="d">-        &quot;&quot;&quot;Emit an event to the main stream.&quot;&quot;&quot;</span>
+<span class="a">+        &quot;&quot;&quot;Emit an error to the main stream.&quot;&quot;&quot;</span>
+<span class="a">+        chunk = ErrorChunk(error=error)</span>
+<span class="a">+        self._flush_and_put_chunk(chunk)</span>
+<span class="a">+</span>
+<span class="a">+    def _put_chunk_nowait(self, chunk):</span>
+<span class="a">+        &quot;&quot;&quot;Helper method to put a chunk in the queue without waiting.</span>
+ 
+<span class="d">-        self._loop.call_soon_threadsafe(</span>
+<span class="d">-            self._queue.put_nowait,</span>
+<span class="d">-            ErrorChunk(error=error),</span>
+<span class="a">+        This is used as a callback for the StateManager.</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        self._loop.call_soon_threadsafe(self._queue.put_nowait, chunk)</span>
+<span class="a">+</span>
+<span class="a">+    def _flush_and_put_chunk(self, chunk):</span>
+<span class="a">+        &quot;&quot;&quot;Helper method to flush state operations and put a chunk in the queue.</span>
+<span class="a">+</span>
+<span class="a">+        This ensures state operations are sent before other operations.</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        # Flush any pending state operations first</span>
+<span class="a">+        self._state_manager.flush()</span>
+<span class="a">+        # Add the chunk to the queue</span>
+<span class="a">+        self._loop.call_soon_threadsafe(self._queue.put_nowait, chunk)</span>
+<span class="a">+</span>
+<span class="a">+    @property</span>
+<span class="a">+    def state(self):</span>
+<span class="a">+        &quot;&quot;&quot;Access the state proxy object for making state updates.</span>
+<span class="a">+</span>
+<span class="a">+        This property provides a proxy object that allows navigating to any path</span>
+<span class="a">+        in the state, reading values, and setting values, which will trigger the</span>
+<span class="a">+        appropriate state update operation.</span>
+<span class="a">+</span>
+<span class="a">+        If the state is None, this property returns None directly.</span>
+<span class="a">+        You can set the root state directly by assigning to this property.</span>
+<span class="a">+</span>
+<span class="a">+        Example:</span>
+<span class="a">+            controller.state = {&quot;user&quot;: {&quot;name&quot;: &quot;John&quot;},&quot;messages&quot;: &quot;Hello&quot;}  # Sets the entire state</span>
+<span class="a">+            controller.state[&quot;user&quot;][&quot;name&quot;] = &quot;Bob&quot;  # Sets the value at path [&quot;user&quot;, &quot;name&quot;]</span>
+<span class="a">+            name = controller.state[&quot;user&quot;][&quot;name&quot;]  # Gets the value at path [&quot;user&quot;, &quot;name&quot;]</span>
+<span class="a">+            controller.state[&quot;messages&quot;] += &quot; world&quot;  # Appends text at path [&quot;messages&quot;]</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        return self._state_manager.state</span>
+<span class="a">+</span>
+<span class="a">+    @state.setter</span>
+<span class="a">+    def state(self, value):</span>
+<span class="a">+        &quot;&quot;&quot;Set the entire state object.</span>
+<span class="a">+</span>
+<span class="a">+        Args:</span>
+<span class="a">+            value: The new state value to set</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        self._state_manager.add_operations(</span>
+<span class="a">+            [{&quot;type&quot;: &quot;set&quot;, &quot;path&quot;: [], &quot;value&quot;: value}]</span>
+         )
+ 
+ 
+<span class="h">@@ -87,13 +128,16 @@ async def create_run(</span>
+             controller.add_error(str(e))
+             raise
+         finally:
+<span class="a">+            # Flush any pending state updates before disposing</span>
+<span class="a">+            controller._state_manager.flush()</span>
+<span class="a">+</span>
+             for dispose in controller._dispose_callbacks:
+                 dispose()
+             try:
+                 for task in controller._stream_tasks:
+                     await task
+             finally:
+<span class="d">-                asyncio.get_event_loop().call_soon_threadsafe(queue.put_nowait, None)</span>
+<span class="a">+                asyncio.get_running_loop().call_soon_threadsafe(queue.put_nowait, None)</span>
+ 
+     task = asyncio.create_task(background_task())
+ </pre><h2>Commit #6: <a href="https://github.com/assistant-ui/assistant-ui/commit/b2c625309844ee257986cf2d0db4b6731e37788d">b2c6253098</a> (2025-05-20T14:42:03-07:00)</h2><p class="k">feat: useThreadRuntime().state (#1967)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index 1d97f7ecd..f3c301cba 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -16,12 +16,12 @@ from assistant_stream.state_manager import StateManager</span>
+ 
+ 
+ class RunController:
+<span class="d">-    def __init__(self, queue):</span>
+<span class="a">+    def __init__(self, queue, state_data):</span>
+         self._queue = queue
+         self._loop = asyncio.get_running_loop()
+         self._dispose_callbacks = []
+         self._stream_tasks = []
+<span class="d">-        self._state_manager = StateManager(self._put_chunk_nowait)</span>
+<span class="a">+        self._state_manager = StateManager(self._put_chunk_nowait, state_data)</span>
+ 
+     def append_text(self, text_delta: str) -&gt; None:
+         &quot;&quot;&quot;Append a text delta to the stream.&quot;&quot;&quot;
+<span class="h">@@ -116,10 +116,12 @@ class RunController:</span>
+ 
+ 
+ async def create_run(
+<span class="d">-    callback: Callable[[RunController], Coroutine[Any, Any, None]]</span>
+<span class="a">+    callback: Callable[[RunController], Coroutine[Any, Any, None]],</span>
+<span class="a">+    *,</span>
+<span class="a">+    state: Any | None = None,</span>
+ ) -&gt; AsyncGenerator[AssistantStreamChunk, None]:
+     queue = asyncio.Queue()
+<span class="d">-    controller = RunController(queue)</span>
+<span class="a">+    controller = RunController(queue, state_data=state)</span>
+ 
+     async def background_task():
+         try:</pre><h2>Commit #7: <a href="https://github.com/assistant-ui/assistant-ui/commit/e2fb13d8cd332ed4594d8b5dd58f114c875838da">e2fb13d8cd</a> (2025-06-11T16:45:02-07:00)</h2><p class="k">feat(py/assistant-stream): add append_reasoning API (#2101)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index f3c301cba..45badb603 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -3,6 +3,7 @@ from typing import Any, AsyncGenerator, Callable, Coroutine, List</span>
+ from assistant_stream.assistant_stream_chunk import (
+     AssistantStreamChunk,
+     TextDeltaChunk,
+<span class="a">+    ReasoningDeltaChunk,</span>
+     ToolResultChunk,
+     DataChunk,
+     ErrorChunk,
+<span class="h">@@ -28,6 +29,11 @@ class RunController:</span>
+         chunk = TextDeltaChunk(text_delta=text_delta)
+         self._flush_and_put_chunk(chunk)
+ 
+<span class="a">+    def append_reasoning(self, reasoning_delta: str) -&gt; None:</span>
+<span class="a">+        &quot;&quot;&quot;Append a reasoning delta to the stream.&quot;&quot;&quot;</span>
+<span class="a">+        chunk = ReasoningDeltaChunk(reasoning_delta=reasoning_delta)</span>
+<span class="a">+        self._flush_and_put_chunk(chunk)</span>
+<span class="a">+</span>
+     async def add_tool_call(
+         self, tool_name: str, tool_call_id: str = generate_openai_style_tool_call_id()
+     ) -&gt; ToolCallController:</pre><h2>Commit #8: <a href="https://github.com/assistant-ui/assistant-ui/commit/f23fdb6764a95bcb43425048ddc9e3c72bf67a73">f23fdb6764</a> (2025-07-22T04:19:22-07:00)</h2><p class="k">feat: MessagePrimitive.PartsGroupedByParentId (#2211)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index 45badb603..c1eb455de 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import asyncio
+<span class="d">-from typing import Any, AsyncGenerator, Callable, Coroutine, List</span>
+<span class="a">+from typing import Any, AsyncGenerator, Callable, Coroutine, List, Optional</span>
+ from assistant_stream.assistant_stream_chunk import (
+     AssistantStreamChunk,
+     TextDeltaChunk,
+<span class="h">@@ -7,6 +7,8 @@ from assistant_stream.assistant_stream_chunk import (</span>
+     ToolResultChunk,
+     DataChunk,
+     ErrorChunk,
+<span class="a">+    SourceChunk,</span>
+<span class="a">+    ToolCallBeginChunk,</span>
+ )
+ from assistant_stream.modules.tool_call import (
+     create_tool_call,
+<span class="h">@@ -17,27 +19,48 @@ from assistant_stream.state_manager import StateManager</span>
+ 
+ 
+ class RunController:
+<span class="d">-    def __init__(self, queue, state_data):</span>
+<span class="a">+    def __init__(self, queue, state_data, parent_id: Optional[str] = None):</span>
+         self._queue = queue
+         self._loop = asyncio.get_running_loop()
+         self._dispose_callbacks = []
+         self._stream_tasks = []
+         self._state_manager = StateManager(self._put_chunk_nowait, state_data)
+<span class="a">+        self._parent_id = parent_id</span>
+<span class="a">+</span>
+<span class="a">+    def with_parent_id(self, parent_id: str) -&gt; &#x27;RunController&#x27;:</span>
+<span class="a">+        &quot;&quot;&quot;Create a new RunController instance with the specified parent_id.&quot;&quot;&quot;</span>
+<span class="a">+        controller = RunController(self._queue, self._state_manager._state_data, parent_id)</span>
+<span class="a">+        controller._loop = self._loop</span>
+<span class="a">+        controller._dispose_callbacks = self._dispose_callbacks</span>
+<span class="a">+        controller._stream_tasks = self._stream_tasks</span>
+<span class="a">+        controller._state_manager = self._state_manager</span>
+<span class="a">+        return controller</span>
+ 
+     def append_text(self, text_delta: str) -&gt; None:
+         &quot;&quot;&quot;Append a text delta to the stream.&quot;&quot;&quot;
+<span class="d">-        chunk = TextDeltaChunk(text_delta=text_delta)</span>
+<span class="a">+        chunk = TextDeltaChunk(text_delta=text_delta, parent_id=self._parent_id)</span>
+         self._flush_and_put_chunk(chunk)
+ 
+     def append_reasoning(self, reasoning_delta: str) -&gt; None:
+         &quot;&quot;&quot;Append a reasoning delta to the stream.&quot;&quot;&quot;
+<span class="d">-        chunk = ReasoningDeltaChunk(reasoning_delta=reasoning_delta)</span>
+<span class="a">+        chunk = ReasoningDeltaChunk(reasoning_delta=reasoning_delta, parent_id=self._parent_id)</span>
+         self._flush_and_put_chunk(chunk)
+ 
+     async def add_tool_call(
+<span class="d">-        self, tool_name: str, tool_call_id: str = generate_openai_style_tool_call_id()</span>
+<span class="a">+        self, tool_name: str, tool_call_id: str = None</span>
+     ) -&gt; ToolCallController:
+         &quot;&quot;&quot;Add a tool call to the stream.&quot;&quot;&quot;
+<span class="a">+        if tool_call_id is None:</span>
+<span class="a">+            tool_call_id = generate_openai_style_tool_call_id()</span>
+<span class="a">+        </span>
+<span class="a">+        # If parent_id is set, emit a ToolCallBeginChunk</span>
+<span class="a">+        if self._parent_id:</span>
+<span class="a">+            begin_chunk = ToolCallBeginChunk(</span>
+<span class="a">+                tool_call_id=tool_call_id,</span>
+<span class="a">+                tool_name=tool_name,</span>
+<span class="a">+                parent_id=self._parent_id</span>
+<span class="a">+            )</span>
+<span class="a">+            self._flush_and_put_chunk(begin_chunk)</span>
+ 
+         stream, controller = await create_tool_call(tool_name, tool_call_id)
+         self._dispose_callbacks.append(controller.close)
+<span class="h">@@ -72,6 +95,16 @@ class RunController:</span>
+         &quot;&quot;&quot;Emit an error to the main stream.&quot;&quot;&quot;
+         chunk = ErrorChunk(error=error)
+         self._flush_and_put_chunk(chunk)
+<span class="a">+    </span>
+<span class="a">+    def add_source(self, id: str, url: str, title: Optional[str] = None) -&gt; None:</span>
+<span class="a">+        &quot;&quot;&quot;Add a source to the stream.&quot;&quot;&quot;</span>
+<span class="a">+        chunk = SourceChunk(</span>
+<span class="a">+            id=id,</span>
+<span class="a">+            url=url,</span>
+<span class="a">+            title=title,</span>
+<span class="a">+            parent_id=self._parent_id</span>
+<span class="a">+        )</span>
+<span class="a">+        self._flush_and_put_chunk(chunk)</span>
+ 
+     def _put_chunk_nowait(self, chunk):
+         &quot;&quot;&quot;Helper method to put a chunk in the queue without waiting.</pre><h2>Commit #9: <a href="https://github.com/assistant-ui/assistant-ui/commit/e534ff945f6706cd94d711dae728581b0c74e65e">e534ff945f</a> (2025-07-29T23:51:04-07:00)</h2><p class="k">fix: handle StateProxy in JSON serializer (#2229)<br>Path after this commit: python/assistant-stream/src/assistant_stream/create_run.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/python/assistant-stream/src/assistant_stream/create_run.py b/python/assistant-stream/src/assistant_stream/create_run.py
+index c1eb455de..0e1e453f9 100644
+<span class="d">--- a/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="a">+++ b/python/assistant-stream/src/assistant_stream/create_run.py</span>
+<span class="h">@@ -52,17 +52,8 @@ class RunController:</span>
+         &quot;&quot;&quot;Add a tool call to the stream.&quot;&quot;&quot;
+         if tool_call_id is None:
+             tool_call_id = generate_openai_style_tool_call_id()
+<span class="d">-        </span>
+<span class="d">-        # If parent_id is set, emit a ToolCallBeginChunk</span>
+<span class="d">-        if self._parent_id:</span>
+<span class="d">-            begin_chunk = ToolCallBeginChunk(</span>
+<span class="d">-                tool_call_id=tool_call_id,</span>
+<span class="d">-                tool_name=tool_name,</span>
+<span class="d">-                parent_id=self._parent_id</span>
+<span class="d">-            )</span>
+<span class="d">-            self._flush_and_put_chunk(begin_chunk)</span>
+<span class="d">-</span>
+<span class="d">-        stream, controller = await create_tool_call(tool_name, tool_call_id)</span>
+<span class="a">+</span>
+<span class="a">+        stream, controller = await create_tool_call(tool_name, tool_call_id, self._parent_id)</span>
+         self._dispose_callbacks.append(controller.close)
+ 
+         self.add_stream(stream)</pre></body></html>

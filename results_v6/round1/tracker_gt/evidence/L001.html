@@ -1,0 +1,642 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L001</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L001</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/glaredb_http/src/gcs/filesystem.rs, line 17<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/7ec3666ff916e34b73efe87813d97b258579fcdf">7ec3666ff9</a> (2025-05-11T21:46:28)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">use crate::client::{HttpClient, HttpResponse};</span></pre><h2>File at the merge commit, lines 9 to 25</h2><pre>    9 |     FileType,
+   10 |     OpenFlags,
+   11 | };
+   12 | use glaredb_error::{DbError, OptionExt, Result, ResultExt, not_implemented};
+   13 | use reqwest::header::CONTENT_LENGTH;
+   14 | use reqwest::{Method, Request, StatusCode};
+   15 | use url::Url;
+   16 | 
+<span class="t">   17 | use crate::client::{HttpClient, HttpResponse};</span>
+   18 | use crate::handle::{HttpFileHandle, RequestSigner};
+   19 | 
+   20 | pub const STORAGE_API_ENDPOINT: &amp;str = &quot;storage.googleapis.com&quot;;
+   21 | 
+   22 | #[derive(Debug)]
+   23 | pub struct GcsFileSystem&lt;C: HttpClient&gt; {
+   24 |     client: C,
+   25 | }</pre><p class="k">Below are all 10 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/d43195e26679539738f3526f0cadcc2d2d5b5345">d43195e266</a> (2025-05-12T11:41:38-04:00)</h2><p class="k">feat: Authenticated gcs access (#3796)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index aefc45d2..99b40174 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -1,4 +1,5 @@</span>
+ use std::io::SeekFrom;
+<span class="a">+use std::sync::Arc;</span>
+ use std::task::{Context, Poll};
+ 
+ use glaredb_core::runtime::filesystem::{
+<span class="h">@@ -10,10 +11,11 @@ use glaredb_core::runtime::filesystem::{</span>
+     OpenFlags,
+ };
+ use glaredb_error::{DbError, OptionExt, Result, ResultExt, not_implemented};
+<span class="d">-use reqwest::header::CONTENT_LENGTH;</span>
+<span class="a">+use reqwest::header::{AUTHORIZATION, CONTENT_LENGTH, HeaderValue};</span>
+ use reqwest::{Method, Request, StatusCode};
+ use url::Url;
+ 
+<span class="a">+use super::credentials::{AccessToken, ServiceAccount};</span>
+<span class=" m"> use crate::client::{HttpClient, HttpResponse};</span>
+ use crate::handle::{HttpFileHandle, RequestSigner};
+ 
+<span class="h">@@ -53,7 +55,7 @@ where</span>
+ 
+ #[derive(Debug, Clone)]
+ pub struct GcsFileSystemState {
+<span class="d">-    // TODO: Creds</span>
+<span class="a">+    service_account: Option&lt;Arc&lt;ServiceAccount&gt;&gt;,</span>
+ }
+ 
+ impl&lt;C&gt; FileSystem for GcsFileSystem&lt;C&gt;
+<span class="h">@@ -63,12 +65,21 @@ where</span>
+     type File = GcsFileHandle&lt;C&gt;;
+     type State = GcsFileSystemState;
+ 
+<span class="d">-    fn state_from_context(&amp;self, _context: FileOpenContext) -&gt; Result&lt;Self::State&gt; {</span>
+<span class="d">-        // TODO: Creds</span>
+<span class="d">-        Ok(GcsFileSystemState {})</span>
+<span class="a">+    fn state_from_context(&amp;self, context: FileOpenContext) -&gt; Result&lt;Self::State&gt; {</span>
+<span class="a">+        let service_account = context.get_value(&quot;service_account&quot;)?;</span>
+<span class="a">+        let service_account = match service_account {</span>
+<span class="a">+            Some(s) =&gt; {</span>
+<span class="a">+                let s = s.try_as_str()?;</span>
+<span class="a">+                let service_account = ServiceAccount::try_from_str(s)?;</span>
+<span class="a">+                Some(Arc::new(service_account))</span>
+<span class="a">+            }</span>
+<span class="a">+            None =&gt; None,</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        Ok(GcsFileSystemState { service_account })</span>
+     }
+ 
+<span class="d">-    async fn open(&amp;self, flags: OpenFlags, path: &amp;str, _state: &amp;Self::State) -&gt; Result&lt;Self::File&gt; {</span>
+<span class="a">+    async fn open(&amp;self, flags: OpenFlags, path: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Self::File&gt; {</span>
+         if flags.is_write() {
+             not_implemented!(&quot;write support for gcs filesystem&quot;)
+         }
+<span class="h">@@ -76,9 +87,21 @@ where</span>
+             not_implemented!(&quot;create support for gcs filesystem&quot;)
+         }
+ 
+<span class="a">+        // Fetch token if we have a service account.</span>
+<span class="a">+        let token = match state.service_account.as_ref() {</span>
+<span class="a">+            Some(sa) =&gt; {</span>
+<span class="a">+                let token = sa.fetch_access_token(&amp;self.client).await?;</span>
+<span class="a">+                Some(token)</span>
+<span class="a">+            }</span>
+<span class="a">+            None =&gt; None,</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+         let url = self.gcs_url_from_path(path)?;
+<span class="d">-        let request = Request::new(Method::HEAD, url.clone());</span>
+<span class="d">-        // TODO: Creds</span>
+<span class="a">+        let mut request = Request::new(Method::HEAD, url.clone());</span>
+<span class="a">+        // Authorize request.</span>
+<span class="a">+        if let Some(tok) = &amp;token {</span>
+<span class="a">+            request = authorize_request(tok, request)?;</span>
+<span class="a">+        }</span>
+ 
+         let resp = self.client.do_request(request).await?;
+         let len = match resp.headers().get(CONTENT_LENGTH) {
+<span class="h">@@ -90,17 +113,29 @@ where</span>
+             None =&gt; return Err(DbError::new(&quot;Missing Content-Length header for file&quot;)),
+         };
+ 
+<span class="d">-        let signer = GcsRequestSigner {};</span>
+<span class="a">+        let signer = GcsRequestSigner { token };</span>
+         let handle = HttpFileHandle::new(url, len, self.client.clone(), signer);
+ 
+         Ok(GcsFileHandle { handle })
+     }
+ 
+<span class="d">-    async fn stat(&amp;self, path: &amp;str, _state: &amp;Self::State) -&gt; Result&lt;Option&lt;FileStat&gt;&gt; {</span>
+<span class="a">+    async fn stat(&amp;self, path: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Option&lt;FileStat&gt;&gt; {</span>
+         let url = self.gcs_url_from_path(path)?;
+ 
+<span class="d">-        let request = Request::new(Method::HEAD, url.clone());</span>
+<span class="d">-        // TODO: Creds</span>
+<span class="a">+        // TODO: Possibly make state mutable to store the fetched token?</span>
+<span class="a">+        let token = match state.service_account.as_ref() {</span>
+<span class="a">+            Some(sa) =&gt; {</span>
+<span class="a">+                let token = sa.fetch_access_token(&amp;self.client).await?;</span>
+<span class="a">+                Some(token)</span>
+<span class="a">+            }</span>
+<span class="a">+            None =&gt; None,</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        let mut request = Request::new(Method::HEAD, url.clone());</span>
+<span class="a">+        if let Some(tok) = &amp;token {</span>
+<span class="a">+            request = authorize_request(tok, request)?;</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         let resp = self.client.do_request(request).await?;
+ 
+         let status = resp.status();
+<span class="h">@@ -130,13 +165,15 @@ where</span>
+ 
+ #[derive(Debug)]
+ pub struct GcsRequestSigner {
+<span class="d">-    // TODO: Creds</span>
+<span class="a">+    token: Option&lt;AccessToken&gt;,</span>
+ }
+ 
+ impl RequestSigner for GcsRequestSigner {
+     fn sign(&amp;self, request: Request) -&gt; Result&lt;Request&gt; {
+<span class="d">-        // TODO: Sign if creds</span>
+<span class="d">-        Ok(request)</span>
+<span class="a">+        match self.token.as_ref() {</span>
+<span class="a">+            Some(tok) =&gt; authorize_request(tok, request),</span>
+<span class="a">+            None =&gt; Ok(request),</span>
+<span class="a">+        }</span>
+     }
+ }
+ 
+<span class="h">@@ -177,3 +214,13 @@ where</span>
+         )))
+     }
+ }
+<span class="a">+</span>
+<span class="a">+fn authorize_request(token: &amp;AccessToken, mut request: Request) -&gt; Result&lt;Request&gt; {</span>
+<span class="a">+    request.headers_mut().insert(</span>
+<span class="a">+        AUTHORIZATION,</span>
+<span class="a">+        HeaderValue::from_str(&amp;format!(&quot;Bearer {}&quot;, token.access_token))</span>
+<span class="a">+            .context(&quot;Failed to set AUTHORIZATION header value&quot;)?,</span>
+<span class="a">+    );</span>
+<span class="a">+</span>
+<span class="a">+    Ok(request)</span>
+<span class="a">+}</span></pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/872097977e2f4d927a670ee711847b987ab02116">872097977e</a> (2025-05-13T08:38:07-05:00)</h2><p class="k">chore: Typos, remove outdated comment<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index 99b40174..3af5d440 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -200,7 +200,7 @@ where</span>
+ 
+     fn poll_write(&amp;mut self, _cx: &amp;mut Context, _buf: &amp;[u8]) -&gt; Poll&lt;Result&lt;usize&gt;&gt; {
+         Poll::Ready(Err(DbError::new(
+<span class="d">-            &quot;GcsFileHandle does not yest support writing&quot;,</span>
+<span class="a">+            &quot;GcsFileHandle does not yet support writing&quot;,</span>
+         )))
+     }
+ </pre><h2>Commit #3: <a href="https://github.com/glaredb/glaredb/commit/e7414375e6bfc85b456080a7d57efe974639f0fe">e7414375e6</a> (2025-05-14T01:33:13+00:00)</h2><p class="k">feat: Initial pass at file globbing (#3799)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index 3af5d440..94138c7e 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -2,8 +2,9 @@ use std::io::SeekFrom;</span>
+ use std::sync::Arc;
+ use std::task::{Context, Poll};
+ 
+<span class="a">+use glaredb_core::runtime::filesystem::directory::DirHandleNotImplemented;</span>
+ use glaredb_core::runtime::filesystem::{
+<span class="d">-    File,</span>
+<span class="a">+    FileHandle,</span>
+     FileOpenContext,
+     FileStat,
+     FileSystem,
+<span class="h">@@ -62,7 +63,8 @@ impl&lt;C&gt; FileSystem for GcsFileSystem&lt;C&gt;</span>
+ where
+     C: HttpClient,
+ {
+<span class="d">-    type File = GcsFileHandle&lt;C&gt;;</span>
+<span class="a">+    type FileHandle = GcsFileHandle&lt;C&gt;;</span>
+<span class="a">+    type ReadDirHandle = DirHandleNotImplemented;</span>
+     type State = GcsFileSystemState;
+ 
+     fn state_from_context(&amp;self, context: FileOpenContext) -&gt; Result&lt;Self::State&gt; {
+<span class="h">@@ -79,7 +81,12 @@ where</span>
+         Ok(GcsFileSystemState { service_account })
+     }
+ 
+<span class="d">-    async fn open(&amp;self, flags: OpenFlags, path: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Self::File&gt; {</span>
+<span class="a">+    async fn open(</span>
+<span class="a">+        &amp;self,</span>
+<span class="a">+        flags: OpenFlags,</span>
+<span class="a">+        path: &amp;str,</span>
+<span class="a">+        state: &amp;Self::State,</span>
+<span class="a">+    ) -&gt; Result&lt;Self::FileHandle&gt; {</span>
+         if flags.is_write() {
+             not_implemented!(&quot;write support for gcs filesystem&quot;)
+         }
+<span class="h">@@ -152,6 +159,10 @@ where</span>
+         Err(DbError::new(format!(&quot;Unexpected status code: {status}&quot;)))
+     }
+ 
+<span class="a">+    fn read_dir(&amp;self, _prefix: &amp;str, _state: &amp;Self::State) -&gt; Self::ReadDirHandle {</span>
+<span class="a">+        DirHandleNotImplemented</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     fn can_handle_path(&amp;self, path: &amp;str) -&gt; bool {
+         match Url::parse(path) {
+             Ok(url) =&gt; {
+<span class="h">@@ -182,7 +193,7 @@ pub struct GcsFileHandle&lt;C: HttpClient&gt; {</span>
+     handle: HttpFileHandle&lt;C, GcsRequestSigner&gt;,
+ }
+ 
+<span class="d">-impl&lt;C&gt; File for GcsFileHandle&lt;C&gt;</span>
+<span class="a">+impl&lt;C&gt; FileHandle for GcsFileHandle&lt;C&gt;</span>
+ where
+     C: HttpClient,
+ {</pre><h2>Commit #4: <a href="https://github.com/glaredb/glaredb/commit/6e85bab3e252ccc06a32ea30ac9d52909dbefc9c">6e85bab3e2</a> (2025-05-14T14:33:52-04:00)</h2><p class="k">feat: Initial S3 globbing (#3802)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: crates/glaredb_http/src/s3/directory.rs.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index 94138c7e..3ea077b0 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -63,6 +63,8 @@ impl&lt;C&gt; FileSystem for GcsFileSystem&lt;C&gt;</span>
+ where
+     C: HttpClient,
+ {
+<span class="a">+    const NAME: &amp;str = &quot;GCS&quot;;</span>
+<span class="a">+</span>
+     type FileHandle = GcsFileHandle&lt;C&gt;;
+     type ReadDirHandle = DirHandleNotImplemented;
+     type State = GcsFileSystemState;
+<span class="h">@@ -159,10 +161,6 @@ where</span>
+         Err(DbError::new(format!(&quot;Unexpected status code: {status}&quot;)))
+     }
+ 
+<span class="d">-    fn read_dir(&amp;self, _prefix: &amp;str, _state: &amp;Self::State) -&gt; Self::ReadDirHandle {</span>
+<span class="d">-        DirHandleNotImplemented</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     fn can_handle_path(&amp;self, path: &amp;str) -&gt; bool {
+         match Url::parse(path) {
+             Ok(url) =&gt; {</pre><h2>Commit #5: <a href="https://github.com/glaredb/glaredb/commit/30765ef4a1d644a1d540522c31086a6fcd2cee25">30765ef4a1</a> (2025-05-14T17:47:57-04:00)</h2><p class="k">feat: Initial GCS globbing (#3803)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: crates/glaredb_http/src/list.rs.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index 3ea077b0..cf9b69f5 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -2,7 +2,7 @@ use std::io::SeekFrom;</span>
+ use std::sync::Arc;
+ use std::task::{Context, Poll};
+ 
+<span class="d">-use glaredb_core::runtime::filesystem::directory::DirHandleNotImplemented;</span>
+<span class="a">+use glaredb_core::runtime::filesystem::glob::{GlobSegments, is_glob};</span>
+ use glaredb_core::runtime::filesystem::{
+     FileHandle,
+     FileOpenContext,
+<span class="h">@@ -17,6 +17,7 @@ use reqwest::{Method, Request, StatusCode};</span>
+ use url::Url;
+ 
+ use super::credentials::{AccessToken, ServiceAccount};
+<span class="a">+use super::directory::GcsDirHandle;</span>
+<span class=" m"> use crate::client::{HttpClient, HttpResponse};</span>
+ use crate::handle::{HttpFileHandle, RequestSigner};
+ 
+<span class="h">@@ -34,8 +35,17 @@ where</span>
+     pub fn new(client: C) -&gt; Self {
+         GcsFileSystem { client }
+     }
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+#[derive(Debug)]</span>
+<span class="a">+pub struct GcsLocation {</span>
+<span class="a">+    pub(crate) bucket: String,</span>
+<span class="a">+    pub(crate) object: String,</span>
+<span class="a">+    pub(crate) endpoint: String,</span>
+<span class="a">+}</span>
+ 
+<span class="d">-    fn gcs_url_from_path(&amp;self, path: &amp;str) -&gt; Result&lt;Url&gt; {</span>
+<span class="a">+impl GcsLocation {</span>
+<span class="a">+    pub(crate) fn from_path(path: &amp;str, _state: &amp;GcsFileSystemState) -&gt; Result&lt;Self&gt; {</span>
+         let url = Url::parse(path).context_fn(|| format!(&quot;Failed to parse &#x27;{path}&#x27; as a URL&quot;))?;
+ 
+         // Assumes gsutil format: &#x27;gs://bucket/file.csv&#x27;
+<span class="h">@@ -43,13 +53,35 @@ where</span>
+             url::Host::Domain(host) =&gt; host,
+             other =&gt; return Err(DbError::new(format!(&quot;Expected domain, got {other:?}&quot;))),
+         };
+<span class="d">-        let object = url.path(); // Should include leading &#x27;/&#x27;;</span>
+<span class="a">+        let object = &amp;url.path()[1..]; // Path includes a leading slash, slice it off.</span>
+         let endpoint = STORAGE_API_ENDPOINT;
+ 
+<span class="a">+        Ok(GcsLocation {</span>
+<span class="a">+            bucket: bucket.to_string(),</span>
+<span class="a">+            object: object.to_string(),</span>
+<span class="a">+            endpoint: endpoint.to_string(),</span>
+<span class="a">+        })</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    // &lt;https://cloud.google.com/storage/docs/xml-api/overview&gt;</span>
+<span class="a">+    pub(crate) fn object_scoped_xml_api_url(&amp;self) -&gt; Result&lt;Url&gt; {</span>
+<span class="a">+        let bucket = &amp;self.bucket;</span>
+<span class="a">+        let endpoint = &amp;self.endpoint;</span>
+<span class="a">+        let object = &amp;self.object;</span>
+<span class="a">+</span>
+         // - bucket: The bucket containing the object (no leading &#x27;/&#x27;)
+         // - endpoint: The gcs endpoint to use.
+<span class="d">-        // - object: Path to the object, this should include a leading &#x27;/&#x27;.</span>
+<span class="d">-        let formatted = format!(&quot;https://{endpoint}/{bucket}{object}&quot;);</span>
+<span class="a">+        // - object: Path to the object, this should not include a leading &#x27;/&#x27;.</span>
+<span class="a">+        let formatted = format!(&quot;https://{endpoint}/{bucket}/{object}&quot;);</span>
+<span class="a">+        Url::parse(&amp;formatted).context_fn(|| format!(&quot;Failed to parse &#x27;{formatted}&#x27; into url&quot;))</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    // &lt;https://cloud.google.com/storage/docs/json_api&gt;</span>
+<span class="a">+    pub(crate) fn bucket_scoped_json_api_url(&amp;self) -&gt; Result&lt;Url&gt; {</span>
+<span class="a">+        let bucket = &amp;self.bucket;</span>
+<span class="a">+        let endpoint = &amp;self.endpoint;</span>
+<span class="a">+        let formatted = format!(&quot;https://{endpoint}/storage/v1/b/{bucket}/o&quot;);</span>
+<span class="a">+</span>
+         Url::parse(&amp;formatted).context_fn(|| format!(&quot;Failed to parse &#x27;{formatted}&#x27; into url&quot;))
+     }
+ }
+<span class="h">@@ -66,7 +98,7 @@ where</span>
+     const NAME: &amp;str = &quot;GCS&quot;;
+ 
+     type FileHandle = GcsFileHandle&lt;C&gt;;
+<span class="d">-    type ReadDirHandle = DirHandleNotImplemented;</span>
+<span class="a">+    type ReadDirHandle = GcsDirHandle&lt;C&gt;;</span>
+     type State = GcsFileSystemState;
+ 
+     fn state_from_context(&amp;self, context: FileOpenContext) -&gt; Result&lt;Self::State&gt; {
+<span class="h">@@ -105,7 +137,7 @@ where</span>
+             None =&gt; None,
+         };
+ 
+<span class="d">-        let url = self.gcs_url_from_path(path)?;</span>
+<span class="a">+        let url = GcsLocation::from_path(path, state)?.object_scoped_xml_api_url()?;</span>
+         let mut request = Request::new(Method::HEAD, url.clone());
+         // Authorize request.
+         if let Some(tok) = &amp;token {
+<span class="h">@@ -129,7 +161,7 @@ where</span>
+     }
+ 
+     async fn stat(&amp;self, path: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Option&lt;FileStat&gt;&gt; {
+<span class="d">-        let url = self.gcs_url_from_path(path)?;</span>
+<span class="a">+        let url = GcsLocation::from_path(path, state)?.object_scoped_xml_api_url()?;</span>
+ 
+         // TODO: Possibly make state mutable to store the fetched token?
+         let token = match state.service_account.as_ref() {
+<span class="h">@@ -161,6 +193,51 @@ where</span>
+         Err(DbError::new(format!(&quot;Unexpected status code: {status}&quot;)))
+     }
+ 
+<span class="a">+    fn read_dir(&amp;self, dir: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Self::ReadDirHandle&gt; {</span>
+<span class="a">+        let location = GcsLocation::from_path(dir, state)?;</span>
+<span class="a">+        let signer = GcsRequestSigner {</span>
+<span class="a">+            token: None, // TODO</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        GcsDirHandle::try_new(self.client.clone(), location, signer)</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    fn glob_segments(glob: &amp;str) -&gt; Result&lt;GlobSegments&gt; {</span>
+<span class="a">+        // TODO: Copy pasted from s3.</span>
+<span class="a">+        let url = Url::parse(glob).context_fn(|| format!(&quot;Failed to parse &#x27;{glob}&#x27; as a URL&quot;))?;</span>
+<span class="a">+</span>
+<span class="a">+        // Assumes gsutil format: &#x27;gs://bucket/file.csv&#x27;</span>
+<span class="a">+        let bucket = match url.host().required(&quot;Missing host on url&quot;)? {</span>
+<span class="a">+            url::Host::Domain(host) =&gt; host,</span>
+<span class="a">+            other =&gt; return Err(DbError::new(format!(&quot;Expected domain, got {other:?}&quot;))),</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        // Now we parse the segments from the the path.</span>
+<span class="a">+        let mut segments: Vec&lt;_&gt; = url</span>
+<span class="a">+            .path()</span>
+<span class="a">+            .trim_start_matches(&#x27;/&#x27;)</span>
+<span class="a">+            .split(&#x27;/&#x27;)</span>
+<span class="a">+            .filter(|s| !s.is_empty())</span>
+<span class="a">+            .collect();</span>
+<span class="a">+        if segments.is_empty() {</span>
+<span class="a">+            return Err(DbError::new(&quot;Missing segments for glob&quot;));</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        // Find the root dir relative to the bucket to use.</span>
+<span class="a">+        let mut root_dir_rel = Vec::new();</span>
+<span class="a">+        while !segments.is_empty() &amp;&amp; !is_glob(segments[0]) {</span>
+<span class="a">+            root_dir_rel.push(segments.remove(0));</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        let root_dir_rel = root_dir_rel.join(&quot;/&quot;);</span>
+<span class="a">+        // Now put it back into the &#x27;gs://...&#x27; format.</span>
+<span class="a">+        let root_dir = format!(&quot;gs://{bucket}/{root_dir_rel}&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        let segments = segments.into_iter().map(|s| s.to_string()).collect();</span>
+<span class="a">+</span>
+<span class="a">+        Ok(GlobSegments { root_dir, segments })</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     fn can_handle_path(&amp;self, path: &amp;str) -&gt; bool {
+         match Url::parse(path) {
+             Ok(url) =&gt; {</pre><h2>Commit #6: <a href="https://github.com/glaredb/glaredb/commit/0b015bae4a5ddaab469db36413cf2245c58c0b73">0b015bae4a</a> (2025-05-14T19:27:22-04:00)</h2><p class="k">fix: Handle parsing object store paths manually when determining glob segments (#3804)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index cf9b69f5..ea5badb4 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -203,24 +203,31 @@ where</span>
+     }
+ 
+     fn glob_segments(glob: &amp;str) -&gt; Result&lt;GlobSegments&gt; {
+<span class="d">-        // TODO: Copy pasted from s3.</span>
+<span class="d">-        let url = Url::parse(glob).context_fn(|| format!(&quot;Failed to parse &#x27;{glob}&#x27; as a URL&quot;))?;</span>
+<span class="a">+        // TODO: Duplicated with s3</span>
+<span class="a">+        let trimmed = match glob.strip_prefix(&quot;gs://&quot;) {</span>
+<span class="a">+            Some(trimmed) =&gt; trimmed,</span>
+<span class="a">+            None =&gt; return Err(DbError::new(format!(&quot;Glob missing &#x27;gs://&#x27; scheme: {glob}&quot;))),</span>
+<span class="a">+        };</span>
+ 
+<span class="d">-        // Assumes gsutil format: &#x27;gs://bucket/file.csv&#x27;</span>
+<span class="d">-        let bucket = match url.host().required(&quot;Missing host on url&quot;)? {</span>
+<span class="d">-            url::Host::Domain(host) =&gt; host,</span>
+<span class="d">-            other =&gt; return Err(DbError::new(format!(&quot;Expected domain, got {other:?}&quot;))),</span>
+<span class="a">+        // Now we parse the segments from the trimmed string</span>
+<span class="a">+        //</span>
+<span class="a">+        // First segment is the bucket.</span>
+<span class="a">+        let mut segments = trimmed.split(&#x27;/&#x27;).filter(|s| !s.is_empty());</span>
+<span class="a">+        let bucket = match segments.next() {</span>
+<span class="a">+            Some(bucket) =&gt; {</span>
+<span class="a">+                if is_glob(bucket) {</span>
+<span class="a">+                    return Err(DbError::new(&quot;Cannot have a glob in the bucket name&quot;));</span>
+<span class="a">+                }</span>
+<span class="a">+                bucket</span>
+<span class="a">+            }</span>
+<span class="a">+            None =&gt; return Err(DbError::new(&quot;Cannot create glob from no segments&quot;)),</span>
+         };
+ 
+<span class="d">-        // Now we parse the segments from the the path.</span>
+<span class="d">-        let mut segments: Vec&lt;_&gt; = url</span>
+<span class="d">-            .path()</span>
+<span class="d">-            .trim_start_matches(&#x27;/&#x27;)</span>
+<span class="d">-            .split(&#x27;/&#x27;)</span>
+<span class="d">-            .filter(|s| !s.is_empty())</span>
+<span class="d">-            .collect();</span>
+<span class="a">+        let mut segments: Vec&lt;_&gt; = segments.collect();</span>
+         if segments.is_empty() {
+<span class="d">-            return Err(DbError::new(&quot;Missing segments for glob&quot;));</span>
+<span class="a">+            return Err(DbError::new(</span>
+<span class="a">+                &quot;Cannot have zero segments after parsing bucket&quot;,</span>
+<span class="a">+            ));</span>
+         }
+ 
+         // Find the root dir relative to the bucket to use.</pre><h2>Commit #7: <a href="https://github.com/glaredb/glaredb/commit/201701d14876832a4d6c78cb76916f288ea9bcfd">201701d148</a> (2025-05-15T14:23:37+00:00)</h2><p class="k">chore: Make fs state loading async (#3805)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index ea5badb4..6ecc34c0 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -101,7 +101,7 @@ where</span>
+     type ReadDirHandle = GcsDirHandle&lt;C&gt;;
+     type State = GcsFileSystemState;
+ 
+<span class="d">-    fn state_from_context(&amp;self, context: FileOpenContext) -&gt; Result&lt;Self::State&gt; {</span>
+<span class="a">+    async fn load_state(&amp;self, context: FileOpenContext&lt;&#x27;_&gt;) -&gt; Result&lt;Self::State&gt; {</span>
+         let service_account = context.get_value(&quot;service_account&quot;)?;
+         let service_account = match service_account {
+             Some(s) =&gt; {</pre><h2>Commit #8: <a href="https://github.com/glaredb/glaredb/commit/c279502703cd5a0c66a0e9193706129754a0a6ed">c279502703</a> (2025-05-15T11:50:13-04:00)</h2><p class="k">fix: Handle gcs token fetching during fs state load (#3807)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index 6ecc34c0..ebde413a 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -88,7 +88,7 @@ impl GcsLocation {</span>
+ 
+ #[derive(Debug, Clone)]
+ pub struct GcsFileSystemState {
+<span class="d">-    service_account: Option&lt;Arc&lt;ServiceAccount&gt;&gt;,</span>
+<span class="a">+    token: Option&lt;Arc&lt;AccessToken&gt;&gt;,</span>
+ }
+ 
+ impl&lt;C&gt; FileSystem for GcsFileSystem&lt;C&gt;
+<span class="h">@@ -103,16 +103,18 @@ where</span>
+ 
+     async fn load_state(&amp;self, context: FileOpenContext&lt;&#x27;_&gt;) -&gt; Result&lt;Self::State&gt; {
+         let service_account = context.get_value(&quot;service_account&quot;)?;
+<span class="d">-        let service_account = match service_account {</span>
+<span class="a">+        let token = match service_account {</span>
+             Some(s) =&gt; {
+                 let s = s.try_as_str()?;
+                 let service_account = ServiceAccount::try_from_str(s)?;
+<span class="d">-                Some(Arc::new(service_account))</span>
+<span class="a">+                // Fetch access token using service account.</span>
+<span class="a">+                let token = service_account.fetch_access_token(&amp;self.client).await?;</span>
+<span class="a">+                Some(Arc::new(token))</span>
+             }
+             None =&gt; None,
+         };
+ 
+<span class="d">-        Ok(GcsFileSystemState { service_account })</span>
+<span class="a">+        Ok(GcsFileSystemState { token })</span>
+     }
+ 
+     async fn open(
+<span class="h">@@ -128,19 +130,10 @@ where</span>
+             not_implemented!(&quot;create support for gcs filesystem&quot;)
+         }
+ 
+<span class="d">-        // Fetch token if we have a service account.</span>
+<span class="d">-        let token = match state.service_account.as_ref() {</span>
+<span class="d">-            Some(sa) =&gt; {</span>
+<span class="d">-                let token = sa.fetch_access_token(&amp;self.client).await?;</span>
+<span class="d">-                Some(token)</span>
+<span class="d">-            }</span>
+<span class="d">-            None =&gt; None,</span>
+<span class="d">-        };</span>
+<span class="d">-</span>
+         let url = GcsLocation::from_path(path, state)?.object_scoped_xml_api_url()?;
+         let mut request = Request::new(Method::HEAD, url.clone());
+         // Authorize request.
+<span class="d">-        if let Some(tok) = &amp;token {</span>
+<span class="a">+        if let Some(tok) = &amp;state.token {</span>
+             request = authorize_request(tok, request)?;
+         }
+ 
+<span class="h">@@ -154,7 +147,9 @@ where</span>
+             None =&gt; return Err(DbError::new(&quot;Missing Content-Length header for file&quot;)),
+         };
+ 
+<span class="d">-        let signer = GcsRequestSigner { token };</span>
+<span class="a">+        let signer = GcsRequestSigner {</span>
+<span class="a">+            token: state.token.clone(),</span>
+<span class="a">+        };</span>
+         let handle = HttpFileHandle::new(url, len, self.client.clone(), signer);
+ 
+         Ok(GcsFileHandle { handle })
+<span class="h">@@ -163,17 +158,8 @@ where</span>
+     async fn stat(&amp;self, path: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Option&lt;FileStat&gt;&gt; {
+         let url = GcsLocation::from_path(path, state)?.object_scoped_xml_api_url()?;
+ 
+<span class="d">-        // TODO: Possibly make state mutable to store the fetched token?</span>
+<span class="d">-        let token = match state.service_account.as_ref() {</span>
+<span class="d">-            Some(sa) =&gt; {</span>
+<span class="d">-                let token = sa.fetch_access_token(&amp;self.client).await?;</span>
+<span class="d">-                Some(token)</span>
+<span class="d">-            }</span>
+<span class="d">-            None =&gt; None,</span>
+<span class="d">-        };</span>
+<span class="d">-</span>
+         let mut request = Request::new(Method::HEAD, url.clone());
+<span class="d">-        if let Some(tok) = &amp;token {</span>
+<span class="a">+        if let Some(tok) = &amp;state.token {</span>
+             request = authorize_request(tok, request)?;
+         }
+ 
+<span class="h">@@ -196,7 +182,7 @@ where</span>
+     fn read_dir(&amp;self, dir: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Self::ReadDirHandle&gt; {
+         let location = GcsLocation::from_path(dir, state)?;
+         let signer = GcsRequestSigner {
+<span class="d">-            token: None, // TODO</span>
+<span class="a">+            token: state.token.clone(),</span>
+         };
+ 
+         GcsDirHandle::try_new(self.client.clone(), location, signer)
+<span class="h">@@ -258,7 +244,7 @@ where</span>
+ 
+ #[derive(Debug)]
+ pub struct GcsRequestSigner {
+<span class="d">-    token: Option&lt;AccessToken&gt;,</span>
+<span class="a">+    token: Option&lt;Arc&lt;AccessToken&gt;&gt;,</span>
+ }
+ 
+ impl RequestSigner for GcsRequestSigner {</pre><h2>Commit #9: <a href="https://github.com/glaredb/glaredb/commit/f4d1acf466f046cfa2281372659fa823cb160ece">f4d1acf466</a> (2025-05-26T10:55:15-04:00)</h2><p class="k">fix: Use u64 for file lengths (#3849)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index ebde413a..6e3fa546 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -142,7 +142,7 @@ where</span>
+             Some(v) =&gt; v
+                 .to_str()
+                 .context(&quot;Failed convert Content-Length header to string&quot;)?
+<span class="d">-                .parse::&lt;usize&gt;()</span>
+<span class="a">+                .parse::&lt;u64&gt;()</span>
+                 .context(&quot;Failed to parse Content-Length&quot;)?,
+             None =&gt; return Err(DbError::new(&quot;Missing Content-Length header for file&quot;)),
+         };
+<span class="h">@@ -269,7 +269,7 @@ where</span>
+         self.handle.url.as_str()
+     }
+ 
+<span class="d">-    fn size(&amp;self) -&gt; usize {</span>
+<span class="a">+    fn size(&amp;self) -&gt; u64 {</span>
+         self.handle.len
+     }
+ </pre><h2>Commit #10: <a href="https://github.com/glaredb/glaredb/commit/327c8d1e16d49e3b65f4e9ef85a65e60f16ecafa">327c8d1e16</a> (2025-06-06T16:07:46-04:00)</h2><p class="k">chore: Detect if S3 bucket is in different region (#3917)<br>Path after this commit: crates/glaredb_http/src/gcs/filesystem.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_http/src/gcs/filesystem.rs b/crates/glaredb_http/src/gcs/filesystem.rs
+index 6e3fa546..560db0a7 100644
+<span class="d">--- a/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_http/src/gcs/filesystem.rs</span>
+<span class="h">@@ -18,7 +18,7 @@ use url::Url;</span>
+ 
+ use super::credentials::{AccessToken, ServiceAccount};
+ use super::directory::GcsDirHandle;
+<span class="d m">-use crate::client::{HttpClient, HttpResponse};</span>
+<span class="a">+use crate::client::{HttpClient, HttpResponse, read_response_as_text};</span>
+ use crate::handle::{HttpFileHandle, RequestSigner};
+ 
+ pub const STORAGE_API_ENDPOINT: &amp;str = &quot;storage.googleapis.com&quot;;
+<span class="h">@@ -138,6 +138,16 @@ where</span>
+         }
+ 
+         let resp = self.client.do_request(request).await?;
+<span class="a">+        if !resp.status().is_success() {</span>
+<span class="a">+            let status = resp.status();</span>
+<span class="a">+            let text = read_response_as_text(resp.into_bytes_stream()).await?;</span>
+<span class="a">+            let mut err = DbError::new(&quot;Failed to make HEAD request&quot;).with_field(&quot;status&quot;, status);</span>
+<span class="a">+            if !text.trim().is_empty() {</span>
+<span class="a">+                err = err.with_field(&quot;response&quot;, text);</span>
+<span class="a">+            }</span>
+<span class="a">+            return Err(err);</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         let len = match resp.headers().get(CONTENT_LENGTH) {
+             Some(v) =&gt; v
+                 .to_str()
+<span class="h">@@ -179,7 +189,7 @@ where</span>
+         Err(DbError::new(format!(&quot;Unexpected status code: {status}&quot;)))
+     }
+ 
+<span class="d">-    fn read_dir(&amp;self, dir: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Self::ReadDirHandle&gt; {</span>
+<span class="a">+    async fn read_dir(&amp;self, dir: &amp;str, state: &amp;Self::State) -&gt; Result&lt;Self::ReadDirHandle&gt; {</span>
+         let location = GcsLocation::from_path(dir, state)?;
+         let signer = GcsRequestSigner {
+             token: state.token.clone(),</pre></body></html>

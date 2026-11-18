@@ -1,0 +1,57 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L075</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L075</h1><p><b>Repository:</b> <a href="https://github.com/skyvern-ai/skyvern">skyvern-ai/skyvern</a><br><b>File at merge:</b> skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts, line 18<br><b>Merge commit (birth):</b> <a href="https://github.com/skyvern-ai/skyvern/commit/69a07c01ab92b16d0898eb222b469019ec6281b7">69a07c01ab</a> (2025-05-29T22:06:31)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/skyvern-ai/skyvern/tree/aef38fd8e2772d5f82901641d2e423bd6289fe17">aef38fd8e2</a>)</p><p><b>The line:</b></p><pre><span class="t">  model: null,</span></pre><h2>File at the merge commit, lines 10 to 23</h2><pre>   10 | export type PDFParserNode = Node&lt;PDFParserNodeData, &quot;pdfParser&quot;&gt;;
+   11 | 
+   12 | export const pdfParserNodeDefaultData: PDFParserNodeData = {
+   13 |   editable: true,
+   14 |   label: &quot;&quot;,
+   15 |   fileUrl: &quot;&quot;,
+   16 |   continueOnFailure: false,
+   17 |   jsonSchema: &quot;null&quot;,
+<span class="t">   18 |   model: null,</span>
+   19 | } as const;
+   20 | 
+   21 | export function isPdfParserNode(node: AppNode): node is PDFParserNode {
+   22 |   return node.type === &quot;pdfParser&quot;;
+   23 | }</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/skyvern-ai/skyvern/commit/acbdb152658a03ac4b013b8a9f22be6ce3365a72">acbdb15265</a> (2025-07-07T22:30:33-04:00)</h2><p class="k">MVP Debugger UI (#2888)<br>Path after this commit: skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: skyvern-frontend/src/store/WorkflowSettingsStore.ts.</p><pre>diff --git a/skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts b/skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts
+index 0edf685e2..c1c51220c 100644
+<span class="d">--- a/skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts</span>
+<span class="a">+++ b/skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts</span>
+<span class="h">@@ -1,6 +1,7 @@</span>
+ import type { Node } from &quot;@xyflow/react&quot;;
+ import { NodeBaseData } from &quot;../types&quot;;
+ import { AppNode } from &quot;..&quot;;
+<span class="a">+import { debuggableWorkflowBlockTypes } from &quot;@/routes/workflows/types/workflowTypes&quot;;</span>
+ 
+ export type PDFParserNodeData = NodeBaseData &amp; {
+   fileUrl: string;
+<span class="h">@@ -10,6 +11,7 @@ export type PDFParserNodeData = NodeBaseData &amp; {</span>
+ export type PDFParserNode = Node&lt;PDFParserNodeData, &quot;pdfParser&quot;&gt;;
+ 
+ export const pdfParserNodeDefaultData: PDFParserNodeData = {
+<span class="a">+  debuggable: debuggableWorkflowBlockTypes.has(&quot;pdf_parser&quot;),</span>
+   editable: true,
+   label: &quot;&quot;,
+   fileUrl: &quot;&quot;,</pre><h2>Commit #2: <a href="https://github.com/skyvern-ai/skyvern/commit/f0134cbcb903eaacaa958ce42cc6fe9ebc9a3080">f0134cbcb9</a> (2025-08-25T22:37:35+08:00)</h2><p class="k">frontend support llm selector for fileparser (#3281)<br>Path after this commit: skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts b/skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts
+index c1c51220c..bcc4445eb 100644
+<span class="d">--- a/skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts</span>
+<span class="a">+++ b/skyvern-frontend/src/routes/workflows/editor/nodes/PDFParserNode/types.ts</span>
+<span class="h">@@ -1,11 +1,15 @@</span>
+ import type { Node } from &quot;@xyflow/react&quot;;
+ import { NodeBaseData } from &quot;../types&quot;;
+ import { AppNode } from &quot;..&quot;;
+<span class="d">-import { debuggableWorkflowBlockTypes } from &quot;@/routes/workflows/types/workflowTypes&quot;;</span>
+<span class="a">+import {</span>
+<span class="a">+  debuggableWorkflowBlockTypes,</span>
+<span class="a">+  WorkflowModel,</span>
+<span class="a">+} from &quot;@/routes/workflows/types/workflowTypes&quot;;</span>
+ 
+ export type PDFParserNodeData = NodeBaseData &amp; {
+   fileUrl: string;
+   jsonSchema: string;
+<span class="a">+  model: WorkflowModel | null;</span>
+ };
+ 
+ export type PDFParserNode = Node&lt;PDFParserNodeData, &quot;pdfParser&quot;&gt;;</pre></body></html>

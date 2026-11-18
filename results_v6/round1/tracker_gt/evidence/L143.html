@@ -1,0 +1,445 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L143</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L143</h1><p><b>Repository:</b> <a href="https://github.com/afadil/wealthfolio">afadil/wealthfolio</a><br><b>File at merge:</b> src-tauri/src/main.rs, line 34<br><b>Merge commit (birth):</b> <a href="https://github.com/afadil/wealthfolio/commit/d56fd4bb680c37444fc30131cdaec265fb971a0f">d56fd4bb68</a> (2025-06-17T01:28:45)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/afadil/wealthfolio/tree/e45bd9bf64f880e4bbdb881d5755549b3a354ff4">e45bd9bf64</a>)</p><p><b>The line:</b></p><pre><span class="t">                } else {</span></pre><h2>File at the merge commit, lines 26 to 42</h2><pre>   26 | pub fn main() {
+   27 |     dotenv().ok(); // Load environment variables from .env file if available
+   28 | 
+   29 |     let app = tauri::Builder::default()
+   30 |         .plugin(
+   31 |             tauri_plugin_log::Builder::new()
+   32 |                 .level(if cfg!(debug_assertions) {
+   33 |                     log::LevelFilter::Debug
+<span class="t">   34 |                 } else {</span>
+   35 |                     log::LevelFilter::Info
+   36 |                 })
+   37 |                 .build(),
+   38 |         )
+   39 |         .plugin(tauri_plugin_shell::init())
+   40 |         .plugin(tauri_plugin_dialog::init())
+   41 |         .plugin(tauri_plugin_updater::Builder::new().build())
+   42 |         .plugin(tauri_plugin_fs::init())</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/afadil/wealthfolio/commit/b2a52461c2dca24d577ccb191965aaabb9221572">b2a52461c2</a> (2025-07-13T11:59:13-04:00)</h2><p class="k">Merge pull request #323 from afadil/codex/add-secret-management-for-api-keys<br>Path after this commit: src-tauri/src/main.rs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: src-core/src/market_data/providers/marketdata_app_provider.rs, src-core/src/market_data/providers/provider_registry.rs, src/pages/settings/market-data-settings.tsx.</p><pre>diff --git a/src-tauri/src/main.rs b/src-tauri/src/main.rs
+index 65dee0c1e..f2d070e69 100644
+<span class="d">--- a/src-tauri/src/main.rs</span>
+<span class="a">+++ b/src-tauri/src/main.rs</span>
+<span class="h">@@ -138,6 +138,11 @@ pub fn main() {</span>
+             commands::market_data::delete_quote,
+             commands::market_data::get_quote_history,
+             commands::market_data::get_market_data_providers,
+<span class="a">+            commands::secrets::set_api_key,</span>
+<span class="a">+            commands::secrets::get_api_key,</span>
+<span class="a">+            commands::secrets::delete_api_key,</span>
+<span class="a">+            commands::providers_settings::get_market_data_providers_settings,</span>
+<span class="a">+            commands::providers_settings::update_market_data_provider_settings,</span>
+         ])
+         .build(tauri::generate_context!())
+         .expect(&quot;error while running wealthfolio application&quot;);</pre><h2>Commit #2: <a href="https://github.com/afadil/wealthfolio/commit/c2cd4e7ae3b8278e5c98aef61320a029f152698b">c2cd4e7ae3</a> (2025-08-20T09:02:35-04:00)</h2><p class="k">Merge pull request #349 from afadil/wealthfolio-addons<br>Path after this commit: src-tauri/src/main.rs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: addons/goal-progress-tracker/src/components/editable-value.tsx, addons/goal-progress-tracker/src/components/investment-calendar.tsx, addons/investment-fees-tracker/src/lib/fee-calculation.service.ts, docs/addons/addon-api-reference.md, docs/addons/addon-examples.md.</p><pre>diff --git a/src-tauri/src/main.rs b/src-tauri/src/main.rs
+index f2d070e69..929b0bc67 100644
+<span class="d">--- a/src-tauri/src/main.rs</span>
+<span class="a">+++ b/src-tauri/src/main.rs</span>
+<span class="h">@@ -2,12 +2,15 @@</span>
+ #![cfg_attr(not(debug_assertions), windows_subsystem = &quot;windows&quot;)]
+ 
+ mod commands;
+<span class="a">+mod addons;</span>
+ mod context;
+ mod events;
+ mod listeners;
+ mod menu;
+ mod updater;
+ 
+<span class="a">+</span>
+<span class="a">+</span>
+ use log::error;
+ use updater::check_for_update;
+ 
+<span class="h">@@ -138,11 +141,26 @@ pub fn main() {</span>
+             commands::market_data::delete_quote,
+             commands::market_data::get_quote_history,
+             commands::market_data::get_market_data_providers,
+<span class="d">-            commands::secrets::set_api_key,</span>
+<span class="d">-            commands::secrets::get_api_key,</span>
+<span class="d">-            commands::secrets::delete_api_key,</span>
+<span class="a">+            commands::secrets::set_secret,</span>
+<span class="a">+            commands::secrets::get_secret,</span>
+<span class="a">+            commands::secrets::delete_secret,</span>
+             commands::providers_settings::get_market_data_providers_settings,
+             commands::providers_settings::update_market_data_provider_settings,
+<span class="a">+            commands::addon::extract_addon_zip,</span>
+<span class="a">+            commands::addon::install_addon_zip,</span>
+<span class="a">+            commands::addon::list_installed_addons,</span>
+<span class="a">+            commands::addon::toggle_addon,</span>
+<span class="a">+            commands::addon::uninstall_addon,</span>
+<span class="a">+            commands::addon::load_addon_for_runtime,</span>
+<span class="a">+            commands::addon::get_enabled_addons_on_startup,</span>
+<span class="a">+            commands::addon::check_addon_update,</span>
+<span class="a">+            commands::addon::check_all_addon_updates,</span>
+<span class="a">+            commands::addon::update_addon_from_store_by_id,</span>
+<span class="a">+            commands::addon::fetch_addon_store_listings,</span>
+<span class="a">+            commands::addon::download_addon_to_staging,</span>
+<span class="a">+            commands::addon::install_addon_from_staging,</span>
+<span class="a">+            commands::addon::clear_addon_staging,</span>
+<span class="a">+            commands::addon::submit_addon_rating,</span>
+         ])
+         .build(tauri::generate_context!())
+         .expect(&quot;error while running wealthfolio application&quot;);</pre><h2>Commit #3: <a href="https://github.com/afadil/wealthfolio/commit/0d9aebd6a06f2de119a6498e84de8f17034f9ee1">0d9aebd6a0</a> (2025-08-21T15:02:04-04:00)</h2><p class="k">Merge pull request #351 from afadil/prepare-1-2<br>Path after this commit: src-tauri/src/main.rs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: docs/addons/addon-api-reference.md, src-core/src/portfolio/snapshot/holdings_calculator.rs, src/pages/activity/components/forms/bulk-holdings-form.tsx, src/pages/activity/components/forms/bulk-holdings-modal.tsx, src/pages/settings/exports/use-export-data.ts.</p><pre>diff --git a/src-tauri/src/main.rs b/src-tauri/src/main.rs
+index 929b0bc67..4c6ed0790 100644
+<span class="d">--- a/src-tauri/src/main.rs</span>
+<span class="a">+++ b/src-tauri/src/main.rs</span>
+<span class="h">@@ -132,6 +132,8 @@ pub fn main() {</span>
+             commands::limits::delete_contribution_limit,
+             commands::limits::calculate_deposits_for_contribution_limit,
+             commands::utilities::backup_database,
+<span class="a">+            commands::utilities::backup_database_to_path,</span>
+<span class="a">+            commands::utilities::restore_database,</span>
+             commands::asset::get_asset_profile,
+             commands::asset::update_asset_profile,
+             commands::asset::update_asset_data_source,</pre><h2>Commit #4: <a href="https://github.com/afadil/wealthfolio/commit/a4945967353d5544c883ceffac430cbe8acec33a">a494596735</a> (2025-08-23T11:07:33-04:00)</h2><p class="k">Merge pull request #359 from afadil/1-2-fixes<br>Path after this commit: src-tauri/src/main.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src-tauri/src/main.rs b/src-tauri/src/main.rs
+index 4c6ed0790..7020955e8 100644
+<span class="d">--- a/src-tauri/src/main.rs</span>
+<span class="a">+++ b/src-tauri/src/main.rs</span>
+<span class="h">@@ -105,6 +105,7 @@ pub fn main() {</span>
+             commands::activity::get_account_import_mapping,
+             commands::activity::save_account_import_mapping,
+             commands::settings::get_settings,
+<span class="a">+            commands::settings::is_auto_update_check_enabled,</span>
+             commands::settings::update_settings,
+             commands::settings::get_latest_exchange_rates,
+             commands::settings::update_exchange_rate,
+<span class="h">@@ -173,7 +174,7 @@ pub fn main() {</span>
+ /// Spawns background tasks such as menu setup, update checks, and initial portfolio sync.
+ fn spawn_background_tasks(
+     handle: AppHandle,
+<span class="d">-    _context: Arc&lt;ServiceContext&gt;, // Context no longer needed directly here</span>
+<span class="a">+    context: Arc&lt;ServiceContext&gt;,</span>
+     instance_id: Arc&lt;String&gt;,
+ ) {
+     // Set up menu (can happen after state is managed)
+<span class="h">@@ -196,10 +197,18 @@ fn spawn_background_tasks(</span>
+         });
+     });
+ 
+<span class="d">-    // Check for updates on startup</span>
+<span class="a">+    // Check for updates on startup (if enabled)</span>
+     let update_handle = handle.clone();
+     let instance_id_update = instance_id.clone();
+<span class="d">-    spawn(async move { check_for_update(update_handle, &amp;*instance_id_update, false).await });</span>
+<span class="a">+    let update_context = context.clone();</span>
+<span class="a">+    spawn(async move { </span>
+<span class="a">+        // Check if auto-update is enabled before performing the check</span>
+<span class="a">+        if let Ok(is_enabled) = update_context.settings_service().is_auto_update_check_enabled() {</span>
+<span class="a">+            if is_enabled {</span>
+<span class="a">+                check_for_update(update_handle, &amp;*instance_id_update, false).await;</span>
+<span class="a">+            }</span>
+<span class="a">+        }</span>
+<span class="a">+    });</span>
+ 
+     // Trigger initial portfolio update on startup
+     // Defaults: no specific accounts (all), sync market data (all symbols), incremental calculation</pre><h2>Commit #5: <a href="https://github.com/afadil/wealthfolio/commit/10492466f22e980305c91dbeba0220e78225d17a">10492466f2</a> (2025-09-11T20:28:39-04:00)</h2><p class="k">Merge pull request #383 from afadil/fix/1.2.2<br>Path after this commit: src-tauri/src/main.rs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: src-core/src/db/mod.rs, src-tauri/src/commands/settings.rs, src/pages/settings/about/about-page.tsx.</p><pre>diff --git a/src-tauri/src/main.rs b/src-tauri/src/main.rs
+index 7020955e8..514fbb2db 100644
+<span class="d">--- a/src-tauri/src/main.rs</span>
+<span class="a">+++ b/src-tauri/src/main.rs</span>
+<span class="h">@@ -180,15 +180,35 @@ fn spawn_background_tasks(</span>
+     // Set up menu (can happen after state is managed)
+     let menu_handle = handle.clone();
+     let instance_id_menu = instance_id.clone();
+<span class="a">+    let context_menu = context.clone();</span>
+     tauri::async_runtime::spawn(async move {
+<span class="d">-        match menu::create_menu(&amp;menu_handle) {</span>
+<span class="d">-            Ok(menu) =&gt; {</span>
+<span class="d">-                if let Err(e) = menu_handle.set_menu(menu) {</span>
+<span class="d">-                    error!(&quot;Failed to set menu: {}&quot;, e);</span>
+<span class="a">+        // Check settings first to decide whether to create menu at all</span>
+<span class="a">+        if let Ok(settings) = context_menu.settings_service().get_settings() {</span>
+<span class="a">+            if settings.menu_bar_visible {</span>
+<span class="a">+                // Only create and set menu if it should be visible</span>
+<span class="a">+                match menu::create_menu(&amp;menu_handle) {</span>
+<span class="a">+                    Ok(menu) =&gt; {</span>
+<span class="a">+                        if let Err(e) = menu_handle.set_menu(menu) {</span>
+<span class="a">+                            error!(&quot;Failed to set menu: {}&quot;, e);</span>
+<span class="a">+                        }</span>
+<span class="a">+                    }</span>
+<span class="a">+                    Err(e) =&gt; {</span>
+<span class="a">+                        error!(&quot;Failed to create menu: {}&quot;, e);</span>
+<span class="a">+                    }</span>
+                 }
+             }
+<span class="d">-            Err(e) =&gt; {</span>
+<span class="d">-                error!(&quot;Failed to create menu: {}&quot;, e);</span>
+<span class="a">+            // If menu_bar_visible is false, don&#x27;t create or set any menu</span>
+<span class="a m">+        } else {</span>
+<span class="a">+            // If we can&#x27;t read settings, default to showing menu</span>
+<span class="a">+            match menu::create_menu(&amp;menu_handle) {</span>
+<span class="a">+                Ok(menu) =&gt; {</span>
+<span class="a">+                    if let Err(e) = menu_handle.set_menu(menu) {</span>
+<span class="a">+                        error!(&quot;Failed to set menu: {}&quot;, e);</span>
+<span class="a">+                    }</span>
+<span class="a">+                }</span>
+<span class="a">+                Err(e) =&gt; {</span>
+<span class="a">+                    error!(&quot;Failed to create menu: {}&quot;, e);</span>
+<span class="a">+                }</span>
+             }
+         }
+         // Set up the menu event handler</pre><h2>Commit #6: <a href="https://github.com/afadil/wealthfolio/commit/610c1769633e47f5d58d20854a91912215b0e3f3">610c176963</a> (2025-10-26T14:07:35-04:00)</h2><p class="k">Merge pull request #378 from FilipHarald/filip_fork<br>Path after this commit: src-tauri/src/main.rs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: src-core/src/market_data/market_data_service.rs.</p><pre>diff --git a/src-tauri/src/main.rs b/src-tauri/src/main.rs
+index 514fbb2db..1f3737c07 100644
+<span class="d">--- a/src-tauri/src/main.rs</span>
+<span class="a">+++ b/src-tauri/src/main.rs</span>
+<span class="h">@@ -144,6 +144,9 @@ pub fn main() {</span>
+             commands::market_data::delete_quote,
+             commands::market_data::get_quote_history,
+             commands::market_data::get_market_data_providers,
+<span class="a">+            commands::market_data::validate_quotes_csv,</span>
+<span class="a">+            commands::market_data::import_quotes_csv,</span>
+<span class="a">+            commands::market_data::get_quote_import_template,</span>
+             commands::secrets::set_secret,
+             commands::secrets::get_secret,
+             commands::secrets::delete_secret,</pre><h2>Commit #7: <a href="https://github.com/afadil/wealthfolio/commit/846f4b1d77ed9ba2053c4fe7e42e889e0c79b892">846f4b1d77</a> (2025-10-29T12:18:48-04:00)</h2><p class="k">Merge pull request #409 from afadil/wealthfolio_v2<br>Path after this commit: src-tauri/src/main.rs. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: src-server/src/addons/service.rs, src-server/src/api.rs, src-tauri/src/commands/addon.rs, src-tauri/src/commands/settings.rs, src-tauri/src/commands/sync.rs.</p><pre>diff --git a/src-tauri/src/main.rs b/src-tauri/src/main.rs
+index 1f3737c07..981af00c2 100644
+<span class="d">--- a/src-tauri/src/main.rs</span>
+<span class="a">+++ b/src-tauri/src/main.rs</span>
+<span class="h">@@ -1,243 +1,6 @@</span>
+ // Prevents additional console window on Windows in release, DO NOT REMOVE!!
+ #![cfg_attr(not(debug_assertions), windows_subsystem = &quot;windows&quot;)]
+ 
+<span class="d">-mod commands;</span>
+<span class="d">-mod addons;</span>
+<span class="d">-mod context;</span>
+<span class="d">-mod events;</span>
+<span class="d">-mod listeners;</span>
+<span class="d">-mod menu;</span>
+<span class="d">-mod updater;</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-use log::error;</span>
+<span class="d">-use updater::check_for_update;</span>
+<span class="d">-</span>
+<span class="d">-use dotenvy::dotenv;</span>
+<span class="d">-use std::env;</span>
+<span class="d">-use std::sync::Arc;</span>
+<span class="d">-</span>
+<span class="d">-use tauri::async_runtime::spawn;</span>
+<span class="d">-</span>
+<span class="d">-use tauri::AppHandle;</span>
+<span class="d">-use tauri::Manager;</span>
+<span class="d">-</span>
+<span class="d">-use context::ServiceContext;</span>
+<span class="d">-use events::{emit_portfolio_trigger_update, PortfolioRequestPayload};</span>
+<span class="d">-</span>
+<span class="d">-pub fn main() {</span>
+<span class="d">-    dotenv().ok(); // Load environment variables from .env file if available</span>
+<span class="d">-</span>
+<span class="d">-    let app = tauri::Builder::default()</span>
+<span class="d">-        .plugin(</span>
+<span class="d">-            tauri_plugin_log::Builder::new()</span>
+<span class="d">-                .level(if cfg!(debug_assertions) {</span>
+<span class="d">-                    log::LevelFilter::Debug</span>
+<span class="d m">-                } else {</span>
+<span class="d">-                    log::LevelFilter::Info</span>
+<span class="d">-                })</span>
+<span class="d">-                .build(),</span>
+<span class="d">-        )</span>
+<span class="d">-        .plugin(tauri_plugin_shell::init())</span>
+<span class="d">-        .plugin(tauri_plugin_dialog::init())</span>
+<span class="d">-        .plugin(tauri_plugin_updater::Builder::new().build())</span>
+<span class="d">-        .plugin(tauri_plugin_fs::init())</span>
+<span class="d">-        .plugin(tauri_plugin_window_state::Builder::new().build())</span>
+<span class="d">-        .setup(|app| {</span>
+<span class="d">-            let handle = app.handle().clone();</span>
+<span class="d">-</span>
+<span class="d">-            // Block synchronously on the essential async setup</span>
+<span class="d">-            tauri::async_runtime::block_on(async {</span>
+<span class="d">-                let app_data_dir = handle</span>
+<span class="d">-                    .path()</span>
+<span class="d">-                    .app_data_dir()? // Use ? directly on the Result</span>
+<span class="d">-                    .to_str()</span>
+<span class="d">-                    .ok_or(&quot;Failed to convert app data dir path to string&quot;)?</span>
+<span class="d">-                    .to_string();</span>
+<span class="d">-</span>
+<span class="d">-                // Initialize context asynchronously</span>
+<span class="d">-                let context = match context::initialize_context(&amp;app_data_dir).await {</span>
+<span class="d">-                    Ok(ctx) =&gt; Arc::new(ctx),</span>
+<span class="d">-                    Err(e) =&gt; {</span>
+<span class="d">-                        error!(&quot;Failed to initialize context: {}&quot;, e);</span>
+<span class="d">-                        // Propagate the original boxed error</span>
+<span class="d">-                        return Err(e);</span>
+<span class="d">-                    }</span>
+<span class="d">-                };</span>
+<span class="d">-</span>
+<span class="d">-                // Make context available to all commands *before* setup returns</span>
+<span class="d">-                handle.manage(context.clone());</span>
+<span class="d">-</span>
+<span class="d">-                // Get instance_id after context is managed</span>
+<span class="d">-                let instance_id = context.instance_id.clone();</span>
+<span class="d">-</span>
+<span class="d">-                // --- Setup event listeners ---</span>
+<span class="d">-                listeners::setup_event_listeners(handle.clone());</span>
+<span class="d">-</span>
+<span class="d">-                // --- Spawn non-critical async tasks ---</span>
+<span class="d">-                spawn_background_tasks(handle.clone(), context.clone(), instance_id);</span>
+<span class="d">-</span>
+<span class="d">-                Ok(())</span>
+<span class="d">-            })</span>
+<span class="d">-            // Handle potential errors from the block_on section</span>
+<span class="d">-            .map_err(|e: Box&lt;dyn std::error::Error&gt;| {</span>
+<span class="d">-                error!(&quot;Critical setup failed: {}&quot;, e);</span>
+<span class="d">-                // Convert the boxed error into Tauri&#x27;s setup error type if needed, or handle otherwise</span>
+<span class="d">-                tauri::Error::Setup(e.into()) // Or Box::new(tauri::Error::Setup(e.into())) depending on signature needs</span>
+<span class="d">-            })?;</span>
+<span class="d">-</span>
+<span class="d">-            Ok(())</span>
+<span class="d">-        })</span>
+<span class="d">-        .invoke_handler(tauri::generate_handler![</span>
+<span class="d">-            commands::account::get_accounts,</span>
+<span class="d">-            commands::account::get_active_accounts,</span>
+<span class="d">-            commands::account::create_account,</span>
+<span class="d">-            commands::account::update_account,</span>
+<span class="d">-            commands::account::delete_account,</span>
+<span class="d">-            commands::activity::search_activities,</span>
+<span class="d">-            commands::activity::get_activities,</span>
+<span class="d">-            commands::activity::create_activity,</span>
+<span class="d">-            commands::activity::update_activity,</span>
+<span class="d">-            commands::activity::delete_activity,</span>
+<span class="d">-            commands::activity::check_activities_import,</span>
+<span class="d">-            commands::activity::import_activities,</span>
+<span class="d">-            commands::activity::get_account_import_mapping,</span>
+<span class="d">-            commands::activity::save_account_import_mapping,</span>
+<span class="d">-            commands::settings::get_settings,</span>
+<span class="d">-            commands::settings::is_auto_update_check_enabled,</span>
+<span class="d">-            commands::settings::update_settings,</span>
+<span class="d">-            commands::settings::get_latest_exchange_rates,</span>
+<span class="d">-            commands::settings::update_exchange_rate,</span>
+<span class="d">-            commands::settings::add_exchange_rate,</span>
+<span class="d">-            commands::settings::delete_exchange_rate,</span>
+<span class="d">-            commands::goal::create_goal,</span>
+<span class="d">-            commands::goal::update_goal,</span>
+<span class="d">-            commands::goal::delete_goal,</span>
+<span class="d">-            commands::goal::get_goals,</span>
+<span class="d">-            commands::goal::update_goal_allocations,</span>
+<span class="d">-            commands::goal::load_goals_allocations,</span>
+<span class="d">-            commands::portfolio::get_holdings,</span>
+<span class="d">-            commands::portfolio::get_holding,</span>
+<span class="d">-            commands::portfolio::get_income_summary,</span>
+<span class="d">-            commands::portfolio::get_historical_valuations,</span>
+<span class="d">-            commands::portfolio::get_latest_valuations,</span>
+<span class="d">-            commands::portfolio::calculate_accounts_simple_performance,</span>
+<span class="d">-            commands::portfolio::update_portfolio,</span>
+<span class="d">-            commands::portfolio::recalculate_portfolio,</span>
+<span class="d">-            commands::portfolio::calculate_performance_summary,</span>
+<span class="d">-            commands::portfolio::calculate_performance_history,</span>
+<span class="d">-            commands::limits::get_contribution_limits,</span>
+<span class="d">-            commands::limits::create_contribution_limit,</span>
+<span class="d">-            commands::limits::update_contribution_limit,</span>
+<span class="d">-            commands::limits::delete_contribution_limit,</span>
+<span class="d">-            commands::limits::calculate_deposits_for_contribution_limit,</span>
+<span class="d">-            commands::utilities::backup_database,</span>
+<span class="d">-            commands::utilities::backup_database_to_path,</span>
+<span class="d">-            commands::utilities::restore_database,</span>
+<span class="d">-            commands::asset::get_asset_profile,</span>
+<span class="d">-            commands::asset::update_asset_profile,</span>
+<span class="d">-            commands::asset::update_asset_data_source,</span>
+<span class="d">-            commands::market_data::search_symbol,</span>
+<span class="d">-            commands::market_data::sync_market_data,</span>
+<span class="d">-            commands::market_data::update_quote,</span>
+<span class="d">-            commands::market_data::delete_quote,</span>
+<span class="d">-            commands::market_data::get_quote_history,</span>
+<span class="d">-            commands::market_data::get_market_data_providers,</span>
+<span class="d">-            commands::market_data::validate_quotes_csv,</span>
+<span class="d">-            commands::market_data::import_quotes_csv,</span>
+<span class="d">-            commands::market_data::get_quote_import_template,</span>
+<span class="d">-            commands::secrets::set_secret,</span>
+<span class="d">-            commands::secrets::get_secret,</span>
+<span class="d">-            commands::secrets::delete_secret,</span>
+<span class="d">-            commands::providers_settings::get_market_data_providers_settings,</span>
+<span class="d">-            commands::providers_settings::update_market_data_provider_settings,</span>
+<span class="d">-            commands::addon::extract_addon_zip,</span>
+<span class="d">-            commands::addon::install_addon_zip,</span>
+<span class="d">-            commands::addon::list_installed_addons,</span>
+<span class="d">-            commands::addon::toggle_addon,</span>
+<span class="d">-            commands::addon::uninstall_addon,</span>
+<span class="d">-            commands::addon::load_addon_for_runtime,</span>
+<span class="d">-            commands::addon::get_enabled_addons_on_startup,</span>
+<span class="d">-            commands::addon::check_addon_update,</span>
+<span class="d">-            commands::addon::check_all_addon_updates,</span>
+<span class="d">-            commands::addon::update_addon_from_store_by_id,</span>
+<span class="d">-            commands::addon::fetch_addon_store_listings,</span>
+<span class="d">-            commands::addon::download_addon_to_staging,</span>
+<span class="d">-            commands::addon::install_addon_from_staging,</span>
+<span class="d">-            commands::addon::clear_addon_staging,</span>
+<span class="d">-            commands::addon::submit_addon_rating,</span>
+<span class="d">-        ])</span>
+<span class="d">-        .build(tauri::generate_context!())</span>
+<span class="d">-        .expect(&quot;error while running wealthfolio application&quot;);</span>
+<span class="d">-</span>
+<span class="d">-    app.run(|_app_handle, _event| {});</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/// Spawns background tasks such as menu setup, update checks, and initial portfolio sync.</span>
+<span class="d">-fn spawn_background_tasks(</span>
+<span class="d">-    handle: AppHandle,</span>
+<span class="d">-    context: Arc&lt;ServiceContext&gt;,</span>
+<span class="d">-    instance_id: Arc&lt;String&gt;,</span>
+<span class="d">-) {</span>
+<span class="d">-    // Set up menu (can happen after state is managed)</span>
+<span class="d">-    let menu_handle = handle.clone();</span>
+<span class="d">-    let instance_id_menu = instance_id.clone();</span>
+<span class="d">-    let context_menu = context.clone();</span>
+<span class="d">-    tauri::async_runtime::spawn(async move {</span>
+<span class="d">-        // Check settings first to decide whether to create menu at all</span>
+<span class="d">-        if let Ok(settings) = context_menu.settings_service().get_settings() {</span>
+<span class="d">-            if settings.menu_bar_visible {</span>
+<span class="d">-                // Only create and set menu if it should be visible</span>
+<span class="d">-                match menu::create_menu(&amp;menu_handle) {</span>
+<span class="d">-                    Ok(menu) =&gt; {</span>
+<span class="d">-                        if let Err(e) = menu_handle.set_menu(menu) {</span>
+<span class="d">-                            error!(&quot;Failed to set menu: {}&quot;, e);</span>
+<span class="d">-                        }</span>
+<span class="d">-                    }</span>
+<span class="d">-                    Err(e) =&gt; {</span>
+<span class="d">-                        error!(&quot;Failed to create menu: {}&quot;, e);</span>
+<span class="d">-                    }</span>
+<span class="d">-                }</span>
+<span class="d">-            }</span>
+<span class="d">-            // If menu_bar_visible is false, don&#x27;t create or set any menu</span>
+<span class="d m">-        } else {</span>
+<span class="d">-            // If we can&#x27;t read settings, default to showing menu</span>
+<span class="d">-            match menu::create_menu(&amp;menu_handle) {</span>
+<span class="d">-                Ok(menu) =&gt; {</span>
+<span class="d">-                    if let Err(e) = menu_handle.set_menu(menu) {</span>
+<span class="d">-                        error!(&quot;Failed to set menu: {}&quot;, e);</span>
+<span class="d">-                    }</span>
+<span class="d">-                }</span>
+<span class="d">-                Err(e) =&gt; {</span>
+<span class="d">-                    error!(&quot;Failed to create menu: {}&quot;, e);</span>
+<span class="d">-                }</span>
+<span class="d">-            }</span>
+<span class="d">-        }</span>
+<span class="d">-        // Set up the menu event handler</span>
+<span class="d">-        menu_handle.on_menu_event(move |app, event| {</span>
+<span class="d">-            menu::handle_menu_event(app, &amp;*instance_id_menu, event.id().as_ref());</span>
+<span class="d">-        });</span>
+<span class="d">-    });</span>
+<span class="d">-</span>
+<span class="d">-    // Check for updates on startup (if enabled)</span>
+<span class="d">-    let update_handle = handle.clone();</span>
+<span class="d">-    let instance_id_update = instance_id.clone();</span>
+<span class="d">-    let update_context = context.clone();</span>
+<span class="d">-    spawn(async move { </span>
+<span class="d">-        // Check if auto-update is enabled before performing the check</span>
+<span class="d">-        if let Ok(is_enabled) = update_context.settings_service().is_auto_update_check_enabled() {</span>
+<span class="d">-            if is_enabled {</span>
+<span class="d">-                check_for_update(update_handle, &amp;*instance_id_update, false).await;</span>
+<span class="d">-            }</span>
+<span class="d">-        }</span>
+<span class="d">-    });</span>
+<span class="d">-</span>
+<span class="d">-    // Trigger initial portfolio update on startup</span>
+<span class="d">-    // Defaults: no specific accounts (all), sync market data (all symbols), incremental calculation</span>
+<span class="d">-    let initial_payload = PortfolioRequestPayload::builder()</span>
+<span class="d">-        .account_ids(None)</span>
+<span class="d">-        .refetch_all_market_data(false)</span>
+<span class="d">-        .build();</span>
+<span class="d">-    emit_portfolio_trigger_update(&amp;handle, initial_payload);</span>
+<span class="a">+fn main() {</span>
+<span class="a">+    wealthfolio_app_lib::run();</span>
+ }</pre></body></html>

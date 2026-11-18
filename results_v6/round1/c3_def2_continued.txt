@@ -1,0 +1,18 @@
+==============================================================================
+C3. Definition 2 with lines followed past leaf-only edits
+==============================================================================
+
+leaf-only first modifications followed: 8,317 content changes (+ 429 leaf-only deletions, censored there as before)
+final status of the followed lines: reached end snapshot 5,802, file_deleted 1,419, content_modified 815, line_deleted 237, next modification AST unknown 29, next modification unverified 9, leaf-only deletion 4, not reported by reverse blame 1, max hops 1
+
+A. Share of lines whose first modification is leaf-only
+  human_supervised   1.17% of all lines;   7.0% of modified lines with known AST status (n lines 177,787, modified known 30,018)
+  fully_autonomous   2.53% of all lines;  14.2% of modified lines with known AST status (n lines 87,634, modified known 15,627)
+  human              1.17% of all lines;   5.8% of modified lines with known AST status (n lines 378,756, modified known 76,074)
+
+B. Definition 2: current (censored at the first leaf-only edit) vs continued
+
+  human_supervised  current   mod. rate  15.7% vs human  18.9%   across HR 0.919 [0.906, 0.932] (model-based SE)   within HR 0.717 boot95 [0.468, 0.918] boot97.5 [0.431, 0.951]
+  human_supervised  continued mod. rate  15.9% vs human  19.4%   across HR 0.906 [0.893, 0.918] (model-based SE)   within HR 0.707 boot95 [0.458, 0.912] boot97.5 [0.425, 0.945]
+  fully_autonomous  current   mod. rate  15.3% vs human  18.9%   across HR 0.847 [0.831, 0.863] (model-based SE)   within HR 1.155 boot95 [0.532, 2.096] boot97.5 [0.468, 2.251]
+  fully_autonomous  continued mod. rate  15.8% vs human  19.4%   across HR 0.841 [0.826, 0.856] (model-based SE)   within HR 1.103 boot95 [0.494, 2.081] boot97.5 [0.411, 2.301]

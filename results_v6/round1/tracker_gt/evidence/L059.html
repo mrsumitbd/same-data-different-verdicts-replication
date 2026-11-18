@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L059</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L059</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-net">azure/azure-sdk-for-net</a><br><b>File at merge:</b> sdk/core/System.ClientModel/tests/Samples/ConfigurationSamples.cs, line 141<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-sdk-for-net/commit/36097d4f6bb3543d8b55d30e1b753c621b12da72">36097d4f6b</a> (2025-07-29T00:35:03)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-net/tree/bac518d3adcf30853ec4211f736b905dde075813">bac518d3ad</a>)</p><p><b>The line:</b></p><pre><span class="t">            perTryPolicies: ReadOnlySpan&lt;PipelinePolicy&gt;.Empty,</span></pre><h2>File at the merge commit, lines 133 to 145</h2><pre>  133 |             perTryPolicies: ReadOnlySpan&lt;PipelinePolicy&gt;.Empty,
+  134 |             beforeTransportPolicies: ReadOnlySpan&lt;PipelinePolicy&gt;.Empty);
+  135 | 
+  136 |         // With custom application ID:
+  137 |         var customUserAgent = new UserAgentPolicy(Assembly.GetExecutingAssembly(), &quot;MyApp/1.0&quot;);
+  138 |         ClientPipeline pipeline2 = ClientPipeline.Create(
+  139 |             options,
+  140 |             perCallPolicies: new[] { customUserAgent },
+<span class="t">  141 |             perTryPolicies: ReadOnlySpan&lt;PipelinePolicy&gt;.Empty,</span>
+  142 |             beforeTransportPolicies: ReadOnlySpan&lt;PipelinePolicy&gt;.Empty);
+  143 |         #endregion
+  144 |     }
+  145 | }</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-net/commit/ca82c578e02a69d453b78b00d14477d9ff50665f">ca82c578e0</a> (2025-09-02T10:01:23-05:00)</h2><p class="k">Improve the exception message when the client side network timeout is reached (#52354)<br>Path after this commit: sdk/core/System.ClientModel/tests/Samples/ConfigurationSamples.cs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/sdk/core/System.ClientModel/tests/Samples/ConfigurationSamples.cs b/sdk/core/System.ClientModel/tests/Samples/ConfigurationSamples.cs
+index c6fa39d1205..c33686734b9 100644
+<span class="d">--- a/sdk/core/System.ClientModel/tests/Samples/ConfigurationSamples.cs</span>
+<span class="a">+++ b/sdk/core/System.ClientModel/tests/Samples/ConfigurationSamples.cs</span>
+<span class="h">@@ -7,6 +7,7 @@ using System.Diagnostics;</span>
+ using System.Net.Http;
+ using System.Reflection;
+ using System.Threading.Tasks;
+<span class="a">+using Azure.Identity;</span>
+ using Maps;
+ using NUnit.Framework;
+ 
+<span class="h">@@ -142,4 +143,19 @@ public class ConfigurationSamples</span>
+             beforeTransportPolicies: ReadOnlySpan&lt;PipelinePolicy&gt;.Empty);
+         #endregion
+     }
+<span class="a">+</span>
+<span class="a">+    [Test]</span>
+<span class="a">+    public void ConfigurationCustomNetworkTimeout()</span>
+<span class="a">+    {</span>
+<span class="a">+        ApiKeyCredential credential = new(&quot;myKey&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        #region Snippet:ConfigurationCustomNetworkTimeout</span>
+<span class="a">+        MapsClientOptions options = new()</span>
+<span class="a">+        {</span>
+<span class="a">+            // Increase the default network timeout.</span>
+<span class="a">+            NetworkTimeout = TimeSpan.FromMinutes(5)</span>
+<span class="a">+        };</span>
+<span class="a">+        MapsClient client = new(new Uri(&quot;https://atlas.microsoft.com&quot;), credential, options);</span>
+<span class="a">+        #endregion</span>
+<span class="a">+    }</span>
+ }</pre></body></html>

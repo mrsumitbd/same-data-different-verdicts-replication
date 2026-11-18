@@ -1,0 +1,395 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L200 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L200: after the move</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>Original file:</b> src/crewai/llms/base_llm.py (see L200.html)<br><b>Move commit:</b> <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (commit #3 on L200.html)<br><b>Destination file (your label):</b> lib/crewai/src/crewai/llms/base_llm.py<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">        self.model = model</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 83).</p><h2>Destination file at the move commit, lines 75 to 91</h2><pre>   75 |             model: The model identifier/name.
+   76 |             temperature: Optional temperature setting for response generation.
+   77 |             stop: Optional list of stop sequences for generation.
+   78 |             **kwargs: Additional provider-specific parameters.
+   79 |         &quot;&quot;&quot;
+   80 |         if not model:
+   81 |             raise ValueError(&quot;Model name is required and cannot be empty&quot;)
+   82 | 
+<span class="t">   83 |         self.model = model</span>
+   84 |         self.temperature = temperature
+   85 |         self.api_key = api_key
+   86 |         self.base_url = base_url
+   87 |         # Store additional parameters for provider-specific use
+   88 |         self.additional_params = kwargs
+   89 |         self._provider = provider or &quot;openai&quot;
+   90 | 
+   91 |         stop = kwargs.pop(&quot;stop&quot;, None)</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/e134e5305ba28d425a5c85f6fc950d00bd03229e">e134e5305b</a> (2025-10-31T18:42:03-07:00)</h2><p class="k">Gl/feat/a2a refactor (#3793)<br>Path after this commit: lib/crewai/src/crewai/llms/base_llm.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/lib/crewai/src/crewai/llms/base_llm.py b/lib/crewai/src/crewai/llms/base_llm.py
+index ae6865d8b..a7026c5c5 100644
+<span class="d">--- a/lib/crewai/src/crewai/llms/base_llm.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/llms/base_llm.py</span>
+<span class="h">@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod</span>
+ from datetime import datetime
+ import json
+ import logging
+<span class="a">+import re</span>
+ from typing import TYPE_CHECKING, Any, Final
+ 
+ from pydantic import BaseModel
+<span class="h">@@ -31,11 +32,15 @@ from crewai.types.usage_metrics import UsageMetrics</span>
+ 
+ 
+ if TYPE_CHECKING:
+<span class="a">+    from crewai.agent.core import Agent</span>
+<span class="a">+    from crewai.task import Task</span>
+<span class="a">+    from crewai.tools.base_tool import BaseTool</span>
+     from crewai.utilities.types import LLMMessage
+ 
+ 
+ DEFAULT_CONTEXT_WINDOW_SIZE: Final[int] = 4096
+ DEFAULT_SUPPORTS_STOP_WORDS: Final[bool] = True
+<span class="a">+_JSON_EXTRACTION_PATTERN: Final[re.Pattern[str]] = re.compile(r&quot;\{.*}&quot;, re.DOTALL)</span>
+ 
+ 
+ class BaseLLM(ABC):
+<span class="h">@@ -65,9 +70,8 @@ class BaseLLM(ABC):</span>
+         temperature: float | None = None,
+         api_key: str | None = None,
+         base_url: str | None = None,
+<span class="d">-        timeout: float | None = None,</span>
+         provider: str | None = None,
+<span class="d">-        **kwargs,</span>
+<span class="a">+        **kwargs: Any,</span>
+     ) -&gt; None:
+         &quot;&quot;&quot;Initialize the BaseLLM with default attributes.
+ 
+<span class="h">@@ -93,8 +97,10 @@ class BaseLLM(ABC):</span>
+             self.stop: list[str] = []
+         elif isinstance(stop, str):
+             self.stop = [stop]
+<span class="d">-        else:</span>
+<span class="a">+        elif isinstance(stop, list):</span>
+             self.stop = stop
+<span class="a">+        else:</span>
+<span class="a">+            self.stop = []</span>
+ 
+         self._token_usage = {
+             &quot;total_tokens&quot;: 0,
+<span class="h">@@ -118,11 +124,12 @@ class BaseLLM(ABC):</span>
+     def call(
+         self,
+         messages: str | list[LLMMessage],
+<span class="d">-        tools: list[dict] | None = None,</span>
+<span class="a">+        tools: list[dict[str, BaseTool]] | None = None,</span>
+         callbacks: list[Any] | None = None,
+         available_functions: dict[str, Any] | None = None,
+<span class="d">-        from_task: Any | None = None,</span>
+<span class="d">-        from_agent: Any | None = None,</span>
+<span class="a">+        from_task: Task | None = None,</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+<span class="a">+        response_model: type[BaseModel] | None = None,</span>
+     ) -&gt; str | Any:
+         &quot;&quot;&quot;Call the LLM with the given messages.
+ 
+<span class="h">@@ -139,6 +146,7 @@ class BaseLLM(ABC):</span>
+                                that can be invoked by the LLM.
+             from_task: Optional task caller to be used for the LLM call.
+             from_agent: Optional agent caller to be used for the LLM call.
+<span class="a">+            response_model: Optional response model to be used for the LLM call.</span>
+ 
+         Returns:
+             Either a text response from the LLM (str) or
+<span class="h">@@ -150,7 +158,9 @@ class BaseLLM(ABC):</span>
+             RuntimeError: If the LLM request fails for other reasons.
+         &quot;&quot;&quot;
+ 
+<span class="d">-    def _convert_tools_for_interference(self, tools: list[dict]) -&gt; list[dict]:</span>
+<span class="a">+    def _convert_tools_for_interference(</span>
+<span class="a">+        self, tools: list[dict[str, BaseTool]]</span>
+<span class="a">+    ) -&gt; list[dict[str, BaseTool]]:</span>
+         &quot;&quot;&quot;Convert tools to a format that can be used for interference.
+ 
+         Args:
+<span class="h">@@ -237,11 +247,11 @@ class BaseLLM(ABC):</span>
+     def _emit_call_started_event(
+         self,
+         messages: str | list[LLMMessage],
+<span class="d">-        tools: list[dict] | None = None,</span>
+<span class="a">+        tools: list[dict[str, BaseTool]] | None = None,</span>
+         callbacks: list[Any] | None = None,
+         available_functions: dict[str, Any] | None = None,
+<span class="d">-        from_task: Any | None = None,</span>
+<span class="d">-        from_agent: Any | None = None,</span>
+<span class="a">+        from_task: Task | None = None,</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+     ) -&gt; None:
+         &quot;&quot;&quot;Emit LLM call started event.&quot;&quot;&quot;
+         if not hasattr(crewai_event_bus, &quot;emit&quot;):
+<span class="h">@@ -264,8 +274,8 @@ class BaseLLM(ABC):</span>
+         self,
+         response: Any,
+         call_type: LLMCallType,
+<span class="d">-        from_task: Any | None = None,</span>
+<span class="d">-        from_agent: Any | None = None,</span>
+<span class="a">+        from_task: Task | None = None,</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+         messages: str | list[dict[str, Any]] | None = None,
+     ) -&gt; None:
+         &quot;&quot;&quot;Emit LLM call completed event.&quot;&quot;&quot;
+<span class="h">@@ -284,8 +294,8 @@ class BaseLLM(ABC):</span>
+     def _emit_call_failed_event(
+         self,
+         error: str,
+<span class="d">-        from_task: Any | None = None,</span>
+<span class="d">-        from_agent: Any | None = None,</span>
+<span class="a">+        from_task: Task | None = None,</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+     ) -&gt; None:
+         &quot;&quot;&quot;Emit LLM call failed event.&quot;&quot;&quot;
+         if not hasattr(crewai_event_bus, &quot;emit&quot;):
+<span class="h">@@ -303,8 +313,8 @@ class BaseLLM(ABC):</span>
+     def _emit_stream_chunk_event(
+         self,
+         chunk: str,
+<span class="d">-        from_task: Any | None = None,</span>
+<span class="d">-        from_agent: Any | None = None,</span>
+<span class="a">+        from_task: Task | None = None,</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+         tool_call: dict[str, Any] | None = None,
+     ) -&gt; None:
+         &quot;&quot;&quot;Emit stream chunk event.&quot;&quot;&quot;
+<span class="h">@@ -326,8 +336,8 @@ class BaseLLM(ABC):</span>
+         function_name: str,
+         function_args: dict[str, Any],
+         available_functions: dict[str, Any],
+<span class="d">-        from_task: Any | None = None,</span>
+<span class="d">-        from_agent: Any | None = None,</span>
+<span class="a">+        from_task: Task | None = None,</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+     ) -&gt; str | None:
+         &quot;&quot;&quot;Handle tool execution with proper event emission.
+ 
+<span class="h">@@ -443,10 +453,10 @@ class BaseLLM(ABC):</span>
+                     f&quot;Message at index {i} must have &#x27;role&#x27; and &#x27;content&#x27; keys&quot;
+                 )
+ 
+<span class="d">-        return messages  # type: ignore[return-value]</span>
+<span class="a">+        return messages</span>
+ 
+<span class="a">+    @staticmethod</span>
+     def _validate_structured_output(
+<span class="d">-        self,</span>
+         response: str,
+         response_format: type[BaseModel] | None,
+     ) -&gt; str | BaseModel:
+<span class="h">@@ -471,10 +481,7 @@ class BaseLLM(ABC):</span>
+                 data = json.loads(response)
+                 return response_format.model_validate(data)
+ 
+<span class="d">-            # Try to extract JSON from response</span>
+<span class="d">-            import re</span>
+<span class="d">-</span>
+<span class="d">-            json_match = re.search(r&quot;\{.*\}&quot;, response, re.DOTALL)</span>
+<span class="a">+            json_match = _JSON_EXTRACTION_PATTERN.search(response)</span>
+             if json_match:
+                 data = json.loads(json_match.group())
+                 return response_format.model_validate(data)
+<span class="h">@@ -487,7 +494,8 @@ class BaseLLM(ABC):</span>
+                 f&quot;Failed to parse response into {response_format.__name__}: {e}&quot;
+             ) from e
+ 
+<span class="d">-    def _extract_provider(self, model: str) -&gt; str:</span>
+<span class="a">+    @staticmethod</span>
+<span class="a">+    def _extract_provider(model: str) -&gt; str:</span>
+         &quot;&quot;&quot;Extract provider from model string.
+ 
+         Args:</pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/20704742e26c568eee5f7277478e9292b45ac7a8">20704742e2</a> (2025-12-01T18:56:56-05:00)</h2><p class="k">feat: async llm support<br>Path after this commit: lib/crewai/src/crewai/llms/base_llm.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/lib/crewai/src/crewai/llms/base_llm.py b/lib/crewai/src/crewai/llms/base_llm.py
+index a7026c5c5..fa4e7be97 100644
+<span class="d">--- a/lib/crewai/src/crewai/llms/base_llm.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/llms/base_llm.py</span>
+<span class="h">@@ -158,6 +158,44 @@ class BaseLLM(ABC):</span>
+             RuntimeError: If the LLM request fails for other reasons.
+         &quot;&quot;&quot;
+ 
+<span class="a">+    async def acall(</span>
+<span class="a">+        self,</span>
+<span class="a">+        messages: str | list[LLMMessage],</span>
+<span class="a">+        tools: list[dict[str, BaseTool]] | None = None,</span>
+<span class="a">+        callbacks: list[Any] | None = None,</span>
+<span class="a">+        available_functions: dict[str, Any] | None = None,</span>
+<span class="a">+        from_task: Task | None = None,</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+<span class="a">+        response_model: type[BaseModel] | None = None,</span>
+<span class="a">+    ) -&gt; str | Any:</span>
+<span class="a">+        &quot;&quot;&quot;Call the LLM with the given messages.</span>
+<span class="a">+</span>
+<span class="a">+        Args:</span>
+<span class="a">+            messages: Input messages for the LLM.</span>
+<span class="a">+                     Can be a string or list of message dictionaries.</span>
+<span class="a">+                     If string, it will be converted to a single user message.</span>
+<span class="a">+                     If list, each dict must have &#x27;role&#x27; and &#x27;content&#x27; keys.</span>
+<span class="a">+            tools: Optional list of tool schemas for function calling.</span>
+<span class="a">+                  Each tool should define its name, description, and parameters.</span>
+<span class="a">+            callbacks: Optional list of callback functions to be executed</span>
+<span class="a">+                      during and after the LLM call.</span>
+<span class="a">+            available_functions: Optional dict mapping function names to callables</span>
+<span class="a">+                               that can be invoked by the LLM.</span>
+<span class="a">+            from_task: Optional task caller to be used for the LLM call.</span>
+<span class="a">+            from_agent: Optional agent caller to be used for the LLM call.</span>
+<span class="a">+            response_model: Optional response model to be used for the LLM call.</span>
+<span class="a">+</span>
+<span class="a">+        Returns:</span>
+<span class="a">+            Either a text response from the LLM (str) or</span>
+<span class="a">+            the result of a tool function call (Any).</span>
+<span class="a">+</span>
+<span class="a">+        Raises:</span>
+<span class="a">+            ValueError: If the messages format is invalid.</span>
+<span class="a">+            TimeoutError: If the LLM request times out.</span>
+<span class="a">+            RuntimeError: If the LLM request fails for other reasons.</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        raise NotImplementedError</span>
+<span class="a">+</span>
+     def _convert_tools_for_interference(
+         self, tools: list[dict[str, BaseTool]]
+     ) -&gt; list[dict[str, BaseTool]]:</pre><h2>Commit #3: <a href="https://github.com/crewaiinc/crewai/commit/c456e5c5fa2a83540fddab8d751fea081fa0007d">c456e5c5fa</a> (2025-12-04T09:38:39-08:00)</h2><p class="k">Lorenze/ensure hooks work with lite agents flows (#3981)<br>Path after this commit: lib/crewai/src/crewai/llms/base_llm.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/lib/crewai/src/crewai/llms/base_llm.py b/lib/crewai/src/crewai/llms/base_llm.py
+index fa4e7be97..bb833ccc8 100644
+<span class="d">--- a/lib/crewai/src/crewai/llms/base_llm.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/llms/base_llm.py</span>
+<span class="h">@@ -314,7 +314,7 @@ class BaseLLM(ABC):</span>
+         call_type: LLMCallType,
+         from_task: Task | None = None,
+         from_agent: Agent | None = None,
+<span class="d">-        messages: str | list[dict[str, Any]] | None = None,</span>
+<span class="a">+        messages: str | list[LLMMessage] | None = None,</span>
+     ) -&gt; None:
+         &quot;&quot;&quot;Emit LLM call completed event.&quot;&quot;&quot;
+         crewai_event_bus.emit(
+<span class="h">@@ -586,3 +586,134 @@ class BaseLLM(ABC):</span>
+             Dictionary with token usage totals
+         &quot;&quot;&quot;
+         return UsageMetrics(**self._token_usage)
+<span class="a">+</span>
+<span class="a">+    def _invoke_before_llm_call_hooks(</span>
+<span class="a">+        self,</span>
+<span class="a">+        messages: list[LLMMessage],</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+<span class="a">+    ) -&gt; bool:</span>
+<span class="a">+        &quot;&quot;&quot;Invoke before_llm_call hooks for direct LLM calls (no agent context).</span>
+<span class="a">+</span>
+<span class="a">+        This method should be called by native provider implementations before</span>
+<span class="a">+        making the actual LLM call when from_agent is None (direct calls).</span>
+<span class="a">+</span>
+<span class="a">+        Args:</span>
+<span class="a">+            messages: The messages being sent to the LLM</span>
+<span class="a">+            from_agent: The agent making the call (None for direct calls)</span>
+<span class="a">+</span>
+<span class="a">+        Returns:</span>
+<span class="a">+            True if LLM call should proceed, False if blocked by hook</span>
+<span class="a">+</span>
+<span class="a">+        Example:</span>
+<span class="a">+            &gt;&gt;&gt; # In a native provider&#x27;s call() method:</span>
+<span class="a">+            &gt;&gt;&gt; if from_agent is None and not self._invoke_before_llm_call_hooks(</span>
+<span class="a">+            ...     messages, from_agent</span>
+<span class="a">+            ... ):</span>
+<span class="a">+            ...     raise ValueError(&quot;LLM call blocked by hook&quot;)</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        # Only invoke hooks for direct calls (no agent context)</span>
+<span class="a">+        if from_agent is not None:</span>
+<span class="a">+            return True</span>
+<span class="a">+</span>
+<span class="a">+        from crewai.hooks.llm_hooks import (</span>
+<span class="a">+            LLMCallHookContext,</span>
+<span class="a">+            get_before_llm_call_hooks,</span>
+<span class="a">+        )</span>
+<span class="a">+        from crewai.utilities.printer import Printer</span>
+<span class="a">+</span>
+<span class="a">+        before_hooks = get_before_llm_call_hooks()</span>
+<span class="a">+        if not before_hooks:</span>
+<span class="a">+            return True</span>
+<span class="a">+</span>
+<span class="a">+        hook_context = LLMCallHookContext(</span>
+<span class="a">+            executor=None,</span>
+<span class="a">+            messages=messages,</span>
+<span class="a">+            llm=self,</span>
+<span class="a">+            agent=None,</span>
+<span class="a">+            task=None,</span>
+<span class="a">+            crew=None,</span>
+<span class="a">+        )</span>
+<span class="a">+        printer = Printer()</span>
+<span class="a">+</span>
+<span class="a">+        try:</span>
+<span class="a">+            for hook in before_hooks:</span>
+<span class="a">+                result = hook(hook_context)</span>
+<span class="a">+                if result is False:</span>
+<span class="a">+                    printer.print(</span>
+<span class="a">+                        content=&quot;LLM call blocked by before_llm_call hook&quot;,</span>
+<span class="a">+                        color=&quot;yellow&quot;,</span>
+<span class="a">+                    )</span>
+<span class="a">+                    return False</span>
+<span class="a">+        except Exception as e:</span>
+<span class="a">+            printer.print(</span>
+<span class="a">+                content=f&quot;Error in before_llm_call hook: {e}&quot;,</span>
+<span class="a">+                color=&quot;yellow&quot;,</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+<span class="a">+        return True</span>
+<span class="a">+</span>
+<span class="a">+    def _invoke_after_llm_call_hooks(</span>
+<span class="a">+        self,</span>
+<span class="a">+        messages: list[LLMMessage],</span>
+<span class="a">+        response: str,</span>
+<span class="a">+        from_agent: Agent | None = None,</span>
+<span class="a">+    ) -&gt; str:</span>
+<span class="a">+        &quot;&quot;&quot;Invoke after_llm_call hooks for direct LLM calls (no agent context).</span>
+<span class="a">+</span>
+<span class="a">+        This method should be called by native provider implementations after</span>
+<span class="a">+        receiving the LLM response when from_agent is None (direct calls).</span>
+<span class="a">+</span>
+<span class="a">+        Args:</span>
+<span class="a">+            messages: The messages that were sent to the LLM</span>
+<span class="a">+            response: The response from the LLM</span>
+<span class="a">+            from_agent: The agent that made the call (None for direct calls)</span>
+<span class="a">+</span>
+<span class="a">+        Returns:</span>
+<span class="a">+            The potentially modified response string</span>
+<span class="a">+</span>
+<span class="a">+        Example:</span>
+<span class="a">+            &gt;&gt;&gt; # In a native provider&#x27;s call() method:</span>
+<span class="a">+            &gt;&gt;&gt; if from_agent is None and isinstance(result, str):</span>
+<span class="a">+            ...     result = self._invoke_after_llm_call_hooks(</span>
+<span class="a">+            ...         messages, result, from_agent</span>
+<span class="a">+            ...     )</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        # Only invoke hooks for direct calls (no agent context)</span>
+<span class="a">+        if from_agent is not None or not isinstance(response, str):</span>
+<span class="a">+            return response</span>
+<span class="a">+</span>
+<span class="a">+        from crewai.hooks.llm_hooks import (</span>
+<span class="a">+            LLMCallHookContext,</span>
+<span class="a">+            get_after_llm_call_hooks,</span>
+<span class="a">+        )</span>
+<span class="a">+        from crewai.utilities.printer import Printer</span>
+<span class="a">+</span>
+<span class="a">+        after_hooks = get_after_llm_call_hooks()</span>
+<span class="a">+        if not after_hooks:</span>
+<span class="a">+            return response</span>
+<span class="a">+</span>
+<span class="a">+        hook_context = LLMCallHookContext(</span>
+<span class="a">+            executor=None,</span>
+<span class="a">+            messages=messages,</span>
+<span class="a">+            llm=self,</span>
+<span class="a">+            agent=None,</span>
+<span class="a">+            task=None,</span>
+<span class="a">+            crew=None,</span>
+<span class="a">+            response=response,</span>
+<span class="a">+        )</span>
+<span class="a">+        printer = Printer()</span>
+<span class="a">+        modified_response = response</span>
+<span class="a">+</span>
+<span class="a">+        try:</span>
+<span class="a">+            for hook in after_hooks:</span>
+<span class="a">+                result = hook(hook_context)</span>
+<span class="a">+                if result is not None and isinstance(result, str):</span>
+<span class="a">+                    modified_response = result</span>
+<span class="a">+                    hook_context.response = modified_response</span>
+<span class="a">+        except Exception as e:</span>
+<span class="a">+            printer.print(</span>
+<span class="a">+                content=f&quot;Error in after_llm_call hook: {e}&quot;,</span>
+<span class="a">+                color=&quot;yellow&quot;,</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+<span class="a">+        return modified_response</span></pre></body></html>

@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L164</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L164</h1><p><b>Repository:</b> <a href="https://github.com/cartography-cncf/cartography">cartography-cncf/cartography</a><br><b>File at merge:</b> cartography/models/aws/rds/instance.py, line 52<br><b>Merge commit (birth):</b> <a href="https://github.com/cartography-cncf/cartography/commit/62cbfd00ee3875c4c9b1dfc20f126274918fcb8d">62cbfd00ee</a> (2025-07-28T21:47:25)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/cartography-cncf/cartography/tree/3881615b88816199205ea864d97e7019e37a20e3">3881615b88</a>)</p><p><b>The line:</b></p><pre><span class="t">    backup_retention_period: PropertyRef = PropertyRef(&quot;BackupRetentionPeriod&quot;)</span></pre><h2>File at the merge commit, lines 44 to 60</h2><pre>   44 |     )
+   45 |     region: PropertyRef = PropertyRef(&quot;Region&quot;, set_in_kwargs=True)
+   46 |     deletion_protection: PropertyRef = PropertyRef(&quot;DeletionProtection&quot;)
+   47 |     preferred_backup_window: PropertyRef = PropertyRef(&quot;PreferredBackupWindow&quot;)
+   48 |     latest_restorable_time: PropertyRef = PropertyRef(&quot;LatestRestorableTime&quot;)
+   49 |     preferred_maintenance_window: PropertyRef = PropertyRef(
+   50 |         &quot;PreferredMaintenanceWindow&quot;
+   51 |     )
+<span class="t">   52 |     backup_retention_period: PropertyRef = PropertyRef(&quot;BackupRetentionPeriod&quot;)</span>
+   53 |     endpoint_address: PropertyRef = PropertyRef(&quot;EndpointAddress&quot;)
+   54 |     endpoint_hostedzoneid: PropertyRef = PropertyRef(&quot;EndpointHostedZoneId&quot;)
+   55 |     endpoint_port: PropertyRef = PropertyRef(&quot;EndpointPort&quot;)
+   56 |     iam_database_authentication_enabled: PropertyRef = PropertyRef(
+   57 |         &quot;IAMDatabaseAuthenticationEnabled&quot;
+   58 |     )
+   59 |     auto_minor_version_upgrade: PropertyRef = PropertyRef(&quot;AutoMinorVersionUpgrade&quot;)
+   60 |     lastupdated: PropertyRef = PropertyRef(&quot;lastupdated&quot;, set_in_kwargs=True)</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/cartography-cncf/cartography/commit/5546619b03274c7dc8f03e2f25b8720a4fdefcac">5546619b03</a> (2025-12-12T10:21:45-08:00)</h2><p class="k">feat(ontology): add databases ontology label (#2143)<br>Path after this commit: cartography/models/aws/rds/instance.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/cartography/models/aws/rds/instance.py b/cartography/models/aws/rds/instance.py
+index b5575828..e2204f05 100644
+<span class="d">--- a/cartography/models/aws/rds/instance.py</span>
+<span class="a">+++ b/cartography/models/aws/rds/instance.py</span>
+<span class="h">@@ -3,6 +3,7 @@ from dataclasses import dataclass</span>
+ from cartography.models.core.common import PropertyRef
+ from cartography.models.core.nodes import CartographyNodeProperties
+ from cartography.models.core.nodes import CartographyNodeSchema
+<span class="a">+from cartography.models.core.nodes import ExtraNodeLabels</span>
+ from cartography.models.core.relationships import CartographyRelProperties
+ from cartography.models.core.relationships import CartographyRelSchema
+ from cartography.models.core.relationships import LinkDirection
+<span class="h">@@ -143,6 +144,7 @@ class RDSInstanceToRDSClusterRel(CartographyRelSchema):</span>
+ @dataclass(frozen=True)
+ class RDSInstanceSchema(CartographyNodeSchema):
+     label: str = &quot;RDSInstance&quot;
+<span class="a">+    extra_node_labels: ExtraNodeLabels = ExtraNodeLabels([&quot;Database&quot;])</span>
+     properties: RDSInstanceNodeProperties = RDSInstanceNodeProperties()
+     sub_resource_relationship: RDSInstanceToAWSAccountRel = RDSInstanceToAWSAccountRel()
+     other_relationships: OtherRelationships = OtherRelationships(</pre></body></html>

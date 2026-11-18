@@ -1,0 +1,20 @@
+======================================================================
+Sampling caps check (uncapped v6confnv data)
+======================================================================
+Uncapped, line-weighted: human_supervised HR=0.888 [0.877, 0.899]; fully_autonomous HR=0.896 [0.882, 0.910]
+
+(1) Old cap rule re-applied (20 files per PR, 100 random lines per file):
+  seed 42: n=276,780  human_supervised HR=0.674 [0.662, 0.686]; fully_autonomous HR=1.292 [1.267, 1.317]
+  seed  1: n=276,780  human_supervised HR=0.675 [0.663, 0.688]; fully_autonomous HR=1.293 [1.267, 1.318]
+  seed  2: n=276,780  human_supervised HR=0.675 [0.663, 0.687]; fully_autonomous HR=1.289 [1.264, 1.314]
+  seed  3: n=276,780  human_supervised HR=0.675 [0.663, 0.687]; fully_autonomous HR=1.293 [1.268, 1.319]
+  seed  4: n=276,780  human_supervised HR=0.675 [0.663, 0.687]; fully_autonomous HR=1.292 [1.267, 1.318]
+
+(2) Share of lines dropped by the caps (seed 42), and lines per PR:
+  fully_autonomous  lines  87,634 kept  37,582 dropped  57.1% | PRs  412, lines/PR median 48, IQR 14-139, max 36,537; top 5 PRs hold 50.2% of lines
+  human             lines 378,710 kept 146,892 dropped  61.2% | PRs 1326, lines/PR median 43, IQR 8-168, max 34,354; top 5 PRs hold 25.0% of lines
+  human_supervised  lines 177,787 kept  92,306 dropped  48.1% | PRs 1055, lines/PR median 37, IQR 7-129, max 15,830; top 5 PRs hold 23.9% of lines
+
+(3) Uncapped, each PR weighted equally (weight = 1 / lines in PR, robust SE):
+  human_supervised  HR=0.722 [0.673, 0.775]
+  fully_autonomous  HR=1.187 [1.110, 1.269]

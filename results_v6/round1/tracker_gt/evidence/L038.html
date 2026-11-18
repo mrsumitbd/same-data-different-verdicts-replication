@@ -1,0 +1,451 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L038</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L038</h1><p><b>Repository:</b> <a href="https://github.com/cloudposse/atmos">cloudposse/atmos</a><br><b>File at merge:</b> pkg/utils/markdown_utils.go, line 6<br><b>Merge commit (birth):</b> <a href="https://github.com/cloudposse/atmos/commit/848bf48005367607741f0e84f0bb5e2dca8d1333">848bf48005</a> (2025-02-19T23:15:33)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/cloudposse/atmos/tree/8dafe30f54cd388f7b33662b92268ba44880c2df">8dafe30f54</a>)</p><p><b>The line:</b></p><pre><span class="t">	&quot;errors&quot;</span></pre><h2>File at the merge commit, lines 1 to 14</h2><pre>    1 | // Package utils provides markdown utilities for error handling and output formatting
+    2 | // in the Atmos CLI application.
+    3 | package utils
+    4 | 
+    5 | import (
+<span class="t">    6 | 	&quot;errors&quot;</span>
+    7 | 	&quot;fmt&quot;
+    8 | 	&quot;os&quot;
+    9 | 	&quot;os/exec&quot;
+   10 | 	&quot;runtime/debug&quot;
+   11 | 
+   12 | 	&quot;github.com/cloudposse/atmos/pkg/schema&quot;
+   13 | 	&quot;github.com/cloudposse/atmos/pkg/ui/markdown&quot;
+   14 | 	&quot;golang.org/x/text/cases&quot;</pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/cloudposse/atmos/commit/5dab42b0f354498084774886af01a9c7ca372a21">5dab42b0f3</a> (2025-03-11T12:04:29-04:00)</h2><p class="k">Update `overrides` section behavior in imports and inline (#1122)<br>Path after this commit: pkg/utils/markdown_utils.go. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: pkg/utils/markdown_utils_test.go.</p><pre>diff --git a/pkg/utils/markdown_utils.go b/pkg/utils/markdown_utils.go
+index ee0ecae1e..0e371a9dd 100644
+<span class="d">--- a/pkg/utils/markdown_utils.go</span>
+<span class="a">+++ b/pkg/utils/markdown_utils.go</span>
+<span class="h">@@ -9,17 +9,18 @@ import (</span>
+ 	&quot;os/exec&quot;
+ 	&quot;runtime/debug&quot;
+ 
+<span class="d">-	&quot;github.com/cloudposse/atmos/pkg/schema&quot;</span>
+<span class="d">-	&quot;github.com/cloudposse/atmos/pkg/ui/markdown&quot;</span>
+<span class="a">+	log &quot;github.com/charmbracelet/log&quot;</span>
+ 	&quot;golang.org/x/text/cases&quot;
+ 	&quot;golang.org/x/text/language&quot;
+ 
+<span class="d">-	l &quot;github.com/charmbracelet/log&quot;</span>
+<span class="a">+	&quot;github.com/cloudposse/atmos/pkg/schema&quot;</span>
+<span class="a">+	&quot;github.com/cloudposse/atmos/pkg/ui/markdown&quot;</span>
+ )
+ 
+<span class="d">-// render is the global markdown renderer instance initialized via InitializeMarkdown</span>
+<span class="a">+// render is the global markdown renderer instance initialized via InitializeMarkdown.</span>
+ var render *markdown.Renderer
+ 
+<span class="a">+// PrintErrorMarkdown prints an error message in Markdown format.</span>
+ func PrintErrorMarkdown(title string, err error, suggestion string) {
+ 	if err == nil {
+ 		return
+<span class="h">@@ -43,12 +44,12 @@ func PrintErrorMarkdown(title string, err error, suggestion string) {</span>
+ 		LogError(err)
+ 	}
+ 	// Print stack trace
+<span class="d">-	if l.GetLevel() == l.DebugLevel {</span>
+<span class="a">+	if log.GetLevel() == log.DebugLevel {</span>
+ 		debug.PrintStack()
+ 	}
+ }
+ 
+<span class="d">-// PrintfErrorMarkdown prints a formatted error message in markdown format</span>
+<span class="a">+// PrintfErrorMarkdown prints a formatted error message in Markdown format.</span>
+ func PrintfErrorMarkdown(format string, a ...interface{}) {
+ 	if render == nil {
+ 		LogError(fmt.Errorf(format, a...))
+<span class="h">@@ -66,6 +67,7 @@ func PrintfErrorMarkdown(format string, a ...interface{}) {</span>
+ 	LogError(err)
+ }
+ 
+<span class="a">+// PrintErrorMarkdownAndExit prints an error message in Markdown format and exist with the exit code 1.</span>
+ func PrintErrorMarkdownAndExit(title string, err error, suggestion string) {
+ 	PrintErrorMarkdown(title, err, suggestion)
+ 
+<span class="h">@@ -75,13 +77,18 @@ func PrintErrorMarkdownAndExit(title string, err error, suggestion string) {</span>
+ 		os.Exit(exitError.ExitCode())
+ 	}
+ 
+<span class="a">+	// TODO: Refactor so that we only call `os.Exit` in `main()` or `init()` functions.</span>
+<span class="a">+	// Exiting here makes it difficult to test.</span>
+<span class="a">+	// revive:disable-next-line:deep-exit</span>
+ 	os.Exit(1)
+ }
+ 
+<span class="a">+// PrintInvalidUsageErrorAndExit prints a message about the incorrect command usage and exist with the exit code 1.</span>
+ func PrintInvalidUsageErrorAndExit(err error, suggestion string) {
+ 	PrintErrorMarkdownAndExit(&quot;Incorrect Usage&quot;, err, suggestion)
+ }
+ 
+<span class="a">+// PrintfMarkdown prints a message in Markdown format.</span>
+ func PrintfMarkdown(format string, a ...interface{}) {
+ 	if render == nil {
+ 		_, err := os.Stdout.WriteString(fmt.Sprintf(format, a...))
+<span class="h">@@ -99,6 +106,7 @@ func PrintfMarkdown(format string, a ...interface{}) {</span>
+ 	LogError(err)
+ }
+ 
+<span class="a">+// InitializeMarkdown initializes a new Markdown renderer.</span>
+ func InitializeMarkdown(atmosConfig schema.AtmosConfiguration) {
+ 	var err error
+ 	render, err = markdown.NewTerminalMarkdownRenderer(atmosConfig)</pre><h2>Commit #2: <a href="https://github.com/cloudposse/atmos/commit/274eb99562aba41023b216b82857ccdf96b6fc63">274eb99562</a> (2025-04-01T16:53:03-04:00)</h2><p class="k">Implement: atmos list values (#1036)<br>Path after this commit: pkg/utils/markdown_utils.go. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: cmd/list_metadata.go, cmd/list_settings.go, cmd/list_values.go, pkg/list/flags/flags_test.go.</p><pre>diff --git a/pkg/utils/markdown_utils.go b/pkg/utils/markdown_utils.go
+index 0e371a9dd..dd5cb81f1 100644
+<span class="d">--- a/pkg/utils/markdown_utils.go</span>
+<span class="a">+++ b/pkg/utils/markdown_utils.go</span>
+<span class="h">@@ -20,6 +20,12 @@ import (</span>
+ // render is the global markdown renderer instance initialized via InitializeMarkdown.
+ var render *markdown.Renderer
+ 
+<span class="a">+// Variable declarations for functions that might be mocked in tests.</span>
+<span class="a">+var (</span>
+<span class="a">+	// PrintErrorMarkdownAndExitFn is a variable that holds the function reference for testing.</span>
+<span class="a">+	PrintErrorMarkdownAndExitFn = printErrorMarkdownAndExitImpl</span>
+<span class="a">+)</span>
+<span class="a">+</span>
+ // PrintErrorMarkdown prints an error message in Markdown format.
+ func PrintErrorMarkdown(title string, err error, suggestion string) {
+ 	if err == nil {
+<span class="h">@@ -67,8 +73,8 @@ func PrintfErrorMarkdown(format string, a ...interface{}) {</span>
+ 	LogError(err)
+ }
+ 
+<span class="d">-// PrintErrorMarkdownAndExit prints an error message in Markdown format and exist with the exit code 1.</span>
+<span class="d">-func PrintErrorMarkdownAndExit(title string, err error, suggestion string) {</span>
+<span class="a">+// printErrorMarkdownAndExitImpl is the implementation of PrintErrorMarkdownAndExit.</span>
+<span class="a">+func printErrorMarkdownAndExitImpl(title string, err error, suggestion string) {</span>
+ 	PrintErrorMarkdown(title, err, suggestion)
+ 
+ 	// Find the executed command&#x27;s exit code from the error
+<span class="h">@@ -83,6 +89,11 @@ func PrintErrorMarkdownAndExit(title string, err error, suggestion string) {</span>
+ 	os.Exit(1)
+ }
+ 
+<span class="a">+// PrintErrorMarkdownAndExit prints an error message in Markdown format and exits with the exit code 1.</span>
+<span class="a">+func PrintErrorMarkdownAndExit(title string, err error, suggestion string) {</span>
+<span class="a">+	PrintErrorMarkdownAndExitFn(title, err, suggestion)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // PrintInvalidUsageErrorAndExit prints a message about the incorrect command usage and exist with the exit code 1.
+ func PrintInvalidUsageErrorAndExit(err error, suggestion string) {
+ 	PrintErrorMarkdownAndExit(&quot;Incorrect Usage&quot;, err, suggestion)</pre><h2>Commit #3: <a href="https://github.com/cloudposse/atmos/commit/c930bbb1a7f34b0ac383a9db1380376a59b70415">c930bbb1a7</a> (2025-04-10T10:28:38-04:00)</h2><p class="k">Refactor gogetter utility for better testability (#1146)<br>Path after this commit: pkg/utils/markdown_utils.go. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: pkg/downloader/file_downloader_test.go, pkg/filetype/filetype.go.</p><pre>diff --git a/pkg/utils/markdown_utils.go b/pkg/utils/markdown_utils.go
+index dd5cb81f1..2ae9cb97c 100644
+<span class="d">--- a/pkg/utils/markdown_utils.go</span>
+<span class="a">+++ b/pkg/utils/markdown_utils.go</span>
+<span class="h">@@ -7,9 +7,7 @@ import (</span>
+ 	&quot;fmt&quot;
+ 	&quot;os&quot;
+ 	&quot;os/exec&quot;
+<span class="d">-	&quot;runtime/debug&quot;</span>
+ 
+<span class="d">-	log &quot;github.com/charmbracelet/log&quot;</span>
+ 	&quot;golang.org/x/text/cases&quot;
+ 	&quot;golang.org/x/text/language&quot;
+ 
+<span class="h">@@ -49,10 +47,6 @@ func PrintErrorMarkdown(title string, err error, suggestion string) {</span>
+ 		LogError(printErr)
+ 		LogError(err)
+ 	}
+<span class="d">-	// Print stack trace</span>
+<span class="d">-	if log.GetLevel() == log.DebugLevel {</span>
+<span class="d">-		debug.PrintStack()</span>
+<span class="d">-	}</span>
+ }
+ 
+ // PrintfErrorMarkdown prints a formatted error message in Markdown format.</pre><h2>Commit #4: <a href="https://github.com/cloudposse/atmos/commit/9cbd6a300c6040092a27c7cb8b62022187ea5387">9cbd6a300c</a> (2025-06-30T22:21:28-04:00)</h2><p class="k">Improve logging and error handling (#1358)<br>Path after this commit: pkg/utils/markdown_utils.go. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: errors/error_funcs.go, errors/error_funcs_test.go, internal/exec/aws_eks_update_kubeconfig.go.</p><pre>diff --git a/pkg/utils/markdown_utils.go b/pkg/utils/markdown_utils.go
+index 2ae9cb97c..10c340ea5 100644
+<span class="d">--- a/pkg/utils/markdown_utils.go</span>
+<span class="a">+++ b/pkg/utils/markdown_utils.go</span>
+<span class="h">@@ -3,112 +3,33 @@</span>
+ package utils
+ 
+ import (
+<span class="d m">-	&quot;errors&quot;</span>
+ 	&quot;fmt&quot;
+ 	&quot;os&quot;
+<span class="d">-	&quot;os/exec&quot;</span>
+<span class="d">-</span>
+<span class="d">-	&quot;golang.org/x/text/cases&quot;</span>
+<span class="d">-	&quot;golang.org/x/text/language&quot;</span>
+ 
+<span class="a">+	errUtils &quot;github.com/cloudposse/atmos/errors&quot;</span>
+ 	&quot;github.com/cloudposse/atmos/pkg/schema&quot;
+ 	&quot;github.com/cloudposse/atmos/pkg/ui/markdown&quot;
+ )
+ 
+<span class="d">-// render is the global markdown renderer instance initialized via InitializeMarkdown.</span>
+<span class="a">+// render is the global Markdown renderer instance initialized via InitializeMarkdown.</span>
+ var render *markdown.Renderer
+ 
+<span class="d">-// Variable declarations for functions that might be mocked in tests.</span>
+<span class="d">-var (</span>
+<span class="d">-	// PrintErrorMarkdownAndExitFn is a variable that holds the function reference for testing.</span>
+<span class="d">-	PrintErrorMarkdownAndExitFn = printErrorMarkdownAndExitImpl</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-// PrintErrorMarkdown prints an error message in Markdown format.</span>
+<span class="d">-func PrintErrorMarkdown(title string, err error, suggestion string) {</span>
+<span class="d">-	if err == nil {</span>
+<span class="d">-		return</span>
+<span class="d">-	}</span>
+<span class="d">-	if render == nil {</span>
+<span class="d">-		LogError(err)</span>
+<span class="d">-		return</span>
+<span class="d">-	}</span>
+<span class="d">-	if title == &quot;&quot; {</span>
+<span class="d">-		title = &quot;Error&quot;</span>
+<span class="d">-	}</span>
+<span class="d">-	title = cases.Title(language.English).String(title)</span>
+<span class="d">-	errorMarkdown, renderErr := render.RenderError(title, err.Error(), suggestion)</span>
+<span class="d">-	if renderErr != nil {</span>
+<span class="d">-		LogError(err)</span>
+<span class="d">-		return</span>
+<span class="d">-	}</span>
+<span class="d">-	_, printErr := os.Stderr.WriteString(fmt.Sprint(errorMarkdown + &quot;\n&quot;))</span>
+<span class="d">-	if printErr != nil {</span>
+<span class="d">-		LogError(printErr)</span>
+<span class="d">-		LogError(err)</span>
+<span class="d">-	}</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-// PrintfErrorMarkdown prints a formatted error message in Markdown format.</span>
+<span class="d">-func PrintfErrorMarkdown(format string, a ...interface{}) {</span>
+<span class="d">-	if render == nil {</span>
+<span class="d">-		LogError(fmt.Errorf(format, a...))</span>
+<span class="d">-		return</span>
+<span class="d">-	}</span>
+<span class="d">-	var markdown string</span>
+<span class="d">-	var renderErr error</span>
+<span class="d">-	markdown, renderErr = render.RenderErrorf(format, a...)</span>
+<span class="d">-	if renderErr != nil {</span>
+<span class="d">-		LogError(renderErr)</span>
+<span class="d">-		LogError(fmt.Errorf(format, a...))</span>
+<span class="d">-		return</span>
+<span class="d">-	}</span>
+<span class="d">-	_, err := os.Stderr.WriteString(fmt.Sprint(markdown + &quot;\n&quot;))</span>
+<span class="d">-	LogError(err)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-// printErrorMarkdownAndExitImpl is the implementation of PrintErrorMarkdownAndExit.</span>
+<span class="d">-func printErrorMarkdownAndExitImpl(title string, err error, suggestion string) {</span>
+<span class="d">-	PrintErrorMarkdown(title, err, suggestion)</span>
+<span class="d">-</span>
+<span class="d">-	// Find the executed command&#x27;s exit code from the error</span>
+<span class="d">-	var exitError *exec.ExitError</span>
+<span class="d">-	if errors.As(err, &amp;exitError) {</span>
+<span class="d">-		os.Exit(exitError.ExitCode())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// TODO: Refactor so that we only call `os.Exit` in `main()` or `init()` functions.</span>
+<span class="d">-	// Exiting here makes it difficult to test.</span>
+<span class="d">-	// revive:disable-next-line:deep-exit</span>
+<span class="d">-	os.Exit(1)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-// PrintErrorMarkdownAndExit prints an error message in Markdown format and exits with the exit code 1.</span>
+<span class="d">-func PrintErrorMarkdownAndExit(title string, err error, suggestion string) {</span>
+<span class="d">-	PrintErrorMarkdownAndExitFn(title, err, suggestion)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-// PrintInvalidUsageErrorAndExit prints a message about the incorrect command usage and exist with the exit code 1.</span>
+<span class="d">-func PrintInvalidUsageErrorAndExit(err error, suggestion string) {</span>
+<span class="d">-	PrintErrorMarkdownAndExit(&quot;Incorrect Usage&quot;, err, suggestion)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ // PrintfMarkdown prints a message in Markdown format.
+ func PrintfMarkdown(format string, a ...interface{}) {
+ 	if render == nil {
+ 		_, err := os.Stdout.WriteString(fmt.Sprintf(format, a...))
+<span class="d">-		LogError(err)</span>
+<span class="a">+		errUtils.CheckErrorAndPrint(err, &quot;&quot;, &quot;&quot;)</span>
+ 		return
+ 	}
+ 	message := fmt.Sprintf(format, a...)
+<span class="d">-	var markdown string</span>
+<span class="a">+	var md string</span>
+ 	var renderErr error
+<span class="d">-	markdown, renderErr = render.Render(message)</span>
+<span class="a">+	md, renderErr = render.Render(message)</span>
+ 	if renderErr != nil {
+<span class="d">-		LogErrorAndExit(renderErr)</span>
+<span class="a">+		errUtils.CheckErrorPrintAndExit(renderErr, &quot;&quot;, &quot;&quot;)</span>
+ 	}
+<span class="d">-	_, err := os.Stdout.WriteString(fmt.Sprint(markdown + &quot;\n&quot;))</span>
+<span class="d">-	LogError(err)</span>
+<span class="a">+	_, err := os.Stdout.WriteString(fmt.Sprint(md + &quot;\n&quot;))</span>
+<span class="a">+	errUtils.CheckErrorAndPrint(err, &quot;&quot;, &quot;&quot;)</span>
+ }
+ 
+ // InitializeMarkdown initializes a new Markdown renderer.
+<span class="h">@@ -116,6 +37,6 @@ func InitializeMarkdown(atmosConfig schema.AtmosConfiguration) {</span>
+ 	var err error
+ 	render, err = markdown.NewTerminalMarkdownRenderer(atmosConfig)
+ 	if err != nil {
+<span class="d">-		LogErrorAndExit(fmt.Errorf(&quot;failed to initialize markdown renderer: %w&quot;, err))</span>
+<span class="a">+		errUtils.CheckErrorPrintAndExit(fmt.Errorf(&quot;failed to initialize markdown renderer: %w&quot;, err), &quot;&quot;, &quot;&quot;)</span>
+ 	}
+ }</pre><h2>Commit #5: <a href="https://github.com/cloudposse/atmos/commit/fc0f1232c5beee0fa967016e3c1410cd7dbea409">fc0f1232c5</a> (2025-10-02T09:23:06-04:00)</h2><p class="k">Add Performance Profiling Heatmap Visualization to Atmos CLI (#1576)<br>Path after this commit: pkg/utils/markdown_utils.go. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: CLAUDE.md.</p><pre>diff --git a/pkg/utils/markdown_utils.go b/pkg/utils/markdown_utils.go
+index 10c340ea5..6e92394e0 100644
+<span class="d">--- a/pkg/utils/markdown_utils.go</span>
+<span class="a">+++ b/pkg/utils/markdown_utils.go</span>
+<span class="h">@@ -7,6 +7,7 @@ import (</span>
+ 	&quot;os&quot;
+ 
+ 	errUtils &quot;github.com/cloudposse/atmos/errors&quot;
+<span class="a">+	&quot;github.com/cloudposse/atmos/pkg/perf&quot;</span>
+ 	&quot;github.com/cloudposse/atmos/pkg/schema&quot;
+ 	&quot;github.com/cloudposse/atmos/pkg/ui/markdown&quot;
+ )
+<span class="h">@@ -16,6 +17,8 @@ var render *markdown.Renderer</span>
+ 
+ // PrintfMarkdown prints a message in Markdown format.
+ func PrintfMarkdown(format string, a ...interface{}) {
+<span class="a">+	defer perf.Track(nil, &quot;utils.PrintfMarkdown&quot;)()</span>
+<span class="a">+</span>
+ 	if render == nil {
+ 		_, err := os.Stdout.WriteString(fmt.Sprintf(format, a...))
+ 		errUtils.CheckErrorAndPrint(err, &quot;&quot;, &quot;&quot;)
+<span class="h">@@ -34,6 +37,8 @@ func PrintfMarkdown(format string, a ...interface{}) {</span>
+ 
+ // InitializeMarkdown initializes a new Markdown renderer.
+ func InitializeMarkdown(atmosConfig schema.AtmosConfiguration) {
+<span class="a">+	defer perf.Track(&amp;atmosConfig, &quot;utils.InitializeMarkdown&quot;)()</span>
+<span class="a">+</span>
+ 	var err error
+ 	render, err = markdown.NewTerminalMarkdownRenderer(atmosConfig)
+ 	if err != nil {</pre><h2>Commit #6: <a href="https://github.com/cloudposse/atmos/commit/41200b0b223543cef7a2e7a0147a8be4d6c30492">41200b0b22</a> (2025-10-06T22:00:02-04:00)</h2><p class="k">fix: redirect telemetry notice to stderr instead of stdout (#1426)<br>Path after this commit: pkg/utils/markdown_utils.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/pkg/utils/markdown_utils.go b/pkg/utils/markdown_utils.go
+index 6e92394e0..abd6cda95 100644
+<span class="d">--- a/pkg/utils/markdown_utils.go</span>
+<span class="a">+++ b/pkg/utils/markdown_utils.go</span>
+<span class="h">@@ -4,7 +4,11 @@ package utils</span>
+ 
+ import (
+ 	&quot;fmt&quot;
+<span class="a">+	&quot;io&quot;</span>
+ 	&quot;os&quot;
+<span class="a">+	&quot;strings&quot;</span>
+<span class="a">+</span>
+<span class="a">+	&quot;golang.org/x/term&quot;</span>
+ 
+ 	errUtils &quot;github.com/cloudposse/atmos/errors&quot;
+ 	&quot;github.com/cloudposse/atmos/pkg/perf&quot;
+<span class="h">@@ -12,15 +16,41 @@ import (</span>
+ 	&quot;github.com/cloudposse/atmos/pkg/ui/markdown&quot;
+ )
+ 
+<span class="a">+const (</span>
+<span class="a">+	// Newline is the newline character constant.</span>
+<span class="a">+	Newline = &quot;\n&quot;</span>
+<span class="a">+)</span>
+<span class="a">+</span>
+ // render is the global Markdown renderer instance initialized via InitializeMarkdown.
+ var render *markdown.Renderer
+ 
+<span class="d">-// PrintfMarkdown prints a message in Markdown format.</span>
+<span class="d">-func PrintfMarkdown(format string, a ...interface{}) {</span>
+<span class="d">-	defer perf.Track(nil, &quot;utils.PrintfMarkdown&quot;)()</span>
+<span class="a">+// isWriterTerminal checks if the writer is a terminal.</span>
+<span class="a">+func isWriterTerminal(w io.Writer) bool {</span>
+<span class="a">+	if file, ok := w.(*os.File); ok {</span>
+<span class="a">+		return term.IsTerminal(int(file.Fd()))</span>
+<span class="a">+	}</span>
+<span class="a">+	return false</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+// trimRenderedMarkdown trims trailing spaces from each line of rendered markdown</span>
+<span class="a">+// when not outputting to a terminal. This prevents unnecessary whitespace in</span>
+<span class="a">+// non-terminal outputs (logs, files, pipes).</span>
+<span class="a">+func trimRenderedMarkdown(md string, isTerminal bool) string {</span>
+<span class="a">+	if isTerminal {</span>
+<span class="a">+		return md</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	lines := strings.Split(md, Newline)</span>
+<span class="a">+	for i, line := range lines {</span>
+<span class="a">+		lines[i] = strings.TrimRight(line, &quot; \t&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	return strings.Join(lines, Newline)</span>
+<span class="a">+}</span>
+ 
+<span class="a">+// printfMarkdownTo prints a message in Markdown format to the specified writer.</span>
+<span class="a">+func printfMarkdownTo(w io.Writer, format string, a ...interface{}) {</span>
+ 	if render == nil {
+<span class="d">-		_, err := os.Stdout.WriteString(fmt.Sprintf(format, a...))</span>
+<span class="a">+		_, err := fmt.Fprintf(w, format, a...)</span>
+ 		errUtils.CheckErrorAndPrint(err, &quot;&quot;, &quot;&quot;)
+ 		return
+ 	}
+<span class="h">@@ -31,10 +61,36 @@ func PrintfMarkdown(format string, a ...interface{}) {</span>
+ 	if renderErr != nil {
+ 		errUtils.CheckErrorPrintAndExit(renderErr, &quot;&quot;, &quot;&quot;)
+ 	}
+<span class="d">-	_, err := os.Stdout.WriteString(fmt.Sprint(md + &quot;\n&quot;))</span>
+<span class="a">+</span>
+<span class="a">+	isTerminal := isWriterTerminal(w)</span>
+<span class="a">+	md = trimRenderedMarkdown(md, isTerminal)</span>
+<span class="a">+</span>
+<span class="a">+	// Ensure rendered markdown ends with a newline to prevent content from</span>
+<span class="a">+	// running into subsequent output (e.g., log lines).</span>
+<span class="a">+	if !strings.HasSuffix(md, Newline) {</span>
+<span class="a">+		md += Newline</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	_, err := fmt.Fprint(w, md)</span>
+ 	errUtils.CheckErrorAndPrint(err, &quot;&quot;, &quot;&quot;)
+ }
+ 
+<span class="a">+// PrintfMarkdown prints a message in Markdown format.</span>
+<span class="a">+func PrintfMarkdown(format string, a ...interface{}) {</span>
+<span class="a">+	defer perf.Track(nil, &quot;utils.PrintfMarkdown&quot;)()</span>
+<span class="a">+</span>
+<span class="a">+	printfMarkdownTo(os.Stdout, format, a...)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+// PrintfMarkdownToTUI prints a message in Markdown format to stderr.</span>
+<span class="a">+// This is useful for notices, warnings, and other messages that should not</span>
+<span class="a">+// interfere with stdout when piping command output.</span>
+<span class="a">+func PrintfMarkdownToTUI(format string, a ...interface{}) {</span>
+<span class="a">+	defer perf.Track(nil, &quot;utils.PrintfMarkdownToTUI&quot;)()</span>
+<span class="a">+</span>
+<span class="a">+	printfMarkdownTo(os.Stderr, format, a...)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // InitializeMarkdown initializes a new Markdown renderer.
+ func InitializeMarkdown(atmosConfig schema.AtmosConfiguration) {
+ 	defer perf.Track(&amp;atmosConfig, &quot;utils.InitializeMarkdown&quot;)()</pre><h2>Commit #7: <a href="https://github.com/cloudposse/atmos/commit/c1618af3dfae8a34eec4318a0161ffc4540bea3e">c1618af3df</a> (2025-10-14T22:44:38-04:00)</h2><p class="k">Improve test quality: fix tests without assertions and convert skip-only tests (#1621)<br>Path after this commit: pkg/utils/markdown_utils.go. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: internal/exec/copy_glob_unix_test.go, pkg/list/list_instances_process_test.go, pkg/list/list_instances_upload_test.go, tests/testhelpers/filesystem_test.go.</p><pre>diff --git a/pkg/utils/markdown_utils.go b/pkg/utils/markdown_utils.go
+index abd6cda95..05b87dcfa 100644
+<span class="d">--- a/pkg/utils/markdown_utils.go</span>
+<span class="a">+++ b/pkg/utils/markdown_utils.go</span>
+<span class="h">@@ -25,6 +25,7 @@ const (</span>
+ var render *markdown.Renderer
+ 
+ // isWriterTerminal checks if the writer is a terminal.
+<span class="a">+// This function checks arbitrary io.Writer, not just stdout/stderr, so it uses term.IsTerminal directly.</span>
+ func isWriterTerminal(w io.Writer) bool {
+ 	if file, ok := w.(*os.File); ok {
+ 		return term.IsTerminal(int(file.Fd()))</pre><h2>Commit #8: <a href="https://github.com/cloudposse/atmos/commit/2782c038ef8509497489ca68695b1cdd94716f7c">2782c038ef</a> (2025-11-11T14:40:56-05:00)</h2><p class="k">feat: add error handling infrastructure with context-aware capabilities (#1763)<br>Path after this commit: pkg/utils/markdown_utils.go. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: pkg/spacelift/spacelift_stack_processor.go, pkg/utils/go_getter_utils.go, pkg/utils/yaml_func_env.go.</p><pre>diff --git a/pkg/utils/markdown_utils.go b/pkg/utils/markdown_utils.go
+index 05b87dcfa..6a65874eb 100644
+<span class="d">--- a/pkg/utils/markdown_utils.go</span>
+<span class="a">+++ b/pkg/utils/markdown_utils.go</span>
+<span class="h">@@ -93,11 +93,16 @@ func PrintfMarkdownToTUI(format string, a ...interface{}) {</span>
+ }
+ 
+ // InitializeMarkdown initializes a new Markdown renderer.
+<span class="d">-func InitializeMarkdown(atmosConfig schema.AtmosConfiguration) {</span>
+<span class="d">-	defer perf.Track(&amp;atmosConfig, &quot;utils.InitializeMarkdown&quot;)()</span>
+<span class="a">+func InitializeMarkdown(atmosConfig *schema.AtmosConfiguration) {</span>
+<span class="a">+	defer perf.Track(atmosConfig, &quot;utils.InitializeMarkdown&quot;)()</span>
+<span class="a">+</span>
+<span class="a">+	if atmosConfig == nil {</span>
+<span class="a">+		errUtils.CheckErrorPrintAndExit(fmt.Errorf(&quot;failed to initialize markdown renderer: atmos configuration is nil&quot;), &quot;&quot;, &quot;&quot;)</span>
+<span class="a">+		return</span>
+<span class="a">+	}</span>
+ 
+ 	var err error
+<span class="d">-	render, err = markdown.NewTerminalMarkdownRenderer(atmosConfig)</span>
+<span class="a">+	render, err = markdown.NewTerminalMarkdownRenderer(*atmosConfig)</span>
+ 	if err != nil {
+ 		errUtils.CheckErrorPrintAndExit(fmt.Errorf(&quot;failed to initialize markdown renderer: %w&quot;, err), &quot;&quot;, &quot;&quot;)
+ 	}</pre></body></html>

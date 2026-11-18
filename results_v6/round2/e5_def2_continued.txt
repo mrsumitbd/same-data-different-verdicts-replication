@@ -1,0 +1,13 @@
+E5. Definition 2 continued past leaf-only edits
+
+A. Across repositories, R coxph (Efron), repository-clustered 95% CI (round 1, c3_def2_clustered.csv)
+  current (censored at leaf-only)  human_supervised  HR 0.919 repo-cl [0.625, 1.350] p=0.666  (model [0.906, 0.932])
+  current (censored at leaf-only)  fully_autonomous  HR 0.847 repo-cl [0.357, 2.011] p=0.706  (model [0.831, 0.863])
+  continued past leaf-only         human_supervised  HR 0.906 repo-cl [0.617, 1.328] p=0.612  (model [0.893, 0.918])
+  continued past leaf-only         fully_autonomous  HR 0.841 repo-cl [0.350, 2.017] p=0.698  (model [0.826, 0.856])
+
+B. Within repository, lifelines Efron, 500-resample repository bootstrap, numpy default_rng(42)
+  current (censored at leaf-only)  human_supervised  HR 0.717 boot95 [0.477, 0.921] boot97.5 [0.456, 0.950] p_boot 0.008 (valid 500)
+  continued past leaf-only         human_supervised  HR 0.707 boot95 [0.469, 0.905] boot97.5 [0.450, 0.936] p_boot 0.008 (valid 500)
+  current (censored at leaf-only)  fully_autonomous  HR 1.155 boot95 [0.519, 2.176] boot97.5 [0.464, 2.309] p_boot 0.600 (valid 500)
+  continued past leaf-only         fully_autonomous  HR 1.103 boot95 [0.472, 2.196] boot97.5 [0.407, 2.308] p_boot 0.668 (valid 500)

@@ -1,0 +1,31 @@
+estimator,tier,comparison,longer,none,sooner,n
+as in the paper,fully_autonomous,across repositories,5,2,15,22
+as in the paper,fully_autonomous,"across, shared repositories",16,2,4,22
+as in the paper,fully_autonomous,within repository,0,22,0,22
+as in the paper,human_supervised,across repositories,21,0,1,22
+as in the paper,human_supervised,"across, shared repositories",21,0,1,22
+as in the paper,human_supervised,within repository,11,10,1,22
+model-based,fully_autonomous,across repositories,5,2,15,22
+model-based,fully_autonomous,"across, shared repositories",16,2,4,22
+model-based,fully_autonomous,within repository,11,4,7,22
+model-based,human_supervised,across repositories,21,0,1,22
+model-based,human_supervised,"across, shared repositories",21,0,1,22
+model-based,human_supervised,within repository,21,0,1,22
+"robust, per observation",fully_autonomous,across repositories,5,2,15,22
+"robust, per observation",fully_autonomous,"across, shared repositories",16,2,4,22
+"robust, per observation",fully_autonomous,within repository,11,4,7,22
+"robust, per observation",human_supervised,across repositories,21,0,1,22
+"robust, per observation",human_supervised,"across, shared repositories",21,0,1,22
+"robust, per observation",human_supervised,within repository,21,0,1,22
+clustered by repository,fully_autonomous,across repositories,1,18,3,22
+clustered by repository,fully_autonomous,"across, shared repositories",3,19,0,22
+clustered by repository,fully_autonomous,within repository,0,22,0,22
+clustered by repository,human_supervised,across repositories,13,9,0,22
+clustered by repository,human_supervised,"across, shared repositories",14,8,0,22
+clustered by repository,human_supervised,within repository,11,10,1,22
+clustered by PR,fully_autonomous,across repositories,0,13,9,22
+clustered by PR,fully_autonomous,"across, shared repositories",6,16,0,22
+clustered by PR,fully_autonomous,within repository,1,20,1,22
+clustered by PR,human_supervised,across repositories,13,9,0,22
+clustered by PR,human_supervised,"across, shared repositories",16,5,1,22
+clustered by PR,human_supervised,within repository,12,9,1,22

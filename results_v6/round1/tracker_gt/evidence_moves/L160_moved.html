@@ -1,0 +1,149 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L160 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L160: after the move</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>Original file:</b> apps/studio/electron/main/assets/helpers.ts (see L160.html)<br><b>Move commit:</b> <a href="https://github.com/onlook-dev/onlook/commit/f7a8060cc456b1968464e5bde9d8fca16648eb1e">f7a8060cc4</a> (commit #2 on L160.html)<br><b>Destination file (your label):</b> apps/web/client/src/components/store/editor/theme/util.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">    return { isUpdated, output };</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 508).</p><h2>Destination file at the move commit, lines 500 to 509</h2><pre>  500 |             // If the visitor returns true, it made an update
+  501 |             if (wasUpdated) {
+  502 |                 isUpdated = true;
+  503 |             }
+  504 |         },
+  505 |     });
+  506 | 
+  507 |     const output = generate(updateAst, { retainLines: true, compact: false }, configContent).code;
+<span class="t">  508 |     return { isUpdated, output };</span>
+  509 | }</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/0e24d3b76ea903d96fc65fb869d63f407c4da69d">0e24d3b76e</a> (2025-07-20T18:18:12-07:00)</h2><p class="k">feat: handle layout and next.config better in ast parsers (#2497)<br>Path after this commit: apps/web/client/src/components/store/editor/theme/util.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/theme/util.ts b/apps/web/client/src/components/store/editor/theme/util.ts
+index 8240eea8..99ff077a 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/theme/util.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/theme/util.ts</span>
+<span class="h">@@ -1,16 +1,16 @@</span>
+<span class="d">-import { parse, traverse, generate } from &#x27;@onlook/parser&#x27;;</span>
+ import type {
+<span class="d">-    ObjectExpression,</span>
+     Node,
+<span class="a">+    ObjectExpression,</span>
+     ObjectMethod,
+     ObjectProperty,
+     SpreadElement,
+ } from &#x27;@babel/types&#x27;;
+<span class="a">+import { DEFAULT_COLOR_NAME } from &#x27;@onlook/constants&#x27;;</span>
+ import { SystemTheme } from &#x27;@onlook/models/assets&#x27;;
+<span class="a">+import { generate, parse, traverse } from &#x27;@onlook/parser&#x27;;</span>
+ import { parseHslValue } from &#x27;@onlook/utility&#x27;;
+ import type { Root, Rule } from &#x27;postcss&#x27;;
+ import postcss from &#x27;postcss&#x27;;
+<span class="d">-import { DEFAULT_COLOR_NAME } from &#x27;@onlook/constants&#x27;;</span>
+ 
+ export function addTailwindNestedColor(
+     colorObj: ObjectExpression,</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/f0ba714eab9736559b96be3c73f9cc63243dd052">f0ba714eab</a> (2025-07-26T00:21:38-07:00)</h2><p class="k">fix: types and use CDN in production (#2539)<br>Path after this commit: apps/web/client/src/components/store/editor/theme/util.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/theme/util.ts b/apps/web/client/src/components/store/editor/theme/util.ts
+index 99ff077a..39e3b838 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/theme/util.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/theme/util.ts</span>
+<span class="h">@@ -359,7 +359,7 @@ export function extractColorsFromTailwindConfig(fileContent: string): Record&lt;str</span>
+                                                 extendProp.key.type === &#x27;Identifier&#x27; &amp;&amp;
+                                                 extendProp.key.name === &#x27;colors&#x27;
+                                             ) {
+<span class="d">-                                                colors = extractObject(extendProp.value);</span>
+<span class="a">+                                                colors = extractObject(extendProp.value as ObjectExpression);</span>
+                                             }
+                                         });
+                                     }</pre><h2>Commit #3: <a href="https://github.com/onlook-dev/onlook/commit/6a1254bf6f93483db46c495ded1e56719dfb6e12">6a1254bf6f</a> (2025-08-01T14:21:56-07:00)</h2><p class="k">refactor: add font test (#2532)<br>Path after this commit: apps/web/client/src/components/store/editor/theme/util.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/theme/util.ts b/apps/web/client/src/components/store/editor/theme/util.ts
+index 39e3b838..d4bd6e65 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/theme/util.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/theme/util.ts</span>
+<span class="h">@@ -1,24 +1,17 @@</span>
+<span class="d">-import type {</span>
+<span class="d">-    Node,</span>
+<span class="d">-    ObjectExpression,</span>
+<span class="d">-    ObjectMethod,</span>
+<span class="d">-    ObjectProperty,</span>
+<span class="d">-    SpreadElement,</span>
+<span class="d">-} from &#x27;@babel/types&#x27;;</span>
+ import { DEFAULT_COLOR_NAME } from &#x27;@onlook/constants&#x27;;
+ import { SystemTheme } from &#x27;@onlook/models/assets&#x27;;
+<span class="d">-import { generate, parse, traverse } from &#x27;@onlook/parser&#x27;;</span>
+<span class="a">+import { generate, getAstFromContent, parse, traverse, type t as T } from &#x27;@onlook/parser&#x27;;</span>
+ import { parseHslValue } from &#x27;@onlook/utility&#x27;;
+ import type { Root, Rule } from &#x27;postcss&#x27;;
+ import postcss from &#x27;postcss&#x27;;
+ 
+ export function addTailwindNestedColor(
+<span class="d">-    colorObj: ObjectExpression,</span>
+<span class="a">+    colorObj: T.ObjectExpression,</span>
+     parentName: string,
+     newName: string,
+     newCssVarName: string,
+ ) {
+<span class="d">-    const parentColorObj = colorObj.properties.find((prop): prop is ObjectProperty =&gt;</span>
+<span class="a">+    const parentColorObj = colorObj.properties.find((prop): prop is T.ObjectProperty =&gt;</span>
+         isValidTailwindConfigProperty(prop, parentName),
+     );
+ 
+<span class="h">@@ -328,10 +321,10 @@ export function extractTailwindCssVariables(content: string) {</span>
+ 
+ export function extractColorsFromTailwindConfig(fileContent: string): Record&lt;string, any&gt; {
+     try {
+<span class="d">-        const ast = parse(fileContent, {</span>
+<span class="d">-            sourceType: &#x27;module&#x27;,</span>
+<span class="d">-            plugins: [&#x27;typescript&#x27;],</span>
+<span class="d">-        });</span>
+<span class="a">+        const ast = getAstFromContent(fileContent);</span>
+<span class="a">+        if (!ast) {</span>
+<span class="a">+            throw new Error(`Failed to parse file in extractColorsFromTailwindConfig`);</span>
+<span class="a">+        }</span>
+ 
+         let colors: Record&lt;string, any&gt; = {};
+ 
+<span class="h">@@ -359,7 +352,7 @@ export function extractColorsFromTailwindConfig(fileContent: string): Record&lt;str</span>
+                                                 extendProp.key.type === &#x27;Identifier&#x27; &amp;&amp;
+                                                 extendProp.key.name === &#x27;colors&#x27;
+                                             ) {
+<span class="d">-                                                colors = extractObject(extendProp.value as ObjectExpression);</span>
+<span class="a">+                                                colors = extractObject(extendProp.value);</span>
+                                             }
+                                         });
+                                     }
+<span class="h">@@ -385,7 +378,7 @@ export function extractColorsFromTailwindConfig(fileContent: string): Record&lt;str</span>
+  * @returns True if the property is a valid tailwind config property, false otherwise
+  */
+ export function isValidTailwindConfigProperty(
+<span class="d">-    prop: ObjectProperty | ObjectMethod | SpreadElement,</span>
+<span class="a">+    prop: T.ObjectProperty | T.ObjectMethod | T.SpreadElement,</span>
+     keyName: string,
+ ): boolean {
+     return (
+<span class="h">@@ -398,7 +391,7 @@ export function isValidTailwindConfigProperty(</span>
+     );
+ }
+ 
+<span class="d">-export function extractObject(node: Node): Record&lt;string, any&gt; {</span>
+<span class="a">+export function extractObject(node: T.Node): Record&lt;string, any&gt; {</span>
+     if (node.type !== &#x27;ObjectExpression&#x27;) {
+         return {};
+     }
+<span class="h">@@ -433,7 +426,7 @@ export function extractObject(node: Node): Record&lt;string, any&gt; {</span>
+ }
+ 
+ export function addTailwindRootColor(
+<span class="d">-    colorObj: ObjectExpression,</span>
+<span class="a">+    colorObj: T.ObjectExpression,</span>
+     newName: string,
+     newCssVarName: string,
+ ) {</pre><h2>Commit #4: <a href="https://github.com/onlook-dev/onlook/commit/55e0fb9685691c822ddfc5756009d8dcd5e29299">55e0fb9685</a> (2025-09-24T10:01:22-07:00)</h2><p class="k">chore: update parser exports (#2904)<br>Path after this commit: apps/web/client/src/components/store/editor/theme/util.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/theme/util.ts b/apps/web/client/src/components/store/editor/theme/util.ts
+index d4bd6e65..412dc64a 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/theme/util.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/theme/util.ts</span>
+<span class="h">@@ -1,9 +1,11 @@</span>
+<span class="a">+import type { Root, Rule } from &#x27;postcss&#x27;;</span>
+<span class="a">+import postcss from &#x27;postcss&#x27;;</span>
+<span class="a">+</span>
+<span class="a">+import type { T } from &#x27;@onlook/parser&#x27;;</span>
+ import { DEFAULT_COLOR_NAME } from &#x27;@onlook/constants&#x27;;
+ import { SystemTheme } from &#x27;@onlook/models/assets&#x27;;
+<span class="d">-import { generate, getAstFromContent, parse, traverse, type t as T } from &#x27;@onlook/parser&#x27;;</span>
+<span class="a">+import { generate, getAstFromContent, parse, traverse } from &#x27;@onlook/parser&#x27;;</span>
+ import { parseHslValue } from &#x27;@onlook/utility&#x27;;
+<span class="d">-import type { Root, Rule } from &#x27;postcss&#x27;;</span>
+<span class="d">-import postcss from &#x27;postcss&#x27;;</span>
+ 
+ export function addTailwindNestedColor(
+     colorObj: T.ObjectExpression,</pre></body></html>

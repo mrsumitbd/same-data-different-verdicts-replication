@@ -1,0 +1,10 @@
+Schoenfeld-residual PH test for is_tier (H0: constant effect over time; p < 0.05 = violation)
+
+                                 model      n     hr  stat_rank    p_rank  stat_km      p_km
+                     step1_pooled_def1 849615 0.3814    1714.64  0.00e+00  6519.45  0.00e+00
+           step2_human_supervised_def1 761605 0.3763     695.82 2.43e-153  7966.49  0.00e+00
+           step2_fully_autonomous_def1 663565 0.3892    1380.42 3.78e-302  2489.43  0.00e+00
+           step3_human_supervised_def2 761605 0.3300      14.96  1.10e-04 16793.95  0.00e+00
+           step3_fully_autonomous_def2 663565 0.3195    2318.61  0.00e+00  1553.27  0.00e+00
+step4_human_supervised_def1_stratified 761605 0.7780      21.87  2.91e-06  3830.85  0.00e+00
+step4_fully_autonomous_def1_stratified 663565 0.7147    3950.26  0.00e+00  1000.14 1.68e-219

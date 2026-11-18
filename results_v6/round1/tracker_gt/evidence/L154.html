@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L154</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L154</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/applicationinsights-js">microsoft/applicationinsights-js</a><br><b>File at merge:</b> extensions/applicationinsights-analytics-js/src/JavaScriptSDK/AnalyticsPlugin.ts, line 15<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/applicationinsights-js/commit/b52e67714b2d6fd8561cb197b0ca81ebb9ef03d6">b52e67714b</a> (2025-07-28T16:27:57)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/applicationinsights-js/tree/c46c683dd5cb6de509417eb8997693e1254279d6">c46c683dd5</a>)</p><p><b>The line:</b></p><pre><span class="t">import { IAjaxMonitorPlugin } from &quot;@microsoft/applicationinsights-dependencies-js&quot;;</span></pre><h2>File at the merge commit, lines 7 to 23</h2><pre>    7 | import {
+    8 |     AnalyticsPluginIdentifier, Event as EventTelemetry, Exception, IAppInsights, IAutoExceptionTelemetry, IConfig, IDependencyTelemetry,
+    9 |     IEventTelemetry, IExceptionInternal, IExceptionTelemetry, IMetricTelemetry, IPageViewPerformanceTelemetry,
+   10 |     IPageViewPerformanceTelemetryInternal, IPageViewTelemetry, IPageViewTelemetryInternal, ITraceTelemetry, Metric, PageView,
+   11 |     PageViewPerformance, PropertiesPluginIdentifier, RemoteDependencyData, Trace, createDistributedTraceContextFromTrace, createDomEvent,
+   12 |     createTelemetryItem, dataSanitizeString, eSeverityLevel, isCrossOriginError, strNotSpecified, utlDisableStorage, utlEnableStorage,
+   13 |     utlSetStoragePrefix
+   14 | } from &quot;@microsoft/applicationinsights-common&quot;;
+<span class="t">   15 | import { IAjaxMonitorPlugin } from &quot;@microsoft/applicationinsights-dependencies-js&quot;;</span>
+   16 | import {
+   17 |     BaseTelemetryPlugin, IAppInsightsCore, IConfigDefaults, IConfiguration, ICookieMgr, ICustomProperties, IDistributedTraceContext,
+   18 |     IExceptionConfig, IInstrumentCallDetails, IPlugin, IProcessTelemetryContext, IProcessTelemetryUnloadContext,
+   19 |     ITelemetryInitializerHandler, ITelemetryItem, ITelemetryPluginChain, ITelemetryUnloadState, InstrumentEvent,
+   20 |     TelemetryInitializerFunction, _eInternalMessageId, arrForEach, cfgDfBoolean, cfgDfMerge, cfgDfSet, cfgDfString, cfgDfValidate,
+   21 |     createProcessTelemetryContext, createUniqueNamespace, dumpObj, eLoggingSeverity, eventOff, eventOn, fieldRedaction, findAllScripts,
+   22 |     generateW3CId, getDocument, getExceptionName, getHistory, getLocation, getWindow, hasHistory, hasWindow, isFunction, isNullOrUndefined,
+   23 |     isString, isUndefined, mergeEvtNamespace, onConfigChange, safeGetCookieMgr, strUndefined, throwError</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/applicationinsights-js/commit/388ad52c9c63574ce1a18aca3e15f54fc94f3182">388ad52c9c</a> (2025-08-04T12:54:23-07:00)</h2><p class="k">[Feature] Implement cookie caching when disabled and automatic flushing when enabled with backward compatibility option (#2632)<br>Path after this commit: extensions/applicationinsights-analytics-js/src/JavaScriptSDK/AnalyticsPlugin.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/extensions/applicationinsights-analytics-js/src/JavaScriptSDK/AnalyticsPlugin.ts b/extensions/applicationinsights-analytics-js/src/JavaScriptSDK/AnalyticsPlugin.ts
+index 90d35179..caf8b776 100644
+<span class="d">--- a/extensions/applicationinsights-analytics-js/src/JavaScriptSDK/AnalyticsPlugin.ts</span>
+<span class="a">+++ b/extensions/applicationinsights-analytics-js/src/JavaScriptSDK/AnalyticsPlugin.ts</span>
+<span class="h">@@ -12,7 +12,6 @@ import {</span>
+     createTelemetryItem, dataSanitizeString, eSeverityLevel, isCrossOriginError, strNotSpecified, utlDisableStorage, utlEnableStorage,
+     utlSetStoragePrefix
+ } from &quot;@microsoft/applicationinsights-common&quot;;
+<span class="d m">-import { IAjaxMonitorPlugin } from &quot;@microsoft/applicationinsights-dependencies-js&quot;;</span>
+ import {
+     BaseTelemetryPlugin, IAppInsightsCore, IConfigDefaults, IConfiguration, ICookieMgr, ICustomProperties, IDistributedTraceContext,
+     IExceptionConfig, IInstrumentCallDetails, IPlugin, IProcessTelemetryContext, IProcessTelemetryUnloadContext,
+<span class="h">@@ -22,6 +21,7 @@ import {</span>
+     generateW3CId, getDocument, getExceptionName, getHistory, getLocation, getWindow, hasHistory, hasWindow, isFunction, isNullOrUndefined,
+     isString, isUndefined, mergeEvtNamespace, onConfigChange, safeGetCookieMgr, strUndefined, throwError
+ } from &quot;@microsoft/applicationinsights-core-js&quot;;
+<span class="a m">+import { IAjaxMonitorPlugin } from &quot;@microsoft/applicationinsights-dependencies-js&quot;;</span>
+ import { PropertiesPlugin } from &quot;@microsoft/applicationinsights-properties-js&quot;;
+ import { isArray, isError, objDeepFreeze, objDefine, scheduleTimeout, strIndexOf } from &quot;@nevware21/ts-utils&quot;;
+ import { IAnalyticsConfig } from &quot;./Interfaces/IAnalyticsConfig&quot;;</pre></body></html>

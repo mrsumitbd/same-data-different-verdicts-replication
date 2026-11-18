@@ -1,0 +1,392 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L008</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L008</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> src/Aspire.Hosting/Publishing/PublishingExtensions.cs, line 92<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/33721413633f3b34b9ee367900a5fad047f04870">3372141363</a> (2025-06-24T22:31:00)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">        this PublishingStep step,</span></pre><h2>File at the merge commit, lines 84 to 100</h2><pre>   84 |     /// Completes a publishing step with an error.
+   85 |     /// &lt;/summary&gt;
+   86 |     /// &lt;param name=&quot;step&quot;&gt;The step to complete.&lt;/param&gt;
+   87 |     /// &lt;param name=&quot;errorMessage&quot;&gt;Optional error message.&lt;/param&gt;
+   88 |     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+   89 |     /// &lt;returns&gt;The completed step.&lt;/returns&gt;
+   90 |     /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when no reporter is available.&lt;/exception&gt;
+   91 |     public static async Task&lt;PublishingStep&gt; FailAsync(
+<span class="t">   92 |         this PublishingStep step,</span>
+   93 |         string? errorMessage = null,
+   94 |         CancellationToken cancellationToken = default)
+   95 |     {
+   96 |         if (step.Reporter is null)
+   97 |         {
+   98 |             throw new InvalidOperationException(&quot;No progress reporter is available for this step.&quot;);
+   99 |         }
+  100 | </pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/2f034511a13cc08e3614dc5f242579516163ce60">2f034511a1</a> (2025-06-25T22:21:44-07:00)</h2><p class="k">Refactor publishing state model and CLI protocol to aggregate CompletionState at all levels (#10037)<br>Path after this commit: src/Aspire.Hosting/Publishing/PublishingExtensions.cs. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/Aspire.Hosting/Publishing/PublishingExtensions.cs b/src/Aspire.Hosting/Publishing/PublishingExtensions.cs
+index c8001c1a09..4f5c993428 100644
+<span class="d">--- a/src/Aspire.Hosting/Publishing/PublishingExtensions.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting/Publishing/PublishingExtensions.cs</span>
+<span class="h">@@ -13,27 +13,6 @@ namespace Aspire.Hosting.Publishing;</span>
+ [Experimental(&quot;ASPIREPUBLISHERS001&quot;, UrlFormat = &quot;https://aka.ms/aspire/diagnostics/{0}&quot;)]
+ public static class PublishingExtensions
+ {
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Creates a new publishing task parented to this step.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    /// &lt;param name=&quot;step&quot;&gt;The step to create a task for.&lt;/param&gt;</span>
+<span class="d">-    /// &lt;param name=&quot;statusText&quot;&gt;The initial status text for the task.&lt;/param&gt;</span>
+<span class="d">-    /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;</span>
+<span class="d">-    /// &lt;returns&gt;The created publishing task.&lt;/returns&gt;</span>
+<span class="d">-    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when no reporter is available or the step is already complete.&lt;/exception&gt;</span>
+<span class="d">-    public static async Task&lt;PublishingTask&gt; CreateTaskAsync(</span>
+<span class="d m">-        this PublishingStep step,</span>
+<span class="d">-        string statusText,</span>
+<span class="d">-        CancellationToken cancellationToken = default)</span>
+<span class="d">-    {</span>
+<span class="d">-        if (step.Reporter is null)</span>
+<span class="d">-        {</span>
+<span class="d">-            throw new InvalidOperationException(&quot;No progress reporter is available for this step.&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        return await step.Reporter.CreateTaskAsync(step, statusText, cancellationToken).ConfigureAwait(false);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     /// &lt;summary&gt;
+     /// Completes a publishing step successfully.
+     /// &lt;/summary&gt;
+<span class="h">@@ -53,7 +32,7 @@ public static class PublishingExtensions</span>
+         }
+ 
+         var completionText = message ?? &quot;Completed successfully&quot;;
+<span class="d">-        await step.Reporter.CompleteStepAsync(step, completionText, isError: false, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await step.Reporter.CompleteStepAsync(step, completionText, CompletionState.Completed, cancellationToken).ConfigureAwait(false);</span>
+         return step;
+     }
+ 
+<span class="h">@@ -76,7 +55,7 @@ public static class PublishingExtensions</span>
+         }
+ 
+         var completionText = message ?? &quot;Completed with warnings&quot;;
+<span class="d">-        await step.Reporter.CompleteStepAsync(step, completionText, isError: false, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await step.Reporter.CompleteStepAsync(step, completionText, CompletionState.CompletedWithWarning, cancellationToken).ConfigureAwait(false);</span>
+         return step;
+     }
+ 
+<span class="h">@@ -99,7 +78,7 @@ public static class PublishingExtensions</span>
+         }
+ 
+         var completionText = errorMessage ?? &quot;Failed&quot;;
+<span class="d">-        await step.Reporter.CompleteStepAsync(step, completionText, isError: true, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await step.Reporter.CompleteStepAsync(step, completionText, CompletionState.CompletedWithError, cancellationToken).ConfigureAwait(false);</span>
+         return step;
+     }
+ 
+<span class="h">@@ -143,7 +122,7 @@ public static class PublishingExtensions</span>
+             throw new InvalidOperationException(&quot;No progress reporter is available for this task.&quot;);
+         }
+ 
+<span class="d">-        await task.Reporter.CompleteTaskAsync(task, TaskCompletionState.Completed, message, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await task.Reporter.CompleteTaskAsync(task, CompletionState.Completed, message, cancellationToken).ConfigureAwait(false);</span>
+         return task;
+     }
+ 
+<span class="h">@@ -165,7 +144,7 @@ public static class PublishingExtensions</span>
+             throw new InvalidOperationException(&quot;No progress reporter is available for this task.&quot;);
+         }
+ 
+<span class="d">-        await task.Reporter.CompleteTaskAsync(task, TaskCompletionState.CompletedWithWarning, message, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await task.Reporter.CompleteTaskAsync(task, CompletionState.CompletedWithWarning, message, cancellationToken).ConfigureAwait(false);</span>
+         return task;
+     }
+ 
+<span class="h">@@ -187,7 +166,7 @@ public static class PublishingExtensions</span>
+             throw new InvalidOperationException(&quot;No progress reporter is available for this task.&quot;);
+         }
+ 
+<span class="d">-        await task.Reporter.CompleteTaskAsync(task, TaskCompletionState.CompletedWithError, errorMessage, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await task.Reporter.CompleteTaskAsync(task, CompletionState.CompletedWithError, errorMessage, cancellationToken).ConfigureAwait(false);</span>
+         return task;
+     }
+ }
+\ No newline at end of file</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/50e580e434e0a8acebfb66e99e9bd3429fd36f83">50e580e434</a> (2025-07-01T15:40:28-07:00)</h2><p class="k">Rename and refactor steps/tasks-related publishing APIs (#10145)<br>Path after this commit: src/Aspire.Hosting/Publishing/PublishingExtensions.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Hosting/Publishing/PublishingExtensions.cs b/src/Aspire.Hosting/Publishing/PublishingExtensions.cs
+index 4f5c993428..1e70bd0be1 100644
+<span class="d">--- a/src/Aspire.Hosting/Publishing/PublishingExtensions.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting/Publishing/PublishingExtensions.cs</span>
+<span class="h">@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;</span>
+ namespace Aspire.Hosting.Publishing;
+ 
+ /// &lt;summary&gt;
+<span class="d">-/// Extension methods for &lt;see cref=&quot;PublishingStep&quot;/&gt; and &lt;see cref=&quot;PublishingTask&quot;/&gt; to provide direct operations.</span>
+<span class="a">+/// Extension methods for &lt;see cref=&quot;IPublishingStep&quot;/&gt; and &lt;see cref=&quot;IPublishingTask&quot;/&gt; to provide direct operations.</span>
+ /// &lt;/summary&gt;
+ [Experimental(&quot;ASPIREPUBLISHERS001&quot;, UrlFormat = &quot;https://aka.ms/aspire/diagnostics/{0}&quot;)]
+ public static class PublishingExtensions
+<span class="h">@@ -20,19 +20,13 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;message&quot;&gt;Optional completion message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed step.&lt;/returns&gt;
+<span class="d">-    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when no reporter is available.&lt;/exception&gt;</span>
+<span class="d">-    public static async Task&lt;PublishingStep&gt; SucceedAsync(</span>
+<span class="d m">-        this PublishingStep step,</span>
+<span class="a">+    public static async Task&lt;IPublishingStep&gt; SucceedAsync(</span>
+<span class="a">+        this IPublishingStep step,</span>
+         string? message = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="d">-        if (step.Reporter is null)</span>
+<span class="d">-        {</span>
+<span class="d">-            throw new InvalidOperationException(&quot;No progress reporter is available for this step.&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+         var completionText = message ?? &quot;Completed successfully&quot;;
+<span class="d">-        await step.Reporter.CompleteStepAsync(step, completionText, CompletionState.Completed, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await step.CompleteAsync(completionText, CompletionState.Completed, cancellationToken).ConfigureAwait(false);</span>
+         return step;
+     }
+ 
+<span class="h">@@ -43,19 +37,13 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;message&quot;&gt;Optional completion message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed step.&lt;/returns&gt;
+<span class="d">-    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when no reporter is available.&lt;/exception&gt;</span>
+<span class="d">-    public static async Task&lt;PublishingStep&gt; WarnAsync(</span>
+<span class="d m">-        this PublishingStep step,</span>
+<span class="a">+    public static async Task&lt;IPublishingStep&gt; WarnAsync(</span>
+<span class="a">+        this IPublishingStep step,</span>
+         string? message = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="d">-        if (step.Reporter is null)</span>
+<span class="d">-        {</span>
+<span class="d">-            throw new InvalidOperationException(&quot;No progress reporter is available for this step.&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+         var completionText = message ?? &quot;Completed with warnings&quot;;
+<span class="d">-        await step.Reporter.CompleteStepAsync(step, completionText, CompletionState.CompletedWithWarning, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await step.CompleteAsync(completionText, CompletionState.CompletedWithWarning, cancellationToken).ConfigureAwait(false);</span>
+         return step;
+     }
+ 
+<span class="h">@@ -66,19 +54,13 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;errorMessage&quot;&gt;Optional error message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed step.&lt;/returns&gt;
+<span class="d">-    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when no reporter is available.&lt;/exception&gt;</span>
+<span class="d">-    public static async Task&lt;PublishingStep&gt; FailAsync(</span>
+<span class="d m">-        this PublishingStep step,</span>
+<span class="a">+    public static async Task&lt;IPublishingStep&gt; FailAsync(</span>
+<span class="a">+        this IPublishingStep step,</span>
+         string? errorMessage = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="d">-        if (step.Reporter is null)</span>
+<span class="d">-        {</span>
+<span class="d">-            throw new InvalidOperationException(&quot;No progress reporter is available for this step.&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+         var completionText = errorMessage ?? &quot;Failed&quot;;
+<span class="d">-        await step.Reporter.CompleteStepAsync(step, completionText, CompletionState.CompletedWithError, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await step.CompleteAsync(completionText, CompletionState.CompletedWithError, cancellationToken).ConfigureAwait(false);</span>
+         return step;
+     }
+ 
+<span class="h">@@ -89,18 +71,12 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;statusText&quot;&gt;The new status text.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The updated task.&lt;/returns&gt;
+<span class="d">-    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when the parent step is complete or no reporter is available.&lt;/exception&gt;</span>
+<span class="d">-    public static async Task&lt;PublishingTask&gt; UpdateStatusAsync(</span>
+<span class="d">-        this PublishingTask task,</span>
+<span class="a">+    public static async Task&lt;IPublishingTask&gt; UpdateStatusAsync(</span>
+<span class="a">+        this IPublishingTask task,</span>
+         string statusText,
+         CancellationToken cancellationToken = default)
+     {
+<span class="d">-        if (task.Reporter is null)</span>
+<span class="d">-        {</span>
+<span class="d">-            throw new InvalidOperationException(&quot;No progress reporter is available for this task.&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        await task.Reporter.UpdateTaskAsync(task, statusText, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await task.UpdateAsync(statusText, cancellationToken).ConfigureAwait(false);</span>
+         return task;
+     }
+ 
+<span class="h">@@ -111,18 +87,12 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;message&quot;&gt;Optional completion message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed task.&lt;/returns&gt;
+<span class="d">-    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when no reporter is available.&lt;/exception&gt;</span>
+<span class="d">-    public static async Task&lt;PublishingTask&gt; SucceedAsync(</span>
+<span class="d">-        this PublishingTask task,</span>
+<span class="a">+    public static async Task&lt;IPublishingTask&gt; SucceedAsync(</span>
+<span class="a">+        this IPublishingTask task,</span>
+         string? message = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="d">-        if (task.Reporter is null)</span>
+<span class="d">-        {</span>
+<span class="d">-            throw new InvalidOperationException(&quot;No progress reporter is available for this task.&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        await task.Reporter.CompleteTaskAsync(task, CompletionState.Completed, message, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await task.CompleteAsync(message, CompletionState.Completed, cancellationToken).ConfigureAwait(false);</span>
+         return task;
+     }
+ 
+<span class="h">@@ -133,18 +103,12 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;message&quot;&gt;Optional completion message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed task.&lt;/returns&gt;
+<span class="d">-    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when no reporter is available.&lt;/exception&gt;</span>
+<span class="d">-    public static async Task&lt;PublishingTask&gt; WarnAsync(</span>
+<span class="d">-        this PublishingTask task,</span>
+<span class="a">+    public static async Task&lt;IPublishingTask&gt; WarnAsync(</span>
+<span class="a">+        this IPublishingTask task,</span>
+         string? message = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="d">-        if (task.Reporter is null)</span>
+<span class="d">-        {</span>
+<span class="d">-            throw new InvalidOperationException(&quot;No progress reporter is available for this task.&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        await task.Reporter.CompleteTaskAsync(task, CompletionState.CompletedWithWarning, message, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await task.CompleteAsync(message, CompletionState.CompletedWithWarning, cancellationToken).ConfigureAwait(false);</span>
+         return task;
+     }
+ 
+<span class="h">@@ -155,18 +119,12 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;errorMessage&quot;&gt;Optional error message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed task.&lt;/returns&gt;
+<span class="d">-    /// &lt;exception cref=&quot;InvalidOperationException&quot;&gt;Thrown when no reporter is available.&lt;/exception&gt;</span>
+<span class="d">-    public static async Task&lt;PublishingTask&gt; FailAsync(</span>
+<span class="d">-        this PublishingTask task,</span>
+<span class="a">+    public static async Task&lt;IPublishingTask&gt; FailAsync(</span>
+<span class="a">+        this IPublishingTask task,</span>
+         string? errorMessage = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="d">-        if (task.Reporter is null)</span>
+<span class="d">-        {</span>
+<span class="d">-            throw new InvalidOperationException(&quot;No progress reporter is available for this task.&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        await task.Reporter.CompleteTaskAsync(task, CompletionState.CompletedWithError, errorMessage, cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+        await task.CompleteAsync(errorMessage, CompletionState.CompletedWithError, cancellationToken).ConfigureAwait(false);</span>
+         return task;
+     }
+<span class="d">-}</span>
+\ No newline at end of file
+<span class="a">+}</span></pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/46b8881190b2cddb17a6048172c79069d08701b0">46b8881190</a> (2025-10-18T12:35:06-07:00)</h2><p class="k">Rename AcitivityReporter and auto-create publishing steps (#12137)<br>Path after this commit: src/Aspire.Hosting/Publishing/PublishingExtensions.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Hosting/Publishing/PublishingExtensions.cs b/src/Aspire.Hosting/Publishing/PublishingExtensions.cs
+index 1e70bd0be1..c02b9c72d2 100644
+<span class="d">--- a/src/Aspire.Hosting/Publishing/PublishingExtensions.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting/Publishing/PublishingExtensions.cs</span>
+<span class="h">@@ -5,10 +5,10 @@</span>
+ 
+ using System.Diagnostics.CodeAnalysis;
+ 
+<span class="d">-namespace Aspire.Hosting.Publishing;</span>
+<span class="a">+namespace Aspire.Hosting.Pipelines;</span>
+ 
+ /// &lt;summary&gt;
+<span class="d">-/// Extension methods for &lt;see cref=&quot;IPublishingStep&quot;/&gt; and &lt;see cref=&quot;IPublishingTask&quot;/&gt; to provide direct operations.</span>
+<span class="a">+/// Extension methods for &lt;see cref=&quot;IReportingStep&quot;/&gt; and &lt;see cref=&quot;IReportingTask&quot;/&gt; to provide direct operations.</span>
+ /// &lt;/summary&gt;
+ [Experimental(&quot;ASPIREPUBLISHERS001&quot;, UrlFormat = &quot;https://aka.ms/aspire/diagnostics/{0}&quot;)]
+ public static class PublishingExtensions
+<span class="h">@@ -20,8 +20,8 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;message&quot;&gt;Optional completion message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed step.&lt;/returns&gt;
+<span class="d">-    public static async Task&lt;IPublishingStep&gt; SucceedAsync(</span>
+<span class="d">-        this IPublishingStep step,</span>
+<span class="a">+    public static async Task&lt;IReportingStep&gt; SucceedAsync(</span>
+<span class="a">+        this IReportingStep step,</span>
+         string? message = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="h">@@ -37,8 +37,8 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;message&quot;&gt;Optional completion message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed step.&lt;/returns&gt;
+<span class="d">-    public static async Task&lt;IPublishingStep&gt; WarnAsync(</span>
+<span class="d">-        this IPublishingStep step,</span>
+<span class="a">+    public static async Task&lt;IReportingStep&gt; WarnAsync(</span>
+<span class="a">+        this IReportingStep step,</span>
+         string? message = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="h">@@ -54,8 +54,8 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;errorMessage&quot;&gt;Optional error message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed step.&lt;/returns&gt;
+<span class="d">-    public static async Task&lt;IPublishingStep&gt; FailAsync(</span>
+<span class="d">-        this IPublishingStep step,</span>
+<span class="a">+    public static async Task&lt;IReportingStep&gt; FailAsync(</span>
+<span class="a">+        this IReportingStep step,</span>
+         string? errorMessage = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="h">@@ -71,8 +71,8 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;statusText&quot;&gt;The new status text.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The updated task.&lt;/returns&gt;
+<span class="d">-    public static async Task&lt;IPublishingTask&gt; UpdateStatusAsync(</span>
+<span class="d">-        this IPublishingTask task,</span>
+<span class="a">+    public static async Task&lt;IReportingTask&gt; UpdateStatusAsync(</span>
+<span class="a">+        this IReportingTask task,</span>
+         string statusText,
+         CancellationToken cancellationToken = default)
+     {
+<span class="h">@@ -87,8 +87,8 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;message&quot;&gt;Optional completion message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed task.&lt;/returns&gt;
+<span class="d">-    public static async Task&lt;IPublishingTask&gt; SucceedAsync(</span>
+<span class="d">-        this IPublishingTask task,</span>
+<span class="a">+    public static async Task&lt;IReportingTask&gt; SucceedAsync(</span>
+<span class="a">+        this IReportingTask task,</span>
+         string? message = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="h">@@ -103,8 +103,8 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;message&quot;&gt;Optional completion message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed task.&lt;/returns&gt;
+<span class="d">-    public static async Task&lt;IPublishingTask&gt; WarnAsync(</span>
+<span class="d">-        this IPublishingTask task,</span>
+<span class="a">+    public static async Task&lt;IReportingTask&gt; WarnAsync(</span>
+<span class="a">+        this IReportingTask task,</span>
+         string? message = null,
+         CancellationToken cancellationToken = default)
+     {
+<span class="h">@@ -119,8 +119,8 @@ public static class PublishingExtensions</span>
+     /// &lt;param name=&quot;errorMessage&quot;&gt;Optional error message.&lt;/param&gt;
+     /// &lt;param name=&quot;cancellationToken&quot;&gt;The cancellation token.&lt;/param&gt;
+     /// &lt;returns&gt;The completed task.&lt;/returns&gt;
+<span class="d">-    public static async Task&lt;IPublishingTask&gt; FailAsync(</span>
+<span class="d">-        this IPublishingTask task,</span>
+<span class="a">+    public static async Task&lt;IReportingTask&gt; FailAsync(</span>
+<span class="a">+        this IReportingTask task,</span>
+         string? errorMessage = null,
+         CancellationToken cancellationToken = default)
+     {</pre><h2>Commit #4: <a href="https://github.com/dotnet/aspire/commit/861eadf3c3b4cdef35df3593aa0881e5f87189de">861eadf3c3</a> (2025-10-27T21:49:41-07:00)</h2><p class="k">Rename ASPIREPUBLISHERS001 to sequential ASPIREPIPELINES001-003 diagnostic codes (#12416)<br>Path after this commit: src/Aspire.Hosting/Publishing/PublishingExtensions.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Hosting/Publishing/PublishingExtensions.cs b/src/Aspire.Hosting/Publishing/PublishingExtensions.cs
+index c02b9c72d2..8a26f0cb3c 100644
+<span class="d">--- a/src/Aspire.Hosting/Publishing/PublishingExtensions.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting/Publishing/PublishingExtensions.cs</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ // Licensed to the .NET Foundation under one or more agreements.
+ // The .NET Foundation licenses this file to you under the MIT license.
+ 
+<span class="d">-#pragma warning disable ASPIREPUBLISHERS001</span>
+<span class="a">+#pragma warning disable ASPIREPIPELINES001</span>
+ 
+ using System.Diagnostics.CodeAnalysis;
+ 
+<span class="h">@@ -10,7 +10,7 @@ namespace Aspire.Hosting.Pipelines;</span>
+ /// &lt;summary&gt;
+ /// Extension methods for &lt;see cref=&quot;IReportingStep&quot;/&gt; and &lt;see cref=&quot;IReportingTask&quot;/&gt; to provide direct operations.
+ /// &lt;/summary&gt;
+<span class="d">-[Experimental(&quot;ASPIREPUBLISHERS001&quot;, UrlFormat = &quot;https://aka.ms/aspire/diagnostics/{0}&quot;)]</span>
+<span class="a">+[Experimental(&quot;ASPIREPIPELINES001&quot;, UrlFormat = &quot;https://aka.ms/aspire/diagnostics/{0}&quot;)]</span>
+ public static class PublishingExtensions
+ {
+     /// &lt;summary&gt;</pre></body></html>

@@ -1,0 +1,102 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L155</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L155</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-rust">azure/azure-sdk-for-rust</a><br><b>File at merge:</b> sdk/core/azure_core/src/credentials.rs, line 98<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-sdk-for-rust/commit/ee975d0775719b7d2e9c7910661fbc0bee0db814">ee975d0775</a> (2025-05-29T22:10:09)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-rust/tree/b4fbd3eefaacaa9efa2f2e66f5f2554f3b356a89">b4fbd3eefa</a>)</p><p><b>The line:</b></p><pre><span class="t">    /// Gets an [`AccessToken`] for the specified scopes</span></pre><h2>File at the merge commit, lines 90 to 104</h2><pre>   90 | /// Options for getting a token from a [`TokenCredential`]
+   91 | #[derive(Clone, Default, SafeDebug)]
+   92 | pub struct TokenRequestOptions;
+   93 | 
+   94 | /// Represents a credential capable of providing an OAuth token.
+   95 | #[cfg_attr(target_arch = &quot;wasm32&quot;, async_trait::async_trait(?Send))]
+   96 | #[cfg_attr(not(target_arch = &quot;wasm32&quot;), async_trait::async_trait)]
+   97 | pub trait TokenCredential: Send + Sync + Debug {
+<span class="t">   98 |     /// Gets an [`AccessToken`] for the specified scopes</span>
+   99 |     async fn get_token(
+  100 |         &amp;self,
+  101 |         scopes: &amp;[&amp;str],
+  102 |         options: Option&lt;TokenRequestOptions&gt;,
+  103 |     ) -&gt; crate::Result&lt;AccessToken&gt;;
+  104 | }</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-rust/commit/7e4c7d9ca073ecfa9f7ed39e90e4be6ce219d600">7e4c7d9ca0</a> (2025-06-19T13:39:48-07:00)</h2><p class="k">Standardize on time::Duration and time::OffsetDateTime for time elements (#2713)<br>Path after this commit: sdk/core/azure_core/src/credentials.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/core/azure_core/src/credentials.rs b/sdk/core/azure_core/src/credentials.rs
+index 20010cffdf..e52722a133 100644
+<span class="d">--- a/sdk/core/azure_core/src/credentials.rs</span>
+<span class="a">+++ b/sdk/core/azure_core/src/credentials.rs</span>
+<span class="h">@@ -5,7 +5,7 @@</span>
+ 
+ use serde::{Deserialize, Serialize};
+ use std::{borrow::Cow, fmt::Debug};
+<span class="d">-use typespec_client_core::{date::OffsetDateTime, fmt::SafeDebug};</span>
+<span class="a">+use typespec_client_core::{fmt::SafeDebug, time::OffsetDateTime};</span>
+ 
+ /// Default Azure authorization scope.
+ pub static DEFAULT_SCOPE_SUFFIX: &amp;str = &quot;/.default&quot;;</pre><h2>Commit #2: <a href="https://github.com/azure/azure-sdk-for-rust/commit/86c31c438a485a5493e1a46e14e1fbf6f8282f36">86c31c438a</a> (2025-09-11T23:10:54+00:00)</h2><p class="k">Credentials use azure_core Pipelines (#2986)<br>Path after this commit: sdk/core/azure_core/src/credentials.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/core/azure_core/src/credentials.rs b/sdk/core/azure_core/src/credentials.rs
+index e52722a133..839fd6f949 100644
+<span class="d">--- a/sdk/core/azure_core/src/credentials.rs</span>
+<span class="a">+++ b/sdk/core/azure_core/src/credentials.rs</span>
+<span class="h">@@ -5,7 +5,7 @@</span>
+ 
+ use serde::{Deserialize, Serialize};
+ use std::{borrow::Cow, fmt::Debug};
+<span class="d">-use typespec_client_core::{fmt::SafeDebug, time::OffsetDateTime};</span>
+<span class="a">+use typespec_client_core::{fmt::SafeDebug, http::ClientMethodOptions, time::OffsetDateTime};</span>
+ 
+ /// Default Azure authorization scope.
+ pub static DEFAULT_SCOPE_SUFFIX: &amp;str = &quot;/.default&quot;;
+<span class="h">@@ -89,7 +89,9 @@ impl AccessToken {</span>
+ 
+ /// Options for getting a token from a [`TokenCredential`]
+ #[derive(Clone, Default, SafeDebug)]
+<span class="d">-pub struct TokenRequestOptions;</span>
+<span class="a">+pub struct TokenRequestOptions&lt;&#x27;a&gt; {</span>
+<span class="a">+    pub method_options: ClientMethodOptions&lt;&#x27;a&gt;,</span>
+<span class="a">+}</span>
+ 
+ /// Represents a credential capable of providing an OAuth token.
+ #[cfg_attr(target_arch = &quot;wasm32&quot;, async_trait::async_trait(?Send))]
+<span class="h">@@ -99,6 +101,6 @@ pub trait TokenCredential: Send + Sync + Debug {</span>
+     async fn get_token(
+         &amp;self,
+         scopes: &amp;[&amp;str],
+<span class="d">-        options: Option&lt;TokenRequestOptions&gt;,</span>
+<span class="a">+        options: Option&lt;TokenRequestOptions&lt;&#x27;_&gt;&gt;,</span>
+     ) -&gt; crate::Result&lt;AccessToken&gt;;
+ }</pre><h2>Commit #3: <a href="https://github.com/azure/azure-sdk-for-rust/commit/a5835c1de16ee38b60933733298c38413e16cf32">a5835c1de1</a> (2025-09-17T23:02:33+00:00)</h2><p class="k">Enabled doc comments in azure_core and azure_identity packages (#2990)<br>Path after this commit: sdk/core/azure_core/src/credentials.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/core/azure_core/src/credentials.rs b/sdk/core/azure_core/src/credentials.rs
+index 839fd6f949..99fbd9960a 100644
+<span class="d">--- a/sdk/core/azure_core/src/credentials.rs</span>
+<span class="a">+++ b/sdk/core/azure_core/src/credentials.rs</span>
+<span class="h">@@ -17,6 +17,7 @@ pub static DEFAULT_SCOPE_SUFFIX: &amp;str = &quot;/.default&quot;;</span>
+ pub struct Secret(Cow&lt;&#x27;static, str&gt;);
+ 
+ impl Secret {
+<span class="a">+    /// Create a new `Secret`.</span>
+     pub fn new&lt;T&gt;(access_token: T) -&gt; Self
+     where
+         T: Into&lt;Cow&lt;&#x27;static, str&gt;&gt;,
+<span class="h">@@ -24,6 +25,7 @@ impl Secret {</span>
+         Self(access_token.into())
+     }
+ 
+<span class="a">+    /// Get the secret value.</span>
+     pub fn secret(&amp;self) -&gt; &amp;str {
+         &amp;self.0
+     }
+<span class="h">@@ -90,6 +92,7 @@ impl AccessToken {</span>
+ /// Options for getting a token from a [`TokenCredential`]
+ #[derive(Clone, Default, SafeDebug)]
+ pub struct TokenRequestOptions&lt;&#x27;a&gt; {
+<span class="a">+    /// Method options to be used when requesting a token.</span>
+     pub method_options: ClientMethodOptions&lt;&#x27;a&gt;,
+ }
+ </pre><h2>Commit #4: <a href="https://github.com/azure/azure-sdk-for-rust/commit/b244dea9f324425a1dc9e3a1c99ecf8ed1ed43ad">b244dea9f3</a> (2025-11-04T10:28:35-08:00)</h2><p class="k">Remove credentials::DEFAULT_SCOPE_SUFFIX (#3287)<br>Path after this commit: sdk/core/azure_core/src/credentials.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/core/azure_core/src/credentials.rs b/sdk/core/azure_core/src/credentials.rs
+index 99fbd9960a..9ed605ffca 100644
+<span class="d">--- a/sdk/core/azure_core/src/credentials.rs</span>
+<span class="a">+++ b/sdk/core/azure_core/src/credentials.rs</span>
+<span class="h">@@ -7,9 +7,6 @@ use serde::{Deserialize, Serialize};</span>
+ use std::{borrow::Cow, fmt::Debug};
+ use typespec_client_core::{fmt::SafeDebug, http::ClientMethodOptions, time::OffsetDateTime};
+ 
+<span class="d">-/// Default Azure authorization scope.</span>
+<span class="d">-pub static DEFAULT_SCOPE_SUFFIX: &amp;str = &quot;/.default&quot;;</span>
+<span class="d">-</span>
+ /// Represents a secret.
+ ///
+ /// The [`Debug`] implementation will not print the secret.</pre></body></html>

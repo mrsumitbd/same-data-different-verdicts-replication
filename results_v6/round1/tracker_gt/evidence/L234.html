@@ -1,0 +1,473 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L234</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L234</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> src/crewai/utilities/events/agent_events.py, line 10<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/00c2f5043e80be88dc3337d5e57a73358f5ca11a">00c2f5043e</a> (2025-02-19T21:52:47)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">    from crewai.agents.agent_builder.base_agent import BaseAgent</span></pre><h2>File at the merge commit, lines 2 to 18</h2><pre>    2 | 
+    3 | from crewai.agents.agent_builder.base_agent import BaseAgent
+    4 | from crewai.tools.base_tool import BaseTool
+    5 | from crewai.tools.structured_tool import CrewStructuredTool
+    6 | 
+    7 | from .base_events import CrewEvent
+    8 | 
+    9 | if TYPE_CHECKING:
+<span class="t">   10 |     from crewai.agents.agent_builder.base_agent import BaseAgent</span>
+   11 | 
+   12 | 
+   13 | class AgentExecutionStartedEvent(CrewEvent):
+   14 |     &quot;&quot;&quot;Event emitted when an agent starts executing a task&quot;&quot;&quot;
+   15 | 
+   16 |     agent: BaseAgent
+   17 |     task: Any
+   18 |     tools: Optional[Sequence[Union[BaseTool, CrewStructuredTool]]]</pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/e1a73e0c44fd85b2ad34ca0a3eda57964c0dee4b">e1a73e0c44</a> (2025-03-26T14:54:23-07:00)</h2><p class="k">Using fingerprints (#2456)<br>Path after this commit: src/crewai/utilities/events/agent_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/utilities/events/agent_events.py b/src/crewai/utilities/events/agent_events.py
+index ed0480957..3d325b41c 100644
+<span class="d">--- a/src/crewai/utilities/events/agent_events.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/agent_events.py</span>
+<span class="h">@@ -21,6 +21,15 @@ class AgentExecutionStartedEvent(CrewEvent):</span>
+ 
+     model_config = {&quot;arbitrary_types_allowed&quot;: True}
+ 
+<span class="a">+    def __init__(self, **data):</span>
+<span class="a">+        super().__init__(**data)</span>
+<span class="a">+        # Set fingerprint data from the agent</span>
+<span class="a">+        if hasattr(self.agent, &#x27;fingerprint&#x27;) and self.agent.fingerprint:</span>
+<span class="a">+            self.source_fingerprint = self.agent.fingerprint.uuid_str</span>
+<span class="a">+            self.source_type = &quot;agent&quot;</span>
+<span class="a">+            if hasattr(self.agent.fingerprint, &#x27;metadata&#x27;) and self.agent.fingerprint.metadata:</span>
+<span class="a">+                self.fingerprint_metadata = self.agent.fingerprint.metadata</span>
+<span class="a">+</span>
+ 
+ class AgentExecutionCompletedEvent(CrewEvent):
+     &quot;&quot;&quot;Event emitted when an agent completes executing a task&quot;&quot;&quot;
+<span class="h">@@ -30,6 +39,15 @@ class AgentExecutionCompletedEvent(CrewEvent):</span>
+     output: str
+     type: str = &quot;agent_execution_completed&quot;
+ 
+<span class="a">+    def __init__(self, **data):</span>
+<span class="a">+        super().__init__(**data)</span>
+<span class="a">+        # Set fingerprint data from the agent</span>
+<span class="a">+        if hasattr(self.agent, &#x27;fingerprint&#x27;) and self.agent.fingerprint:</span>
+<span class="a">+            self.source_fingerprint = self.agent.fingerprint.uuid_str</span>
+<span class="a">+            self.source_type = &quot;agent&quot;</span>
+<span class="a">+            if hasattr(self.agent.fingerprint, &#x27;metadata&#x27;) and self.agent.fingerprint.metadata:</span>
+<span class="a">+                self.fingerprint_metadata = self.agent.fingerprint.metadata</span>
+<span class="a">+</span>
+ 
+ class AgentExecutionErrorEvent(CrewEvent):
+     &quot;&quot;&quot;Event emitted when an agent encounters an error during execution&quot;&quot;&quot;
+<span class="h">@@ -38,3 +56,12 @@ class AgentExecutionErrorEvent(CrewEvent):</span>
+     task: Any
+     error: str
+     type: str = &quot;agent_execution_error&quot;
+<span class="a">+</span>
+<span class="a">+    def __init__(self, **data):</span>
+<span class="a">+        super().__init__(**data)</span>
+<span class="a">+        # Set fingerprint data from the agent</span>
+<span class="a">+        if hasattr(self.agent, &#x27;fingerprint&#x27;) and self.agent.fingerprint:</span>
+<span class="a">+            self.source_fingerprint = self.agent.fingerprint.uuid_str</span>
+<span class="a">+            self.source_type = &quot;agent&quot;</span>
+<span class="a">+            if hasattr(self.agent.fingerprint, &#x27;metadata&#x27;) and self.agent.fingerprint.metadata:</span>
+<span class="a">+                self.fingerprint_metadata = self.agent.fingerprint.metadata</span></pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/f845fac4da7ec0255f966bf5f5999e713f0535e5">f845fac4da</a> (2025-03-27T15:42:11-03:00)</h2><p class="k">Refactor event base classes (#2491)<br>Path after this commit: src/crewai/utilities/events/agent_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/utilities/events/agent_events.py b/src/crewai/utilities/events/agent_events.py
+index 3d325b41c..0bb6b4f38 100644
+<span class="d">--- a/src/crewai/utilities/events/agent_events.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/agent_events.py</span>
+<span class="h">@@ -4,13 +4,13 @@ from crewai.agents.agent_builder.base_agent import BaseAgent</span>
+ from crewai.tools.base_tool import BaseTool
+ from crewai.tools.structured_tool import CrewStructuredTool
+ 
+<span class="d">-from .base_events import CrewEvent</span>
+<span class="a">+from .base_events import BaseEvent</span>
+ 
+ if TYPE_CHECKING:
+<span class=" m">     from crewai.agents.agent_builder.base_agent import BaseAgent</span>
+ 
+ 
+<span class="d">-class AgentExecutionStartedEvent(CrewEvent):</span>
+<span class="a">+class AgentExecutionStartedEvent(BaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when an agent starts executing a task&quot;&quot;&quot;
+ 
+     agent: BaseAgent
+<span class="h">@@ -24,14 +24,17 @@ class AgentExecutionStartedEvent(CrewEvent):</span>
+     def __init__(self, **data):
+         super().__init__(**data)
+         # Set fingerprint data from the agent
+<span class="d">-        if hasattr(self.agent, &#x27;fingerprint&#x27;) and self.agent.fingerprint:</span>
+<span class="a">+        if hasattr(self.agent, &quot;fingerprint&quot;) and self.agent.fingerprint:</span>
+             self.source_fingerprint = self.agent.fingerprint.uuid_str
+             self.source_type = &quot;agent&quot;
+<span class="d">-            if hasattr(self.agent.fingerprint, &#x27;metadata&#x27;) and self.agent.fingerprint.metadata:</span>
+<span class="a">+            if (</span>
+<span class="a">+                hasattr(self.agent.fingerprint, &quot;metadata&quot;)</span>
+<span class="a">+                and self.agent.fingerprint.metadata</span>
+<span class="a">+            ):</span>
+                 self.fingerprint_metadata = self.agent.fingerprint.metadata
+ 
+ 
+<span class="d">-class AgentExecutionCompletedEvent(CrewEvent):</span>
+<span class="a">+class AgentExecutionCompletedEvent(BaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when an agent completes executing a task&quot;&quot;&quot;
+ 
+     agent: BaseAgent
+<span class="h">@@ -42,14 +45,17 @@ class AgentExecutionCompletedEvent(CrewEvent):</span>
+     def __init__(self, **data):
+         super().__init__(**data)
+         # Set fingerprint data from the agent
+<span class="d">-        if hasattr(self.agent, &#x27;fingerprint&#x27;) and self.agent.fingerprint:</span>
+<span class="a">+        if hasattr(self.agent, &quot;fingerprint&quot;) and self.agent.fingerprint:</span>
+             self.source_fingerprint = self.agent.fingerprint.uuid_str
+             self.source_type = &quot;agent&quot;
+<span class="d">-            if hasattr(self.agent.fingerprint, &#x27;metadata&#x27;) and self.agent.fingerprint.metadata:</span>
+<span class="a">+            if (</span>
+<span class="a">+                hasattr(self.agent.fingerprint, &quot;metadata&quot;)</span>
+<span class="a">+                and self.agent.fingerprint.metadata</span>
+<span class="a">+            ):</span>
+                 self.fingerprint_metadata = self.agent.fingerprint.metadata
+ 
+ 
+<span class="d">-class AgentExecutionErrorEvent(CrewEvent):</span>
+<span class="a">+class AgentExecutionErrorEvent(BaseEvent):</span>
+     &quot;&quot;&quot;Event emitted when an agent encounters an error during execution&quot;&quot;&quot;
+ 
+     agent: BaseAgent
+<span class="h">@@ -60,8 +66,11 @@ class AgentExecutionErrorEvent(CrewEvent):</span>
+     def __init__(self, **data):
+         super().__init__(**data)
+         # Set fingerprint data from the agent
+<span class="d">-        if hasattr(self.agent, &#x27;fingerprint&#x27;) and self.agent.fingerprint:</span>
+<span class="a">+        if hasattr(self.agent, &quot;fingerprint&quot;) and self.agent.fingerprint:</span>
+             self.source_fingerprint = self.agent.fingerprint.uuid_str
+             self.source_type = &quot;agent&quot;
+<span class="d">-            if hasattr(self.agent.fingerprint, &#x27;metadata&#x27;) and self.agent.fingerprint.metadata:</span>
+<span class="a">+            if (</span>
+<span class="a">+                hasattr(self.agent.fingerprint, &quot;metadata&quot;)</span>
+<span class="a">+                and self.agent.fingerprint.metadata</span>
+<span class="a">+            ):</span>
+                 self.fingerprint_metadata = self.agent.fingerprint.metadata</pre><h2>Commit #3: <a href="https://github.com/crewaiinc/crewai/commit/efe27bd570d91f00af59f1d605d87e7b82c2bc88">efe27bd570</a> (2025-04-02T08:54:46-07:00)</h2><p class="k">Feat/individual react agent (#2483)<br>Path after this commit: src/crewai/utilities/events/agent_events.py. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: src/crewai/lite_agent.py, src/crewai/tools/tool_usage.py.</p><pre>diff --git a/src/crewai/utilities/events/agent_events.py b/src/crewai/utilities/events/agent_events.py
+index 0bb6b4f38..51b8d2122 100644
+<span class="d">--- a/src/crewai/utilities/events/agent_events.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/agent_events.py</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, Union</span>
+<span class="a">+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union</span>
+ 
+<span class=" m"> from crewai.agents.agent_builder.base_agent import BaseAgent</span>
+ from crewai.tools.base_tool import BaseTool
+<span class="h">@@ -74,3 +74,31 @@ class AgentExecutionErrorEvent(BaseEvent):</span>
+                 and self.agent.fingerprint.metadata
+             ):
+                 self.fingerprint_metadata = self.agent.fingerprint.metadata
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+# New event classes for LiteAgent</span>
+<span class="a">+class LiteAgentExecutionStartedEvent(BaseEvent):</span>
+<span class="a">+    &quot;&quot;&quot;Event emitted when a LiteAgent starts executing&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    agent_info: Dict[str, Any]</span>
+<span class="a">+    tools: Optional[Sequence[Union[BaseTool, CrewStructuredTool]]]</span>
+<span class="a">+    messages: Union[str, List[Dict[str, str]]]</span>
+<span class="a">+    type: str = &quot;lite_agent_execution_started&quot;</span>
+<span class="a">+</span>
+<span class="a">+    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class LiteAgentExecutionCompletedEvent(BaseEvent):</span>
+<span class="a">+    &quot;&quot;&quot;Event emitted when a LiteAgent completes execution&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    agent_info: Dict[str, Any]</span>
+<span class="a">+    output: str</span>
+<span class="a">+    type: str = &quot;lite_agent_execution_completed&quot;</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class LiteAgentExecutionErrorEvent(BaseEvent):</span>
+<span class="a">+    &quot;&quot;&quot;Event emitted when a LiteAgent encounters an error during execution&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    agent_info: Dict[str, Any]</span>
+<span class="a">+    error: str</span>
+<span class="a">+    type: str = &quot;lite_agent_execution_error&quot;</span></pre><h2>Commit #4: <a href="https://github.com/crewaiinc/crewai/commit/a5b5c8ab37d696e5c9df1dafe2df68b8ef2f9e7e">a5b5c8ab37</a> (2025-06-14T12:21:46-07:00)</h2><p class="k">Lorenze/console printer nice (#3004)<br>Path after this commit: src/crewai/utilities/events/agent_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/utilities/events/agent_events.py b/src/crewai/utilities/events/agent_events.py
+index 51b8d2122..2699e346e 100644
+<span class="d">--- a/src/crewai/utilities/events/agent_events.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/agent_events.py</span>
+<span class="h">@@ -102,3 +102,24 @@ class LiteAgentExecutionErrorEvent(BaseEvent):</span>
+     agent_info: Dict[str, Any]
+     error: str
+     type: str = &quot;lite_agent_execution_error&quot;
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+# New logging events</span>
+<span class="a">+class AgentLogsStartedEvent(BaseEvent):</span>
+<span class="a">+    &quot;&quot;&quot;Event emitted when agent logs should be shown at start&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    agent_role: str</span>
+<span class="a">+    task_description: Optional[str] = None</span>
+<span class="a">+    verbose: bool = False</span>
+<span class="a">+    type: str = &quot;agent_logs_started&quot;</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class AgentLogsExecutionEvent(BaseEvent):</span>
+<span class="a">+    &quot;&quot;&quot;Event emitted when agent logs should be shown during execution&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    agent_role: str</span>
+<span class="a">+    formatted_answer: Any</span>
+<span class="a">+    verbose: bool = False</span>
+<span class="a">+    type: str = &quot;agent_logs_execution&quot;</span>
+<span class="a">+</span>
+<span class="a">+    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span></pre><h2>Commit #5: <a href="https://github.com/crewaiinc/crewai/commit/9b67e5a15f02ffbd0535bc148667e08887fad97b">9b67e5a15f</a> (2025-07-16T13:18:59-04:00)</h2><p class="k">Emit events about Agent eval (#3168)<br>Path after this commit: src/crewai/utilities/events/agent_events.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/utilities/events/agent_events.py b/src/crewai/utilities/events/agent_events.py
+index 2699e346e..6e66085e0 100644
+<span class="d">--- a/src/crewai/utilities/events/agent_events.py</span>
+<span class="a">+++ b/src/crewai/utilities/events/agent_events.py</span>
+<span class="h">@@ -123,3 +123,28 @@ class AgentLogsExecutionEvent(BaseEvent):</span>
+     type: str = &quot;agent_logs_execution&quot;
+ 
+     model_config = {&quot;arbitrary_types_allowed&quot;: True}
+<span class="a">+</span>
+<span class="a">+# Agent Eval events</span>
+<span class="a">+class AgentEvaluationStartedEvent(BaseEvent):</span>
+<span class="a">+    agent_id: str</span>
+<span class="a">+    agent_role: str</span>
+<span class="a">+    task_id: str | None = None</span>
+<span class="a">+    iteration: int</span>
+<span class="a">+    type: str = &quot;agent_evaluation_started&quot;</span>
+<span class="a">+</span>
+<span class="a">+class AgentEvaluationCompletedEvent(BaseEvent):</span>
+<span class="a">+    agent_id: str</span>
+<span class="a">+    agent_role: str</span>
+<span class="a">+    task_id: str | None = None</span>
+<span class="a">+    iteration: int</span>
+<span class="a">+    metric_category: Any</span>
+<span class="a">+    score: Any</span>
+<span class="a">+    type: str = &quot;agent_evaluation_completed&quot;</span>
+<span class="a">+</span>
+<span class="a">+class AgentEvaluationFailedEvent(BaseEvent):</span>
+<span class="a">+    agent_id: str</span>
+<span class="a">+    agent_role: str</span>
+<span class="a">+    task_id: str | None = None</span>
+<span class="a">+    iteration: int</span>
+<span class="a">+    error: str</span>
+<span class="a">+    type: str = &quot;agent_evaluation_failed&quot;</span></pre><h2>Commit #6: <a href="https://github.com/crewaiinc/crewai/commit/878c1a649af98a0155bdba5f4c2e903c8b6a1d58">878c1a649a</a> (2025-09-02T10:06:42-04:00)</h2><p class="k">refactor: Move events module to crewai.events (#3425)<br>Path after this commit: src/crewai/events/types/agent_events.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/crewai/utilities/events/agent_events.py b/src/crewai/events/types/agent_events.py
+similarity index 78%
+rename from src/crewai/utilities/events/agent_events.py
+rename to src/crewai/events/types/agent_events.py
+index 6e66085e0..c182499b6 100644
+<span class="d">--- a/src/crewai/utilities/events/agent_events.py</span>
+<span class="a">+++ b/src/crewai/events/types/agent_events.py</span>
+<span class="h">@@ -1,13 +1,15 @@</span>
+<span class="d">-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union</span>
+<span class="a">+&quot;&quot;&quot;Agent-related events moved to break circular dependencies.&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+from __future__ import annotations</span>
+<span class="a">+</span>
+<span class="a">+from typing import Any, Dict, List, Optional, Sequence, Union</span>
+<span class="a">+</span>
+<span class="a">+from pydantic import model_validator</span>
+ 
+<span class=" m"> from crewai.agents.agent_builder.base_agent import BaseAgent</span>
+ from crewai.tools.base_tool import BaseTool
+ from crewai.tools.structured_tool import CrewStructuredTool
+<span class="d">-</span>
+<span class="d">-from .base_events import BaseEvent</span>
+<span class="d">-</span>
+<span class="d">-if TYPE_CHECKING:</span>
+<span class="d m">-    from crewai.agents.agent_builder.base_agent import BaseAgent</span>
+<span class="a">+from crewai.events.base_events import BaseEvent</span>
+ 
+ 
+ class AgentExecutionStartedEvent(BaseEvent):
+<span class="h">@@ -21,9 +23,9 @@ class AgentExecutionStartedEvent(BaseEvent):</span>
+ 
+     model_config = {&quot;arbitrary_types_allowed&quot;: True}
+ 
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the agent</span>
+<span class="a">+    @model_validator(mode=&quot;after&quot;)</span>
+<span class="a">+    def set_fingerprint_data(self):</span>
+<span class="a">+        &quot;&quot;&quot;Set fingerprint data from the agent if available.&quot;&quot;&quot;</span>
+         if hasattr(self.agent, &quot;fingerprint&quot;) and self.agent.fingerprint:
+             self.source_fingerprint = self.agent.fingerprint.uuid_str
+             self.source_type = &quot;agent&quot;
+<span class="h">@@ -32,6 +34,7 @@ class AgentExecutionStartedEvent(BaseEvent):</span>
+                 and self.agent.fingerprint.metadata
+             ):
+                 self.fingerprint_metadata = self.agent.fingerprint.metadata
+<span class="a">+        return self</span>
+ 
+ 
+ class AgentExecutionCompletedEvent(BaseEvent):
+<span class="h">@@ -42,9 +45,11 @@ class AgentExecutionCompletedEvent(BaseEvent):</span>
+     output: str
+     type: str = &quot;agent_execution_completed&quot;
+ 
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the agent</span>
+<span class="a">+    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span>
+<span class="a">+</span>
+<span class="a">+    @model_validator(mode=&quot;after&quot;)</span>
+<span class="a">+    def set_fingerprint_data(self):</span>
+<span class="a">+        &quot;&quot;&quot;Set fingerprint data from the agent if available.&quot;&quot;&quot;</span>
+         if hasattr(self.agent, &quot;fingerprint&quot;) and self.agent.fingerprint:
+             self.source_fingerprint = self.agent.fingerprint.uuid_str
+             self.source_type = &quot;agent&quot;
+<span class="h">@@ -53,6 +58,7 @@ class AgentExecutionCompletedEvent(BaseEvent):</span>
+                 and self.agent.fingerprint.metadata
+             ):
+                 self.fingerprint_metadata = self.agent.fingerprint.metadata
+<span class="a">+        return self</span>
+ 
+ 
+ class AgentExecutionErrorEvent(BaseEvent):
+<span class="h">@@ -63,9 +69,11 @@ class AgentExecutionErrorEvent(BaseEvent):</span>
+     error: str
+     type: str = &quot;agent_execution_error&quot;
+ 
+<span class="d">-    def __init__(self, **data):</span>
+<span class="d">-        super().__init__(**data)</span>
+<span class="d">-        # Set fingerprint data from the agent</span>
+<span class="a">+    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span>
+<span class="a">+</span>
+<span class="a">+    @model_validator(mode=&quot;after&quot;)</span>
+<span class="a">+    def set_fingerprint_data(self):</span>
+<span class="a">+        &quot;&quot;&quot;Set fingerprint data from the agent if available.&quot;&quot;&quot;</span>
+         if hasattr(self.agent, &quot;fingerprint&quot;) and self.agent.fingerprint:
+             self.source_fingerprint = self.agent.fingerprint.uuid_str
+             self.source_type = &quot;agent&quot;
+<span class="h">@@ -74,6 +82,7 @@ class AgentExecutionErrorEvent(BaseEvent):</span>
+                 and self.agent.fingerprint.metadata
+             ):
+                 self.fingerprint_metadata = self.agent.fingerprint.metadata
+<span class="a">+        return self</span>
+ 
+ 
+ # New event classes for LiteAgent
+<span class="h">@@ -104,26 +113,6 @@ class LiteAgentExecutionErrorEvent(BaseEvent):</span>
+     type: str = &quot;lite_agent_execution_error&quot;
+ 
+ 
+<span class="d">-# New logging events</span>
+<span class="d">-class AgentLogsStartedEvent(BaseEvent):</span>
+<span class="d">-    &quot;&quot;&quot;Event emitted when agent logs should be shown at start&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    agent_role: str</span>
+<span class="d">-    task_description: Optional[str] = None</span>
+<span class="d">-    verbose: bool = False</span>
+<span class="d">-    type: str = &quot;agent_logs_started&quot;</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class AgentLogsExecutionEvent(BaseEvent):</span>
+<span class="d">-    &quot;&quot;&quot;Event emitted when agent logs should be shown during execution&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    agent_role: str</span>
+<span class="d">-    formatted_answer: Any</span>
+<span class="d">-    verbose: bool = False</span>
+<span class="d">-    type: str = &quot;agent_logs_execution&quot;</span>
+<span class="d">-</span>
+<span class="d">-    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span>
+<span class="d">-</span>
+ # Agent Eval events
+ class AgentEvaluationStartedEvent(BaseEvent):
+     agent_id: str
+<span class="h">@@ -132,6 +121,7 @@ class AgentEvaluationStartedEvent(BaseEvent):</span>
+     iteration: int
+     type: str = &quot;agent_evaluation_started&quot;
+ 
+<span class="a">+</span>
+ class AgentEvaluationCompletedEvent(BaseEvent):
+     agent_id: str
+     agent_role: str
+<span class="h">@@ -141,6 +131,7 @@ class AgentEvaluationCompletedEvent(BaseEvent):</span>
+     score: Any
+     type: str = &quot;agent_evaluation_completed&quot;
+ 
+<span class="a">+</span>
+ class AgentEvaluationFailedEvent(BaseEvent):
+     agent_id: str
+     agent_role: str</pre><h2>Commit #7: <a href="https://github.com/crewaiinc/crewai/commit/2cfc4d37b812fdbc38bc62ee12f0e49ee287cbe7">2cfc4d37b8</a> (2025-09-19T20:10:55-04:00)</h2><p class="k">chore: apply ruff linting fixes to events module<br>Path after this commit: src/crewai/events/types/agent_events.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/crewai/events/types/agent_events.py b/src/crewai/events/types/agent_events.py
+index c182499b6..5a5ab52a7 100644
+<span class="d">--- a/src/crewai/events/types/agent_events.py</span>
+<span class="a">+++ b/src/crewai/events/types/agent_events.py</span>
+<span class="h">@@ -2,14 +2,15 @@</span>
+ 
+ from __future__ import annotations
+ 
+<span class="d">-from typing import Any, Dict, List, Optional, Sequence, Union</span>
+<span class="a">+from collections.abc import Sequence</span>
+<span class="a">+from typing import Any</span>
+ 
+<span class="d">-from pydantic import model_validator</span>
+<span class="a">+from pydantic import ConfigDict, model_validator</span>
+ 
+<span class=" m"> from crewai.agents.agent_builder.base_agent import BaseAgent</span>
+<span class="a">+from crewai.events.base_events import BaseEvent</span>
+ from crewai.tools.base_tool import BaseTool
+ from crewai.tools.structured_tool import CrewStructuredTool
+<span class="d">-from crewai.events.base_events import BaseEvent</span>
+ 
+ 
+ class AgentExecutionStartedEvent(BaseEvent):
+<span class="h">@@ -17,11 +18,11 @@ class AgentExecutionStartedEvent(BaseEvent):</span>
+ 
+     agent: BaseAgent
+     task: Any
+<span class="d">-    tools: Optional[Sequence[Union[BaseTool, CrewStructuredTool]]]</span>
+<span class="a">+    tools: Sequence[BaseTool | CrewStructuredTool] | None</span>
+     task_prompt: str
+     type: str = &quot;agent_execution_started&quot;
+ 
+<span class="d">-    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span>
+<span class="a">+    model_config = ConfigDict(arbitrary_types_allowed=True)</span>
+ 
+     @model_validator(mode=&quot;after&quot;)
+     def set_fingerprint_data(self):
+<span class="h">@@ -45,7 +46,7 @@ class AgentExecutionCompletedEvent(BaseEvent):</span>
+     output: str
+     type: str = &quot;agent_execution_completed&quot;
+ 
+<span class="d">-    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span>
+<span class="a">+    model_config = ConfigDict(arbitrary_types_allowed=True)</span>
+ 
+     @model_validator(mode=&quot;after&quot;)
+     def set_fingerprint_data(self):
+<span class="h">@@ -69,7 +70,7 @@ class AgentExecutionErrorEvent(BaseEvent):</span>
+     error: str
+     type: str = &quot;agent_execution_error&quot;
+ 
+<span class="d">-    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span>
+<span class="a">+    model_config = ConfigDict(arbitrary_types_allowed=True)</span>
+ 
+     @model_validator(mode=&quot;after&quot;)
+     def set_fingerprint_data(self):
+<span class="h">@@ -89,18 +90,18 @@ class AgentExecutionErrorEvent(BaseEvent):</span>
+ class LiteAgentExecutionStartedEvent(BaseEvent):
+     &quot;&quot;&quot;Event emitted when a LiteAgent starts executing&quot;&quot;&quot;
+ 
+<span class="d">-    agent_info: Dict[str, Any]</span>
+<span class="d">-    tools: Optional[Sequence[Union[BaseTool, CrewStructuredTool]]]</span>
+<span class="d">-    messages: Union[str, List[Dict[str, str]]]</span>
+<span class="a">+    agent_info: dict[str, Any]</span>
+<span class="a">+    tools: Sequence[BaseTool | CrewStructuredTool] | None</span>
+<span class="a">+    messages: str | list[dict[str, str]]</span>
+     type: str = &quot;lite_agent_execution_started&quot;
+ 
+<span class="d">-    model_config = {&quot;arbitrary_types_allowed&quot;: True}</span>
+<span class="a">+    model_config = ConfigDict(arbitrary_types_allowed=True)</span>
+ 
+ 
+ class LiteAgentExecutionCompletedEvent(BaseEvent):
+     &quot;&quot;&quot;Event emitted when a LiteAgent completes execution&quot;&quot;&quot;
+ 
+<span class="d">-    agent_info: Dict[str, Any]</span>
+<span class="a">+    agent_info: dict[str, Any]</span>
+     output: str
+     type: str = &quot;lite_agent_execution_completed&quot;
+ 
+<span class="h">@@ -108,7 +109,7 @@ class LiteAgentExecutionCompletedEvent(BaseEvent):</span>
+ class LiteAgentExecutionErrorEvent(BaseEvent):
+     &quot;&quot;&quot;Event emitted when a LiteAgent encounters an error during execution&quot;&quot;&quot;
+ 
+<span class="d">-    agent_info: Dict[str, Any]</span>
+<span class="a">+    agent_info: dict[str, Any]</span>
+     error: str
+     type: str = &quot;lite_agent_execution_error&quot;
+ </pre><h2>Commit #8: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: lib/crewai/src/crewai/events/types/agent_events.py. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: lib/crewai/README.md, lib/crewai/src/crewai/agents/agent_adapters/base_agent_adapter.py, lib/crewai/src/crewai/experimental/a2a/a2a_adapter.py.</p><pre>diff --git a/src/crewai/events/types/agent_events.py b/lib/crewai/src/crewai/events/types/agent_events.py
+similarity index 100%
+rename from src/crewai/events/types/agent_events.py
+rename to lib/crewai/src/crewai/events/types/agent_events.py</pre></body></html>

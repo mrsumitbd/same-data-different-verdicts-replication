@@ -1,0 +1,268 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L248</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L248</h1><p><b>Repository:</b> <a href="https://github.com/antiwork/gumroad">antiwork/gumroad</a><br><b>File at merge:</b> app/sidekiq/generate_quarterly_sales_report_job.rb, line 55<br><b>Merge commit (birth):</b> <a href="https://github.com/antiwork/gumroad/commit/42e2579ace5c6a6c93cf55547e738c31a510fb9d">42e2579ace</a> (2025-07-14T23:00:04)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/antiwork/gumroad/tree/841de7d7b8f8d4c47f52dce8d9320d49edb249ca">841de7d7b8</a>)</p><p><b>The line:</b></p><pre><span class="t">        SlackMessageWorker.perform_async(&quot;payments&quot;, slack_sender(country_code), &quot;#{country.common_name} Q#{quarter} #{year} sales report is ready - #{s3_signed_url}&quot;, &quot;green&quot;)</span></pre><h2>File at the merge commit, lines 47 to 63</h2><pre>   47 | 
+   48 |       s3_filename = &quot;#{country.common_name.downcase}-sales-report-Q#{quarter}-#{year}-#{SecureRandom.hex(4)}.csv&quot;
+   49 |       s3_report_key = &quot;sales-tax/#{country.alpha2.downcase}-sales-quarterly/#{s3_filename}&quot;
+   50 |       s3_object = Aws::S3::Resource.new.bucket(REPORTING_S3_BUCKET).object(s3_report_key)
+   51 |       s3_object.upload_file(temp_file)
+   52 |       s3_signed_url = s3_object.presigned_url(:get, expires_in: 1.week.to_i).to_s
+   53 | 
+   54 |       if send_notification
+<span class="t">   55 |         SlackMessageWorker.perform_async(&quot;payments&quot;, slack_sender(country_code), &quot;#{country.common_name} Q#{quarter} #{year} sales report is ready - #{s3_signed_url}&quot;, &quot;green&quot;)</span>
+   56 |       end
+   57 |     ensure
+   58 |       temp_file.close
+   59 |     end
+   60 |   end
+   61 | 
+   62 |   private
+   63 |     def row_headers(country_code)</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/antiwork/gumroad/commit/fe33cd01a9307e819d2c1160cd9f2b946de01159">fe33cd01a9</a> (2025-07-15T13:45:33-04:00)</h2><p class="k">Add s3_prefix option to GenerateQuarterlySalesReportJob (#641)<br>Path after this commit: app/sidekiq/generate_quarterly_sales_report_job.rb. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/app/sidekiq/generate_quarterly_sales_report_job.rb b/app/sidekiq/generate_quarterly_sales_report_job.rb
+index e3d4b4105..7aa5a5e29 100644
+<span class="d">--- a/app/sidekiq/generate_quarterly_sales_report_job.rb</span>
+<span class="a">+++ b/app/sidekiq/generate_quarterly_sales_report_job.rb</span>
+<span class="h">@@ -4,7 +4,7 @@ class GenerateQuarterlySalesReportJob</span>
+   include Sidekiq::Job
+   sidekiq_options retry: 1, queue: :default, lock: :until_executed, on_conflict: :replace
+ 
+<span class="d">-  def perform(country_code, quarter, year, send_notification = true)</span>
+<span class="a">+  def perform(country_code, quarter, year, send_notification = true, s3_prefix = nil)</span>
+     country = ISO3166::Country[country_code].tap { |value| raise ArgumentError, &quot;Invalid country code&quot; unless value }
+     raise ArgumentError, &quot;Invalid quarter&quot; unless quarter.in?(1..4)
+     raise ArgumentError, &quot;Invalid year&quot; unless year.in?(2014..3200)
+<span class="h">@@ -46,7 +46,8 @@ class GenerateQuarterlySalesReportJob</span>
+       temp_file.rewind
+ 
+       s3_filename = &quot;#{country.common_name.downcase}-sales-report-Q#{quarter}-#{year}-#{SecureRandom.hex(4)}.csv&quot;
+<span class="d">-      s3_report_key = &quot;sales-tax/#{country.alpha2.downcase}-sales-quarterly/#{s3_filename}&quot;</span>
+<span class="a">+      base_path = &quot;sales-tax/#{country.alpha2.downcase}-sales-quarterly/#{s3_filename}&quot;</span>
+<span class="a">+      s3_report_key = s3_prefix.present? ? &quot;#{s3_prefix.chomp(&#x27;/&#x27;)}/#{base_path}&quot; : base_path</span>
+       s3_object = Aws::S3::Resource.new.bucket(REPORTING_S3_BUCKET).object(s3_report_key)
+       s3_object.upload_file(temp_file)
+       s3_signed_url = s3_object.presigned_url(:get, expires_in: 1.week.to_i).to_s</pre><h2>Commit #2: <a href="https://github.com/antiwork/gumroad/commit/ce6ed5f524446dc47c2f045202b51cecfb04a412">ce6ed5f524</a> (2025-07-18T09:27:54-04:00)</h2><p class="k">Add admin page for sales reports with custom date ranges (#647)<br>Path after this commit: app/sidekiq/generate_sales_report_job.rb. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/sidekiq/generate_quarterly_sales_report_job.rb b/app/sidekiq/generate_sales_report_job.rb
+similarity index 67%
+rename from app/sidekiq/generate_quarterly_sales_report_job.rb
+rename to app/sidekiq/generate_sales_report_job.rb
+index 7aa5a5e29..069faa73d 100644
+<span class="d">--- a/app/sidekiq/generate_quarterly_sales_report_job.rb</span>
+<span class="a">+++ b/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="h">@@ -1,22 +1,20 @@</span>
+ # frozen_string_literal: true
+ 
+<span class="d">-class GenerateQuarterlySalesReportJob</span>
+<span class="a">+class GenerateSalesReportJob</span>
+   include Sidekiq::Job
+   sidekiq_options retry: 1, queue: :default, lock: :until_executed, on_conflict: :replace
+ 
+<span class="d">-  def perform(country_code, quarter, year, send_notification = true, s3_prefix = nil)</span>
+<span class="a">+  def perform(country_code, start_date, end_date, send_notification = true, s3_prefix = nil)</span>
+     country = ISO3166::Country[country_code].tap { |value| raise ArgumentError, &quot;Invalid country code&quot; unless value }
+<span class="d">-    raise ArgumentError, &quot;Invalid quarter&quot; unless quarter.in?(1..4)</span>
+<span class="d">-    raise ArgumentError, &quot;Invalid year&quot; unless year.in?(2014..3200)</span>
+ 
+<span class="d">-    start_time_of_quarter = Date.new(year, (1 + 3 * (quarter - 1)).to_i).beginning_of_month.beginning_of_day</span>
+<span class="d">-    end_time_of_quarter = Date.new(year, (3 + 3 * (quarter - 1)).to_i).end_of_month.end_of_day</span>
+<span class="a">+    start_time_of_quarter = Date.parse(start_date.to_s).beginning_of_day</span>
+<span class="a">+    end_time_of_quarter = Date.parse(end_date.to_s).end_of_day</span>
+ 
+     begin
+       temp_file = Tempfile.new
+       temp_file.write(row_headers(country_code).to_csv)
+ 
+<span class="d">-      timeout_seconds = ($redis.get(RedisKey.generate_quarterly_sales_report_job_max_execution_time_seconds) || 1.hour).to_i</span>
+<span class="a">+      timeout_seconds = ($redis.get(RedisKey.generate_sales_report_job_max_execution_time_seconds) || 1.hour).to_i</span>
+       WithMaxExecutionTime.timeout_queries(seconds: timeout_seconds) do
+         Purchase.successful
+           .not_fully_refunded
+<span class="h">@@ -45,7 +43,7 @@ class GenerateQuarterlySalesReportJob</span>
+ 
+       temp_file.rewind
+ 
+<span class="d">-      s3_filename = &quot;#{country.common_name.downcase}-sales-report-Q#{quarter}-#{year}-#{SecureRandom.hex(4)}.csv&quot;</span>
+<span class="a">+      s3_filename = &quot;#{country.common_name.downcase.tr(&#x27; &#x27;, &#x27;-&#x27;)}-sales-report-#{start_time_of_quarter.to_date}-to-#{end_time_of_quarter.to_date}-#{SecureRandom.hex(4)}.csv&quot;</span>
+       base_path = &quot;sales-tax/#{country.alpha2.downcase}-sales-quarterly/#{s3_filename}&quot;
+       s3_report_key = s3_prefix.present? ? &quot;#{s3_prefix.chomp(&#x27;/&#x27;)}/#{base_path}&quot; : base_path
+       s3_object = Aws::S3::Resource.new.bucket(REPORTING_S3_BUCKET).object(s3_report_key)
+<span class="h">@@ -53,7 +51,9 @@ class GenerateQuarterlySalesReportJob</span>
+       s3_signed_url = s3_object.presigned_url(:get, expires_in: 1.week.to_i).to_s
+ 
+       if send_notification
+<span class="d m">-        SlackMessageWorker.perform_async(&quot;payments&quot;, slack_sender(country_code), &quot;#{country.common_name} Q#{quarter} #{year} sales report is ready - #{s3_signed_url}&quot;, &quot;green&quot;)</span>
+<span class="a">+        message = &quot;#{country.common_name} sales report (#{start_time_of_quarter.to_date} to #{end_time_of_quarter.to_date}) is ready - #{s3_signed_url}&quot;</span>
+<span class="a">+        SlackMessageWorker.perform_async(&quot;payments&quot;, slack_sender(country_code), message, &quot;green&quot;)</span>
+<span class="a">+        update_job_status_to_completed(country_code, start_time_of_quarter, end_time_of_quarter, s3_signed_url)</span>
+       end
+     ensure
+       temp_file.close
+<span class="h">@@ -85,4 +85,21 @@ class GenerateQuarterlySalesReportJob</span>
+         &quot;VAT Reporting&quot;
+       end
+     end
+<span class="a">+</span>
+<span class="a">+    def update_job_status_to_completed(country_code, start_time, end_time, download_url)</span>
+<span class="a">+      job_data = $redis.lrange(RedisKey.sales_report_jobs, 0, 19)</span>
+<span class="a">+      job_data.each_with_index do |data, index|</span>
+<span class="a">+        job = JSON.parse(data)</span>
+<span class="a">+        if job[&quot;country_code&quot;] == country_code &amp;&amp;</span>
+<span class="a">+           job[&quot;start_date&quot;] == start_time.to_date.to_s &amp;&amp;</span>
+<span class="a">+           job[&quot;end_date&quot;] == end_time.to_date.to_s &amp;&amp;</span>
+<span class="a">+           job[&quot;status&quot;] == &quot;processing&quot;</span>
+<span class="a">+          job[&quot;status&quot;] = &quot;completed&quot;</span>
+<span class="a">+          job[&quot;download_url&quot;] = download_url</span>
+<span class="a">+          $redis.lset(RedisKey.sales_report_jobs, index, job.to_json)</span>
+<span class="a">+          break</span>
+<span class="a">+        end</span>
+<span class="a">+      end</span>
+<span class="a">+    rescue JSON::ParserError</span>
+<span class="a">+    end</span>
+ end</pre><h2>Commit #3: <a href="https://github.com/antiwork/gumroad/commit/061a014f8a0dc0f110935e9f5255ff1f919723f8">061a014f8a</a> (2025-07-21T11:36:54-04:00)</h2><p class="k">Update S3 presigned URL expiry from 1 week to 1 year in GenerateSalesReportJob (#662)<br>Path after this commit: app/sidekiq/generate_sales_report_job.rb. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/sidekiq/generate_sales_report_job.rb b/app/sidekiq/generate_sales_report_job.rb
+index 069faa73d..286b9cf55 100644
+<span class="d">--- a/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="a">+++ b/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="h">@@ -48,7 +48,7 @@ class GenerateSalesReportJob</span>
+       s3_report_key = s3_prefix.present? ? &quot;#{s3_prefix.chomp(&#x27;/&#x27;)}/#{base_path}&quot; : base_path
+       s3_object = Aws::S3::Resource.new.bucket(REPORTING_S3_BUCKET).object(s3_report_key)
+       s3_object.upload_file(temp_file)
+<span class="d">-      s3_signed_url = s3_object.presigned_url(:get, expires_in: 1.week.to_i).to_s</span>
+<span class="a">+      s3_signed_url = s3_object.presigned_url(:get, expires_in: 1.year.to_i).to_s</span>
+ 
+       if send_notification
+         message = &quot;#{country.common_name} sales report (#{start_time_of_quarter.to_date} to #{end_time_of_quarter.to_date}) is ready - #{s3_signed_url}&quot;</pre><h2>Commit #4: <a href="https://github.com/antiwork/gumroad/commit/b1513605fc2a081edc54dd42f85ba27e19af4e52">b1513605fc</a> (2025-07-21T18:18:51-04:00)</h2><p class="k">Remove expires_in parameter from S3 presigned URL in GenerateSalesReportJob (#665)<br>Path after this commit: app/sidekiq/generate_sales_report_job.rb. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/sidekiq/generate_sales_report_job.rb b/app/sidekiq/generate_sales_report_job.rb
+index 286b9cf55..5ec9d05e4 100644
+<span class="d">--- a/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="a">+++ b/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="h">@@ -48,7 +48,7 @@ class GenerateSalesReportJob</span>
+       s3_report_key = s3_prefix.present? ? &quot;#{s3_prefix.chomp(&#x27;/&#x27;)}/#{base_path}&quot; : base_path
+       s3_object = Aws::S3::Resource.new.bucket(REPORTING_S3_BUCKET).object(s3_report_key)
+       s3_object.upload_file(temp_file)
+<span class="d">-      s3_signed_url = s3_object.presigned_url(:get, expires_in: 1.year.to_i).to_s</span>
+<span class="a">+      s3_signed_url = s3_object.presigned_url(:get).to_s</span>
+ 
+       if send_notification
+         message = &quot;#{country.common_name} sales report (#{start_time_of_quarter.to_date} to #{end_time_of_quarter.to_date}) is ready - #{s3_signed_url}&quot;</pre><h2>Commit #5: <a href="https://github.com/antiwork/gumroad/commit/3563ac7b09aa3804268fc0744610419bf042f4ee">3563ac7b09</a> (2025-07-31T23:20:49-04:00)</h2><p class="k">Use ExpiringS3FileService in GenerateSalesReportJob (#720)<br>Path after this commit: app/sidekiq/generate_sales_report_job.rb. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/sidekiq/generate_sales_report_job.rb b/app/sidekiq/generate_sales_report_job.rb
+index 5ec9d05e4..cfd163c5b 100644
+<span class="d">--- a/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="a">+++ b/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="h">@@ -44,11 +44,14 @@ class GenerateSalesReportJob</span>
+       temp_file.rewind
+ 
+       s3_filename = &quot;#{country.common_name.downcase.tr(&#x27; &#x27;, &#x27;-&#x27;)}-sales-report-#{start_time_of_quarter.to_date}-to-#{end_time_of_quarter.to_date}-#{SecureRandom.hex(4)}.csv&quot;
+<span class="d">-      base_path = &quot;sales-tax/#{country.alpha2.downcase}-sales-quarterly/#{s3_filename}&quot;</span>
+<span class="d">-      s3_report_key = s3_prefix.present? ? &quot;#{s3_prefix.chomp(&#x27;/&#x27;)}/#{base_path}&quot; : base_path</span>
+<span class="d">-      s3_object = Aws::S3::Resource.new.bucket(REPORTING_S3_BUCKET).object(s3_report_key)</span>
+<span class="d">-      s3_object.upload_file(temp_file)</span>
+<span class="d">-      s3_signed_url = s3_object.presigned_url(:get).to_s</span>
+<span class="a">+      s3_path = s3_prefix.present? ? &quot;#{s3_prefix.chomp(&#x27;/&#x27;)}/sales-tax/#{country.alpha2.downcase}-sales-quarterly&quot; : &quot;sales-tax/#{country.alpha2.downcase}-sales-quarterly&quot;</span>
+<span class="a">+      s3_signed_url = ExpiringS3FileService.new(</span>
+<span class="a">+        file: temp_file,</span>
+<span class="a">+        filename: s3_filename,</span>
+<span class="a">+        path: s3_path,</span>
+<span class="a">+        expiry: 1.week,</span>
+<span class="a">+        bucket: REPORTING_S3_BUCKET</span>
+<span class="a">+      ).perform</span>
+ 
+       if send_notification
+         message = &quot;#{country.common_name} sales report (#{start_time_of_quarter.to_date} to #{end_time_of_quarter.to_date}) is ready - #{s3_signed_url}&quot;</pre><h2>Commit #6: <a href="https://github.com/antiwork/gumroad/commit/01dd467c3d180bb501dfb525d954e06774ea508c">01dd467c3d</a> (2025-12-11T18:36:15+05:30)</h2><p class="k">Support generating discover sales reports from admin and add example scripts to accounting docs (#1716)<br>Path after this commit: app/sidekiq/generate_sales_report_job.rb. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/sidekiq/generate_sales_report_job.rb b/app/sidekiq/generate_sales_report_job.rb
+index cfd163c5b..3a073cd3f 100644
+<span class="d">--- a/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="a">+++ b/app/sidekiq/generate_sales_report_job.rb</span>
+<span class="h">@@ -4,11 +4,16 @@ class GenerateSalesReportJob</span>
+   include Sidekiq::Job
+   sidekiq_options retry: 1, queue: :default, lock: :until_executed, on_conflict: :replace
+ 
+<span class="d">-  def perform(country_code, start_date, end_date, send_notification = true, s3_prefix = nil)</span>
+<span class="a">+  ALL_SALES = &quot;all_sales&quot;</span>
+<span class="a">+  DISCOVER_SALES = &quot;discover_sales&quot;</span>
+<span class="a">+  SALES_TYPES = [ALL_SALES, DISCOVER_SALES]</span>
+<span class="a">+</span>
+<span class="a">+  def perform(country_code, start_date, end_date, sales_type, send_slack_notification = true, s3_prefix = nil)</span>
+     country = ISO3166::Country[country_code].tap { |value| raise ArgumentError, &quot;Invalid country code&quot; unless value }
+<span class="a">+    raise ArgumentError, &quot;Invalid sales type&quot; unless SALES_TYPES.include?(sales_type)</span>
+ 
+<span class="d">-    start_time_of_quarter = Date.parse(start_date.to_s).beginning_of_day</span>
+<span class="d">-    end_time_of_quarter = Date.parse(end_date.to_s).end_of_day</span>
+<span class="a">+    start_time = Date.parse(start_date.to_s).beginning_of_day</span>
+<span class="a">+    end_time = Date.parse(end_date.to_s).end_of_day</span>
+ 
+     begin
+       temp_file = Tempfile.new
+<span class="h">@@ -16,15 +21,18 @@ class GenerateSalesReportJob</span>
+ 
+       timeout_seconds = ($redis.get(RedisKey.generate_sales_report_job_max_execution_time_seconds) || 1.hour).to_i
+       WithMaxExecutionTime.timeout_queries(seconds: timeout_seconds) do
+<span class="d">-        Purchase.successful</span>
+<span class="d">-          .not_fully_refunded</span>
+<span class="d">-          .not_chargedback_or_chargedback_reversed</span>
+<span class="d">-          .where.not(stripe_transaction_id: nil)</span>
+<span class="d">-          .where(&quot;purchases.created_at BETWEEN ? AND ?&quot;,</span>
+<span class="d">-                 start_time_of_quarter,</span>
+<span class="d">-                 end_time_of_quarter)</span>
+<span class="d">-          .where(&quot;(country = ?) OR ((country IS NULL OR country = ?) AND ip_country = ?)&quot;, country.common_name, country.common_name, country.common_name)</span>
+<span class="d">-          .find_each do |purchase|</span>
+<span class="a">+        sales = Purchase.successful</span>
+<span class="a">+                        .not_fully_refunded</span>
+<span class="a">+                        .not_chargedback_or_chargedback_reversed</span>
+<span class="a">+                        .where.not(stripe_transaction_id: nil)</span>
+<span class="a">+                        .where(&quot;purchases.created_at BETWEEN ? AND ?&quot;,</span>
+<span class="a">+                               start_time,</span>
+<span class="a">+                               end_time)</span>
+<span class="a">+                        .where(&quot;(country = ?) OR ((country IS NULL OR country = ?) AND ip_country = ?)&quot;, country.common_name, country.common_name, country.common_name)</span>
+<span class="a">+</span>
+<span class="a">+        sales = sales.where(&quot;purchases.flags &amp; ? &gt; 0&quot;, Purchase.flag_mapping[&quot;flags&quot;][:was_product_recommended]) if sales_type == DISCOVER_SALES</span>
+<span class="a">+</span>
+<span class="a">+        sales.find_each do |purchase|</span>
+           row = [purchase.created_at, purchase.external_id,
+                  purchase.seller.external_id, purchase.seller.form_email&amp;.gsub(/.{0,4}@/, &#x27;####@&#x27;),
+                  purchase.seller.user_compliance_infos.last&amp;.legal_entity_country,
+<span class="h">@@ -36,6 +44,10 @@ class GenerateSalesReportJob</span>
+             row += [purchase.link.is_physical? ? &quot;DTC&quot; : &quot;BS&quot;, purchase.zip_tax_rate_id, purchase.purchase_sales_tax_info.business_vat_id]
+           end
+ 
+<span class="a">+          # Do not include free recommendations like library and more-like-this in the discover sales report</span>
+<span class="a">+          # because we don&#x27;t charge our discover/marketplace fee in those cases.</span>
+<span class="a">+          next if sales_type == DISCOVER_SALES &amp;&amp; RecommendationType.is_free_recommendation_type?(purchase.recommended_by)</span>
+<span class="a">+</span>
+           temp_file.write(row.to_csv)
+           temp_file.flush
+         end
+<span class="h">@@ -43,7 +55,7 @@ class GenerateSalesReportJob</span>
+ 
+       temp_file.rewind
+ 
+<span class="d">-      s3_filename = &quot;#{country.common_name.downcase.tr(&#x27; &#x27;, &#x27;-&#x27;)}-sales-report-#{start_time_of_quarter.to_date}-to-#{end_time_of_quarter.to_date}-#{SecureRandom.hex(4)}.csv&quot;</span>
+<span class="a">+      s3_filename = &quot;#{country.common_name.downcase.tr(&#x27; &#x27;, &#x27;-&#x27;)}-#{sales_type.tr(&quot;_&quot;, &quot;-&quot;)}-report-#{start_time.to_date}-to-#{end_time.to_date}-#{SecureRandom.hex(4)}.csv&quot;</span>
+       s3_path = s3_prefix.present? ? &quot;#{s3_prefix.chomp(&#x27;/&#x27;)}/sales-tax/#{country.alpha2.downcase}-sales-quarterly&quot; : &quot;sales-tax/#{country.alpha2.downcase}-sales-quarterly&quot;
+       s3_signed_url = ExpiringS3FileService.new(
+         file: temp_file,
+<span class="h">@@ -53,10 +65,11 @@ class GenerateSalesReportJob</span>
+         bucket: REPORTING_S3_BUCKET
+       ).perform
+ 
+<span class="d">-      if send_notification</span>
+<span class="d">-        message = &quot;#{country.common_name} sales report (#{start_time_of_quarter.to_date} to #{end_time_of_quarter.to_date}) is ready - #{s3_signed_url}&quot;</span>
+<span class="a">+      update_job_status_to_completed(country_code, start_time, end_time, sales_type, s3_signed_url)</span>
+<span class="a">+</span>
+<span class="a">+      if send_slack_notification</span>
+<span class="a">+        message = &quot;#{country.common_name} sales report (#{start_time.to_date} to #{end_time.to_date}) is ready - #{s3_signed_url}&quot;</span>
+         SlackMessageWorker.perform_async(&quot;payments&quot;, slack_sender(country_code), message, &quot;green&quot;)
+<span class="d">-        update_job_status_to_completed(country_code, start_time_of_quarter, end_time_of_quarter, s3_signed_url)</span>
+       end
+     ensure
+       temp_file.close
+<span class="h">@@ -89,13 +102,14 @@ class GenerateSalesReportJob</span>
+       end
+     end
+ 
+<span class="d">-    def update_job_status_to_completed(country_code, start_time, end_time, download_url)</span>
+<span class="a">+    def update_job_status_to_completed(country_code, start_time, end_time, sales_type, download_url)</span>
+       job_data = $redis.lrange(RedisKey.sales_report_jobs, 0, 19)
+       job_data.each_with_index do |data, index|
+         job = JSON.parse(data)
+         if job[&quot;country_code&quot;] == country_code &amp;&amp;
+            job[&quot;start_date&quot;] == start_time.to_date.to_s &amp;&amp;
+            job[&quot;end_date&quot;] == end_time.to_date.to_s &amp;&amp;
+<span class="a">+           job[&quot;sales_type&quot;] == sales_type &amp;&amp;</span>
+            job[&quot;status&quot;] == &quot;processing&quot;
+           job[&quot;status&quot;] = &quot;completed&quot;
+           job[&quot;download_url&quot;] = download_url</pre></body></html>

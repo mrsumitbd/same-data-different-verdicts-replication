@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L109 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L109: after the move</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>Original file:</b> packages/grida-canvas-transparency-grid/transparency-grid.ts (see L109.html)<br><b>Move commit:</b> <a href="https://github.com/gridaco/grida/commit/ccb06d4fae4a34dcb6b239a40e7ff2ad6709904c">ccb06d4fae</a> (commit #1 on L109.html)<br><b>Destination file (your label):</b> packages/grida-canvas-transparency-grid/transparency-grid-2d.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t"> *     1 0 1 0 1</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 2 (lines 10, 12).</p><h2>Destination file at the move commit, lines 2 to 18</h2><pre>    2 | import { quantize } from &quot;./utils&quot;;
+    3 | 
+    4 | /**
+    5 |  * The TransparencyGridCanvas class renders a checkered transparency grid on an HTML canvas.
+    6 |  *
+    7 |  * Visual Behaviour:
+    8 |  * - Renders a chessboard-like pattern where filled cells alternate with empty cells.
+    9 |  *   For example:
+<span class="t">   10 |  *     1 0 1 0 1</span>
+   11 |  *     0 1 0 1 0
+   12 |  *     1 0 1 0 1
+   13 |  *
+   14 |  * - The grid is used to indicate transparency in graphics editors.
+   15 |  * - Each cell&#x27;s visual size is maintained at roughly 20px regardless of zoom, achieved by
+   16 |  *   quantizing the cell size based on the current scaling factors and device pixel ratio.
+   17 |  * - A transformation matrix (scale and translation) is applied so that as the user pans or zooms,
+   18 |  *   the grid adapts its position and cell size to remain visually consistent.</pre><h2>Destination file at the move commit, lines 4 to 20</h2><pre>    4 | /**
+    5 |  * The TransparencyGridCanvas class renders a checkered transparency grid on an HTML canvas.
+    6 |  *
+    7 |  * Visual Behaviour:
+    8 |  * - Renders a chessboard-like pattern where filled cells alternate with empty cells.
+    9 |  *   For example:
+   10 |  *     1 0 1 0 1
+   11 |  *     0 1 0 1 0
+<span class="t">   12 |  *     1 0 1 0 1</span>
+   13 |  *
+   14 |  * - The grid is used to indicate transparency in graphics editors.
+   15 |  * - Each cell&#x27;s visual size is maintained at roughly 20px regardless of zoom, achieved by
+   16 |  *   quantizing the cell size based on the current scaling factors and device pixel ratio.
+   17 |  * - A transformation matrix (scale and translation) is applied so that as the user pans or zooms,
+   18 |  *   the grid adapts its position and cell size to remain visually consistent.
+   19 |  * - The checkered pattern is produced by iterating over grid indices and filling cells
+   20 |  *   where the sum of the indices is even.</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches the destination file after the move in the window.</b></p></body></html>

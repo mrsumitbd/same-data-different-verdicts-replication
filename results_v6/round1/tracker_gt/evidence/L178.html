@@ -1,0 +1,298 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L178</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L178</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>File at merge:</b> editor/app/(tenant)/~/[tenant]/api/west/t/route.ts, line 41<br><b>Merge commit (birth):</b> <a href="https://github.com/gridaco/grida/commit/e3757d3d6d8d7a8cddc9095b1a7bd91757963046">e3757d3d6d</a> (2025-04-16T04:00:01)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t">      return NextResponse.json({</span></pre><h2>File at the merge commit, lines 33 to 49</h2><pre>   33 |         campaing_err,
+   34 |         campaign_id
+   35 |       );
+   36 |       return notFound();
+   37 |     }
+   38 | 
+   39 |     if (code === Platform.WEST.Referral.TEST_CODE_REFERRER) {
+   40 |       //
+<span class="t">   41 |       return NextResponse.json({</span>
+   42 |         data: {
+   43 |           id: code,
+   44 |           type: &quot;referrer&quot;,
+   45 |           code: code,
+   46 |           campaign: campaign,
+   47 |           referrer_name: &quot;DUMMY&quot;,
+   48 |           invitation_count: 0,
+   49 |           invitations: [],</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gridaco/grida/commit/0a6bc5a11c310d23e97b8c955838a7b1abb2a070">0a6bc5a11c</a> (2025-04-16T09:48:03+00:00)</h2><p class="k">Merge pull request #293 from gridaco/supabase/rr<br>Path after this commit: editor/app/(tenant)/~/[tenant]/api/west/t/route.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts b/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts
+index 0fcf6a8e8..50f9abec7 100644
+<span class="d">--- a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts</span>
+<span class="a">+++ b/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+ import { Platform } from &quot;@/lib/platform&quot;;
+<span class="d">-import { grida_west_referral_client } from &quot;@/lib/supabase/server&quot;;</span>
+<span class="d">-import { headers } from &quot;next/headers&quot;;</span>
+<span class="a">+import { sb } from &quot;@/lib/supabase/server&quot;;</span>
+<span class="a">+import { cookies, headers } from &quot;next/headers&quot;;</span>
+ import { notFound } from &quot;next/navigation&quot;;
+ import { NextRequest, NextResponse } from &quot;next/server&quot;;
+ import assert from &quot;assert&quot;;
+<span class="h">@@ -9,23 +9,28 @@ export const revalidate = 0;</span>
+ 
+ export async function GET(req: NextRequest) {
+   const headersList = await headers();
+<span class="a">+  const cookieStore = await cookies();</span>
+   const campaign_id = headersList.get(&quot;x-grida-west-campaign-id&quot;);
+   const code = headersList.get(&quot;x-grida-west-token-code&quot;);
+   assert(code, &quot;x-grida-west-token-code is required&quot;);
+   assert(campaign_id, &quot;x-grida-west-campaign-id is required&quot;);
+ 
+<span class="a">+  const rrwest = sb.rr.west_referral.createClient({</span>
+<span class="a">+    headers: headersList,</span>
+<span class="a">+    cookies: cookieStore,</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+   // #region test codes
+   if (
+     code === Platform.WEST.Referral.TEST_CODE_REFERRER ||
+     code === Platform.WEST.Referral.TEST_CODE_INVITATION
+   ) {
+     const now = new Date().toISOString();
+<span class="d">-    const { data: campaign, error: campaing_err } =</span>
+<span class="d">-      await grida_west_referral_client</span>
+<span class="d">-        .from(&quot;campaign_public&quot;)</span>
+<span class="d">-        .select()</span>
+<span class="d">-        .eq(&quot;id&quot;, campaign_id)</span>
+<span class="d">-        .single();</span>
+<span class="a">+    const { data: campaign, error: campaing_err } = await rrwest</span>
+<span class="a">+      .from(&quot;campaign_public&quot;)</span>
+<span class="a">+      .select()</span>
+<span class="a">+      .eq(&quot;id&quot;, campaign_id)</span>
+<span class="a">+      .single();</span>
+ 
+     if (campaing_err) {
+       console.error(
+<span class="h">@@ -68,11 +73,15 @@ export async function GET(req: NextRequest) {</span>
+   }
+   // #endregion
+ 
+<span class="d">-  const { data: ref, error: ref_err } = await grida_west_referral_client</span>
+<span class="d">-    .rpc(&quot;lookup&quot;, {</span>
+<span class="d">-      p_campaign_id: campaign_id,</span>
+<span class="d">-      p_code: code,</span>
+<span class="d">-    })</span>
+<span class="a">+  const { data: ref, error: ref_err } = await rrwest</span>
+<span class="a">+    .rpc(</span>
+<span class="a">+      &quot;lookup&quot;,</span>
+<span class="a">+      {</span>
+<span class="a">+        p_campaign_id: campaign_id,</span>
+<span class="a">+        p_code: code,</span>
+<span class="a">+      },</span>
+<span class="a">+      { get: true }</span>
+<span class="a">+    )</span>
+     .single();
+ 
+   if (ref_err) console.error(&quot;lookup failed&quot;, ref_err);
+<span class="h">@@ -89,7 +98,7 @@ export async function GET(req: NextRequest) {</span>
+   &gt; | null = null;
+   switch (ref.type) {
+     case &quot;referrer&quot;: {
+<span class="d">-      const { data, error } = await grida_west_referral_client</span>
+<span class="a">+      const { data, error } = await rrwest</span>
+         .from(&quot;referrer_public_secure&quot;)
+         .select(
+           `
+<span class="h">@@ -118,7 +127,7 @@ export async function GET(req: NextRequest) {</span>
+       break;
+     }
+     case &quot;invitation&quot;: {
+<span class="d">-      const { data, error } = await grida_west_referral_client</span>
+<span class="a">+      const { data, error } = await rrwest</span>
+         .from(&quot;invitation&quot;)
+         .select(
+           `</pre><h2>Commit #2: <a href="https://github.com/gridaco/grida/commit/33cee0e5cede8772e179c33528dfc9ced98d7c0a">33cee0e5ce</a> (2025-04-20T08:35:50+00:00)</h2><p class="k">Merge pull request #301 from gridaco/supabase/ssr<br>Path after this commit: editor/app/(tenant)/~/[tenant]/api/west/t/route.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts b/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts
+index 50f9abec7..aadff8748 100644
+<span class="d">--- a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts</span>
+<span class="a">+++ b/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+ import { Platform } from &quot;@/lib/platform&quot;;
+<span class="d">-import { sb } from &quot;@/lib/supabase/server&quot;;</span>
+<span class="d">-import { cookies, headers } from &quot;next/headers&quot;;</span>
+<span class="a">+import { createWestReferralClient } from &quot;@/lib/supabase/server&quot;;</span>
+<span class="a">+import { headers } from &quot;next/headers&quot;;</span>
+ import { notFound } from &quot;next/navigation&quot;;
+ import { NextRequest, NextResponse } from &quot;next/server&quot;;
+ import assert from &quot;assert&quot;;
+<span class="h">@@ -9,16 +9,12 @@ export const revalidate = 0;</span>
+ 
+ export async function GET(req: NextRequest) {
+   const headersList = await headers();
+<span class="d">-  const cookieStore = await cookies();</span>
+   const campaign_id = headersList.get(&quot;x-grida-west-campaign-id&quot;);
+   const code = headersList.get(&quot;x-grida-west-token-code&quot;);
+   assert(code, &quot;x-grida-west-token-code is required&quot;);
+   assert(campaign_id, &quot;x-grida-west-campaign-id is required&quot;);
+ 
+<span class="d">-  const rrwest = sb.rr.west_referral.createClient({</span>
+<span class="d">-    headers: headersList,</span>
+<span class="d">-    cookies: cookieStore,</span>
+<span class="d">-  });</span>
+<span class="a">+  const westClient = await createWestReferralClient();</span>
+ 
+   // #region test codes
+   if (
+<span class="h">@@ -26,7 +22,7 @@ export async function GET(req: NextRequest) {</span>
+     code === Platform.WEST.Referral.TEST_CODE_INVITATION
+   ) {
+     const now = new Date().toISOString();
+<span class="d">-    const { data: campaign, error: campaing_err } = await rrwest</span>
+<span class="a">+    const { data: campaign, error: campaing_err } = await westClient</span>
+       .from(&quot;campaign_public&quot;)
+       .select()
+       .eq(&quot;id&quot;, campaign_id)
+<span class="h">@@ -73,7 +69,7 @@ export async function GET(req: NextRequest) {</span>
+   }
+   // #endregion
+ 
+<span class="d">-  const { data: ref, error: ref_err } = await rrwest</span>
+<span class="a">+  const { data: ref, error: ref_err } = await westClient</span>
+     .rpc(
+       &quot;lookup&quot;,
+       {
+<span class="h">@@ -98,7 +94,7 @@ export async function GET(req: NextRequest) {</span>
+   &gt; | null = null;
+   switch (ref.type) {
+     case &quot;referrer&quot;: {
+<span class="d">-      const { data, error } = await rrwest</span>
+<span class="a">+      const { data, error } = await westClient</span>
+         .from(&quot;referrer_public_secure&quot;)
+         .select(
+           `
+<span class="h">@@ -127,7 +123,7 @@ export async function GET(req: NextRequest) {</span>
+       break;
+     }
+     case &quot;invitation&quot;: {
+<span class="d">-      const { data, error } = await rrwest</span>
+<span class="a">+      const { data, error } = await westClient</span>
+         .from(&quot;invitation&quot;)
+         .select(
+           `</pre><h2>Commit #3: <a href="https://github.com/gridaco/grida/commit/5572000fef4a41b5dcadd847e60fe281bdb4efa5">5572000fef</a> (2025-04-20T17:22:05+00:00)</h2><p class="k">Merge pull request #302 from gridaco/model/customer-portal<br>Path after this commit: editor/app/(tenant)/~/[tenant]/api/west/t/route.ts. Lines with exactly this text in the file after the commit: 2. Identical text added in other files in this commit: editor/app/(api)/api/v1/route.ts.</p><pre>diff --git a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts b/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts
+index aadff8748..5d700e12d 100644
+<span class="d">--- a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts</span>
+<span class="a">+++ b/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import { Platform } from &quot;@/lib/platform&quot;;
+<span class="d">-import { createWestReferralClient } from &quot;@/lib/supabase/server&quot;;</span>
+<span class="a">+import { service_role } from &quot;@/lib/supabase/server&quot;;</span>
+ import { headers } from &quot;next/headers&quot;;
+ import { notFound } from &quot;next/navigation&quot;;
+ import { NextRequest, NextResponse } from &quot;next/server&quot;;
+<span class="h">@@ -14,19 +14,18 @@ export async function GET(req: NextRequest) {</span>
+   assert(code, &quot;x-grida-west-token-code is required&quot;);
+   assert(campaign_id, &quot;x-grida-west-campaign-id is required&quot;);
+ 
+<span class="d">-  const westClient = await createWestReferralClient();</span>
+<span class="d">-</span>
+   // #region test codes
+   if (
+     code === Platform.WEST.Referral.TEST_CODE_REFERRER ||
+     code === Platform.WEST.Referral.TEST_CODE_INVITATION
+   ) {
+     const now = new Date().toISOString();
+<span class="d">-    const { data: campaign, error: campaing_err } = await westClient</span>
+<span class="d">-      .from(&quot;campaign_public&quot;)</span>
+<span class="d">-      .select()</span>
+<span class="d">-      .eq(&quot;id&quot;, campaign_id)</span>
+<span class="d">-      .single();</span>
+<span class="a">+    const { data: campaign, error: campaing_err } =</span>
+<span class="a">+      await service_role.west_referral</span>
+<span class="a">+        .from(&quot;campaign_public&quot;)</span>
+<span class="a">+        .select()</span>
+<span class="a">+        .eq(&quot;id&quot;, campaign_id)</span>
+<span class="a">+        .single();</span>
+ 
+     if (campaing_err) {
+       console.error(
+<span class="h">@@ -69,7 +68,7 @@ export async function GET(req: NextRequest) {</span>
+   }
+   // #endregion
+ 
+<span class="d">-  const { data: ref, error: ref_err } = await westClient</span>
+<span class="a">+  const { data: ref, error: ref_err } = await service_role.west_referral</span>
+     .rpc(
+       &quot;lookup&quot;,
+       {
+<span class="h">@@ -81,7 +80,10 @@ export async function GET(req: NextRequest) {</span>
+     .single();
+ 
+   if (ref_err) console.error(&quot;lookup failed&quot;, ref_err);
+<span class="d">-  if (!ref) return notFound();</span>
+<span class="a">+  if (!ref) {</span>
+<span class="a">+    console.error(&quot;lookup failed&quot;, ref_err, ref, &quot;with&quot;, code);</span>
+<span class="a">+    return notFound();</span>
+<span class="a">+  }</span>
+ 
+   let campaign_public: Platform.WEST.Referral.CampaignPublic;
+   let referrer: Omit&lt;
+<span class="h">@@ -94,7 +96,7 @@ export async function GET(req: NextRequest) {</span>
+   &gt; | null = null;
+   switch (ref.type) {
+     case &quot;referrer&quot;: {
+<span class="d">-      const { data, error } = await westClient</span>
+<span class="a">+      const { data, error } = await service_role.west_referral</span>
+         .from(&quot;referrer_public_secure&quot;)
+         .select(
+           `
+<span class="h">@@ -108,7 +110,10 @@ export async function GET(req: NextRequest) {</span>
+         .order(&quot;created_at&quot;, { referencedTable: &quot;invitations&quot; })
+         .single();
+ 
+<span class="d">-      if (error) console.error(error);</span>
+<span class="a">+      if (error) {</span>
+<span class="a">+        console.error(&quot;fetching referrer failed&quot;, error);</span>
+<span class="a">+        return notFound();</span>
+<span class="a">+      }</span>
+       if (!data) return notFound();
+       const { campaign, ...__private } = data;
+       campaign_public = campaign;
+<span class="h">@@ -123,7 +128,7 @@ export async function GET(req: NextRequest) {</span>
+       break;
+     }
+     case &quot;invitation&quot;: {
+<span class="d">-      const { data, error } = await westClient</span>
+<span class="a">+      const { data, error } = await service_role.west_referral</span>
+         .from(&quot;invitation&quot;)
+         .select(
+           `</pre><h2>Commit #4: <a href="https://github.com/gridaco/grida/commit/e9edd3648afa78052c00e46ac18310caf296a144">e9edd3648a</a> (2025-05-09T12:52:45+00:00)</h2><p class="k">Merge pull request #322 from gridaco/next15<br>Path after this commit: editor/app/(tenant)/~/[tenant]/api/west/t/route.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts b/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts
+index 5d700e12d..e3442ab21 100644
+<span class="d">--- a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts</span>
+<span class="a">+++ b/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts</span>
+<span class="h">@@ -5,8 +5,6 @@ import { notFound } from &quot;next/navigation&quot;;</span>
+ import { NextRequest, NextResponse } from &quot;next/server&quot;;
+ import assert from &quot;assert&quot;;
+ 
+<span class="d">-export const revalidate = 0;</span>
+<span class="d">-</span>
+ export async function GET(req: NextRequest) {
+   const headersList = await headers();
+   const campaign_id = headersList.get(&quot;x-grida-west-campaign-id&quot;);</pre><h2>Commit #5: <a href="https://github.com/gridaco/grida/commit/1e28d9131457eee8a142ffc9d541a40c7a51b87f">1e28d91314</a> (2025-05-10T09:32:05+00:00)</h2><p class="k">Merge pull request #323 from gridaco/attributes/phone<br>Path after this commit: editor/app/(api)/(public)/v1/west/t/route.ts. Lines with exactly this text in the file after the commit: 2. Identical text added in other files in this commit: editor/app/(api)/(public)/v1/route.ts, editor/app/(api)/private/editor/[form_id]/share/route.ts.</p><pre>diff --git a/editor/app/(tenant)/~/[tenant]/api/west/t/route.ts b/editor/app/(api)/(public)/v1/west/t/route.ts
+similarity index 100%
+rename from editor/app/(tenant)/~/[tenant]/api/west/t/route.ts
+rename to editor/app/(api)/(public)/v1/west/t/route.ts</pre><h2>Commit #6: <a href="https://github.com/gridaco/grida/commit/e3fc9201d47784919c46b6e77437b0ebb7506a7b">e3fc9201d4</a> (2025-05-10T11:37:29+00:00)</h2><p class="k">Merge pull request #324 from gridaco/form/use<br>Path after this commit: editor/app/(api)/(public)/v1/west/t/route.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/editor/app/(api)/(public)/v1/west/t/route.ts b/editor/app/(api)/(public)/v1/west/t/route.ts
+index e3442ab21..e1adb735a 100644
+<span class="d">--- a/editor/app/(api)/(public)/v1/west/t/route.ts</span>
+<span class="a">+++ b/editor/app/(api)/(public)/v1/west/t/route.ts</span>
+<span class="h">@@ -7,10 +7,15 @@ import assert from &quot;assert&quot;;</span>
+ 
+ export async function GET(req: NextRequest) {
+   const headersList = await headers();
+<span class="d">-  const campaign_id = headersList.get(&quot;x-grida-west-campaign-id&quot;);</span>
+<span class="d">-  const code = headersList.get(&quot;x-grida-west-token-code&quot;);</span>
+<span class="d">-  assert(code, &quot;x-grida-west-token-code is required&quot;);</span>
+<span class="d">-  assert(campaign_id, &quot;x-grida-west-campaign-id is required&quot;);</span>
+<span class="a">+  const campaign_id = headersList.get(</span>
+<span class="a">+    Platform.headers[&quot;x-grida-west-campaign-id&quot;]</span>
+<span class="a">+  );</span>
+<span class="a">+  const code = headersList.get(Platform.headers[&quot;x-grida-west-token-code&quot;]);</span>
+<span class="a">+  assert(code, `${Platform.headers[&quot;x-grida-west-token-code&quot;]} is required`);</span>
+<span class="a">+  assert(</span>
+<span class="a">+    campaign_id,</span>
+<span class="a">+    `${Platform.headers[&quot;x-grida-west-campaign-id&quot;]} is required`</span>
+<span class="a">+  );</span>
+ 
+   // #region test codes
+   if (</pre></body></html>

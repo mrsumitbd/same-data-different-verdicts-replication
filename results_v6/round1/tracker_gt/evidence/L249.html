@@ -1,0 +1,416 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L249</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L249</h1><p><b>Repository:</b> <a href="https://github.com/marimo-team/marimo">marimo-team/marimo</a><br><b>File at merge:</b> frontend/src/components/editor/chrome/wrapper/copilot-status.tsx, line 20<br><b>Merge commit (birth):</b> <a href="https://github.com/marimo-team/marimo/commit/9d5c97b181b9044bb646559be1491f43650b66ba">9d5c97b181</a> (2025-01-17T20:24:50)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/marimo-team/marimo/tree/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a>)</p><p><b>The line:</b></p><pre><span class="t">import { Button } from &quot;@/components/ui/button&quot;;</span></pre><h2>File at the merge commit, lines 12 to 28</h2><pre>   12 | import { GitHubCopilotIcon } from &quot;@/components/icons/github-copilot&quot;;
+   13 | import { SparklesIcon } from &quot;lucide-react&quot;;
+   14 | import { FooterItem } from &quot;./footer-item&quot;;
+   15 | import { activeUserConfigCategoryAtom } from &quot;@/components/app-config/user-config-form&quot;;
+   16 | import { settingDialogAtom } from &quot;@/components/app-config/app-config-button&quot;;
+   17 | import { toast } from &quot;@/components/ui/use-toast&quot;;
+   18 | import { getCopilotClient } from &quot;@/core/codemirror/copilot/client&quot;;
+   19 | import { Logger } from &quot;@/utils/Logger&quot;;
+<span class="t">   20 | import { Button } from &quot;@/components/ui/button&quot;;</span>
+   21 | import { useOnMount } from &quot;@/hooks/useLifecycle&quot;;
+   22 | export const AIStatusIcon: React.FC = () =&gt; {
+   23 |   const ai = useAtomValue(aiAtom);
+   24 |   const aiEnabled = useAtomValue(aiEnabledAtom);
+   25 |   const model = ai?.open_ai?.model || &quot;gpt-4-turbo&quot;;
+   26 |   const { handleClick } = useOpenAISettings();
+   27 | 
+   28 |   if (!aiEnabled) {</pre><p class="k">Below are all 9 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/marimo-team/marimo/commit/e40879e6a014c2e6859579af5ebe4bc2c26f8761">e40879e6a0</a> (2025-02-06T17:11:22-05:00)</h2><p class="k">improvement: click package icon to change the package manager (#3691)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx
+index 279c82bb9..fa7441de8 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx</span>
+<span class="h">@@ -12,25 +12,24 @@ import { aiEnabledAtom, resolvedMarimoConfigAtom } from &quot;@/core/config/config&quot;;</span>
+ import { GitHubCopilotIcon } from &quot;@/components/icons/github-copilot&quot;;
+ import { SparklesIcon } from &quot;lucide-react&quot;;
+ import { FooterItem } from &quot;./footer-item&quot;;
+<span class="d">-import { activeUserConfigCategoryAtom } from &quot;@/components/app-config/user-config-form&quot;;</span>
+<span class="d">-import { settingDialogAtom } from &quot;@/components/app-config/app-config-button&quot;;</span>
+ import { toast } from &quot;@/components/ui/use-toast&quot;;
+ import { getCopilotClient } from &quot;@/core/codemirror/copilot/client&quot;;
+ import { Logger } from &quot;@/utils/Logger&quot;;
+<span class=" m"> import { Button } from &quot;@/components/ui/button&quot;;</span>
+ import { useOnMount } from &quot;@/hooks/useLifecycle&quot;;
+<span class="a">+import { useOpenSettingsToTab } from &quot;@/components/app-config/state&quot;;</span>
+ export const AIStatusIcon: React.FC = () =&gt; {
+   const ai = useAtomValue(aiAtom);
+   const aiEnabled = useAtomValue(aiEnabledAtom);
+   const model = ai?.open_ai?.model || &quot;gpt-4-turbo&quot;;
+<span class="d">-  const { handleClick } = useOpenAISettings();</span>
+<span class="a">+  const { handleClick } = useOpenSettingsToTab();</span>
+ 
+   if (!aiEnabled) {
+     return (
+       &lt;FooterItem
+         tooltip=&quot;Assist is disabled&quot;
+         selected={false}
+<span class="d">-        onClick={handleClick}</span>
+<span class="a">+        onClick={() =&gt; handleClick(&quot;ai&quot;)}</span>
+       &gt;
+         &lt;SparklesIcon className=&quot;h-4 w-4 opacity-60&quot; /&gt;
+       &lt;/FooterItem&gt;
+<span class="h">@@ -44,7 +43,7 @@ export const AIStatusIcon: React.FC = () =&gt; {</span>
+           &lt;b&gt;Assist model:&lt;/b&gt; {model}
+         &lt;/&gt;
+       }
+<span class="d">-      onClick={handleClick}</span>
+<span class="a">+      onClick={() =&gt; handleClick(&quot;ai&quot;)}</span>
+       selected={false}
+     &gt;
+       &lt;SparklesIcon className=&quot;h-4 w-4&quot; /&gt;
+<span class="h">@@ -59,16 +58,6 @@ const aiAtom = atom((get) =&gt; {</span>
+   return get(resolvedMarimoConfigAtom).ai;
+ });
+ 
+<span class="d">-export function useOpenAISettings() {</span>
+<span class="d">-  const setActiveCategory = useSetAtom(activeUserConfigCategoryAtom);</span>
+<span class="d">-  const setSettingsDialog = useSetAtom(settingDialogAtom);</span>
+<span class="d">-  const handleClick = () =&gt; {</span>
+<span class="d">-    setActiveCategory(&quot;ai&quot;);</span>
+<span class="d">-    setSettingsDialog(true);</span>
+<span class="d">-  };</span>
+<span class="d">-  return { handleClick };</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ export const CopilotStatusIcon: React.FC = () =&gt; {
+   const copilot = useAtomValue(copilotAtom);
+ 
+<span class="h">@@ -84,7 +73,8 @@ export const CopilotStatusIcon: React.FC = () =&gt; {</span>
+ const GitHubCopilotStatus: React.FC = () =&gt; {
+   const isGitHubCopilotSignedIn = useAtomValue(isGitHubCopilotSignedInState);
+   const isLoading = useAtomValue(githubCopilotLoadingVersion) !== null;
+<span class="d">-  const { handleClick } = useOpenAISettings();</span>
+<span class="a">+  const { handleClick } = useOpenSettingsToTab();</span>
+<span class="a">+  const openSettings = () =&gt; handleClick(&quot;ai&quot;);</span>
+ 
+   const label = isGitHubCopilotSignedIn ? &quot;Ready&quot; : &quot;Not connected&quot;;
+   const setCopilotSignedIn = useSetAtom(isGitHubCopilotSignedInState);
+<span class="h">@@ -128,7 +118,7 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+             &quot;Failed to connect to GitHub Copilot. Check settings and try again.&quot;,
+           variant: &quot;danger&quot;,
+           action: (
+<span class="d">-            &lt;Button variant=&quot;link&quot; onClick={handleClick}&gt;</span>
+<span class="a">+            &lt;Button variant=&quot;link&quot; onClick={openSettings}&gt;</span>
+               Settings
+             &lt;/Button&gt;
+           ),
+<span class="h">@@ -151,7 +141,7 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+         &lt;/&gt;
+       }
+       selected={false}
+<span class="d">-      onClick={handleClick}</span>
+<span class="a">+      onClick={openSettings}</span>
+     &gt;
+       &lt;span&gt;
+         {isLoading ? (</pre><h2>Commit #2: <a href="https://github.com/marimo-team/marimo/commit/f223ce84acaede0af1cedff91325dff66b9be3c0">f223ce84ac</a> (2025-02-25T19:01:11-05:00)</h2><p class="k">feat: GA chat sidebar (#3919)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx
+index fa7441de8..7a8674f5e 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx</span>
+<span class="h">@@ -8,7 +8,11 @@ import {</span>
+   copilotSignedInState,
+ } from &quot;@/core/codemirror/copilot/state&quot;;
+ import { atom, useAtomValue, useSetAtom } from &quot;jotai&quot;;
+<span class="d">-import { aiEnabledAtom, resolvedMarimoConfigAtom } from &quot;@/core/config/config&quot;;</span>
+<span class="a">+import {</span>
+<span class="a">+  aiAtom,</span>
+<span class="a">+  aiEnabledAtom,</span>
+<span class="a">+  resolvedMarimoConfigAtom,</span>
+<span class="a">+} from &quot;@/core/config/config&quot;;</span>
+ import { GitHubCopilotIcon } from &quot;@/components/icons/github-copilot&quot;;
+ import { SparklesIcon } from &quot;lucide-react&quot;;
+ import { FooterItem } from &quot;./footer-item&quot;;
+<span class="h">@@ -18,6 +22,7 @@ import { Logger } from &quot;@/utils/Logger&quot;;</span>
+<span class=" m"> import { Button } from &quot;@/components/ui/button&quot;;</span>
+ import { useOnMount } from &quot;@/hooks/useLifecycle&quot;;
+ import { useOpenSettingsToTab } from &quot;@/components/app-config/state&quot;;
+<span class="a">+</span>
+ export const AIStatusIcon: React.FC = () =&gt; {
+   const ai = useAtomValue(aiAtom);
+   const aiEnabled = useAtomValue(aiEnabledAtom);
+<span class="h">@@ -54,9 +59,6 @@ export const AIStatusIcon: React.FC = () =&gt; {</span>
+ const copilotAtom = atom((get) =&gt; {
+   return get(resolvedMarimoConfigAtom).completion.copilot;
+ });
+<span class="d">-const aiAtom = atom((get) =&gt; {</span>
+<span class="d">-  return get(resolvedMarimoConfigAtom).ai;</span>
+<span class="d">-});</span>
+ 
+ export const CopilotStatusIcon: React.FC = () =&gt; {
+   const copilot = useAtomValue(copilotAtom);</pre><h2>Commit #3: <a href="https://github.com/marimo-team/marimo/commit/4df3636ce27af4a7bafb85fabf0556b70b0a5859">4df3636ce2</a> (2025-05-08T09:13:42-04:00)</h2><p class="k">[rtc] awareness (#4839)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx
+similarity index 78%
+rename from frontend/src/components/editor/chrome/wrapper/copilot-status.tsx
+rename to frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx
+index 7a8674f5e..078c63cb4 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="h">@@ -8,14 +8,9 @@ import {</span>
+   copilotSignedInState,
+ } from &quot;@/core/codemirror/copilot/state&quot;;
+ import { atom, useAtomValue, useSetAtom } from &quot;jotai&quot;;
+<span class="d">-import {</span>
+<span class="d">-  aiAtom,</span>
+<span class="d">-  aiEnabledAtom,</span>
+<span class="d">-  resolvedMarimoConfigAtom,</span>
+<span class="d">-} from &quot;@/core/config/config&quot;;</span>
+<span class="a">+import { resolvedMarimoConfigAtom } from &quot;@/core/config/config&quot;;</span>
+ import { GitHubCopilotIcon } from &quot;@/components/icons/github-copilot&quot;;
+<span class="d">-import { SparklesIcon } from &quot;lucide-react&quot;;</span>
+<span class="d">-import { FooterItem } from &quot;./footer-item&quot;;</span>
+<span class="a">+import { FooterItem } from &quot;../footer-item&quot;;</span>
+ import { toast } from &quot;@/components/ui/use-toast&quot;;
+ import { getCopilotClient } from &quot;@/core/codemirror/copilot/client&quot;;
+ import { Logger } from &quot;@/utils/Logger&quot;;
+<span class="h">@@ -23,39 +18,6 @@ import { Button } from &quot;@/components/ui/button&quot;;</span>
+ import { useOnMount } from &quot;@/hooks/useLifecycle&quot;;
+ import { useOpenSettingsToTab } from &quot;@/components/app-config/state&quot;;
+ 
+<span class="d">-export const AIStatusIcon: React.FC = () =&gt; {</span>
+<span class="d">-  const ai = useAtomValue(aiAtom);</span>
+<span class="d">-  const aiEnabled = useAtomValue(aiEnabledAtom);</span>
+<span class="d">-  const model = ai?.open_ai?.model || &quot;gpt-4-turbo&quot;;</span>
+<span class="d">-  const { handleClick } = useOpenSettingsToTab();</span>
+<span class="d">-</span>
+<span class="d">-  if (!aiEnabled) {</span>
+<span class="d">-    return (</span>
+<span class="d">-      &lt;FooterItem</span>
+<span class="d">-        tooltip=&quot;Assist is disabled&quot;</span>
+<span class="d">-        selected={false}</span>
+<span class="d">-        onClick={() =&gt; handleClick(&quot;ai&quot;)}</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;SparklesIcon className=&quot;h-4 w-4 opacity-60&quot; /&gt;</span>
+<span class="d">-      &lt;/FooterItem&gt;</span>
+<span class="d">-    );</span>
+<span class="d">-  }</span>
+<span class="d">-</span>
+<span class="d">-  return (</span>
+<span class="d">-    &lt;FooterItem</span>
+<span class="d">-      tooltip={</span>
+<span class="d">-        &lt;&gt;</span>
+<span class="d">-          &lt;b&gt;Assist model:&lt;/b&gt; {model}</span>
+<span class="d">-        &lt;/&gt;</span>
+<span class="d">-      }</span>
+<span class="d">-      onClick={() =&gt; handleClick(&quot;ai&quot;)}</span>
+<span class="d">-      selected={false}</span>
+<span class="d">-    &gt;</span>
+<span class="d">-      &lt;SparklesIcon className=&quot;h-4 w-4&quot; /&gt;</span>
+<span class="d">-    &lt;/FooterItem&gt;</span>
+<span class="d">-  );</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+ const copilotAtom = atom((get) =&gt; {
+   return get(resolvedMarimoConfigAtom).completion.copilot;
+ });</pre><h2>Commit #4: <a href="https://github.com/marimo-team/marimo/commit/09fd33cc02e7bec3093f35a1752d9ea3424381cf">09fd33cc02</a> (2025-05-21T17:04:59-04:00)</h2><p class="k">feat: migrate to @github/copilot-language-server, enable GitHub copilot in Conda environments (#5010)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx
+index 078c63cb4..1f244a7ec 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="h">@@ -34,6 +34,8 @@ export const CopilotStatusIcon: React.FC = () =&gt; {</span>
+   return null;
+ };
+ 
+<span class="a">+const logger = Logger.get(&quot;[copilot-status-bar]&quot;);</span>
+<span class="a">+</span>
+ const GitHubCopilotStatus: React.FC = () =&gt; {
+   const isGitHubCopilotSignedIn = useAtomValue(isGitHubCopilotSignedInState);
+   const isLoading = useAtomValue(githubCopilotLoadingVersion) !== null;
+<span class="h">@@ -53,7 +55,7 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+       try {
+         // If we fail to initialize, show connection error
+         await client.initializePromise.catch((error) =&gt; {
+<span class="d">-          Logger.error(&quot;Copilot#checkConnection: Failed to initialize&quot;, error);</span>
+<span class="a">+          logger.error(&quot;Failed to initialize&quot;, error);</span>
+           client.close();
+           throw error;
+         });
+<span class="h">@@ -73,7 +75,7 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+         if (!mounted) {
+           return;
+         }
+<span class="d">-        Logger.warn(&quot;Copilot#checkConnection: Connection failed&quot;, error);</span>
+<span class="a">+        logger.warn(&quot;Connection failed&quot;, error);</span>
+         setCopilotSignedIn(false);
+         setStep(&quot;connectionError&quot;);
+         toast({</pre><h2>Commit #5: <a href="https://github.com/marimo-team/marimo/commit/a22cfbb9c1cb5e6ff42c73ff8d6aa7f21134cac1">a22cfbb9c1</a> (2025-06-12T15:20:47-07:00)</h2><p class="k">improvement: connecting indicator and readonly tooltip (#5284)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx
+index 1f244a7ec..8196eb0fa 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="h">@@ -108,6 +108,7 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+       }
+       selected={false}
+       onClick={openSettings}
+<span class="a">+      data-testid=&quot;footer-copilot-status&quot;</span>
+     &gt;
+       &lt;span&gt;
+         {isLoading ? (</pre><h2>Commit #6: <a href="https://github.com/marimo-team/marimo/commit/e543a9b45dc8af04aa40517ef33d6110799cc553">e543a9b45d</a> (2025-06-12T21:10:32-04:00)</h2><p class="k">chore: biome 2x (#5291)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: frontend/src/components/app-config/optional-features.tsx, frontend/src/components/app-config/user-config-form.tsx, frontend/src/components/chat/chat-panel.tsx, frontend/src/components/data-table/charts/charts.tsx, frontend/src/components/data-table/charts/components/form-fields.tsx.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx
+index 8196eb0fa..3f80e3c13 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="h">@@ -1,22 +1,23 @@</span>
+ /* Copyright 2024 Marimo. All rights reserved. */
+<span class="a">+</span>
+<span class="a">+import { atom, useAtomValue, useSetAtom } from &quot;jotai&quot;;</span>
+ import React from &quot;react&quot;;
+<span class="d">-import { cn } from &quot;@/utils/cn&quot;;</span>
+<span class="a">+import { useOpenSettingsToTab } from &quot;@/components/app-config/state&quot;;</span>
+<span class="a">+import { GitHubCopilotIcon } from &quot;@/components/icons/github-copilot&quot;;</span>
+ import { Spinner } from &quot;@/components/icons/spinner&quot;;
+<span class="a m">+import { Button } from &quot;@/components/ui/button&quot;;</span>
+<span class="a">+import { toast } from &quot;@/components/ui/use-toast&quot;;</span>
+<span class="a">+import { getCopilotClient } from &quot;@/core/codemirror/copilot/client&quot;;</span>
+ import {
+<span class="d">-  isGitHubCopilotSignedInState,</span>
+<span class="d">-  githubCopilotLoadingVersion,</span>
+   copilotSignedInState,
+<span class="a">+  githubCopilotLoadingVersion,</span>
+<span class="a">+  isGitHubCopilotSignedInState,</span>
+ } from &quot;@/core/codemirror/copilot/state&quot;;
+<span class="d">-import { atom, useAtomValue, useSetAtom } from &quot;jotai&quot;;</span>
+ import { resolvedMarimoConfigAtom } from &quot;@/core/config/config&quot;;
+<span class="d">-import { GitHubCopilotIcon } from &quot;@/components/icons/github-copilot&quot;;</span>
+<span class="d">-import { FooterItem } from &quot;../footer-item&quot;;</span>
+<span class="d">-import { toast } from &quot;@/components/ui/use-toast&quot;;</span>
+<span class="d">-import { getCopilotClient } from &quot;@/core/codemirror/copilot/client&quot;;</span>
+<span class="d">-import { Logger } from &quot;@/utils/Logger&quot;;</span>
+<span class="d m">-import { Button } from &quot;@/components/ui/button&quot;;</span>
+ import { useOnMount } from &quot;@/hooks/useLifecycle&quot;;
+<span class="d">-import { useOpenSettingsToTab } from &quot;@/components/app-config/state&quot;;</span>
+<span class="a">+import { cn } from &quot;@/utils/cn&quot;;</span>
+<span class="a">+import { Logger } from &quot;@/utils/Logger&quot;;</span>
+<span class="a">+import { FooterItem } from &quot;../footer-item&quot;;</span>
+ 
+ const copilotAtom = atom((get) =&gt; {
+   return get(resolvedMarimoConfigAtom).completion.copilot;</pre><h2>Commit #7: <a href="https://github.com/marimo-team/marimo/commit/c54359dc7e0a202b32e70ef3e187e3ff8fcf7b29">c54359dc7e</a> (2025-12-01T10:57:27-05:00)</h2><p class="k">improvement: forward status of copilot to footer icon (#7312)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx
+index 3f80e3c13..4da68b63e 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="h">@@ -10,6 +10,7 @@ import { toast } from &quot;@/components/ui/use-toast&quot;;</span>
+ import { getCopilotClient } from &quot;@/core/codemirror/copilot/client&quot;;
+ import {
+   copilotSignedInState,
+<span class="a">+  copilotStatusState,</span>
+   githubCopilotLoadingVersion,
+   isGitHubCopilotSignedInState,
+ } from &quot;@/core/codemirror/copilot/state&quot;;
+<span class="h">@@ -40,10 +41,18 @@ const logger = Logger.get(&quot;[copilot-status-bar]&quot;);</span>
+ const GitHubCopilotStatus: React.FC = () =&gt; {
+   const isGitHubCopilotSignedIn = useAtomValue(isGitHubCopilotSignedInState);
+   const isLoading = useAtomValue(githubCopilotLoadingVersion) !== null;
+<span class="a">+  const status = useAtomValue(copilotStatusState);</span>
+   const { handleClick } = useOpenSettingsToTab();
+   const openSettings = () =&gt; handleClick(&quot;ai&quot;);
+ 
+<span class="d">-  const label = isGitHubCopilotSignedIn ? &quot;Ready&quot; : &quot;Not connected&quot;;</span>
+<span class="a">+  // Build label from status</span>
+<span class="a">+  let label = isGitHubCopilotSignedIn ? &quot;Ready&quot; : &quot;Not connected&quot;;</span>
+<span class="a">+  if (status.message) {</span>
+<span class="a">+    label = status.message;</span>
+<span class="a">+  } else if (status.busy) {</span>
+<span class="a">+    label = &quot;Processing...&quot;;</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+   const setCopilotSignedIn = useSetAtom(isGitHubCopilotSignedInState);
+   const setStep = useSetAtom(copilotSignedInState);
+ 
+<span class="h">@@ -100,11 +109,25 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+     };
+   });
+ 
+<span class="a">+  // Determine icon color based on status</span>
+<span class="a">+  const iconColorClass =</span>
+<span class="a">+    status.kind === &quot;Warning&quot; || status.kind === &quot;Error&quot;</span>
+<span class="a">+      ? &quot;text-(--yellow-11)&quot;</span>
+<span class="a">+      : isGitHubCopilotSignedIn</span>
+<span class="a">+        ? &quot;&quot;</span>
+<span class="a">+        : &quot;opacity-60&quot;;</span>
+<span class="a">+</span>
+   return (
+     &lt;FooterItem
+       tooltip={
+         &lt;&gt;
+           &lt;b&gt;GitHub Copilot:&lt;/b&gt; {label}
+<span class="a">+          {status.kind &amp;&amp; (</span>
+<span class="a">+            &lt;&gt;</span>
+<span class="a">+              &lt;br /&gt;</span>
+<span class="a">+              &lt;span className=&quot;text-xs&quot;&gt;Status: {status.kind}&lt;/span&gt;</span>
+<span class="a">+            &lt;/&gt;</span>
+<span class="a">+          )}</span>
+         &lt;/&gt;
+       }
+       selected={false}
+<span class="h">@@ -112,12 +135,10 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+       data-testid=&quot;footer-copilot-status&quot;
+     &gt;
+       &lt;span&gt;
+<span class="d">-        {isLoading ? (</span>
+<span class="a">+        {isLoading || status.busy ? (</span>
+           &lt;Spinner className=&quot;h-4 w-4&quot; /&gt;
+         ) : (
+<span class="d">-          &lt;GitHubCopilotIcon</span>
+<span class="d">-            className={cn(&quot;h-4 w-4&quot;, !isGitHubCopilotSignedIn &amp;&amp; &quot;opacity-60&quot;)}</span>
+<span class="d">-          /&gt;</span>
+<span class="a">+          &lt;GitHubCopilotIcon className={cn(&quot;h-4 w-4&quot;, iconColorClass)} /&gt;</span>
+         )}
+       &lt;/span&gt;
+     &lt;/FooterItem&gt;</pre><h2>Commit #8: <a href="https://github.com/marimo-team/marimo/commit/4f72abde9560ae62e05dc4c3059f5f5e8bf97264">4f72abde95</a> (2025-12-11T10:42:44-08:00)</h2><p class="k">feat: enhance GitHub Copilot integration with advanced configuration options (#7457)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx
+index 4da68b63e..0f820b7a2 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="h">@@ -17,6 +17,7 @@ import {</span>
+ import { resolvedMarimoConfigAtom } from &quot;@/core/config/config&quot;;
+ import { useOnMount } from &quot;@/hooks/useLifecycle&quot;;
+ import { cn } from &quot;@/utils/cn&quot;;
+<span class="a">+import { prettyError } from &quot;@/utils/errors&quot;;</span>
+ import { Logger } from &quot;@/utils/Logger&quot;;
+ import { FooterItem } from &quot;../footer-item&quot;;
+ 
+<span class="h">@@ -90,8 +91,19 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+         setStep(&quot;connectionError&quot;);
+         toast({
+           title: &quot;GitHub Copilot Connection Error&quot;,
+<span class="d">-          description:</span>
+<span class="d">-            &quot;Failed to connect to GitHub Copilot. Check settings and try again.&quot;,</span>
+<span class="a">+          description: (</span>
+<span class="a">+            &lt;&gt;</span>
+<span class="a">+              {&quot; &quot;}</span>
+<span class="a">+              &lt;div&gt;</span>
+<span class="a">+                Failed to connect to GitHub Copilot. Check settings and try</span>
+<span class="a">+                again.</span>
+<span class="a">+              &lt;/div&gt;</span>
+<span class="a">+              &lt;br /&gt;</span>
+<span class="a">+              &lt;div className=&quot;text-sm font-mono whitespace-pre-wrap&quot;&gt;</span>
+<span class="a">+                {prettyError(error)}</span>
+<span class="a">+              &lt;/div&gt;</span>
+<span class="a">+            &lt;/&gt;</span>
+<span class="a">+          ),</span>
+           variant: &quot;danger&quot;,
+           action: (
+             &lt;Button variant=&quot;link&quot; onClick={openSettings}&gt;
+<span class="h">@@ -120,15 +132,15 @@ const GitHubCopilotStatus: React.FC = () =&gt; {</span>
+   return (
+     &lt;FooterItem
+       tooltip={
+<span class="d">-        &lt;&gt;</span>
+<span class="a">+        &lt;div className=&quot;max-w-[200px]&quot;&gt;</span>
+           &lt;b&gt;GitHub Copilot:&lt;/b&gt; {label}
+           {status.kind &amp;&amp; (
+             &lt;&gt;
+               &lt;br /&gt;
+<span class="d">-              &lt;span className=&quot;text-xs&quot;&gt;Status: {status.kind}&lt;/span&gt;</span>
+<span class="a">+              &lt;span className=&quot;pt-1 text-xs&quot;&gt;Status: {status.kind}&lt;/span&gt;</span>
+             &lt;/&gt;
+           )}
+<span class="d">-        &lt;/&gt;</span>
+<span class="a">+        &lt;/div&gt;</span>
+       }
+       selected={false}
+       onClick={openSettings}</pre><h2>Commit #9: <a href="https://github.com/marimo-team/marimo/commit/adebb475066ed8d1d5bdf5006472b9750c8faaa9">adebb47506</a> (2025-12-26T09:56:49-05:00)</h2><p class="k">Change copyright to 2026 including scripts (#7606)<br>Path after this commit: frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx
+index 0f820b7a2..f12bb6bbc 100644
+<span class="d">--- a/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="a">+++ b/frontend/src/components/editor/chrome/wrapper/footer-items/copilot-status.tsx</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-/* Copyright 2024 Marimo. All rights reserved. */</span>
+<span class="a">+/* Copyright 2026 Marimo. All rights reserved. */</span>
+ 
+ import { atom, useAtomValue, useSetAtom } from &quot;jotai&quot;;
+ import React from &quot;react&quot;;</pre></body></html>

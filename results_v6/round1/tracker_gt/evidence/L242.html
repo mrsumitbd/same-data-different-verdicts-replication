@@ -1,0 +1,208 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L242</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L242</h1><p><b>Repository:</b> <a href="https://github.com/shopware/shopware">shopware/shopware</a><br><b>File at merge:</b> tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php, line 75<br><b>Merge commit (birth):</b> <a href="https://github.com/shopware/shopware/commit/f88b6769984086bd73b6cb8946d9ce270d04d249">f88b676998</a> (2025-04-16T12:27:17)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/shopware/shopware/tree/2800b80b6b4bc8e534b78f786dade880a1c3886f">2800b80b6b</a>)</p><p><b>The line:</b></p><pre><span class="t">            self::getCategory(&#x27;differentCmsPageId&#x27;, true, true),</span></pre><h2>File at the merge commit, lines 67 to 83</h2><pre>   67 |             self::getCategory(&#x27;foobar&#x27;, false),
+   68 |             &#x27;foobar&#x27;,
+   69 |             &#x27;foobar&#x27;,
+   70 |             null,
+   71 |         ];
+   72 | 
+   73 |         yield &#x27;It does not set cms page id if already set by the subscriber&#x27; =&gt; [
+   74 |             self::getSystemConfigServiceMock(null, &#x27;cmsPageId&#x27;),
+<span class="t">   75 |             self::getCategory(&#x27;differentCmsPageId&#x27;, true, true),</span>
+   76 |             &#x27;differentCmsPageId&#x27;,
+   77 |             &#x27;differentCmsPageId&#x27;,
+   78 |             &#x27;salesChannelId&#x27;,
+   79 |         ];
+   80 | 
+   81 |         yield &#x27;It does not set if no default is given&#x27; =&gt; [
+   82 |             self::getSystemConfigServiceMock(),
+   83 |             self::getCategory(null, false),</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/shopware/shopware/commit/0576fd0742b97d0d6504e10e1b0e1a3f213f80d7">0576fd0742</a> (2025-05-21T08:09:09+00:00)</h2><p class="k">refactor: Simplify category loaded subscriber (#9565)<br>Path after this commit: tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php b/tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php
+index fc4118ce800..1f626e4d6a0 100644
+<span class="d">--- a/tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php</span>
+<span class="a">+++ b/tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php</span>
+<span class="h">@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;</span>
+ use Shopware\Core\Content\Category\CategoryDefinition;
+ use Shopware\Core\Content\Category\CategoryEntity;
+ use Shopware\Core\Content\Category\CategoryEvents;
+<span class="a">+use Shopware\Core\Content\Category\SalesChannel\SalesChannelCategoryDefinition;</span>
+ use Shopware\Core\Content\Category\SalesChannel\SalesChannelCategoryEntity;
+ use Shopware\Core\Content\Category\Service\CategoryUrlGenerator;
+ use Shopware\Core\Content\Category\Subscriber\CategorySubscriber;
+<span class="h">@@ -29,53 +30,64 @@ class CategorySubscriberTest extends TestCase</span>
+     public function testHasEvents(): void
+     {
+         $expectedEvents = [
+<span class="d">-            CategoryEvents::CATEGORY_LOADED_EVENT =&gt; &#x27;entityLoaded&#x27;,</span>
+<span class="d">-            &#x27;sales_channel.&#x27; . CategoryEvents::CATEGORY_LOADED_EVENT =&gt; &#x27;entityLoaded&#x27;,</span>
+<span class="a">+            CategoryEvents::CATEGORY_LOADED_EVENT =&gt; &#x27;categoryLoaded&#x27;,</span>
+<span class="a">+            &#x27;sales_channel.&#x27; . CategoryEvents::CATEGORY_LOADED_EVENT =&gt; &#x27;salesChannelCategoryLoaded&#x27;,</span>
+         ];
+ 
+         static::assertSame($expectedEvents, CategorySubscriber::getSubscribedEvents());
+     }
+ 
+<span class="d">-    #[DataProvider(&#x27;entityLoadedEventDataProvider&#x27;)]</span>
+<span class="d">-    public function testEntityLoadedEvent(</span>
+<span class="a">+    #[DataProvider(&#x27;categoryLoadedEventDataProvider&#x27;)]</span>
+<span class="a">+    public function testCategoryLoadedEvent(</span>
+         SystemConfigService $systemConfigService,
+         CategoryEntity $categoryEntity,
+         ?string $cmsPageIdBeforeEvent,
+<span class="d">-        ?string $cmsPageIdAfterEvent,</span>
+<span class="d">-        ?string $salesChannelId</span>
+<span class="a">+        ?string $cmsPageIdAfterEvent</span>
+     ): void {
+         $categorySubscriber = new CategorySubscriber($systemConfigService, $this-&gt;createMock(CategoryUrlGenerator::class));
+ 
+<span class="d">-        if ($salesChannelId) {</span>
+<span class="d">-            $event = new SalesChannelEntityLoadedEvent(new CategoryDefinition(), [$categoryEntity], $this-&gt;getSalesChannelContext($salesChannelId));</span>
+<span class="d">-        } else {</span>
+<span class="d">-            $event = new EntityLoadedEvent(new CategoryDefinition(), [$categoryEntity], Context::createDefaultContext());</span>
+<span class="d">-        }</span>
+<span class="a">+        static::assertSame($cmsPageIdBeforeEvent, $categoryEntity-&gt;getCmsPageId());</span>
+<span class="a">+</span>
+<span class="a">+        $event = new EntityLoadedEvent(new CategoryDefinition(), [$categoryEntity], Context::createDefaultContext());</span>
+<span class="a">+        $categorySubscriber-&gt;categoryLoaded($event);</span>
+<span class="a">+</span>
+<span class="a">+        static::assertSame($cmsPageIdAfterEvent, $categoryEntity-&gt;getCmsPageId());</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    #[DataProvider(&#x27;salesChannelCategoryLoadedEventDataProvider&#x27;)]</span>
+<span class="a">+    public function testSalesChannelCategoryLoadedEvent(</span>
+<span class="a">+        SystemConfigService $systemConfigService,</span>
+<span class="a">+        SalesChannelCategoryEntity $categoryEntity,</span>
+<span class="a">+        ?string $cmsPageIdBeforeEvent,</span>
+<span class="a">+        ?string $cmsPageIdAfterEvent,</span>
+<span class="a">+        string $salesChannelId</span>
+<span class="a">+    ): void {</span>
+<span class="a">+        $categorySubscriber = new CategorySubscriber($systemConfigService, $this-&gt;createMock(CategoryUrlGenerator::class));</span>
+ 
+         static::assertSame($cmsPageIdBeforeEvent, $categoryEntity-&gt;getCmsPageId());
+<span class="d">-        $categorySubscriber-&gt;entityLoaded($event);</span>
+<span class="a">+</span>
+<span class="a">+        $event = new SalesChannelEntityLoadedEvent(</span>
+<span class="a">+            new SalesChannelCategoryDefinition(),</span>
+<span class="a">+            [$categoryEntity],</span>
+<span class="a">+            $this-&gt;getSalesChannelContext($salesChannelId)</span>
+<span class="a">+        );</span>
+<span class="a">+</span>
+<span class="a">+        $categorySubscriber-&gt;categoryLoaded($event);</span>
+<span class="a">+        $categorySubscriber-&gt;salesChannelCategoryLoaded($event);</span>
+<span class="a">+</span>
+         static::assertSame($cmsPageIdAfterEvent, $categoryEntity-&gt;getCmsPageId());
+     }
+ 
+     /**
+<span class="d">-     * @return array&lt;string, array{SystemConfigService, CategoryEntity, string|null, string|null, string|null}&gt;</span>
+<span class="a">+     * @return array&lt;string, array{SystemConfigService, CategoryEntity, string|null, string|null}&gt;</span>
+      */
+<span class="d">-    public static function entityLoadedEventDataProvider(): iterable</span>
+<span class="a">+    public static function categoryLoadedEventDataProvider(): iterable</span>
+     {
+         yield &#x27;It does not set cms page id if already set by the user&#x27; =&gt; [
+             self::getSystemConfigServiceMock(),
+             self::getCategory(&#x27;foobar&#x27;, false),
+             &#x27;foobar&#x27;,
+             &#x27;foobar&#x27;,
+<span class="d">-            null,</span>
+<span class="d">-        ];</span>
+<span class="d">-</span>
+<span class="d">-        yield &#x27;It does not set cms page id if already set by the subscriber&#x27; =&gt; [</span>
+<span class="d">-            self::getSystemConfigServiceMock(null, &#x27;cmsPageId&#x27;),</span>
+<span class="d m">-            self::getCategory(&#x27;differentCmsPageId&#x27;, true, true),</span>
+<span class="d">-            &#x27;differentCmsPageId&#x27;,</span>
+<span class="d">-            &#x27;differentCmsPageId&#x27;,</span>
+<span class="d">-            &#x27;salesChannelId&#x27;,</span>
+         ];
+ 
+         yield &#x27;It does not set if no default is given&#x27; =&gt; [
+<span class="h">@@ -83,15 +95,35 @@ class CategorySubscriberTest extends TestCase</span>
+             self::getCategory(null, false),
+             null,
+             null,
+<span class="d">-            null,</span>
+         ];
+ 
+<span class="d">-        yield &#x27;It uses overall default if no salesChannel is given&#x27; =&gt; [</span>
+<span class="a">+        yield &#x27;It uses overall default&#x27; =&gt; [</span>
+             self::getSystemConfigServiceMock(null, &#x27;cmsPageId&#x27;),
+             self::getCategory(null, false),
+             null,
+             &#x27;cmsPageId&#x27;,
+<span class="d">-            null,</span>
+<span class="a">+        ];</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    /**</span>
+<span class="a">+     * @return array&lt;string, array{SystemConfigService, CategoryEntity, string|null, string|null, string}&gt;</span>
+<span class="a">+     */</span>
+<span class="a">+    public static function salesChannelCategoryLoadedEventDataProvider(): iterable</span>
+<span class="a">+    {</span>
+<span class="a">+        yield &#x27;It does not set cms page id if already set by the user&#x27; =&gt; [</span>
+<span class="a">+            self::getSystemConfigServiceMock(),</span>
+<span class="a">+            self::getCategory(&#x27;foobar&#x27;, false, true),</span>
+<span class="a">+            &#x27;foobar&#x27;,</span>
+<span class="a">+            &#x27;foobar&#x27;,</span>
+<span class="a">+            &#x27;salesChannelId&#x27;,</span>
+<span class="a">+        ];</span>
+<span class="a">+</span>
+<span class="a">+        yield &#x27;It does not set cms page id if already set by the subscriber&#x27; =&gt; [</span>
+<span class="a">+            self::getSystemConfigServiceMock(&#x27;salesChannelId&#x27;, &#x27;cmsPageId&#x27;),</span>
+<span class="a m">+            self::getCategory(&#x27;differentCmsPageId&#x27;, true, true),</span>
+<span class="a">+            &#x27;differentCmsPageId&#x27;,</span>
+<span class="a">+            &#x27;differentCmsPageId&#x27;,</span>
+<span class="a">+            &#x27;salesChannelId&#x27;,</span>
+         ];
+ 
+         yield &#x27;It uses salesChannel specific default&#x27; =&gt; [
+<span class="h">@@ -101,6 +133,17 @@ class CategorySubscriberTest extends TestCase</span>
+             &#x27;salesChannelSpecificDefault&#x27;,
+             &#x27;salesChannelId&#x27;,
+         ];
+<span class="a">+</span>
+<span class="a">+        $systemConfigWithOnlyGlobalDefault = self::getSystemConfigServiceMock(&#x27;nonExistentSalesChannel&#x27;, &#x27;foobar&#x27;);</span>
+<span class="a">+        $systemConfigWithOnlyGlobalDefault-&gt;set(CategoryDefinition::CONFIG_KEY_DEFAULT_CMS_PAGE_CATEGORY, &#x27;globalDefaultCmsPage&#x27;);</span>
+<span class="a">+</span>
+<span class="a">+        yield &#x27;It uses global default when no sales channel specific default is set&#x27; =&gt; [</span>
+<span class="a">+            $systemConfigWithOnlyGlobalDefault,</span>
+<span class="a">+            self::getCategory(null, false, true),</span>
+<span class="a">+            null,</span>
+<span class="a">+            &#x27;globalDefaultCmsPage&#x27;,</span>
+<span class="a">+            &#x27;testSalesChannelId&#x27;,</span>
+<span class="a">+        ];</span>
+     }
+ 
+     private static function getSystemConfigServiceMock(?string $salesChannelId = null, ?string $cmsPageId = null): SystemConfigService
+<span class="h">@@ -122,6 +165,9 @@ class CategorySubscriberTest extends TestCase</span>
+         ]);
+     }
+ 
+<span class="a">+    /**</span>
+<span class="a">+     * @return ($salesChannelEntity is true ? SalesChannelCategoryEntity : CategoryEntity)</span>
+<span class="a">+     */</span>
+     private static function getCategory(?string $cmsPageId, bool $cmsPageIdSwitched, bool $salesChannelEntity = false): CategoryEntity
+     {
+         $category = new CategoryEntity();</pre><h2>Commit #2: <a href="https://github.com/shopware/shopware/commit/f4aedf232284e8a67a5e4a5bd8811ed9df86a053">f4aedf2322</a> (2025-10-28T09:56:31+00:00)</h2><p class="k">feat: Update PHPStan and its plugins (10-2025) (#12971)<br>Path after this commit: tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php b/tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php
+index 1f626e4d6a0..b464b7bb6c8 100644
+<span class="d">--- a/tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php</span>
+<span class="a">+++ b/tests/unit/Core/Content/Category/Subscriber/CategorySubscriberTest.php</span>
+<span class="h">@@ -79,7 +79,7 @@ class CategorySubscriberTest extends TestCase</span>
+     }
+ 
+     /**
+<span class="d">-     * @return array&lt;string, array{SystemConfigService, CategoryEntity, string|null, string|null}&gt;</span>
+<span class="a">+     * @return iterable&lt;string, array{SystemConfigService, CategoryEntity, string|null, string|null}&gt;</span>
+      */
+     public static function categoryLoadedEventDataProvider(): iterable
+     {
+<span class="h">@@ -106,7 +106,7 @@ class CategorySubscriberTest extends TestCase</span>
+     }
+ 
+     /**
+<span class="d">-     * @return array&lt;string, array{SystemConfigService, CategoryEntity, string|null, string|null, string}&gt;</span>
+<span class="a">+     * @return iterable&lt;string, array{SystemConfigService, CategoryEntity, string|null, string|null, string}&gt;</span>
+      */
+     public static function salesChannelCategoryLoadedEventDataProvider(): iterable
+     {</pre></body></html>

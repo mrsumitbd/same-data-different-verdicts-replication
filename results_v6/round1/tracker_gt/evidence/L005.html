@@ -1,0 +1,723 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L005</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L005</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>File at merge:</b> editor/app/(dev)/canvas/examples/with-templates/002/page.tsx, line 244<br><b>Merge commit (birth):</b> <a href="https://github.com/gridaco/grida/commit/5b7afc732b26effb08c12967912d2b7c88bc07bb">5b7afc732b</a> (2025-03-09T08:15:41)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t">      style={{</span></pre><h2>File at the merge commit, lines 236 to 252</h2><pre>  236 |     &lt;/div&gt;
+  237 |   );
+  238 | }
+  239 | 
+  240 | function CustomComponent__Portal_Verify(props: any) {
+  241 |   return (
+  242 |     &lt;div
+  243 |       className=&quot;rounded shadow border&quot;
+<span class="t">  244 |       style={{</span>
+  245 |         ...props.style,
+  246 |       }}
+  247 |       {...queryattributes(props)}
+  248 |     &gt;
+  249 |       &lt;Verify /&gt;
+  250 |     &lt;/div&gt;
+  251 |   );
+  252 | }</pre><p class="k">Below are all 10 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gridaco/grida/commit/41052cb423ac777a6feda606129397b37497e46b">41052cb423</a> (2025-03-12T10:14:26+00:00)</h2><p class="k">Merge pull request #275 from gridaco/demo<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 6.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index db8473203..06860b28f 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -4,28 +4,12 @@ import type { IDocumentEditorInit } from &quot;@/grida-react-canvas&quot;;</span>
+ import Editor from &quot;../../../editor&quot;;
+ import React from &quot;react&quot;;
+ import queryattributes from &quot;@/grida-react-canvas/nodes/utils/attributes&quot;;
+<span class="d">-import _002 from &quot;@/theme/templates/formstart/002/page&quot;;</span>
+<span class="d">-import Invite from &quot;@/app/(demo)/demo/sales/campaign/polestar-kr-2503/[cid]/invite/main&quot;;</span>
+<span class="d">-import Portal from &quot;@/app/(demo)/demo/sales/campaign/polestar-kr-2503/portal/_flows/page&quot;;</span>
+<span class="d">-import Verify from &quot;@/app/(demo)/demo/sales/campaign/polestar-kr-2503/portal/_flows/step-verify&quot;;</span>
+<span class="d">-import Main from &quot;@/app/(demo)/demo/sales/campaign/polestar-kr-2503/[cid]/join/_flows/main&quot;;</span>
+ 
+<span class="d">-export default function FileExamplePage() {</span>
+<span class="d">-  return (</span>
+<span class="d">-    &lt;main className=&quot;w-screen h-screen overflow-hidden&quot;&gt;</span>
+<span class="d">-      &lt;Editor</span>
+<span class="d">-        document={document}</span>
+<span class="d">-        templates={{</span>
+<span class="d">-          &quot;tmp-2503-invite&quot;: CustomComponent__Invite,</span>
+<span class="d">-          &quot;tmp-2503-join&quot;: CustomComponent__Join,</span>
+<span class="d">-          &quot;tmp-2503-join-hello&quot;: CustomComponent__Join_Hello,</span>
+<span class="d">-          &quot;tmp-2503-portal&quot;: CustomComponent__Portal,</span>
+<span class="d">-          &quot;tmp-2503-portal-verify&quot;: CustomComponent__Portal_Verify,</span>
+<span class="d">-        }}</span>
+<span class="d">-      /&gt;</span>
+<span class="d">-    &lt;/main&gt;</span>
+<span class="d">-  );</span>
+<span class="d">-}</span>
+<span class="a">+import Invite from &quot;@/app/(demo)/polestar/event/invite/[cid]/main&quot;;</span>
+<span class="a">+import Portal from &quot;@/app/(demo)/polestar/event/portal/_flows/page&quot;;</span>
+<span class="a">+import Verify from &quot;@/app/(demo)/polestar/event/portal/_flows/step-verify&quot;;</span>
+<span class="a">+import Main from &quot;@/app/(demo)/polestar/event/join/[cid]/_flows/main&quot;;</span>
+<span class="a">+import Hello from &quot;@/app/(demo)/polestar/event/join/[cid]/_flows/hello&quot;;</span>
+ 
+ const document: IDocumentEditorInit = {
+   editable: true,
+<span class="h">@@ -49,9 +33,26 @@ const document: IDocumentEditorInit = {</span>
+       },
+       join: {
+         id: &quot;join&quot;,
+<span class="d">-        name: &quot;Join Page&quot;,</span>
+         type: &quot;template_instance&quot;,
+<span class="d">-        template_id: &quot;tmp-2503-join&quot;,</span>
+<span class="a">+        name: &quot;Page&quot;,</span>
+<span class="a">+        position: &quot;absolute&quot;,</span>
+<span class="a">+        template_id: &quot;tabs&quot;,</span>
+<span class="a">+        removable: false,</span>
+<span class="a">+        active: true,</span>
+<span class="a">+        locked: false,</span>
+<span class="a">+        width: 375,</span>
+<span class="a">+        height: 812,</span>
+<span class="a">+        properties: {},</span>
+<span class="a">+        props: {},</span>
+<span class="a">+        overrides: {},</span>
+<span class="a">+        top: -400,</span>
+<span class="a">+        left: 0,</span>
+<span class="a">+      },</span>
+<span class="a">+      join_main: {</span>
+<span class="a">+        id: &quot;join_main&quot;,</span>
+<span class="a">+        name: &quot;Join Page (TabsContent)&quot;,</span>
+<span class="a">+        type: &quot;template_instance&quot;,</span>
+<span class="a">+        template_id: &quot;tmp-2503-join-main&quot;,</span>
+         position: &quot;absolute&quot;,
+         removable: false,
+         active: true,
+<span class="h">@@ -66,7 +67,7 @@ const document: IDocumentEditorInit = {</span>
+       },
+       join_hello: {
+         id: &quot;join_hello&quot;,
+<span class="d">-        name: &quot;Join Hello (Overlay)&quot;,</span>
+<span class="a">+        name: &quot;Join Hello (TabsContent)&quot;,</span>
+         type: &quot;template_instance&quot;,
+         template_id: &quot;tmp-2503-join-hello&quot;,
+         position: &quot;absolute&quot;,
+<span class="h">@@ -133,7 +134,7 @@ const document: IDocumentEditorInit = {</span>
+         type: &quot;scene&quot;,
+         id: &quot;join&quot;,
+         name: &quot;Join&quot;,
+<span class="d">-        children: [&quot;join&quot;, &quot;join_hello&quot;],</span>
+<span class="a">+        children: [&quot;join&quot;, &quot;join_main&quot;, &quot;join_hello&quot;],</span>
+         guides: [],
+         constraints: {
+           children: &quot;multiple&quot;,
+<span class="h">@@ -170,6 +171,14 @@ const document: IDocumentEditorInit = {</span>
+       version: &quot;0.0.0&quot;,
+       nodes: {},
+     },
+<span class="a">+    [&quot;tmp-2503-join-main&quot;]: {</span>
+<span class="a">+      name: &quot;Join&quot;,</span>
+<span class="a">+      type: &quot;template&quot;,</span>
+<span class="a">+      properties: {},</span>
+<span class="a">+      default: {},</span>
+<span class="a">+      version: &quot;0.0.0&quot;,</span>
+<span class="a">+      nodes: {},</span>
+<span class="a">+    },</span>
+     [&quot;tmp-2503-portal&quot;]: {
+       name: &quot;Portal&quot;,
+       type: &quot;template&quot;,
+<span class="h">@@ -181,6 +190,24 @@ const document: IDocumentEditorInit = {</span>
+   },
+ };
+ 
+<span class="a">+export default function FileExamplePage() {</span>
+<span class="a">+  return (</span>
+<span class="a">+    &lt;main className=&quot;w-screen h-screen overflow-hidden&quot;&gt;</span>
+<span class="a">+      &lt;Editor</span>
+<span class="a">+        document={document}</span>
+<span class="a">+        templates={{</span>
+<span class="a">+          tabs: CustomComponent__Tabs,</span>
+<span class="a">+          &quot;tmp-2503-invite&quot;: CustomComponent__Invite,</span>
+<span class="a">+          &quot;tmp-2503-join-main&quot;: CustomComponent__Join_Main,</span>
+<span class="a">+          &quot;tmp-2503-join-hello&quot;: CustomComponent__Join_Hello,</span>
+<span class="a">+          &quot;tmp-2503-portal&quot;: CustomComponent__Portal,</span>
+<span class="a">+          &quot;tmp-2503-portal-verify&quot;: CustomComponent__Portal_Verify,</span>
+<span class="a">+        }}</span>
+<span class="a">+      /&gt;</span>
+<span class="a">+    &lt;/main&gt;</span>
+<span class="a">+  );</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ function CustomComponent__Invite(props: any) {
+   return (
+     &lt;div
+<span class="h">@@ -195,7 +222,7 @@ function CustomComponent__Invite(props: any) {</span>
+   );
+ }
+ 
+<span class="d">-function CustomComponent__Join(props: any) {</span>
+<span class="a">+function CustomComponent__Tabs(props: any) {</span>
+   return (
+     &lt;div
+       className=&quot;rounded shadow border&quot;
+<span class="h">@@ -204,7 +231,28 @@ function CustomComponent__Join(props: any) {</span>
+       }}
+       {...queryattributes(props)}
+     &gt;
+<span class="d">-      &lt;Main /&gt;</span>
+<span class="a">+      {/*  */}</span>
+<span class="a">+    &lt;/div&gt;</span>
+<span class="a">+  );</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+function CustomComponent__Join_Main(props: any) {</span>
+<span class="a">+  return (</span>
+<span class="a">+    &lt;div</span>
+<span class="a">+      className=&quot;rounded shadow border&quot;</span>
+<span class="a m">+      style={{</span>
+<span class="a">+        ...props.style,</span>
+<span class="a">+      }}</span>
+<span class="a">+      {...queryattributes(props)}</span>
+<span class="a">+    &gt;</span>
+<span class="a">+      &lt;Main</span>
+<span class="a">+        data={{</span>
+<span class="a">+          cid: &quot;00000000&quot;,</span>
+<span class="a">+          user: {</span>
+<span class="a">+            name: &quot;DUMMY&quot;,</span>
+<span class="a">+          },</span>
+<span class="a">+        }}</span>
+<span class="a">+      /&gt;</span>
+     &lt;/div&gt;
+   );
+ }
+<span class="h">@@ -218,7 +266,15 @@ function CustomComponent__Join_Hello(props: any) {</span>
+       }}
+       {...queryattributes(props)}
+     &gt;
+<span class="d">-      &lt;_002 /&gt;</span>
+<span class="a">+      {/* &lt;_002 /&gt; */}</span>
+<span class="a">+      &lt;Hello</span>
+<span class="a">+        data={{</span>
+<span class="a">+          cid: &quot;&quot;,</span>
+<span class="a">+          user: {</span>
+<span class="a">+            name: &quot;DUMMY&quot;,</span>
+<span class="a">+          },</span>
+<span class="a">+        }}</span>
+<span class="a">+      /&gt;</span>
+     &lt;/div&gt;
+   );
+ }</pre><h2>Commit #2: <a href="https://github.com/gridaco/grida/commit/32f06da01186c9efcf5e13a907fd8356c86bee1f">32f06da011</a> (2025-03-25T02:01:06+00:00)</h2><p class="k">Merge pull request #280 from gridaco/model/token<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 6. Identical text added in other files in this commit: editor/app/(workbench)/[org]/[proj]/(project)/about-west-card.tsx, editor/www/ui/scratch-to-reveal.tsx.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index 06860b28f..1e2a68782 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -5,11 +5,11 @@ import Editor from &quot;../../../editor&quot;;</span>
+ import React from &quot;react&quot;;
+ import queryattributes from &quot;@/grida-react-canvas/nodes/utils/attributes&quot;;
+ 
+<span class="d">-import Invite from &quot;@/app/(demo)/polestar/event/invite/[cid]/main&quot;;</span>
+<span class="d">-import Portal from &quot;@/app/(demo)/polestar/event/portal/_flows/page&quot;;</span>
+<span class="d">-import Verify from &quot;@/app/(demo)/polestar/event/portal/_flows/step-verify&quot;;</span>
+<span class="d">-import Main from &quot;@/app/(demo)/polestar/event/join/[cid]/_flows/main&quot;;</span>
+<span class="d">-import Hello from &quot;@/app/(demo)/polestar/event/join/[cid]/_flows/hello&quot;;</span>
+<span class="a">+import Invite from &quot;@/app/(demo)/r/[slug]/[code]/_invite&quot;;</span>
+<span class="a">+import Portal from &quot;@/app/(demo)/r/[slug]/(portal)/_flows/page&quot;;</span>
+<span class="a">+import Verify from &quot;@/app/(demo)/r/[slug]/(portal)/_flows/step-verify&quot;;</span>
+<span class="a">+import Main from &quot;@/app/(demo)/r/[slug]/[code]/_join/_flows/main&quot;;</span>
+<span class="a">+import Hello from &quot;@/app/(demo)/r/[slug]/[code]/_join/_flows/hello&quot;;</span>
+ 
+ const document: IDocumentEditorInit = {
+   editable: true,
+<span class="h">@@ -217,7 +217,7 @@ function CustomComponent__Invite(props: any) {</span>
+       }}
+       {...queryattributes(props)}
+     &gt;
+<span class="d">-      &lt;Invite params={{ cid: &quot;00000000&quot; }} /&gt;</span>
+<span class="a">+      {/* &lt;Invite params={{ code: &quot;00000000&quot; }} /&gt; */}</span>
+     &lt;/div&gt;
+   );
+ }
+<span class="h">@@ -245,14 +245,14 @@ function CustomComponent__Join_Main(props: any) {</span>
+       }}
+       {...queryattributes(props)}
+     &gt;
+<span class="d">-      &lt;Main</span>
+<span class="a">+      {/* &lt;Main</span>
+         data={{
+           cid: &quot;00000000&quot;,
+           user: {
+             name: &quot;DUMMY&quot;,
+           },
+         }}
+<span class="d">-      /&gt;</span>
+<span class="a">+      /&gt; */}</span>
+     &lt;/div&gt;
+   );
+ }
+<span class="h">@@ -267,14 +267,14 @@ function CustomComponent__Join_Hello(props: any) {</span>
+       {...queryattributes(props)}
+     &gt;
+       {/* &lt;_002 /&gt; */}
+<span class="d">-      &lt;Hello</span>
+<span class="a">+      {/* &lt;Hello</span>
+         data={{
+           cid: &quot;&quot;,
+           user: {
+             name: &quot;DUMMY&quot;,
+           },
+         }}
+<span class="d">-      /&gt;</span>
+<span class="a">+      /&gt; */}</span>
+     &lt;/div&gt;
+   );
+ }</pre><h2>Commit #3: <a href="https://github.com/gridaco/grida/commit/7e4f0abac046b9d57a6caad8537b456b68fcf1a3">7e4f0abac0</a> (2025-04-07T04:54:57+00:00)</h2><p class="k">Merge pull request #290 from gridaco/model/west<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 5.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index 1e2a68782..8be9770ef 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -5,11 +5,10 @@ import Editor from &quot;../../../editor&quot;;</span>
+ import React from &quot;react&quot;;
+ import queryattributes from &quot;@/grida-react-canvas/nodes/utils/attributes&quot;;
+ 
+<span class="d">-import Invite from &quot;@/app/(demo)/r/[slug]/[code]/_invite&quot;;</span>
+<span class="d">-import Portal from &quot;@/app/(demo)/r/[slug]/(portal)/_flows/page&quot;;</span>
+<span class="d">-import Verify from &quot;@/app/(demo)/r/[slug]/(portal)/_flows/step-verify&quot;;</span>
+<span class="d">-import Main from &quot;@/app/(demo)/r/[slug]/[code]/_join/_flows/main&quot;;</span>
+<span class="d">-import Hello from &quot;@/app/(demo)/r/[slug]/[code]/_join/_flows/hello&quot;;</span>
+<span class="a">+import ReferrerPage from &quot;@/app/(demo)/r/[slug]/t/[code]/_invite&quot;;</span>
+<span class="a">+import Portal from &quot;@/app/(demo)/r/[slug]/p/_flows/page&quot;;</span>
+<span class="a">+import Main from &quot;@/app/(demo)/r/[slug]/t/[code]/_join/_flows/main&quot;;</span>
+<span class="a">+import Hello from &quot;@/app/(demo)/r/[slug]/t/[code]/_join/_flows/hello&quot;;</span>
+ 
+ const document: IDocumentEditorInit = {
+   editable: true,
+<span class="h">@@ -201,7 +200,6 @@ export default function FileExamplePage() {</span>
+           &quot;tmp-2503-join-main&quot;: CustomComponent__Join_Main,
+           &quot;tmp-2503-join-hello&quot;: CustomComponent__Join_Hello,
+           &quot;tmp-2503-portal&quot;: CustomComponent__Portal,
+<span class="d">-          &quot;tmp-2503-portal-verify&quot;: CustomComponent__Portal_Verify,</span>
+         }}
+       /&gt;
+     &lt;/main&gt;
+<span class="h">@@ -292,17 +290,3 @@ function CustomComponent__Portal(props: any) {</span>
+     &lt;/div&gt;
+   );
+ }
+<span class="d">-</span>
+<span class="d">-function CustomComponent__Portal_Verify(props: any) {</span>
+<span class="d">-  return (</span>
+<span class="d">-    &lt;div</span>
+<span class="d">-      className=&quot;rounded shadow border&quot;</span>
+<span class="d m">-      style={{</span>
+<span class="d">-        ...props.style,</span>
+<span class="d">-      }}</span>
+<span class="d">-      {...queryattributes(props)}</span>
+<span class="d">-    &gt;</span>
+<span class="d">-      &lt;Verify /&gt;</span>
+<span class="d">-    &lt;/div&gt;</span>
+<span class="d">-  );</span>
+<span class="d">-}</span></pre><h2>Commit #4: <a href="https://github.com/gridaco/grida/commit/e3757d3d6d8d7a8cddc9095b1a7bd91757963046">e3757d3d6d</a> (2025-04-16T04:00:01+00:00)</h2><p class="k">Merge pull request #291 from gridaco/model/west<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 5. Identical text added in other files in this commit: editor/app/(workbench)/[org]/[proj]/(console)/(campaign)/campaigns/[campaign]/design/template-duo-001-viewer.tsx, editor/theme/templates/west-referral/standard.tsx.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index 8be9770ef..7f7aaeb1b 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -5,10 +5,7 @@ import Editor from &quot;../../../editor&quot;;</span>
+ import React from &quot;react&quot;;
+ import queryattributes from &quot;@/grida-react-canvas/nodes/utils/attributes&quot;;
+ 
+<span class="d">-import ReferrerPage from &quot;@/app/(demo)/r/[slug]/t/[code]/_invite&quot;;</span>
+<span class="d">-import Portal from &quot;@/app/(demo)/r/[slug]/p/_flows/page&quot;;</span>
+<span class="d">-import Main from &quot;@/app/(demo)/r/[slug]/t/[code]/_join/_flows/main&quot;;</span>
+<span class="d">-import Hello from &quot;@/app/(demo)/r/[slug]/t/[code]/_join/_flows/hello&quot;;</span>
+<span class="a">+import ReferrerPageTemplate from &quot;@/theme/templates/west-referral/referrer/page&quot;;</span>
+ 
+ const document: IDocumentEditorInit = {
+   editable: true,
+<span class="h">@@ -26,7 +23,28 @@ const document: IDocumentEditorInit = {</span>
+         locked: false,
+         width: 375,
+         height: &quot;auto&quot;,
+<span class="d">-        properties: {},</span>
+<span class="a">+        properties: {</span>
+<span class="a">+          image: {</span>
+<span class="a">+            type: &quot;image&quot;,</span>
+<span class="a">+            title: &quot;Main Image&quot;,</span>
+<span class="a">+            required: true,</span>
+<span class="a">+          },</span>
+<span class="a">+          title: {</span>
+<span class="a">+            type: &quot;string&quot;,</span>
+<span class="a">+            title: &quot;Title&quot;,</span>
+<span class="a">+            required: true,</span>
+<span class="a">+          },</span>
+<span class="a">+          description: {</span>
+<span class="a">+            title: &quot;Page Description&quot;,</span>
+<span class="a">+            type: &quot;string&quot;,</span>
+<span class="a">+            required: true,</span>
+<span class="a">+          },</span>
+<span class="a">+          article: {</span>
+<span class="a">+            type: &quot;richtext&quot;,</span>
+<span class="a">+            title: &quot;Article&quot;,</span>
+<span class="a">+            required: true,</span>
+<span class="a">+          },</span>
+<span class="a">+        },</span>
+         props: {},
+         overrides: {},
+       },
+<span class="h">@@ -157,7 +175,23 @@ const document: IDocumentEditorInit = {</span>
+     [&quot;tmp-2503-invite&quot;]: {
+       name: &quot;Invite&quot;,
+       type: &quot;template&quot;,
+<span class="d">-      properties: {},</span>
+<span class="a">+      properties: {</span>
+<span class="a">+        title: {</span>
+<span class="a">+          title: &quot;Page Title&quot;,</span>
+<span class="a">+          type: &quot;string&quot;,</span>
+<span class="a">+          required: true,</span>
+<span class="a">+        },</span>
+<span class="a">+        description: {</span>
+<span class="a">+          title: &quot;Page Description&quot;,</span>
+<span class="a">+          type: &quot;string&quot;,</span>
+<span class="a">+          required: true,</span>
+<span class="a">+        },</span>
+<span class="a">+        article: {</span>
+<span class="a">+          type: &quot;richtext&quot;,</span>
+<span class="a">+          title: &quot;Article&quot;,</span>
+<span class="a">+          required: true,</span>
+<span class="a">+        },</span>
+<span class="a">+      },</span>
+       default: {},
+       version: &quot;0.0.0&quot;,
+       nodes: {},
+<span class="h">@@ -196,7 +230,7 @@ export default function FileExamplePage() {</span>
+         document={document}
+         templates={{
+           tabs: CustomComponent__Tabs,
+<span class="d">-          &quot;tmp-2503-invite&quot;: CustomComponent__Invite,</span>
+<span class="a">+          &quot;tmp-2503-invite&quot;: CustomComponent__Referrer,</span>
+           &quot;tmp-2503-join-main&quot;: CustomComponent__Join_Main,
+           &quot;tmp-2503-join-hello&quot;: CustomComponent__Join_Hello,
+           &quot;tmp-2503-portal&quot;: CustomComponent__Portal,
+<span class="h">@@ -206,16 +240,67 @@ export default function FileExamplePage() {</span>
+   );
+ }
+ 
+<span class="d">-function CustomComponent__Invite(props: any) {</span>
+<span class="a">+function CustomComponent__Referrer(componentprops: any) {</span>
+<span class="a">+  console.log(&quot;props&quot;, componentprops);</span>
+   return (
+     &lt;div
+       className=&quot;rounded shadow border&quot;
+<span class=" m">       style={{</span>
+<span class="d">-        ...props.style,</span>
+<span class="a">+        ...componentprops.style,</span>
+       }}
+<span class="d">-      {...queryattributes(props)}</span>
+<span class="a">+      {...queryattributes(componentprops)}</span>
+     &gt;
+<span class="d">-      {/* &lt;Invite params={{ code: &quot;00000000&quot; }} /&gt; */}</span>
+<span class="a">+      &lt;ReferrerPageTemplate</span>
+<span class="a">+        design={{</span>
+<span class="a">+          brand_name: &quot;Apple&quot;,</span>
+<span class="a">+          title: componentprops.props.title as string,</span>
+<span class="a">+          description: componentprops.props.description as string,</span>
+<span class="a">+          logo: {</span>
+<span class="a">+            src: &quot;/logos/thebundle.png&quot;,</span>
+<span class="a">+            srcDark: &quot;/logos/thebundle-dark.png&quot;,</span>
+<span class="a">+          },</span>
+<span class="a">+          favicon: {</span>
+<span class="a">+            src: &quot;https://www.apple.com/favicon.ico&quot;,</span>
+<span class="a">+            srcDark: &quot;https://www.apple.com/favicon.ico&quot;,</span>
+<span class="a">+          },</span>
+<span class="a">+          article: componentprops.props.article,</span>
+<span class="a">+          cta: &quot;Join Now&quot;,</span>
+<span class="a">+          image: {</span>
+<span class="a">+            src: componentprops.props.image,</span>
+<span class="a">+            alt: &quot;Example Image&quot;,</span>
+<span class="a">+          },</span>
+<span class="a">+          footer: {</span>
+<span class="a">+            link_privacy: &quot;/privacy&quot;,</span>
+<span class="a">+            link_instagram: &quot;https://www.instagram.com/polestarcars/&quot;,</span>
+<span class="a">+            paragraph: {</span>
+<span class="a">+              html: &quot;1. Hearing Aid and Hearing Test: The Hearing Aid feature has received FDA authorization. The Hearing Test and Hearing Aid features are supported on AirPods Pro 2 with the latest firmware paired with a compatible iPhone or iPad with iOS 18 or iPadOS 18 and later and are intended for people 18 years old or older. The Hearing Aid feature is also supported on a compatible Mac with macOS Sequoia and later. It is intended for people with perceived mild to moderate hearing loss.&quot;,</span>
+<span class="a">+            },</span>
+<span class="a">+          },</span>
+<span class="a">+        }}</span>
+<span class="a">+        locale=&quot;en&quot;</span>
+<span class="a">+        slug=&quot;dummy&quot;</span>
+<span class="a">+        data={{</span>
+<span class="a">+          campaign: {</span>
+<span class="a">+            id: &quot;dummy&quot;,</span>
+<span class="a">+            title: &quot;DUMMY&quot;,</span>
+<span class="a">+            description: null,</span>
+<span class="a">+            enabled: true,</span>
+<span class="a">+            max_invitations_per_referrer: 10,</span>
+<span class="a">+            layout_id: null,</span>
+<span class="a">+            reward_currency: &quot;USD&quot;,</span>
+<span class="a">+            public: null,</span>
+<span class="a">+            scheduling_close_at: null,</span>
+<span class="a">+            scheduling_open_at: null,</span>
+<span class="a">+            scheduling_tz: null,</span>
+<span class="a">+          },</span>
+<span class="a">+          code: &quot;dummy&quot;,</span>
+<span class="a">+          invitation_count: 0,</span>
+<span class="a">+          invitations: [],</span>
+<span class="a">+          type: &quot;referrer&quot;,</span>
+<span class="a">+          id: &quot;123&quot;,</span>
+<span class="a">+          referrer_name: &quot;DUMMY&quot;,</span>
+<span class="a">+        }}</span>
+<span class="a">+      /&gt;</span>
+     &lt;/div&gt;
+   );
+ }
+<span class="h">@@ -286,7 +371,7 @@ function CustomComponent__Portal(props: any) {</span>
+       }}
+       {...queryattributes(props)}
+     &gt;
+<span class="d">-      &lt;Portal /&gt;</span>
+<span class="a">+      {/* &lt;Portal /&gt; */}</span>
+     &lt;/div&gt;
+   );
+ }</pre><h2>Commit #5: <a href="https://github.com/gridaco/grida/commit/c01ca78183f062bb3b88f0f0b6fdbcf38f14cffa">c01ca78183</a> (2025-05-05T12:38:17+00:00)</h2><p class="k">Merge pull request #306 from gridaco/model/west<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 5. Identical text added in other files in this commit: editor/app/(workbench)/[org]/[proj]/(console)/(campaign)/campaigns/[campaign]/_components/overview.tsx.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index 7f7aaeb1b..970e70008 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -1,10 +1,9 @@</span>
+ &quot;use client&quot;;
+ 
+<span class="a">+import React from &quot;react&quot;;</span>
+ import type { IDocumentEditorInit } from &quot;@/grida-react-canvas&quot;;
+ import Editor from &quot;../../../editor&quot;;
+<span class="d">-import React from &quot;react&quot;;</span>
+ import queryattributes from &quot;@/grida-react-canvas/nodes/utils/attributes&quot;;
+<span class="d">-</span>
+ import ReferrerPageTemplate from &quot;@/theme/templates/west-referral/referrer/page&quot;;
+ 
+ const document: IDocumentEditorInit = {
+<span class="h">@@ -284,6 +283,8 @@ function CustomComponent__Referrer(componentprops: any) {</span>
+             id: &quot;dummy&quot;,
+             title: &quot;DUMMY&quot;,
+             description: null,
+<span class="a">+            www_name: &quot;dummy&quot;,</span>
+<span class="a">+            www_route_path: &quot;/dummy&quot;,</span>
+             enabled: true,
+             max_invitations_per_referrer: 10,
+             layout_id: null,</pre><h2>Commit #6: <a href="https://github.com/gridaco/grida/commit/03c113b0bec5d37dca53e9ffe1d83bbdd510df71">03c113b0be</a> (2025-05-07T00:47:06+00:00)</h2><p class="k">Merge pull request #321 from gridaco/model/west<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 5. Identical text added in other files in this commit: editor/app/(workbench)/[org]/[proj]/(console)/(campaign)/campaigns/[campaign]/design/template-duo-001-viewer.tsx.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index 970e70008..87e65cd72 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -270,14 +270,13 @@ function CustomComponent__Referrer(componentprops: any) {</span>
+           },
+           footer: {
+             link_privacy: &quot;/privacy&quot;,
+<span class="d">-            link_instagram: &quot;https://www.instagram.com/polestarcars/&quot;,</span>
+<span class="a">+            link_instagram: &quot;https://www.instagram.com/grida.co/&quot;,</span>
+             paragraph: {
+               html: &quot;1. Hearing Aid and Hearing Test: The Hearing Aid feature has received FDA authorization. The Hearing Test and Hearing Aid features are supported on AirPods Pro 2 with the latest firmware paired with a compatible iPhone or iPad with iOS 18 or iPadOS 18 and later and are intended for people 18 years old or older. The Hearing Aid feature is also supported on a compatible Mac with macOS Sequoia and later. It is intended for people with perceived mild to moderate hearing loss.&quot;,
+             },
+           },
+         }}
+         locale=&quot;en&quot;
+<span class="d">-        slug=&quot;dummy&quot;</span>
+         data={{
+           campaign: {
+             id: &quot;dummy&quot;,</pre><h2>Commit #7: <a href="https://github.com/gridaco/grida/commit/f34275faaedf1d2dfda56100e0399cf882422930">f34275faae</a> (2025-05-12T08:38:34+00:00)</h2><p class="k">Merge pull request #327 from gridaco/monorepo<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 5. Identical text added in other files in this commit: editor/components/ui/chart.tsx.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index 87e65cd72..929817417 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -243,7 +243,7 @@ function CustomComponent__Referrer(componentprops: any) {</span>
+   console.log(&quot;props&quot;, componentprops);
+   return (
+     &lt;div
+<span class="d">-      className=&quot;rounded shadow border&quot;</span>
+<span class="a">+      className=&quot;rounded-sm shadow border&quot;</span>
+<span class=" m">       style={{</span>
+         ...componentprops.style,
+       }}
+<span class="h">@@ -308,7 +308,7 @@ function CustomComponent__Referrer(componentprops: any) {</span>
+ function CustomComponent__Tabs(props: any) {
+   return (
+     &lt;div
+<span class="d">-      className=&quot;rounded shadow border&quot;</span>
+<span class="a">+      className=&quot;rounded-sm shadow border&quot;</span>
+<span class=" m">       style={{</span>
+         ...props.style,
+       }}
+<span class="h">@@ -322,7 +322,7 @@ function CustomComponent__Tabs(props: any) {</span>
+ function CustomComponent__Join_Main(props: any) {
+   return (
+     &lt;div
+<span class="d">-      className=&quot;rounded shadow border&quot;</span>
+<span class="a">+      className=&quot;rounded-sm shadow border&quot;</span>
+<span class=" m">       style={{</span>
+         ...props.style,
+       }}
+<span class="h">@@ -343,7 +343,7 @@ function CustomComponent__Join_Main(props: any) {</span>
+ function CustomComponent__Join_Hello(props: any) {
+   return (
+     &lt;div
+<span class="d">-      className=&quot;rounded shadow border&quot;</span>
+<span class="a">+      className=&quot;rounded-sm shadow border&quot;</span>
+<span class=" m">       style={{</span>
+         ...props.style,
+       }}
+<span class="h">@@ -365,7 +365,7 @@ function CustomComponent__Join_Hello(props: any) {</span>
+ function CustomComponent__Portal(props: any) {
+   return (
+     &lt;div
+<span class="d">-      className=&quot;rounded shadow border&quot;</span>
+<span class="a">+      className=&quot;rounded-sm shadow border&quot;</span>
+<span class=" m">       style={{</span>
+         ...props.style,
+       }}</pre><h2>Commit #8: <a href="https://github.com/gridaco/grida/commit/efb3cd28537a4b5dfbbfb483e36ab3cd3a52952c">efb3cd2853</a> (2025-05-26T10:08:53+00:00)</h2><p class="k">Merge pull request #351 from gridaco/canary<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 5.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index 929817417..c89efe103 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -1,12 +1,12 @@</span>
+ &quot;use client&quot;;
+ 
+ import React from &quot;react&quot;;
+<span class="d">-import type { IDocumentEditorInit } from &quot;@/grida-react-canvas&quot;;</span>
+<span class="a">+import { editor } from &quot;@/grida-canvas&quot;;</span>
+ import Editor from &quot;../../../editor&quot;;
+<span class="d">-import queryattributes from &quot;@/grida-react-canvas/nodes/utils/attributes&quot;;</span>
+<span class="a">+import queryattributes from &quot;@/grida-canvas-react/nodes/utils/attributes&quot;;</span>
+ import ReferrerPageTemplate from &quot;@/theme/templates/west-referral/referrer/page&quot;;
+ 
+<span class="d">-const document: IDocumentEditorInit = {</span>
+<span class="a">+const document: editor.state.IEditorStateInit = {</span>
+   editable: true,
+   debug: false,
+   document: {</pre><h2>Commit #9: <a href="https://github.com/gridaco/grida/commit/da8a95bff8d3715fc81ed5c8e2b3f540aeeb95d7">da8a95bff8</a> (2025-07-19T18:44:17+00:00)</h2><p class="k">Merge pull request #402 from gridaco/canary<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 5.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index c89efe103..39609865c 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -3,7 +3,7 @@</span>
+ import React from &quot;react&quot;;
+ import { editor } from &quot;@/grida-canvas&quot;;
+ import Editor from &quot;../../../editor&quot;;
+<span class="d">-import queryattributes from &quot;@/grida-canvas-react/nodes/utils/attributes&quot;;</span>
+<span class="a">+import queryattributes from &quot;@/grida-canvas-react-renderer-dom/nodes/utils/attributes&quot;;</span>
+ import ReferrerPageTemplate from &quot;@/theme/templates/west-referral/referrer/page&quot;;
+ 
+ const document: editor.state.IEditorStateInit = {</pre><h2>Commit #10: <a href="https://github.com/gridaco/grida/commit/b1d0793ccfe17cf67857f188423063c18eb98212">b1d0793ccf</a> (2025-10-14T17:21:45+09:00)</h2><p class="k">Merge pull request #431 from gridaco/canary<br>Path after this commit: editor/app/(dev)/canvas/examples/with-templates/002/page.tsx. Lines with exactly this text in the file after the commit: 5. Identical text added in other files in this commit: editor/app/(dev)/ui/multiplayer/page.tsx, editor/components/cursor/cursor-fake.tsx, editor/components/multiplayer/chat-effects.tsx, editor/components/multiplayer/cursor-chat.tsx, editor/components/multiplayer/cursor.tsx.</p><pre>diff --git a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx
+index 39609865c..81ba394f0 100644
+<span class="d">--- a/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="a">+++ b/editor/app/(dev)/canvas/examples/with-templates/002/page.tsx</span>
+<span class="h">@@ -10,7 +10,52 @@ const document: editor.state.IEditorStateInit = {</span>
+   editable: true,
+   debug: false,
+   document: {
+<span class="a">+    scenes_ref: [&quot;scene_invite&quot;, &quot;scene_join&quot;, &quot;scene_portal&quot;],</span>
+<span class="a">+    links: {</span>
+<span class="a">+      scene_invite: [&quot;invite&quot;],</span>
+<span class="a">+      scene_join: [&quot;join&quot;, &quot;join_main&quot;, &quot;join_hello&quot;],</span>
+<span class="a">+      scene_portal: [&quot;portal&quot;, &quot;portal_verify&quot;],</span>
+<span class="a">+    },</span>
+     nodes: {
+<span class="a">+      scene_invite: {</span>
+<span class="a">+        type: &quot;scene&quot;,</span>
+<span class="a">+        id: &quot;scene_invite&quot;,</span>
+<span class="a">+        name: &quot;Invite&quot;,</span>
+<span class="a">+        active: true,</span>
+<span class="a">+        locked: false,</span>
+<span class="a">+        guides: [],</span>
+<span class="a">+        edges: [],</span>
+<span class="a">+        constraints: {</span>
+<span class="a">+          children: &quot;multiple&quot;,</span>
+<span class="a">+        },</span>
+<span class="a">+        order: 1,</span>
+<span class="a">+      },</span>
+<span class="a">+      scene_join: {</span>
+<span class="a">+        type: &quot;scene&quot;,</span>
+<span class="a">+        id: &quot;scene_join&quot;,</span>
+<span class="a">+        name: &quot;Join&quot;,</span>
+<span class="a">+        active: true,</span>
+<span class="a">+        locked: false,</span>
+<span class="a">+        guides: [],</span>
+<span class="a">+        edges: [],</span>
+<span class="a">+        constraints: {</span>
+<span class="a">+          children: &quot;multiple&quot;,</span>
+<span class="a">+        },</span>
+<span class="a">+        order: 2,</span>
+<span class="a">+      },</span>
+<span class="a">+      scene_portal: {</span>
+<span class="a">+        type: &quot;scene&quot;,</span>
+<span class="a">+        id: &quot;scene_portal&quot;,</span>
+<span class="a">+        name: &quot;Portal&quot;,</span>
+<span class="a">+        active: true,</span>
+<span class="a">+        locked: false,</span>
+<span class="a">+        guides: [],</span>
+<span class="a">+        edges: [],</span>
+<span class="a">+        constraints: {</span>
+<span class="a">+          children: &quot;multiple&quot;,</span>
+<span class="a">+        },</span>
+<span class="a">+        order: 3,</span>
+<span class="a">+      },</span>
+       invite: {
+         id: &quot;invite&quot;,
+         name: &quot;Invite Page&quot;,
+<span class="h">@@ -133,42 +178,7 @@ const document: editor.state.IEditorStateInit = {</span>
+         left: 500,
+       },
+     },
+<span class="d">-    entry_scene_id: &quot;invite&quot;,</span>
+<span class="d">-    scenes: {</span>
+<span class="d">-      invite: {</span>
+<span class="d">-        type: &quot;scene&quot;,</span>
+<span class="d">-        id: &quot;invite&quot;,</span>
+<span class="d">-        name: &quot;Invite&quot;,</span>
+<span class="d">-        children: [&quot;invite&quot;],</span>
+<span class="d">-        guides: [],</span>
+<span class="d">-        constraints: {</span>
+<span class="d">-          children: &quot;multiple&quot;,</span>
+<span class="d">-        },</span>
+<span class="d">-        order: 1,</span>
+<span class="d">-      },</span>
+<span class="d">-      join: {</span>
+<span class="d">-        type: &quot;scene&quot;,</span>
+<span class="d">-        id: &quot;join&quot;,</span>
+<span class="d">-        name: &quot;Join&quot;,</span>
+<span class="d">-        children: [&quot;join&quot;, &quot;join_main&quot;, &quot;join_hello&quot;],</span>
+<span class="d">-        guides: [],</span>
+<span class="d">-        constraints: {</span>
+<span class="d">-          children: &quot;multiple&quot;,</span>
+<span class="d">-        },</span>
+<span class="d">-        order: 2,</span>
+<span class="d">-      },</span>
+<span class="d">-      portal: {</span>
+<span class="d">-        type: &quot;scene&quot;,</span>
+<span class="d">-        id: &quot;portal&quot;,</span>
+<span class="d">-        name: &quot;Portal&quot;,</span>
+<span class="d">-        children: [&quot;portal&quot;, &quot;portal_verify&quot;],</span>
+<span class="d">-        guides: [],</span>
+<span class="d">-        constraints: {</span>
+<span class="d">-          children: &quot;multiple&quot;,</span>
+<span class="d">-        },</span>
+<span class="d">-        order: 3,</span>
+<span class="d">-      },</span>
+<span class="d">-    },</span>
+<span class="a">+    entry_scene_id: &quot;scene_invite&quot;,</span>
+   },
+   templates: {
+     [&quot;tmp-2503-invite&quot;]: {
+<span class="h">@@ -194,6 +204,7 @@ const document: editor.state.IEditorStateInit = {</span>
+       default: {},
+       version: &quot;0.0.0&quot;,
+       nodes: {},
+<span class="a">+      links: {},</span>
+     },
+     [&quot;tmp-2503-join&quot;]: {
+       name: &quot;Join&quot;,
+<span class="h">@@ -202,6 +213,7 @@ const document: editor.state.IEditorStateInit = {</span>
+       default: {},
+       version: &quot;0.0.0&quot;,
+       nodes: {},
+<span class="a">+      links: {},</span>
+     },
+     [&quot;tmp-2503-join-main&quot;]: {
+       name: &quot;Join&quot;,
+<span class="h">@@ -210,6 +222,7 @@ const document: editor.state.IEditorStateInit = {</span>
+       default: {},
+       version: &quot;0.0.0&quot;,
+       nodes: {},
+<span class="a">+      links: {},</span>
+     },
+     [&quot;tmp-2503-portal&quot;]: {
+       name: &quot;Portal&quot;,
+<span class="h">@@ -218,6 +231,7 @@ const document: editor.state.IEditorStateInit = {</span>
+       default: {},
+       version: &quot;0.0.0&quot;,
+       nodes: {},
+<span class="a">+      links: {},</span>
+     },
+   },
+ };</pre></body></html>

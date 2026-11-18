@@ -1,0 +1,81 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L215</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L215</h1><p><b>Repository:</b> <a href="https://github.com/rqlite/rqlite">rqlite/rqlite</a><br><b>File at merge:</b> store/store_raft_index_test.go, line 1<br><b>Merge commit (birth):</b> <a href="https://github.com/rqlite/rqlite/commit/a2062d739c1ed9bfcfb3bbda0d9e2de411ebc91f">a2062d739c</a> (2025-06-17T21:02:37)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/rqlite/rqlite/tree/953a6d69b54e79a59175375ae0972c32cfb8ce28">953a6d69b5</a>)</p><p><b>The line:</b></p><pre><span class="t">package store</span></pre><h2>File at the merge commit, lines 1 to 9</h2><pre><span class="t">    1 | package store</span>
+    2 | 
+    3 | import (
+    4 | 	&quot;testing&quot;
+    5 | 	&quot;time&quot;
+    6 | )
+    7 | 
+    8 | func Test_StoreExecuteRaftIndex(t *testing.T) {
+    9 | 	s, ln := mustNewStore(t)</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/rqlite/rqlite/commit/2474a79962edd8240c61bb49e7a2f340df7a6841">2474a79962</a> (2025-06-18T00:08:27-04:00)</h2><p class="k">Return Raft index in response<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/store/store_raft_index_test.go b/store/store_raft_index_test.go
+deleted file mode 100644
+index 7fcb6574..00000000
+<span class="d">--- a/store/store_raft_index_test.go</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,63 +0,0 @@</span>
+<span class="d m">-package store</span>
+<span class="d">-</span>
+<span class="d">-import (</span>
+<span class="d">-	&quot;testing&quot;</span>
+<span class="d">-	&quot;time&quot;</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-func Test_StoreExecuteRaftIndex(t *testing.T) {</span>
+<span class="d">-	s, ln := mustNewStore(t)</span>
+<span class="d">-	defer ln.Close()</span>
+<span class="d">-	defer s.Close(true)</span>
+<span class="d">-</span>
+<span class="d">-	if err := s.Open(); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	defer s.Close(true)</span>
+<span class="d">-	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// Execute a command and verify we get a non-zero Raft index</span>
+<span class="d">-	er := executeRequestFromStrings([]string{</span>
+<span class="d">-		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,</span>
+<span class="d">-	}, false, false)</span>
+<span class="d">-</span>
+<span class="d">-	results, raftIndex, err := s.Execute(er)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if results == nil {</span>
+<span class="d">-		t.Fatalf(&quot;expected results, got nil&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if raftIndex == 0 {</span>
+<span class="d">-		t.Fatalf(&quot;expected non-zero Raft index, got %d&quot;, raftIndex)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	t.Logf(&quot;Successfully executed command and received Raft index: %d&quot;, raftIndex)</span>
+<span class="d">-</span>
+<span class="d">-	// Execute another command and verify the index increases</span>
+<span class="d">-	er2 := executeRequestFromStrings([]string{</span>
+<span class="d">-		`INSERT INTO foo(id, name) VALUES(1, &quot;test&quot;)`,</span>
+<span class="d">-	}, false, false)</span>
+<span class="d">-</span>
+<span class="d">-	results2, raftIndex2, err2 := s.Execute(er2)</span>
+<span class="d">-	if err2 != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to execute second command: %s&quot;, err2.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if results2 == nil {</span>
+<span class="d">-		t.Fatalf(&quot;expected results for second command, got nil&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if raftIndex2 &lt;= raftIndex {</span>
+<span class="d">-		t.Fatalf(&quot;expected second Raft index (%d) to be greater than first (%d)&quot;, raftIndex2, raftIndex)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	t.Logf(&quot;Successfully executed second command and received higher Raft index: %d&quot;, raftIndex2)</span>
+<span class="d">-}</span></pre></body></html>

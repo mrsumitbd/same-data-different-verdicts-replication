@@ -1,0 +1,2593 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L090 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L090: after the move</h1><p><b>Repository:</b> <a href="https://github.com/rqlite/rqlite">rqlite/rqlite</a><br><b>Original file:</b> store/store_raft_index_test.go (see L090.html)<br><b>Move commit:</b> <a href="https://github.com/rqlite/rqlite/commit/2474a79962edd8240c61bb49e7a2f340df7a6841">2474a79962</a> (commit #1 on L090.html)<br><b>Destination file (your label):</b> store/store_test.go<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/rqlite/rqlite/tree/953a6d69b54e79a59175375ae0972c32cfb8ce28">953a6d69b5</a>)</p><p><b>The line:</b></p><pre><span class="t">		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 54 (lines 82, 115, 178, 238, 258, 291, 310, 342, 374, 447).</p><h2>Destination file at the move commit, lines 74 to 90</h2><pre>   74 | 		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())
+   75 | 	}
+   76 | 	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {
+   77 | 		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())
+   78 | 	}
+   79 | 
+   80 | 	_, err := s.WaitForLeader(10 * time.Second)
+   81 | 	if err != nil {
+<span class="t">   82 | 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+   83 | 	}
+   84 | 	if !s.HasLeaderID() {
+   85 | 		t.Fatalf(&quot;store not marked as having leader ID&quot;)
+   86 | 	}
+   87 | 	_, err = s.LeaderAddr()
+   88 | 	if err != nil {
+   89 | 		t.Fatalf(&quot;failed to get leader address: %s&quot;, err.Error())
+   90 | 	}</pre><h2>Destination file at the move commit, lines 107 to 123</h2><pre>  107 | 	if err := s.Open(); err != nil {
+  108 | 		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())
+  109 | 	}
+  110 | 	defer s.Close(true)
+  111 | 	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {
+  112 | 		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())
+  113 | 	}
+  114 | 	if _, err := s.WaitForLeader(10 * time.Second); err != nil {
+<span class="t">  115 | 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+  116 | 	}
+  117 | 	testPoll(t, func() bool {
+  118 | 		ci, err := s.CommitIndex()
+  119 | 		return err == nil &amp;&amp; ci == uint64(2)
+  120 | 	}, 50*time.Millisecond, 2*time.Second)
+  121 | 
+  122 | 	er := executeRequestFromStrings([]string{
+  123 | 		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,</pre><h2>Destination file at the move commit, lines 170 to 186</h2><pre>  170 | 	if err := s.Open(); err != nil {
+  171 | 		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())
+  172 | 	}
+  173 | 	defer s.Close(true)
+  174 | 	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {
+  175 | 		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())
+  176 | 	}
+  177 | 	if _, err := s.WaitForLeader(10 * time.Second); err != nil {
+<span class="t">  178 | 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+  179 | 	}
+  180 | 	if got, exp := s.DBAppliedIndex(), uint64(0); exp != got {
+  181 | 		t.Fatalf(&quot;wrong DB applied index, got: %d, exp %d&quot;, got, exp)
+  182 | 	}
+  183 | 
+  184 | 	// Execute a command, and ensure DBAppliedIndex is updated.
+  185 | 	er := executeRequestFromStrings([]string{
+  186 | 		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,</pre><p class="k">Below are all 24 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/rqlite/rqlite/commit/9ebdeccdd723230c3b8cdd86c7a241742a68ed3a">9ebdeccdd7</a> (2025-06-18T22:36:14-04:00)</h2><p class="k">Refactor Store.Query to Return Raft Index for Strong Consistency Reads<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 55.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index c19cf5a3..33890ef3 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -145,7 +145,7 @@ func Test_SingleNodeOnDiskSQLitePath(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -206,7 +206,7 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 	// Do a strong query, and ensure DBAppliedIndex is updated.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	_, err = s.Query(qr)</span>
+<span class="a">+	_, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -217,7 +217,7 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 	// Do a weak query, and ensure DBAppliedIndex is not updated.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK
+<span class="d">-	_, err = s.Query(qr)</span>
+<span class="a">+	_, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -551,7 +551,7 @@ func Test_SingleNodeSnapshot(t *testing.T) {</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())
+ 	}
+<span class="d">-	_, err = s.Query(queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false))</span>
+<span class="a">+	_, _, err = s.Query(queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false))</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -585,7 +585,7 @@ func Test_SingleNodeSnapshot(t *testing.T) {</span>
+ 	}
+ 
+ 	// Ensure database is back in the correct state.
+<span class="d">-	r, err := s.Query(queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false))</span>
+<span class="a">+	r, _, err := s.Query(queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false))</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -642,7 +642,7 @@ func Test_StoreSingleNodeNotOpen(t *testing.T) {</span>
+ 	if _, _, err := s.Execute(&amp;proto.ExecuteRequest{}); err != ErrNotOpen {
+ 		t.Fatalf(&quot;wrong error received for non-open store: %s&quot;, err)
+ 	}
+<span class="d">-	if _, err := s.Query(&amp;proto.QueryRequest{}); err != ErrNotOpen {</span>
+<span class="a">+	if _, _, err := s.Query(&amp;proto.QueryRequest{}); err != ErrNotOpen {</span>
+ 		t.Fatalf(&quot;wrong error received for non-open store: %s&quot;, err)
+ 	}
+ 	if err := s.Load(nil); err != ErrNotOpen {
+<span class="h">@@ -705,7 +705,7 @@ func Test_OpenStoreCloseSingleNode(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -841,7 +841,7 @@ func Test_SingleNodeExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -882,7 +882,7 @@ func Test_SingleNodeExecuteQuery_Linearizable(t *testing.T) {</span>
+ 	// Perform the first linearizable query, which should be upgraded to a strong query.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_LINEARIZABLE
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to perform linearizable query on single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -897,7 +897,7 @@ func Test_SingleNodeExecuteQuery_Linearizable(t *testing.T) {</span>
+ 	}
+ 
+ 	// Perform the second linearizable query, which should not be upgraded to a strong query.
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to perform linearizable query on single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -949,7 +949,7 @@ func Test_SingleNodeExecuteQuery_RETURNING(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1019,19 +1019,19 @@ func Test_SingleNodeExecuteQueryTx(t *testing.T) {</span>
+ 	var r []*proto.QueryRows
+ 
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+<span class="d">-	_, err = s.Query(qr)</span>
+<span class="a">+	_, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+ 
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK
+<span class="d">-	_, err = s.Query(qr)</span>
+<span class="a">+	_, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+ 
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1412,7 +1412,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1420,7 +1420,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1428,7 +1428,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1437,7 +1437,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, true)
+ 	qr.Timings = true
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1446,7 +1446,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, true, false)
+ 	qr.Request.Transaction = true
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1485,7 +1485,7 @@ func Test_SingleNodeExecuteQueryFreshness(t *testing.T) {</span>
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE
+ 	qr.Freshness = mustParseDuration(&quot;1ns&quot;).Nanoseconds()
+<span class="d">-	r, err := s0.Query(qr)</span>
+<span class="a">+	r, _, err := s0.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query leader node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1634,7 +1634,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1722,7 +1722,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT count(*) FROM track&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1735,7 +1735,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM album&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1748,7 +1748,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM artist&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1792,7 +1792,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1820,7 +1820,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo WHERE id=2&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1832,7 +1832,7 @@ COMMIT;</span>
+ 	}
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM foo&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1846,7 +1846,7 @@ COMMIT;</span>
+ 	// Check preexisting data is gone.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1877,7 +1877,7 @@ func Test_SingleNodeAutoRestore(t *testing.T) {</span>
+ 
+ 	testPoll(t, s.Ready, 100*time.Millisecond, 2*time.Second)
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo WHERE id=2&quot;, false, true)
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1951,7 +1951,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1987,7 +1987,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo WHERE id=2&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1999,7 +1999,7 @@ COMMIT;</span>
+ 	}
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM foo&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2013,7 +2013,7 @@ COMMIT;</span>
+ 	// Check preexisting data is gone.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2032,7 +2032,7 @@ COMMIT;</span>
+<span class=" m"> 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+ 	}
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM foo&quot;, false, true)
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2274,7 +2274,7 @@ func Test_SingleNode_SnapshotWithAutoOptimize_Stress(t *testing.T) {</span>
+ 	// Query the data, make sure it looks good after all this.
+ 	qr := queryRequestFromString(&quot;SELECT COUNT(*) FROM foo&quot;, false, true)
+ 	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG
+<span class="d">-	r, err := s.Query(qr)</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2293,7 +2293,7 @@ func Test_SingleNode_SnapshotWithAutoOptimize_Stress(t *testing.T) {</span>
+ 	if _, err := s.WaitForLeader(10 * time.Second); err != nil {
+<span class=" m"> 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+ 	}
+<span class="d">-	r, err = s.Query(qr)</span>
+<span class="a">+	r, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2803,6 +2803,80 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="a">+// Test_StoreQueryRaftIndex tests that Store.Query returns the correct Raft index</span>
+<span class="a">+func Test_StoreQueryRaftIndex(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Create table and insert data</span>
+<span class="a">+	er := executeRequestFromStrings([]string{</span>
+<span class="a">+		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,</span>
+<span class="a">+		`INSERT INTO foo(id, name) VALUES(1, &quot;test&quot;)`,</span>
+<span class="a">+	}, false, false)</span>
+<span class="a">+	_, writeIndex, err := s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute write request: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if writeIndex == 0 {</span>
+<span class="a">+		t.Fatalf(&quot;expected non-zero Raft index for write request, got %d&quot;, writeIndex)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// First do a STRONG query to set the strongReadTerm for the current term</span>
+<span class="a">+	strongReq := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	strongReq.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	_, _, err = s.Query(strongReq)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute initial STRONG query: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test that NONE, WEAK, and LINEARIZABLE consistency levels return index 0</span>
+<span class="a">+	levels := []struct {</span>
+<span class="a">+		level proto.QueryRequest_Level</span>
+<span class="a">+		name  string</span>
+<span class="a">+	}{</span>
+<span class="a">+		{proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE, &quot;NONE&quot;},</span>
+<span class="a">+		{proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK, &quot;WEAK&quot;},</span>
+<span class="a">+		{proto.QueryRequest_QUERY_REQUEST_LEVEL_LINEARIZABLE, &quot;LINEARIZABLE&quot;},</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	for _, level := range levels {</span>
+<span class="a">+		req := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+		req.Level = level.level</span>
+<span class="a">+		_, index, err := s.Query(req)</span>
+<span class="a">+		if err != nil {</span>
+<span class="a">+			t.Fatalf(&quot;failed to execute %s query: %s&quot;, level.name, err.Error())</span>
+<span class="a">+		}</span>
+<span class="a">+		if index != 0 {</span>
+<span class="a">+			t.Fatalf(&quot;expected index 0 for %s consistency query, got %d&quot;, level.name, index)</span>
+<span class="a">+		}</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test STRONG consistency should return non-zero index</span>
+<span class="a">+	strongTestReq := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	strongTestReq.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	_, strongIndex, err := s.Query(strongTestReq)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute STRONG query: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if strongIndex == 0 {</span>
+<span class="a">+		t.Fatalf(&quot;expected non-zero Raft index for STRONG consistency query, got %d&quot;, strongIndex)</span>
+<span class="a">+	}</span>
+<span class="a">+	if strongIndex &lt;= writeIndex {</span>
+<span class="a">+		t.Fatalf(&quot;expected STRONG query Raft index (%d) to be greater than write index (%d)&quot;, strongIndex, writeIndex)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func Test_State(t *testing.T) {
+ 	s, ln := mustNewStore(t)
+ 	defer ln.Close()</pre><h2>Commit #2: <a href="https://github.com/rqlite/rqlite/commit/cc7460651740b7810ef2ea89c4e51c5f7fbb3f0e">cc74606517</a> (2025-07-03T11:47:22-04:00)</h2><p class="k">Leader observations are now booleans<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 55. Identical text added in other files in this commit: store/store_multi_test.go.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 33890ef3..d1bf27bd 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -730,18 +730,24 @@ func Test_StoreLeaderObservation(t *testing.T) {</span>
+ 		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())
+ 	}
+ 
+<span class="d">-	ch1 := make(chan struct{})</span>
+<span class="d">-	ch2 := make(chan struct{})</span>
+<span class="a">+	ch1 := make(chan bool)</span>
+<span class="a">+	ch2 := make(chan bool)</span>
+ 	countCh := make(chan int, 2)
+ 	s.RegisterLeaderChange(ch1)
+ 	s.RegisterLeaderChange(ch2)
+ 
+ 	go func() {
+<span class="d">-		&lt;-ch1</span>
+<span class="a">+		b := &lt;-ch1</span>
+<span class="a">+		if !b {</span>
+<span class="a">+			t.Errorf(&quot;expected true from ch1, got false&quot;)</span>
+<span class="a">+		}</span>
+ 		countCh &lt;- 1
+ 	}()
+ 	go func() {
+<span class="d">-		&lt;-ch2</span>
+<span class="a">+		b := &lt;-ch2</span>
+<span class="a">+		if !b {</span>
+<span class="a">+			t.Errorf(&quot;expected true from ch2, got false&quot;)</span>
+<span class="a">+		}</span>
+ 		countCh &lt;- 2
+ 	}()
+ </pre><h2>Commit #3: <a href="https://github.com/rqlite/rqlite/commit/2dd2e1dfcdf77e129ee0ab6bad8a5a3d373fd0e5">2dd2e1dfcd</a> (2025-07-07T11:04:43-04:00)</h2><p class="k">Consolidate utilities into internal module<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 55.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index d1bf27bd..813ce4a2 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -15,8 +15,8 @@ import (</span>
+ 
+ 	&quot;github.com/rqlite/rqlite/v8/command/encoding&quot;
+ 	&quot;github.com/rqlite/rqlite/v8/command/proto&quot;
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/random&quot;</span>
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/rarchive&quot;</span>
+<span class="a">+	&quot;github.com/rqlite/rqlite/v8/internal/random&quot;</span>
+<span class="a">+	&quot;github.com/rqlite/rqlite/v8/internal/rarchive&quot;</span>
+ 	&quot;github.com/rqlite/rqlite/v8/testdata/chinook&quot;
+ )
+ </pre><h2>Commit #4: <a href="https://github.com/rqlite/rqlite/commit/c6eddee6ceceea8547fd84233c73173806dfea82">c6eddee6ce</a> (2025-07-21T09:16:28-04:00)</h2><p class="k">Minor refactor of HTTP-Store interface<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 55.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 813ce4a2..5975a494 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -95,6 +95,19 @@ func Test_OpenStoreSingleNode(t *testing.T) {</span>
+ 	if got, exp := id, s.raftID; got != exp {
+ 		t.Fatalf(&quot;wrong leader ID returned, got: %s, exp %s&quot;, got, exp)
+ 	}
+<span class="a">+	node, err := s.Leader()</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to retrieve leader node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if node == nil {</span>
+<span class="a">+		t.Fatalf(&quot;leader node should not be nil&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if node.ID != s.raftID {</span>
+<span class="a">+		t.Fatalf(&quot;wrong leader ID returned, got: %s, exp %s&quot;, node.ID, s.raftID)</span>
+<span class="a">+	}</span>
+<span class="a">+	if node.Addr != s.Addr() {</span>
+<span class="a">+		t.Fatalf(&quot;wrong leader address returned, got: %s, exp %s&quot;, node.Addr, s.Addr())</span>
+<span class="a">+	}</span>
+ }
+ 
+ // Test_SingleNodeOnDiskSQLitePath ensures that basic functionality works when the SQLite</pre><h2>Commit #5: <a href="https://github.com/rqlite/rqlite/commit/42179e735810ae4ab531dbb7a77fdd40a07ac4a8">42179e7358</a> (2025-07-21T17:00:07-04:00)</h2><p class="k">Allow the stepdown HTTP API call to specify target node for new leader<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 56. Identical text added in other files in this commit: store/store_multi_test.go.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 5975a494..cfeb17da 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -26,7 +26,7 @@ func Test_NonOpenStore(t *testing.T) {</span>
+ 	defer s.Close(true)
+ 	defer ln.Close()
+ 
+<span class="d">-	if err := s.Stepdown(false); err != ErrNotOpen {</span>
+<span class="a">+	if err := s.Stepdown(false, &quot;&quot;); err != ErrNotOpen {</span>
+ 		t.Fatalf(&quot;wrong error received for non-open store: %s&quot;, err)
+ 	}
+ 	if s.IsLeader() {
+<span class="h">@@ -2459,11 +2459,36 @@ func Test_SingleNodeStepdown(t *testing.T) {</span>
+ 	}
+ 
+ 	// Tell leader to step down. Should fail as there is no other node available.
+<span class="d">-	if err := s.Stepdown(true); err == nil {</span>
+<span class="a">+	if err := s.Stepdown(true, &quot;&quot;); err == nil {</span>
+ 		t.Fatalf(&quot;single node stepped down OK&quot;)
+ 	}
+ }
+ 
+<span class="a">+func Test_SingleNodeStepdownInvalidID(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Tell leader to step down with invalid node ID. Should fail with proper error.</span>
+<span class="a">+	invalidID := &quot;nonexistent-node&quot;</span>
+<span class="a">+	err := s.Stepdown(true, invalidID)</span>
+<span class="a">+	if err == nil {</span>
+<span class="a">+		t.Fatalf(&quot;stepdown with invalid node ID should have failed&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if !errors.Is(err, ErrNodeNotFound) {</span>
+<span class="a">+		t.Fatalf(&quot;expected ErrNodeNotFound, got %v&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func Test_SingleNodeStepdownNoWaitOK(t *testing.T) {
+ 	s, ln := mustNewStore(t)
+ 	defer ln.Close()
+<span class="h">@@ -2479,7 +2504,7 @@ func Test_SingleNodeStepdownNoWaitOK(t *testing.T) {</span>
+ 	}
+ 
+ 	// Tell leader to step down without waiting.
+<span class="d">-	if err := s.Stepdown(false); err != nil {</span>
+<span class="a">+	if err := s.Stepdown(false, &quot;&quot;); err != nil {</span>
+ 		t.Fatalf(&quot;single node reported error stepping down even when told not to wait&quot;)
+ 	}
+ }</pre><h2>Commit #6: <a href="https://github.com/rqlite/rqlite/commit/f2e089e21fa1f17a2ea281bffbc495e5bd001e21">f2e089e21f</a> (2025-07-22T09:00:18-04:00)</h2><p class="k">Add Followers method to Store<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 56. Identical text added in other files in this commit: store/store_multi_test.go.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index cfeb17da..cad66aab 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -108,6 +108,12 @@ func Test_OpenStoreSingleNode(t *testing.T) {</span>
+ 	if node.Addr != s.Addr() {
+ 		t.Fatalf(&quot;wrong leader address returned, got: %s, exp %s&quot;, node.Addr, s.Addr())
+ 	}
+<span class="a">+</span>
+<span class="a">+	if followers, err := s.Followers(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to retrieve followers: %s&quot;, err.Error())</span>
+<span class="a">+	} else if len(followers) != 0 {</span>
+<span class="a">+		t.Fatalf(&quot;expected no followers, got %d&quot;, len(followers))</span>
+<span class="a">+	}</span>
+ }
+ 
+ // Test_SingleNodeOnDiskSQLitePath ensures that basic functionality works when the SQLite
+<span class="h">@@ -2464,7 +2470,7 @@ func Test_SingleNodeStepdown(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="d">-func Test_SingleNodeStepdownInvalidID(t *testing.T) {</span>
+<span class="a">+func Test_SingleNodeStepdown_InvalidID(t *testing.T) {</span>
+ 	s, ln := mustNewStore(t)
+ 	defer ln.Close()
+ 	if err := s.Open(); err != nil {
+<span class="h">@@ -2489,7 +2495,7 @@ func Test_SingleNodeStepdownInvalidID(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="d">-func Test_SingleNodeStepdownNoWaitOK(t *testing.T) {</span>
+<span class="a">+func Test_SingleNodeStepdown_NoWaitOK(t *testing.T) {</span>
+ 	s, ln := mustNewStore(t)
+ 	defer ln.Close()
+ 	if err := s.Open(); err != nil {</pre><h2>Commit #7: <a href="https://github.com/rqlite/rqlite/commit/3e4e51c903b9c6d4ef0fcc63bd80718cbff59d51">3e4e51c903</a> (2025-07-24T14:01:33-04:00)</h2><p class="k">Support providing backups in DELETE mode<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 57.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index cad66aab..ca585859 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -15,6 +15,7 @@ import (</span>
+ 
+ 	&quot;github.com/rqlite/rqlite/v8/command/encoding&quot;
+ 	&quot;github.com/rqlite/rqlite/v8/command/proto&quot;
+<span class="a">+	&quot;github.com/rqlite/rqlite/v8/db&quot;</span>
+ 	&quot;github.com/rqlite/rqlite/v8/internal/random&quot;
+ 	&quot;github.com/rqlite/rqlite/v8/internal/rarchive&quot;
+ 	&quot;github.com/rqlite/rqlite/v8/testdata/chinook&quot;
+<span class="h">@@ -1582,6 +1583,95 @@ COMMIT;</span>
+ 	}
+ }
+ 
+<span class="a">+// Test_SingleNodeBackupDelete tests that requesting a DELETE-formatted</span>
+<span class="a">+// backup works as expected.</span>
+<span class="a">+func Test_SingleNodeBackupDelete(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	dump := `PRAGMA foreign_keys=OFF;</span>
+<span class="a">+BEGIN TRANSACTION;</span>
+<span class="a">+CREATE TABLE foo (id integer not null primary key, name text);</span>
+<span class="a">+INSERT INTO &quot;foo&quot; VALUES(1,&#x27;fiona&#x27;);</span>
+<span class="a">+COMMIT;</span>
+<span class="a">+`</span>
+<span class="a">+	_, _, err := s.Execute(executeRequestFromString(dump, false, false))</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to load simple dump: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test uncompressed DELETE format backup</span>
+<span class="a">+	f, err := os.CreateTemp(&quot;&quot;, &quot;rqlite-baktest-delete-&quot;)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup Failed: unable to create temp file, %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer os.Remove(f.Name())</span>
+<span class="a">+	defer f.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Backup(backupRequestDelete(true, false, false), f); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;DELETE backup failed %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Check that the backup file is a valid SQLite database</span>
+<span class="a">+	f.Seek(0, 0)</span>
+<span class="a">+	header := make([]byte, 20) // Need at least 20 bytes for DELETE mode check</span>
+<span class="a">+	if _, err := f.Read(header); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to read backup file header: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if !db.IsValidSQLiteData(header) {</span>
+<span class="a">+		t.Fatalf(&quot;backup file is not a valid SQLite database&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Check that the backup file is in DELETE mode</span>
+<span class="a">+	if !db.IsDELETEModeEnabled(header) {</span>
+<span class="a">+		t.Fatalf(&quot;backup file is not in DELETE mode&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test compressed DELETE format backup</span>
+<span class="a">+	gzf, err := os.CreateTemp(&quot;&quot;, &quot;rqlite-baktest-delete-gz-&quot;)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Compressed backup Failed: unable to create temp file, %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer os.Remove(gzf.Name())</span>
+<span class="a">+	defer gzf.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Backup(backupRequestDelete(true, false, true), gzf); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Compressed DELETE backup failed %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Verify the compressed backup can be decompressed and is valid</span>
+<span class="a">+	guzf, err := rarchive.Gunzip(gzf.Name())</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Failed to gunzip DELETE backup file %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer os.Remove(guzf)</span>
+<span class="a">+</span>
+<span class="a">+	guzData, err := os.ReadFile(guzf)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to read gunzipped DELETE backup: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if len(guzData) &lt; 20 {</span>
+<span class="a">+		t.Fatalf(&quot;gunzipped DELETE backup file is too short: %d bytes&quot;, len(guzData))</span>
+<span class="a">+	}</span>
+<span class="a">+	if !db.IsValidSQLiteData(guzData[:16]) {</span>
+<span class="a">+		t.Fatalf(&quot;gunzipped DELETE backup file is not a valid SQLite database&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if !db.IsDELETEModeEnabled(guzData[:20]) {</span>
+<span class="a">+		t.Fatalf(&quot;gunzipped DELETE backup file is not in DELETE mode&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // Test_SingleNodeSingleCommandTrigger tests that a SQLite trigger works.
+ func Test_SingleNodeSingleCommandTrigger(t *testing.T) {
+ 	s, ln := mustNewStore(t)
+<span class="h">@@ -3165,6 +3255,15 @@ func backupRequestBinary(leader, vacuum, compress bool) *proto.BackupRequest {</span>
+ 	}
+ }
+ 
+<span class="a">+func backupRequestDelete(leader, vacuum, compress bool) *proto.BackupRequest {</span>
+<span class="a">+	return &amp;proto.BackupRequest{</span>
+<span class="a">+		Format:   proto.BackupRequest_BACKUP_REQUEST_FORMAT_DELETE,</span>
+<span class="a">+		Leader:   leader,</span>
+<span class="a">+		Vacuum:   vacuum,</span>
+<span class="a">+		Compress: compress,</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func loadRequestFromFile(path string) *proto.LoadRequest {
+ 	return &amp;proto.LoadRequest{
+ 		Data: mustReadFile(path),</pre><h2>Commit #8: <a href="https://github.com/rqlite/rqlite/commit/24383681bfb8d04bbaadf08dc61462e384b19f96">24383681bf</a> (2025-07-25T10:25:01-04:00)</h2><p class="k">Upgrade SQLite to 3.50.3<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 57.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index ca585859..e09d9df5 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -3349,6 +3349,14 @@ func asJSONAssociative(v any) string {</span>
+ }
+ 
+ func testPoll(t *testing.T, f func() bool, checkPeriod time.Duration, timeout time.Duration) {
+<span class="a">+	t.Helper()</span>
+<span class="a">+	g := func(_ bool) bool {</span>
+<span class="a">+		return f()</span>
+<span class="a">+	}</span>
+<span class="a">+	testPollLog(t, g, checkPeriod, timeout)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+func testPollLog(t *testing.T, f func(to bool) bool, checkPeriod time.Duration, timeout time.Duration) {</span>
+ 	t.Helper()
+ 	tck := time.NewTicker(checkPeriod)
+ 	defer tck.Stop()
+<span class="h">@@ -3358,10 +3366,11 @@ func testPoll(t *testing.T, f func() bool, checkPeriod time.Duration, timeout ti</span>
+ 	for {
+ 		select {
+ 		case &lt;-tck.C:
+<span class="d">-			if f() {</span>
+<span class="a">+			if f(false) {</span>
+ 				return
+ 			}
+ 		case &lt;-tmr.C:
+<span class="a">+			f(true)</span>
+ 			t.Fatalf(&quot;timeout expired: %s&quot;, t.Name())
+ 		}
+ 	}</pre><h2>Commit #9: <a href="https://github.com/rqlite/rqlite/commit/94dcdfbdcb342bcd650b81f7744d8db53adae841">94dcdfbdcb</a> (2025-07-31T00:37:26-04:00)</h2><p class="k">Add table-specific backup functionality to rqlite HTTP API with optimized SQL filtering<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 60.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index e09d9df5..db08ad0f 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -1672,6 +1672,201 @@ COMMIT;</span>
+ 	}
+ }
+ 
+<span class="a">+// Test_SingleNodeBackupSingleTable tests that backing up a single table works.</span>
+<span class="a">+func Test_SingleNodeBackupSingleTable(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Create two tables</span>
+<span class="a">+	dump := `PRAGMA foreign_keys=OFF;</span>
+<span class="a">+BEGIN TRANSACTION;</span>
+<span class="a">+CREATE TABLE foo (id integer not null primary key, name text);</span>
+<span class="a">+INSERT INTO &quot;foo&quot; VALUES(1,&#x27;fiona&#x27;);</span>
+<span class="a">+CREATE TABLE bar (id integer not null primary key, age integer);</span>
+<span class="a">+INSERT INTO &quot;bar&quot; VALUES(1,25);</span>
+<span class="a">+COMMIT;</span>
+<span class="a">+`</span>
+<span class="a">+	_, _, err := s.Execute(executeRequestFromString(dump, false, false))</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to load dump: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Backup only the &#x27;foo&#x27; table</span>
+<span class="a">+	f, err := os.CreateTemp(&quot;&quot;, &quot;rqlite-baktest-single-&quot;)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup Failed: unable to create temp file, %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer os.Remove(f.Name())</span>
+<span class="a">+	s.logger.Printf(&quot;backup file is %s&quot;, f.Name())</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Backup(backupRequestSQLWithTables(true, []string{&quot;foo&quot;}), f); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup failed %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Check the backed up data contains only foo table</span>
+<span class="a">+	bkp, err := os.ReadFile(f.Name())</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup Failed: unable to read backup file, %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	backupStr := string(bkp)</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;CREATE TABLE foo&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain foo table&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;INSERT INTO \&quot;foo\&quot; VALUES(1,&#x27;fiona&#x27;)&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain foo table data&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if strings.Contains(backupStr, &quot;CREATE TABLE bar&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should not contain bar table&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if strings.Contains(backupStr, &quot;INSERT INTO \&quot;bar\&quot;&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should not contain bar table data&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+// Test_SingleNodeBackupTwoTables tests that backing up two specific tables works.</span>
+<span class="a">+func Test_SingleNodeBackupTwoTables(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Create three tables</span>
+<span class="a">+	dump := `PRAGMA foreign_keys=OFF;</span>
+<span class="a">+BEGIN TRANSACTION;</span>
+<span class="a">+CREATE TABLE foo (id integer not null primary key, name text);</span>
+<span class="a">+INSERT INTO &quot;foo&quot; VALUES(1,&#x27;fiona&#x27;);</span>
+<span class="a">+CREATE TABLE bar (id integer not null primary key, age integer);</span>
+<span class="a">+INSERT INTO &quot;bar&quot; VALUES(1,25);</span>
+<span class="a">+CREATE TABLE baz (id integer not null primary key, city text);</span>
+<span class="a">+INSERT INTO &quot;baz&quot; VALUES(1,&#x27;vancouver&#x27;);</span>
+<span class="a">+COMMIT;</span>
+<span class="a">+`</span>
+<span class="a">+	_, _, err := s.Execute(executeRequestFromString(dump, false, false))</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to load dump: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Backup only the &#x27;foo&#x27; and &#x27;bar&#x27; tables</span>
+<span class="a">+	f, err := os.CreateTemp(&quot;&quot;, &quot;rqlite-baktest-two-&quot;)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup Failed: unable to create temp file, %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer os.Remove(f.Name())</span>
+<span class="a">+	s.logger.Printf(&quot;backup file is %s&quot;, f.Name())</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Backup(backupRequestSQLWithTables(true, []string{&quot;foo&quot;, &quot;bar&quot;}), f); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup failed %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Check the backed up data contains only foo and bar tables</span>
+<span class="a">+	bkp, err := os.ReadFile(f.Name())</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup Failed: unable to read backup file, %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	backupStr := string(bkp)</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;CREATE TABLE foo&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain foo table&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;INSERT INTO \&quot;foo\&quot; VALUES(1,&#x27;fiona&#x27;)&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain foo table data&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;CREATE TABLE bar&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain bar table&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;INSERT INTO \&quot;bar\&quot; VALUES(1,25)&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain bar table data&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if strings.Contains(backupStr, &quot;CREATE TABLE baz&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should not contain baz table&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if strings.Contains(backupStr, &quot;INSERT INTO \&quot;baz\&quot;&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should not contain baz table data&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+// Test_SingleNodeBackupNonExistentTable tests that backing up a non-existent table works gracefully.</span>
+<span class="a">+func Test_SingleNodeBackupNonExistentTable(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Create one table</span>
+<span class="a">+	dump := `PRAGMA foreign_keys=OFF;</span>
+<span class="a">+BEGIN TRANSACTION;</span>
+<span class="a">+CREATE TABLE foo (id integer not null primary key, name text);</span>
+<span class="a">+INSERT INTO &quot;foo&quot; VALUES(1,&#x27;fiona&#x27;);</span>
+<span class="a">+COMMIT;</span>
+<span class="a">+`</span>
+<span class="a">+	_, _, err := s.Execute(executeRequestFromString(dump, false, false))</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to load dump: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Try to backup a non-existent table</span>
+<span class="a">+	f, err := os.CreateTemp(&quot;&quot;, &quot;rqlite-baktest-nonexistent-&quot;)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup Failed: unable to create temp file, %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer os.Remove(f.Name())</span>
+<span class="a">+	s.logger.Printf(&quot;backup file is %s&quot;, f.Name())</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Backup(backupRequestSQLWithTables(true, []string{&quot;nonexistent&quot;}), f); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup failed %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Check the backed up data should contain minimal dump structure but no tables</span>
+<span class="a">+	bkp, err := os.ReadFile(f.Name())</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;Backup Failed: unable to read backup file, %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	backupStr := string(bkp)</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;PRAGMA foreign_keys=OFF&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain PRAGMA statement&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;BEGIN TRANSACTION&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain BEGIN TRANSACTION&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if !strings.Contains(backupStr, &quot;COMMIT&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should contain COMMIT&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if strings.Contains(backupStr, &quot;CREATE TABLE&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should not contain any CREATE TABLE statements&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	if strings.Contains(backupStr, &quot;INSERT INTO&quot;) {</span>
+<span class="a">+		t.Fatalf(&quot;Backup should not contain any INSERT statements&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // Test_SingleNodeSingleCommandTrigger tests that a SQLite trigger works.
+ func Test_SingleNodeSingleCommandTrigger(t *testing.T) {
+ 	s, ln := mustNewStore(t)
+<span class="h">@@ -3246,6 +3441,14 @@ func backupRequestSQL(leader bool) *proto.BackupRequest {</span>
+ 	}
+ }
+ 
+<span class="a">+func backupRequestSQLWithTables(leader bool, tables []string) *proto.BackupRequest {</span>
+<span class="a">+	return &amp;proto.BackupRequest{</span>
+<span class="a">+		Format: proto.BackupRequest_BACKUP_REQUEST_FORMAT_SQL,</span>
+<span class="a">+		Leader: leader,</span>
+<span class="a">+		Tables: tables,</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func backupRequestBinary(leader, vacuum, compress bool) *proto.BackupRequest {
+ 	return &amp;proto.BackupRequest{
+ 		Format:   proto.BackupRequest_BACKUP_REQUEST_FORMAT_BINARY,</pre><h2>Commit #10: <a href="https://github.com/rqlite/rqlite/commit/e3dda91492398af5093955a7625eade3942fcf7b">e3dda91492</a> (2025-07-31T21:28:20-04:00)</h2><p class="k">Rollback transaction if restore fails<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 61.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index db08ad0f..d9c398ca 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -2165,6 +2165,59 @@ COMMIT;</span>
+ 	}
+ }
+ 
+<span class="a">+func Test_SingleNodeLoad_SQLFail(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	dump := `PRAGMA foreign_keys=OFF;</span>
+<span class="a">+BEGIN TRANSACTION;</span>
+<span class="a">+CREATE TABLE bar (id integer not null primary key, name text);</span>
+<span class="a">+INSERT INTO &quot;bar&quot; VALUES(1,&#x27;declan&#x27;);</span>
+<span class="a">+INSERT INTO &quot;bar&quot; VALUES(1,&#x27;fiona&#x27;);</span>
+<span class="a">+COMMIT;</span>
+<span class="a">+`</span>
+<span class="a">+	er := executeRequestFromString(dump, false, false)</span>
+<span class="a">+	er.Request.RollbackOnError = true</span>
+<span class="a">+	_, _, err := s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to load simple dump: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Check that data were loaded correctly.</span>
+<span class="a">+	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)</span>
+<span class="a">+	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	r, _, err := s.Query(qr)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[{&quot;error&quot;:&quot;no such table: bar&quot;}]`, asJSON(r); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Check that the transaction was rolled back by trying to start a new transaction.</span>
+<span class="a">+	// It should succeed.</span>
+<span class="a">+	er = executeRequestFromString(&quot;BEGIN TRANSACTION; COMMIT;&quot;, false, false)</span>
+<span class="a">+	rer, _, err := s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to start new transaction after SQL error: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if asJSON(rer) != `[{&quot;last_insert_id&quot;:1}]` {</span>
+<span class="a">+		t.Fatalf(&quot;expected no results after starting new transaction, got %s&quot;, asJSON(rer))</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func Test_SingleNodeAutoRestore(t *testing.T) {
+ 	s, ln := mustNewStore(t)
+ 	defer ln.Close()</pre><h2>Commit #11: <a href="https://github.com/rqlite/rqlite/commit/dee9bace6c77a0f8807da500d08f1666e9fb4b45">dee9bace6c</a> (2025-08-29T09:42:29-04:00)</h2><p class="k">Reorder parameters for Store initialization<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 61.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index d9c398ca..ec3b0536 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -3292,11 +3292,11 @@ func mustNewStoreAtPathsLn(id, dataPath, sqlitePath string, fk bool) (*Store, ne</span>
+ 	cfg.OnDiskPath = sqlitePath
+ 
+ 	ly := mustMockLayer(&quot;localhost:0&quot;)
+<span class="d">-	s := New(ly, &amp;Config{</span>
+<span class="a">+	s := New(&amp;Config{</span>
+ 		DBConf: cfg,
+ 		Dir:    dataPath,
+ 		ID:     id,
+<span class="d">-	})</span>
+<span class="a">+	}, ly)</span>
+ 	if s == nil {
+ 		panic(&quot;failed to create new store&quot;)
+ 	}</pre><h2>Commit #12: <a href="https://github.com/rqlite/rqlite/commit/a78e30e71ba32db42f4d8d4c935521e7373bf30b">a78e30e71b</a> (2025-08-29T11:54:47-04:00)</h2><p class="k">Allow store.Store to take CDC configuration at construction with automatic initialization<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 61.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index ec3b0536..56f7ea2c 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -3296,7 +3296,7 @@ func mustNewStoreAtPathsLn(id, dataPath, sqlitePath string, fk bool) (*Store, ne</span>
+ 		DBConf: cfg,
+ 		Dir:    dataPath,
+ 		ID:     id,
+<span class="d">-	}, ly)</span>
+<span class="a">+	}, nil, ly)</span>
+ 	if s == nil {
+ 		panic(&quot;failed to create new store&quot;)
+ 	}</pre><h2>Commit #13: <a href="https://github.com/rqlite/rqlite/commit/2629209a44ccefd5e159c2d5b50c70e886f7f9fd">2629209a44</a> (2025-08-29T15:58:26-04:00)</h2><p class="k">Revert &quot;Allow store.Store to take CDC configuration at construction with automatic initialization&quot;<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 61.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 56f7ea2c..ec3b0536 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -3296,7 +3296,7 @@ func mustNewStoreAtPathsLn(id, dataPath, sqlitePath string, fk bool) (*Store, ne</span>
+ 		DBConf: cfg,
+ 		Dir:    dataPath,
+ 		ID:     id,
+<span class="d">-	}, nil, ly)</span>
+<span class="a">+	}, ly)</span>
+ 	if s == nil {
+ 		panic(&quot;failed to create new store&quot;)
+ 	}</pre><h2>Commit #14: <a href="https://github.com/rqlite/rqlite/commit/08b7eb202005b9061af7fdef1c48a2485dfd52bc">08b7eb2020</a> (2025-09-08T10:06:27-04:00)</h2><p class="k">Merge branch &#x27;master&#x27; of github.com:rqlite/rqlite<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 62.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index ec3b0536..df1132e1 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -2475,6 +2475,49 @@ func Test_SingleNodeUserSnapshot_CAS(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="a">+func Test_SingleNodeUserSnapshot_Sync(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	mustNoop(s, &quot;1&quot;)</span>
+<span class="a">+	if err := s.Snapshot(0); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to snapshot single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Register a channel, and close it, allowing snapshotting to proceed.</span>
+<span class="a">+	ch := make(chan chan struct{})</span>
+<span class="a">+	s.RegisterSnapshotSync(ch)</span>
+<span class="a">+	called := false</span>
+<span class="a">+	go func() {</span>
+<span class="a">+		c := &lt;-ch</span>
+<span class="a">+		called = true</span>
+<span class="a">+		close(c)</span>
+<span class="a">+	}()</span>
+<span class="a">+	mustNoop(s, &quot;2&quot;)</span>
+<span class="a">+	if err := s.Snapshot(0); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to snapshot single-node store with sync: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if !called {</span>
+<span class="a">+		t.Fatalf(&quot;expected sync function to be called&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Register a channel, but don&#x27;t close it, which should cause a timeout.</span>
+<span class="a">+	mustNoop(s, &quot;3&quot;)</span>
+<span class="a">+	if err := s.Snapshot(0); err == nil {</span>
+<span class="a">+		t.Fatalf(&quot;snapshotting succeeded, expected failure due to sync timeout&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func Test_SingleNode_WALTriggeredSnapshot(t *testing.T) {
+ 	s, ln := mustNewStore(t)
+ 	defer ln.Close()</pre><h2>Commit #15: <a href="https://github.com/rqlite/rqlite/commit/80517cf1a13e45be595db739c22bccf90dfd4119">80517cf1a1</a> (2025-09-15T10:54:22-04:00)</h2><p class="k">Switch go mod from v8 to v9 (#2329)<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 62.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index df1132e1..5e21f858 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -13,12 +13,12 @@ import (</span>
+ 	&quot;testing&quot;
+ 	&quot;time&quot;
+ 
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/command/encoding&quot;</span>
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/command/proto&quot;</span>
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/db&quot;</span>
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/internal/random&quot;</span>
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/internal/rarchive&quot;</span>
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/testdata/chinook&quot;</span>
+<span class="a">+	&quot;github.com/rqlite/rqlite/v9/command/encoding&quot;</span>
+<span class="a">+	&quot;github.com/rqlite/rqlite/v9/command/proto&quot;</span>
+<span class="a">+	&quot;github.com/rqlite/rqlite/v9/db&quot;</span>
+<span class="a">+	&quot;github.com/rqlite/rqlite/v9/internal/random&quot;</span>
+<span class="a">+	&quot;github.com/rqlite/rqlite/v9/internal/rarchive&quot;</span>
+<span class="a">+	&quot;github.com/rqlite/rqlite/v9/testdata/chinook&quot;</span>
+ )
+ 
+ // Test_NonOpenStore tests that a non-open Store handles public methods correctly.</pre><h2>Commit #16: <a href="https://github.com/rqlite/rqlite/commit/3c1ee7a1292594391f3f60c4c03ce56aab0d3076">3c1ee7a129</a> (2025-10-01T08:25:53-04:00)</h2><p class="k">Support Linearizable reads on the Unified Endpoint<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 63.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 5e21f858..461b8a7d 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -1015,6 +1015,71 @@ func Test_SingleNodeExecuteQueryFail(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="a">+// Test_SingleNodeRequest_Linearizable tests that a Store correctly responds to a</span>
+<span class="a">+// simple Request with Linearizable consistency level.</span>
+<span class="a">+func Test_SingleNodeRequest_Linearizable(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	_, err := s.WaitForLeader(10 * time.Second)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	er := executeRequestFromStrings([]string{</span>
+<span class="a">+		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,</span>
+<span class="a">+		`INSERT INTO foo(id, name) VALUES(1, &quot;fiona&quot;)`,</span>
+<span class="a">+	}, false, false)</span>
+<span class="a">+	_, _, err = s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Perform the first linearizable request, which should be upgraded to a strong query.</span>
+<span class="a">+	eqr := executeQueryRequestFromString(&quot;SELECT * FROM foo&quot;, proto.QueryRequest_QUERY_REQUEST_LEVEL_LINEARIZABLE, false, false)</span>
+<span class="a">+	r, _, err := s.Request(eqr)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to perform linearizable request on single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if r[0].GetQ() == nil {</span>
+<span class="a">+		t.Fatalf(&quot;expected query result, got %v&quot;, r[0])</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[&quot;id&quot;,&quot;name&quot;]`, asJSON(r[0].GetQ().Columns); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for request\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[[1,&quot;fiona&quot;]]`, asJSON(r[0].GetQ().Values); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for request\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+	if s.numLRUpgraded.Load() != 1 {</span>
+<span class="a">+		t.Fatalf(&quot;expected 1 linearizable upgrade, got %d&quot;, s.numLRUpgraded.Load())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Perform the second linearizable request, which should not be upgraded to a strong query.</span>
+<span class="a">+	r, _, err = s.Request(eqr)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to perform linearizable request on single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if r[0].GetQ() == nil {</span>
+<span class="a">+		t.Fatalf(&quot;expected query result, got %v&quot;, r[0])</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[&quot;id&quot;,&quot;name&quot;]`, asJSON(r[0].GetQ().Columns); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for request\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[[1,&quot;fiona&quot;]]`, asJSON(r[0].GetQ().Values); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for request\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+	if s.numLRUpgraded.Load() != 1 {</span>
+<span class="a">+		t.Fatalf(&quot;expected 1 linearizable upgrade, got %d&quot;, s.numLRUpgraded.Load())</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // Test_SingleNodeExecuteQueryTx tests that a Store correctly responds to a simple
+ // Execute and Query request, when the request is wrapped in a transaction.
+ func Test_SingleNodeExecuteQueryTx(t *testing.T) {</pre><h2>Commit #17: <a href="https://github.com/rqlite/rqlite/commit/47dd834c461103468b48ce277dcbf8161ff9e2d5">47dd834c46</a> (2025-10-07T09:43:11-04:00)</h2><p class="k">Factor out Protobuf Consistency Levels<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 63.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 461b8a7d..5cc4ac63 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -164,7 +164,7 @@ func Test_SingleNodeOnDiskSQLitePath(t *testing.T) {</span>
+ 	}
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -225,7 +225,7 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 
+ 	// Do a strong query, and ensure DBAppliedIndex is updated.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	_, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -236,7 +236,7 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 
+ 	// Do a weak query, and ensure DBAppliedIndex is not updated.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_WEAK</span>
+ 	_, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -724,7 +724,7 @@ func Test_OpenStoreCloseSingleNode(t *testing.T) {</span>
+ 	}
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -866,7 +866,7 @@ func Test_SingleNodeExecuteQuery(t *testing.T) {</span>
+ 	}
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -907,7 +907,7 @@ func Test_SingleNodeExecuteQuery_Linearizable(t *testing.T) {</span>
+ 
+ 	// Perform the first linearizable query, which should be upgraded to a strong query.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_LINEARIZABLE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_LINEARIZABLE</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to perform linearizable query on single node: %s&quot;, err.Error())
+<span class="h">@@ -974,7 +974,7 @@ func Test_SingleNodeExecuteQuery_RETURNING(t *testing.T) {</span>
+ 	}
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -1043,7 +1043,7 @@ func Test_SingleNodeRequest_Linearizable(t *testing.T) {</span>
+ 	}
+ 
+ 	// Perform the first linearizable request, which should be upgraded to a strong query.
+<span class="d">-	eqr := executeQueryRequestFromString(&quot;SELECT * FROM foo&quot;, proto.QueryRequest_QUERY_REQUEST_LEVEL_LINEARIZABLE, false, false)</span>
+<span class="a">+	eqr := executeQueryRequestFromString(&quot;SELECT * FROM foo&quot;, proto.ConsistencyLevel_LINEARIZABLE, false, false)</span>
+ 	r, _, err := s.Request(eqr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to perform linearizable request on single node: %s&quot;, err.Error())
+<span class="h">@@ -1109,19 +1109,19 @@ func Test_SingleNodeExecuteQueryTx(t *testing.T) {</span>
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, true)
+ 	var r []*proto.QueryRows
+ 
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	_, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+ 
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_WEAK</span>
+ 	_, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+ 
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -1210,7 +1210,7 @@ func Test_SingleNodeRequest(t *testing.T) {</span>
+ 	}
+ 
+ 	for _, tt := range tests {
+<span class="d">-		eqr := executeQueryRequestFromStrings(tt.stmts, proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK, false, false)</span>
+<span class="a">+		eqr := executeQueryRequestFromStrings(tt.stmts, proto.ConsistencyLevel_WEAK, false, false)</span>
+ 		r, _, err := s.Request(eqr)
+ 		if err != nil {
+ 			t.Fatalf(&quot;failed to execute request on single node: %s&quot;, err.Error())
+<span class="h">@@ -1290,7 +1290,7 @@ func Test_SingleNodeRequestTx(t *testing.T) {</span>
+ 	}
+ 
+ 	for _, tt := range tests {
+<span class="d">-		eqr := executeQueryRequestFromStrings(tt.stmts, proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK, false, tt.tx)</span>
+<span class="a">+		eqr := executeQueryRequestFromStrings(tt.stmts, proto.ConsistencyLevel_WEAK, false, tt.tx)</span>
+ 		r, _, err := s.Request(eqr)
+ 		if err != nil {
+ 			t.Fatalf(&quot;failed to execute request on single node: %s&quot;, err.Error())
+<span class="h">@@ -1502,7 +1502,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 	}
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -1510,7 +1510,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 	check(r)
+ 
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_WEAK</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -1518,7 +1518,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 	check(r)
+ 
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -1527,7 +1527,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, true)
+ 	qr.Timings = true
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -1536,7 +1536,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, true, false)
+ 	qr.Request.Transaction = true
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -1574,7 +1574,7 @@ func Test_SingleNodeExecuteQueryFreshness(t *testing.T) {</span>
+ 	}
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+ 	qr.Freshness = mustParseDuration(&quot;1ns&quot;).Nanoseconds()
+ 	r, _, err := s0.Query(qr)
+ 	if err != nil {
+<span class="h">@@ -1587,7 +1587,7 @@ func Test_SingleNodeExecuteQueryFreshness(t *testing.T) {</span>
+ 		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)
+ 	}
+ 
+<span class="d">-	rr := executeQueryRequestFromString(&quot;SELECT * FROM foo&quot;, proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE,</span>
+<span class="a">+	rr := executeQueryRequestFromString(&quot;SELECT * FROM foo&quot;, proto.ConsistencyLevel_NONE,</span>
+ 		false, false)
+ 	rr.Freshness = mustParseDuration(&quot;1ns&quot;).Nanoseconds()
+ 	eqr, _, err := s0.Request(rr)
+<span class="h">@@ -2008,7 +2008,7 @@ COMMIT;</span>
+ 
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2096,7 +2096,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 	// Check that data were loaded correctly.
+ 
+ 	qr := queryRequestFromString(&quot;SELECT count(*) FROM track&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2109,7 +2109,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 	}
+ 
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM album&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2122,7 +2122,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 	}
+ 
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM artist&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2166,7 +2166,7 @@ COMMIT;</span>
+ 
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2194,7 +2194,7 @@ COMMIT;</span>
+ 
+ 	// Check that data were loaded correctly.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo WHERE id=2&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2206,7 +2206,7 @@ COMMIT;</span>
+ 		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)
+ 	}
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM foo&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2220,7 +2220,7 @@ COMMIT;</span>
+ 
+ 	// Check preexisting data is gone.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2261,7 +2261,7 @@ COMMIT;</span>
+ 
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2378,7 +2378,7 @@ COMMIT;</span>
+ 
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2414,7 +2414,7 @@ COMMIT;</span>
+ 
+ 	// Check that data were loaded correctly.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo WHERE id=2&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2426,7 +2426,7 @@ COMMIT;</span>
+ 		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)
+ 	}
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM foo&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2440,7 +2440,7 @@ COMMIT;</span>
+ 
+ 	// Check preexisting data is gone.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err = s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -2744,7 +2744,7 @@ func Test_SingleNode_SnapshotWithAutoOptimize_Stress(t *testing.T) {</span>
+ 
+ 	// Query the data, make sure it looks good after all this.
+ 	qr := queryRequestFromString(&quot;SELECT COUNT(*) FROM foo&quot;, false, true)
+<span class="d">-	qr.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_STRONG</span>
+ 	r, _, err := s.Query(qr)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+<span class="h">@@ -3169,7 +3169,7 @@ func Test_RWROCount(t *testing.T) {</span>
+ 
+ 	for _, tt := range tests {
+ 		t.Run(tt.name, func(t *testing.T) {
+<span class="d">-			rwN, roN := s.RORWCount(executeQueryRequestFromStrings(tt.stmts, proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE, false, false))</span>
+<span class="a">+			rwN, roN := s.RORWCount(executeQueryRequestFromStrings(tt.stmts, proto.ConsistencyLevel_NONE, false, false))</span>
+ 			if rwN != tt.expRW {
+ 				t.Fatalf(&quot;wrong number of RW statements, exp %d, got %d&quot;, tt.expRW, rwN)
+ 			}
+<span class="h">@@ -3245,7 +3245,7 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 	// Test 1: Write request should return a non-zero index
+ 	writeReq := executeQueryRequestFromStrings([]string{
+ 		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,
+<span class="d">-	}, proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG, false, false)</span>
+<span class="a">+	}, proto.ConsistencyLevel_STRONG, false, false)</span>
+ 
+ 	_, raftIndex, err := s.Request(writeReq)
+ 	if err != nil {
+<span class="h">@@ -3258,7 +3258,7 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 	// Test 2: Read-only request with NONE consistency should return index 0
+ 	readReq := executeQueryRequestFromStrings([]string{
+ 		`SELECT * FROM foo`,
+<span class="d">-	}, proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE, false, false)</span>
+<span class="a">+	}, proto.ConsistencyLevel_NONE, false, false)</span>
+ 
+ 	_, readIndex, err := s.Request(readReq)
+ 	if err != nil {
+<span class="h">@@ -3271,7 +3271,7 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 	// Test 3: Another write request should return a higher index
+ 	writeReq2 := executeQueryRequestFromStrings([]string{
+ 		`INSERT INTO foo(id, name) VALUES(1, &quot;test&quot;)`,
+<span class="d">-	}, proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG, false, false)</span>
+<span class="a">+	}, proto.ConsistencyLevel_STRONG, false, false)</span>
+ 
+ 	_, raftIndex2, err := s.Request(writeReq2)
+ 	if err != nil {
+<span class="h">@@ -3284,7 +3284,7 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 	// Test 4: STRONG read should go through Raft and return a non-zero index
+ 	strongReadReq := executeQueryRequestFromStrings([]string{
+ 		`SELECT * FROM foo`,
+<span class="d">-	}, proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG, false, false)</span>
+<span class="a">+	}, proto.ConsistencyLevel_STRONG, false, false)</span>
+ 
+ 	_, strongReadIndex, err := s.Request(strongReadReq)
+ 	if err != nil {
+<span class="h">@@ -3330,7 +3330,7 @@ func Test_StoreQueryRaftIndex(t *testing.T) {</span>
+ 
+ 	// First do a STRONG query to set the strongReadTerm for the current term
+ 	strongReq := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	strongReq.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	strongReq.Level = proto.ConsistencyLevel_STRONG</span>
+ 	_, _, err = s.Query(strongReq)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute initial STRONG query: %s&quot;, err.Error())
+<span class="h">@@ -3338,12 +3338,12 @@ func Test_StoreQueryRaftIndex(t *testing.T) {</span>
+ 
+ 	// Test that NONE, WEAK, and LINEARIZABLE consistency levels return index 0
+ 	levels := []struct {
+<span class="d">-		level proto.QueryRequest_Level</span>
+<span class="a">+		level proto.ConsistencyLevel</span>
+ 		name  string
+ 	}{
+<span class="d">-		{proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE, &quot;NONE&quot;},</span>
+<span class="d">-		{proto.QueryRequest_QUERY_REQUEST_LEVEL_WEAK, &quot;WEAK&quot;},</span>
+<span class="d">-		{proto.QueryRequest_QUERY_REQUEST_LEVEL_LINEARIZABLE, &quot;LINEARIZABLE&quot;},</span>
+<span class="a">+		{proto.ConsistencyLevel_NONE, &quot;NONE&quot;},</span>
+<span class="a">+		{proto.ConsistencyLevel_WEAK, &quot;WEAK&quot;},</span>
+<span class="a">+		{proto.ConsistencyLevel_LINEARIZABLE, &quot;LINEARIZABLE&quot;},</span>
+ 	}
+ 
+ 	for _, level := range levels {
+<span class="h">@@ -3360,7 +3360,7 @@ func Test_StoreQueryRaftIndex(t *testing.T) {</span>
+ 
+ 	// Test STRONG consistency should return non-zero index
+ 	strongTestReq := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+<span class="d">-	strongTestReq.Level = proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG</span>
+<span class="a">+	strongTestReq.Level = proto.ConsistencyLevel_STRONG</span>
+ 	_, strongIndex, err := s.Query(strongTestReq)
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute STRONG query: %s&quot;, err.Error())
+<span class="h">@@ -3574,11 +3574,11 @@ func queryRequestFromStrings(s []string, timings, tx bool) *proto.QueryRequest {</span>
+ 	}
+ }
+ 
+<span class="d">-func executeQueryRequestFromString(s string, lvl proto.QueryRequest_Level, timings, tx bool) *proto.ExecuteQueryRequest {</span>
+<span class="a">+func executeQueryRequestFromString(s string, lvl proto.ConsistencyLevel, timings, tx bool) *proto.ExecuteQueryRequest {</span>
+ 	return executeQueryRequestFromStrings([]string{s}, lvl, timings, tx)
+ }
+ 
+<span class="d">-func executeQueryRequestFromStrings(s []string, lvl proto.QueryRequest_Level, timings, tx bool) *proto.ExecuteQueryRequest {</span>
+<span class="a">+func executeQueryRequestFromStrings(s []string, lvl proto.ConsistencyLevel, timings, tx bool) *proto.ExecuteQueryRequest {</span>
+ 	stmts := make([]*proto.Statement, len(s))
+ 	for i := range s {
+ 		stmts[i] = &amp;proto.Statement{</pre><h2>Commit #18: <a href="https://github.com/rqlite/rqlite/commit/0efa215118107697a74df130176f3d6fe2db761f">0efa215118</a> (2025-10-10T13:21:06-04:00)</h2><p class="k">Return actual consistency level from store.Query<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 64.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 5cc4ac63..68f6a74b 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -165,7 +165,7 @@ func Test_SingleNodeOnDiskSQLitePath(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -226,7 +226,7 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 	// Do a strong query, and ensure DBAppliedIndex is updated.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	_, _, err = s.Query(qr)</span>
+<span class="a">+	_, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -237,7 +237,7 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 	// Do a weak query, and ensure DBAppliedIndex is not updated.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_WEAK
+<span class="d">-	_, _, err = s.Query(qr)</span>
+<span class="a">+	_, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -571,7 +571,7 @@ func Test_SingleNodeSnapshot(t *testing.T) {</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())
+ 	}
+<span class="d">-	_, _, err = s.Query(queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false))</span>
+<span class="a">+	_, _, _, err = s.Query(queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false))</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -605,7 +605,7 @@ func Test_SingleNodeSnapshot(t *testing.T) {</span>
+ 	}
+ 
+ 	// Ensure database is back in the correct state.
+<span class="d">-	r, _, err := s.Query(queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false))</span>
+<span class="a">+	r, _, _, err := s.Query(queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false))</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -662,7 +662,7 @@ func Test_StoreSingleNodeNotOpen(t *testing.T) {</span>
+ 	if _, _, err := s.Execute(&amp;proto.ExecuteRequest{}); err != ErrNotOpen {
+ 		t.Fatalf(&quot;wrong error received for non-open store: %s&quot;, err)
+ 	}
+<span class="d">-	if _, _, err := s.Query(&amp;proto.QueryRequest{}); err != ErrNotOpen {</span>
+<span class="a">+	if _, _, _, err := s.Query(&amp;proto.QueryRequest{}); err != ErrNotOpen {</span>
+ 		t.Fatalf(&quot;wrong error received for non-open store: %s&quot;, err)
+ 	}
+ 	if err := s.Load(nil); err != ErrNotOpen {
+<span class="h">@@ -725,7 +725,7 @@ func Test_OpenStoreCloseSingleNode(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -867,7 +867,7 @@ func Test_SingleNodeExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -908,7 +908,7 @@ func Test_SingleNodeExecuteQuery_Linearizable(t *testing.T) {</span>
+ 	// Perform the first linearizable query, which should be upgraded to a strong query.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_LINEARIZABLE
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to perform linearizable query on single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -923,7 +923,7 @@ func Test_SingleNodeExecuteQuery_Linearizable(t *testing.T) {</span>
+ 	}
+ 
+ 	// Perform the second linearizable query, which should not be upgraded to a strong query.
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to perform linearizable query on single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -975,7 +975,7 @@ func Test_SingleNodeExecuteQuery_RETURNING(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1110,19 +1110,19 @@ func Test_SingleNodeExecuteQueryTx(t *testing.T) {</span>
+ 	var r []*proto.QueryRows
+ 
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	_, _, err = s.Query(qr)</span>
+<span class="a">+	_, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+ 
+ 	qr.Level = proto.ConsistencyLevel_WEAK
+<span class="d">-	_, _, err = s.Query(qr)</span>
+<span class="a">+	_, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+ 
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1503,7 +1503,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1511,7 +1511,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_WEAK
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1519,7 +1519,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1528,7 +1528,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, true)
+ 	qr.Timings = true
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1537,7 +1537,7 @@ func Test_SingleNodeOnDiskFileExecuteQuery(t *testing.T) {</span>
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo&quot;, true, false)
+ 	qr.Request.Transaction = true
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1576,7 +1576,7 @@ func Test_SingleNodeExecuteQueryFreshness(t *testing.T) {</span>
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_NONE
+ 	qr.Freshness = mustParseDuration(&quot;1ns&quot;).Nanoseconds()
+<span class="d">-	r, _, err := s0.Query(qr)</span>
+<span class="a">+	r, _, _, err := s0.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query leader node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2009,7 +2009,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2097,7 +2097,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT count(*) FROM track&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2110,7 +2110,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM album&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2123,7 +2123,7 @@ func Test_SingleNodeLoadTextChinook(t *testing.T) {</span>
+ 
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM artist&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2167,7 +2167,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2195,7 +2195,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo WHERE id=2&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2207,7 +2207,7 @@ COMMIT;</span>
+ 	}
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM foo&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2221,7 +2221,7 @@ COMMIT;</span>
+ 	// Check preexisting data is gone.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2262,7 +2262,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2305,7 +2305,7 @@ func Test_SingleNodeAutoRestore(t *testing.T) {</span>
+ 
+ 	testPoll(t, s.Ready, 100*time.Millisecond, 2*time.Second)
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo WHERE id=2&quot;, false, true)
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2379,7 +2379,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr := queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2415,7 +2415,7 @@ COMMIT;</span>
+ 	// Check that data were loaded correctly.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM foo WHERE id=2&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2427,7 +2427,7 @@ COMMIT;</span>
+ 	}
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM foo&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2441,7 +2441,7 @@ COMMIT;</span>
+ 	// Check preexisting data is gone.
+ 	qr = queryRequestFromString(&quot;SELECT * FROM bar&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2460,7 +2460,7 @@ COMMIT;</span>
+<span class=" m"> 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+ 	}
+ 	qr = queryRequestFromString(&quot;SELECT count(*) FROM foo&quot;, false, true)
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2745,7 +2745,7 @@ func Test_SingleNode_SnapshotWithAutoOptimize_Stress(t *testing.T) {</span>
+ 	// Query the data, make sure it looks good after all this.
+ 	qr := queryRequestFromString(&quot;SELECT COUNT(*) FROM foo&quot;, false, true)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	r, _, err := s.Query(qr)</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -2764,7 +2764,7 @@ func Test_SingleNode_SnapshotWithAutoOptimize_Stress(t *testing.T) {</span>
+ 	if _, err := s.WaitForLeader(10 * time.Second); err != nil {
+<span class=" m"> 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+ 	}
+<span class="d">-	r, _, err = s.Query(qr)</span>
+<span class="a">+	r, _, _, err = s.Query(qr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -3331,7 +3331,7 @@ func Test_StoreQueryRaftIndex(t *testing.T) {</span>
+ 	// First do a STRONG query to set the strongReadTerm for the current term
+ 	strongReq := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	strongReq.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	_, _, err = s.Query(strongReq)</span>
+<span class="a">+	_, _, _, err = s.Query(strongReq)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute initial STRONG query: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -3349,7 +3349,7 @@ func Test_StoreQueryRaftIndex(t *testing.T) {</span>
+ 	for _, level := range levels {
+ 		req := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 		req.Level = level.level
+<span class="d">-		_, index, err := s.Query(req)</span>
+<span class="a">+		_, _, index, err := s.Query(req)</span>
+ 		if err != nil {
+ 			t.Fatalf(&quot;failed to execute %s query: %s&quot;, level.name, err.Error())
+ 		}
+<span class="h">@@ -3361,7 +3361,7 @@ func Test_StoreQueryRaftIndex(t *testing.T) {</span>
+ 	// Test STRONG consistency should return non-zero index
+ 	strongTestReq := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	strongTestReq.Level = proto.ConsistencyLevel_STRONG
+<span class="d">-	_, strongIndex, err := s.Query(strongTestReq)</span>
+<span class="a">+	_, _, strongIndex, err := s.Query(strongTestReq)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute STRONG query: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -3373,6 +3373,93 @@ func Test_StoreQueryRaftIndex(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="a">+// Test_StoreQueryReturnedLevel tests that Store.Query returns the actual consistency level used</span>
+<span class="a">+func Test_StoreQueryReturnedLevel(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Create a table</span>
+<span class="a">+	er := executeRequestFromString(&quot;CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)&quot;, false, false)</span>
+<span class="a">+	_, _, err := s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to create table: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Execute initial STRONG query to set strongReadTerm</span>
+<span class="a">+	strongReq := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	strongReq.Level = proto.ConsistencyLevel_STRONG</span>
+<span class="a">+	_, _, _, err = s.Query(strongReq)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute initial STRONG query: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test NONE level</span>
+<span class="a">+	req := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	req.Level = proto.ConsistencyLevel_NONE</span>
+<span class="a">+	_, level, _, err := s.Query(req)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute NONE query: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if level != proto.ConsistencyLevel_NONE {</span>
+<span class="a">+		t.Fatalf(&quot;expected NONE consistency level, got %s&quot;, level)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test WEAK level</span>
+<span class="a">+	req = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	req.Level = proto.ConsistencyLevel_WEAK</span>
+<span class="a">+	_, level, _, err = s.Query(req)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute WEAK query: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if level != proto.ConsistencyLevel_WEAK {</span>
+<span class="a">+		t.Fatalf(&quot;expected WEAK consistency level, got %s&quot;, level)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test STRONG level</span>
+<span class="a">+	req = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	req.Level = proto.ConsistencyLevel_STRONG</span>
+<span class="a">+	_, level, _, err = s.Query(req)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute STRONG query: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if level != proto.ConsistencyLevel_STRONG {</span>
+<span class="a">+		t.Fatalf(&quot;expected STRONG consistency level, got %s&quot;, level)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test LINEARIZABLE level (should stay LINEARIZABLE if no strong read needed)</span>
+<span class="a">+	req = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	req.Level = proto.ConsistencyLevel_LINEARIZABLE</span>
+<span class="a">+	_, level, _, err = s.Query(req)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute LINEARIZABLE query: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if level != proto.ConsistencyLevel_LINEARIZABLE {</span>
+<span class="a">+		t.Fatalf(&quot;expected LINEARIZABLE consistency level, got %s&quot;, level)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test AUTO level (should be converted to WEAK for a voter)</span>
+<span class="a">+	req = queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	req.Level = proto.ConsistencyLevel_AUTO</span>
+<span class="a">+	_, level, _, err = s.Query(req)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute AUTO query: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if level != proto.ConsistencyLevel_WEAK {</span>
+<span class="a">+		t.Fatalf(&quot;expected AUTO to be converted to WEAK for a voter, got %s&quot;, level)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func Test_State(t *testing.T) {
+ 	s, ln := mustNewStore(t)
+ 	defer ln.Close()</pre><h2>Commit #19: <a href="https://github.com/rqlite/rqlite/commit/0b49e42c3f504ca3b6f326359372f4b7b02027d9">0b49e42c3f</a> (2025-10-13T14:26:41-04:00)</h2><p class="k">Return number of RW statements from Store.Request()<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 65.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 68f6a74b..5c2dd82e 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -1044,7 +1044,7 @@ func Test_SingleNodeRequest_Linearizable(t *testing.T) {</span>
+ 
+ 	// Perform the first linearizable request, which should be upgraded to a strong query.
+ 	eqr := executeQueryRequestFromString(&quot;SELECT * FROM foo&quot;, proto.ConsistencyLevel_LINEARIZABLE, false, false)
+<span class="d">-	r, _, err := s.Request(eqr)</span>
+<span class="a">+	r, _, _, err := s.Request(eqr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to perform linearizable request on single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1062,7 +1062,7 @@ func Test_SingleNodeRequest_Linearizable(t *testing.T) {</span>
+ 	}
+ 
+ 	// Perform the second linearizable request, which should not be upgraded to a strong query.
+<span class="d">-	r, _, err = s.Request(eqr)</span>
+<span class="a">+	r, _, _, err = s.Request(eqr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to perform linearizable request on single node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1211,7 +1211,7 @@ func Test_SingleNodeRequest(t *testing.T) {</span>
+ 
+ 	for _, tt := range tests {
+ 		eqr := executeQueryRequestFromStrings(tt.stmts, proto.ConsistencyLevel_WEAK, false, false)
+<span class="d">-		r, _, err := s.Request(eqr)</span>
+<span class="a">+		r, _, _, err := s.Request(eqr)</span>
+ 		if err != nil {
+ 			t.Fatalf(&quot;failed to execute request on single node: %s&quot;, err.Error())
+ 		}
+<span class="h">@@ -1291,7 +1291,7 @@ func Test_SingleNodeRequestTx(t *testing.T) {</span>
+ 
+ 	for _, tt := range tests {
+ 		eqr := executeQueryRequestFromStrings(tt.stmts, proto.ConsistencyLevel_WEAK, false, tt.tx)
+<span class="d">-		r, _, err := s.Request(eqr)</span>
+<span class="a">+		r, _, _, err := s.Request(eqr)</span>
+ 		if err != nil {
+ 			t.Fatalf(&quot;failed to execute request on single node: %s&quot;, err.Error())
+ 		}
+<span class="h">@@ -1423,7 +1423,7 @@ func Test_SingleNodeRequestParameters(t *testing.T) {</span>
+ 	}
+ 
+ 	for _, tt := range tests {
+<span class="d">-		r, _, err := s.Request(tt.request)</span>
+<span class="a">+		r, _, _, err := s.Request(tt.request)</span>
+ 		if err != nil {
+ 			t.Fatalf(&quot;failed to execute request on single node: %s&quot;, err.Error())
+ 		}
+<span class="h">@@ -1590,7 +1590,7 @@ func Test_SingleNodeExecuteQueryFreshness(t *testing.T) {</span>
+ 	rr := executeQueryRequestFromString(&quot;SELECT * FROM foo&quot;, proto.ConsistencyLevel_NONE,
+ 		false, false)
+ 	rr.Freshness = mustParseDuration(&quot;1ns&quot;).Nanoseconds()
+<span class="d">-	eqr, _, err := s0.Request(rr)</span>
+<span class="a">+	eqr, _, _, err := s0.Request(rr)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to query leader node: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -3247,7 +3247,7 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,
+ 	}, proto.ConsistencyLevel_STRONG, false, false)
+ 
+<span class="d">-	_, raftIndex, err := s.Request(writeReq)</span>
+<span class="a">+	_, _, raftIndex, err := s.Request(writeReq)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute write request: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -3260,7 +3260,7 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 		`SELECT * FROM foo`,
+ 	}, proto.ConsistencyLevel_NONE, false, false)
+ 
+<span class="d">-	_, readIndex, err := s.Request(readReq)</span>
+<span class="a">+	_, _, readIndex, err := s.Request(readReq)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute read request: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -3273,7 +3273,7 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 		`INSERT INTO foo(id, name) VALUES(1, &quot;test&quot;)`,
+ 	}, proto.ConsistencyLevel_STRONG, false, false)
+ 
+<span class="d">-	_, raftIndex2, err := s.Request(writeReq2)</span>
+<span class="a">+	_, _, raftIndex2, err := s.Request(writeReq2)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute second write request: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -3286,7 +3286,7 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 		`SELECT * FROM foo`,
+ 	}, proto.ConsistencyLevel_STRONG, false, false)
+ 
+<span class="d">-	_, strongReadIndex, err := s.Request(strongReadReq)</span>
+<span class="a">+	_, _, strongReadIndex, err := s.Request(strongReadReq)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute strong read request: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -3299,6 +3299,86 @@ func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="a">+// Test_StoreRequestRWCount tests that Store.Request returns the correct number of RW statements</span>
+<span class="a">+func Test_StoreRequestRWCount(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Create a table first</span>
+<span class="a">+	createReq := executeQueryRequestFromString(`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`, proto.ConsistencyLevel_STRONG, false, false)</span>
+<span class="a">+	_, nRWCreate, _, err := s.Request(createReq)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to create table: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if nRWCreate != 1 {</span>
+<span class="a">+		t.Fatalf(&quot;expected nRW=1 for CREATE TABLE statement, got %d&quot;, nRWCreate)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test 1: Single write statement should return nRW=1</span>
+<span class="a">+	writeReq := executeQueryRequestFromStrings([]string{</span>
+<span class="a">+		`INSERT INTO foo(id, name) VALUES(1, &quot;fiona&quot;)`,</span>
+<span class="a">+	}, proto.ConsistencyLevel_STRONG, false, false)</span>
+<span class="a">+	_, nRW, _, err := s.Request(writeReq)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute write request: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if nRW != 1 {</span>
+<span class="a">+		t.Fatalf(&quot;expected nRW=1 for single write statement, got %d&quot;, nRW)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test 2: Multiple write statements should return correct nRW count</span>
+<span class="a">+	multiWriteReq := executeQueryRequestFromStrings([]string{</span>
+<span class="a">+		`INSERT INTO foo(id, name) VALUES(2, &quot;alice&quot;)`,</span>
+<span class="a">+		`INSERT INTO foo(id, name) VALUES(3, &quot;bob&quot;)`,</span>
+<span class="a">+		`UPDATE foo SET name=&quot;charlie&quot; WHERE id=1`,</span>
+<span class="a">+	}, proto.ConsistencyLevel_STRONG, false, false)</span>
+<span class="a">+	_, nRW, _, err = s.Request(multiWriteReq)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute multi-write request: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if nRW != 3 {</span>
+<span class="a">+		t.Fatalf(&quot;expected nRW=3 for three write statements, got %d&quot;, nRW)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test 3: Read-only statement should return nRW=0</span>
+<span class="a">+	readReq := executeQueryRequestFromStrings([]string{</span>
+<span class="a">+		`SELECT * FROM foo`,</span>
+<span class="a">+	}, proto.ConsistencyLevel_NONE, false, false)</span>
+<span class="a">+	_, nRW, _, err = s.Request(readReq)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute read request: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if nRW != 0 {</span>
+<span class="a">+		t.Fatalf(&quot;expected nRW=0 for read-only statement, got %d&quot;, nRW)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Test 4: Mixed read-write statements should return correct nRW count</span>
+<span class="a">+	mixedReq := executeQueryRequestFromStrings([]string{</span>
+<span class="a">+		`SELECT * FROM foo`,</span>
+<span class="a">+		`INSERT INTO foo(id, name) VALUES(4, &quot;diana&quot;)`,</span>
+<span class="a">+		`SELECT * FROM foo WHERE id=4`,</span>
+<span class="a">+		`DELETE FROM foo WHERE id=1`,</span>
+<span class="a">+	}, proto.ConsistencyLevel_STRONG, false, false)</span>
+<span class="a">+	_, nRW, _, err = s.Request(mixedReq)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute mixed request: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if nRW != 2 {</span>
+<span class="a">+		t.Fatalf(&quot;expected nRW=2 for two write statements in mixed request, got %d&quot;, nRW)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // Test_StoreQueryRaftIndex tests that Store.Query returns the correct Raft index
+ func Test_StoreQueryRaftIndex(t *testing.T) {
+ 	s, ln := mustNewStore(t)</pre><h2>Commit #20: <a href="https://github.com/rqlite/rqlite/commit/fd4b290d9526d44ea847581718a47d5366a3f271">fd4b290d95</a> (2025-10-30T10:22:42-04:00)</h2><p class="k">Remove racy functions that wait for Raft indexes<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 63.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 5c2dd82e..2f1fb3bc 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -347,70 +347,6 @@ func Test_SingleNode_WaitForCommitIndex(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="d">-func Test_SingleNode_WaitForAppliedIndex(t *testing.T) {</span>
+<span class="d">-	s, ln := mustNewStore(t)</span>
+<span class="d">-	defer ln.Close()</span>
+<span class="d">-</span>
+<span class="d">-	if err := s.Open(); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	defer s.Close(true)</span>
+<span class="d">-	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="d m">-		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="d">-	}</span>
+<span class="d">-	er := executeRequestFromStrings([]string{</span>
+<span class="d">-		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,</span>
+<span class="d">-	}, false, false)</span>
+<span class="d">-	_, _, err := s.Execute(er)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// There should be at least 1 entry applied to the FSM</span>
+<span class="d">-	if err := s.WaitForAppliedIndex(1, 100*time.Second); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to wait for commit index: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	// It should timeout waiting for the commit index to be way larger.</span>
+<span class="d">-	if err := s.WaitForAppliedIndex(1000, 100*time.Millisecond); err == nil {</span>
+<span class="d">-		t.Fatalf(&quot;should have timed out waiting for commit index&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func Test_SingleNode_WaitForFSMIndex(t *testing.T) {</span>
+<span class="d">-	s, ln := mustNewStore(t)</span>
+<span class="d">-	defer ln.Close()</span>
+<span class="d">-</span>
+<span class="d">-	if err := s.Open(); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	defer s.Close(true)</span>
+<span class="d">-	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="d m">-		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="d">-	}</span>
+<span class="d">-	er := executeRequestFromStrings([]string{</span>
+<span class="d">-		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,</span>
+<span class="d">-	}, false, false)</span>
+<span class="d">-	_, _, err := s.Execute(er)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// There should be at least 1 entry applied to the FSM</span>
+<span class="d">-	if _, err := s.WaitForFSMIndex(1, 100*time.Second); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to wait for commit index: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	// It should timeout waiting for the commit index to be way larger.</span>
+<span class="d">-	if _, err := s.WaitForFSMIndex(1000, 100*time.Millisecond); err == nil {</span>
+<span class="d">-		t.Fatalf(&quot;should have timed out waiting for commit index&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ func Test_SingleNodeTempFileCleanup(t *testing.T) {
+ 	s, ln := mustNewStore(t)
+ 	defer ln.Close()
+<span class="h">@@ -693,15 +629,13 @@ func Test_OpenStoreCloseSingleNode(t *testing.T) {</span>
+ 		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,
+ 		`INSERT INTO foo(id, name) VALUES(1, &quot;fiona&quot;)`,
+ 	}, false, false)
+<span class="d">-	_, _, err := s.Execute(er)</span>
+<span class="a">+	_, idx, err := s.Execute(er)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())
+ 	}
+<span class="d">-</span>
+<span class="d">-	fsmIdx, err := s.WaitForAppliedFSM(5 * time.Second)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to wait for fsmIndex: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="a">+	testPoll(t, func() bool {</span>
+<span class="a">+		return idx &lt;= s.DBAppliedIndex()</span>
+<span class="a">+	}, 100*time.Millisecond, 5*time.Second)</span>
+ 
+ 	if err := s.Close(true); err != nil {
+ 		t.Fatalf(&quot;failed to close single-node store: %s&quot;, err.Error())
+<span class="h">@@ -718,23 +652,17 @@ func Test_OpenStoreCloseSingleNode(t *testing.T) {</span>
+<span class=" m"> 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+ 	}
+ 
+<span class="d">-	// Wait until the log entries have been re-applied after start-up.</span>
+<span class="d">-	if _, err := s.WaitForFSMIndex(fsmIdx, 5*time.Second); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;error waiting for follower to apply index: %s:&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="d">-	r, _, _, err := s.Query(qr)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	if exp, got := `[&quot;id&quot;,&quot;name&quot;]`, asJSON(r[0].Columns); exp != got {</span>
+<span class="d">-		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="d">-	}</span>
+<span class="d">-	if exp, got := `[[1,&quot;fiona&quot;]]`, asJSON(r[0].Values); exp != got {</span>
+<span class="d">-		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="d">-	}</span>
+<span class="a">+	testPoll(t, func() bool {</span>
+<span class="a">+		r, _, _, err := s.Query(qr)</span>
+<span class="a">+		if err != nil {</span>
+<span class="a">+			t.Logf(&quot;failed to query single node: %s&quot;, err.Error())</span>
+<span class="a">+			return false</span>
+<span class="a">+		}</span>
+<span class="a">+		return asJSON(r[0].Columns) == `[&quot;id&quot;,&quot;name&quot;]` &amp;&amp; asJSON(r[0].Values) == `[[1,&quot;fiona&quot;]]`</span>
+<span class="a">+	}, 100*time.Millisecond, 5*time.Second)</span>
+<span class="a">+</span>
+ 	if err := s.Close(true); err != nil {
+ 		t.Fatalf(&quot;failed to close single-node store: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -1563,15 +1491,13 @@ func Test_SingleNodeExecuteQueryFreshness(t *testing.T) {</span>
+ 		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,
+ 		`INSERT INTO foo(id, name) VALUES(1, &quot;fiona&quot;)`,
+ 	}, false, false)
+<span class="d">-	_, _, err := s0.Execute(er)</span>
+<span class="a">+	_, idx, err := s0.Execute(er)</span>
+ 	if err != nil {
+ 		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())
+ 	}
+<span class="d">-</span>
+<span class="d">-	_, err = s0.WaitForAppliedFSM(5 * time.Second)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to wait for fsmIndex: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="a">+	testPoll(t, func() bool {</span>
+<span class="a">+		return idx &lt;= s0.DBAppliedIndex()</span>
+<span class="a">+	}, 100*time.Millisecond, 5*time.Second)</span>
+ 
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_NONE
+<span class="h">@@ -2738,9 +2664,6 @@ func Test_SingleNode_SnapshotWithAutoOptimize_Stress(t *testing.T) {</span>
+ 		go insertFn()
+ 	}
+ 	wg.Wait()
+<span class="d">-	if s.WaitForAllApplied(5*time.Second) != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to wait for all data to be applied&quot;)</span>
+<span class="d">-	}</span>
+ 
+ 	// Query the data, make sure it looks good after all this.
+ 	qr := queryRequestFromString(&quot;SELECT COUNT(*) FROM foo&quot;, false, true)
+<span class="h">@@ -2753,7 +2676,7 @@ func Test_SingleNode_SnapshotWithAutoOptimize_Stress(t *testing.T) {</span>
+ 		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)
+ 	}
+ 
+<span class="d">-	// Restart the Store, make sure it still works.</span>
+<span class="a">+	// Restart the Store, make sure all still looks good.</span>
+ 	if err := s.Close(true); err != nil {
+ 		t.Fatalf(&quot;failed to close store: %s&quot;, err.Error())
+ 	}</pre><h2>Commit #21: <a href="https://github.com/rqlite/rqlite/commit/2565ccd097226f404486bc9b4c27a9a1db01685c">2565ccd097</a> (2025-10-30T19:09:01-04:00)</h2><p class="k">Don&#x27;t restore state from Raft on startup (if possible)<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 63.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 2f1fb3bc..fc03e481 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -190,7 +190,6 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 	if err := s.Open(); err != nil {
+ 		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())
+ 	}
+<span class="d">-	defer s.Close(true)</span>
+ 	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {
+ 		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())
+ 	}
+<span class="h">@@ -223,7 +222,9 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 		t.Fatalf(&quot;wrong DB applied index, got: %d, exp %d&quot;, got, exp)
+ 	}
+ 
+<span class="d">-	// Do a strong query, and ensure DBAppliedIndex is updated.</span>
+<span class="a">+	// Do a strong query, and ensure DBAppliedIndex is not updated,</span>
+<span class="a">+	// since strong queries do not modify the database, though they</span>
+<span class="a">+	// do go through the Raft log.</span>
+ 	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)
+ 	qr.Level = proto.ConsistencyLevel_STRONG
+ 	_, _, _, err = s.Query(qr)
+<span class="h">@@ -245,6 +246,19 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+ 		t.Fatalf(&quot;wrong DB applied index, got: %d, exp %d&quot;, got, exp)
+ 	}
+ 
+<span class="a">+	// Modify the database again. The Raft index will be 6 because of</span>
+<span class="a">+	// the strong query at index 5.</span>
+<span class="a">+	er = executeRequestFromStrings([]string{</span>
+<span class="a">+		`INSERT INTO foo(id, name) VALUES(1, &quot;fiona&quot;)`,</span>
+<span class="a">+	}, false, false)</span>
+<span class="a">+	_, _, err = s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if got, exp := s.DBAppliedIndex(), uint64(6); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;wrong DB applied index, got: %d, exp %d&quot;, got, exp)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+ 	// Restart the node, and ensure DBAppliedIndex is set to the correct value.
+ 	// It can take a second or two for the apply loop to run.
+ 	if err := s.Close(true); err != nil {
+<span class="h">@@ -258,8 +272,8 @@ func Test_SingleNodeDBAppliedIndex(t *testing.T) {</span>
+<span class=" m"> 		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+ 	}
+ 	testPoll(t, func() bool {
+<span class="d">-		return s.DBAppliedIndex() == uint64(4)</span>
+<span class="d">-	}, 100*time.Millisecond, 5*time.Second)</span>
+<span class="a">+		return s.DBAppliedIndex() == uint64(6) // 6, same as above.</span>
+<span class="a">+	}, 100*time.Millisecond, 2*time.Second)</span>
+ }
+ 
+ func Test_SingleNodeDBAppliedIndex_SnapshotRestart(t *testing.T) {</pre><h2>Commit #22: <a href="https://github.com/rqlite/rqlite/commit/32be2c1e90e71cf06205308580d3d2fcc7e25c8e">32be2c1e90</a> (2025-10-31T09:28:26-04:00)</h2><p class="k">Extensive testing of not restoring from Raft on startup<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 63. Identical text added in other files in this commit: store/store_restart_test.go.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index fc03e481..2b3fdc4d 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -2349,7 +2349,7 @@ COMMIT;</span>
+ 		t.Fatalf(&quot;expected %d bytes to be read, got %d&quot;, sz, n)
+ 	}
+ 	if s.numSnapshots.Load() != numSnapshots+1 {
+<span class="d">-		t.Fatalf(&quot;expected 1 extra snapshot, got %d&quot;, s.numSnapshots)</span>
+<span class="a">+		t.Fatalf(&quot;expected 1 extra snapshot, got %d&quot;, s.numSnapshots.Load())</span>
+ 	}
+ 
+ 	// Check that data were loaded correctly.</pre><h2>Commit #23: <a href="https://github.com/rqlite/rqlite/commit/8379c04168471b7a9ea57cd06ea075e66988094c">8379c04168</a> (2025-11-07T17:00:12-05:00)</h2><p class="k">Don&#x27;t attempt stepdown if single node cluster<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 63.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index 2b3fdc4d..df7068d6 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -115,6 +115,10 @@ func Test_OpenStoreSingleNode(t *testing.T) {</span>
+ 	} else if len(followers) != 0 {
+ 		t.Fatalf(&quot;expected no followers, got %d&quot;, len(followers))
+ 	}
+<span class="a">+</span>
+<span class="a">+	if !s.IsStandalone() {</span>
+<span class="a">+		t.Fatalf(&quot;store not marked as standalone&quot;)</span>
+<span class="a">+	}</span>
+ }
+ 
+ // Test_SingleNodeOnDiskSQLitePath ensures that basic functionality works when the SQLite</pre><h2>Commit #24: <a href="https://github.com/rqlite/rqlite/commit/4dcf16b2e05cb843414d45861060b06f63b447bb">4dcf16b2e0</a> (2025-12-03T22:16:32-05:00)</h2><p class="k">Upgrade SQL parser<br>Path after this commit: store/store_test.go. Lines with exactly this text in the file after the commit: 64.</p><pre>diff --git a/store/store_test.go b/store/store_test.go
+index df7068d6..27e99853 100644
+<span class="d">--- a/store/store_test.go</span>
+<span class="a">+++ b/store/store_test.go</span>
+<span class="h">@@ -933,6 +933,65 @@ func Test_SingleNodeExecuteQuery_RETURNING(t *testing.T) {</span>
+ 	}
+ }
+ 
+<span class="a">+func Test_SingleNodeExecuteQuery_RETURNING_KeywordAsIdent(t *testing.T) {</span>
+<span class="a">+	s, ln := mustNewStore(t)</span>
+<span class="a">+	defer ln.Close()</span>
+<span class="a">+</span>
+<span class="a">+	if err := s.Open(); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	defer s.Close(true)</span>
+<span class="a">+	_, err := s.WaitForLeader(10 * time.Second)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a m">+		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	er := executeRequestFromStrings([]string{</span>
+<span class="a">+		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, desc TEXT)`,</span>
+<span class="a">+		`INSERT INTO foo(id, desc) VALUES(1, &quot;fiona&quot;)`,</span>
+<span class="a">+	}, false, false)</span>
+<span class="a">+	_, _, err = s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute on single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	er = executeRequestFromString(`INSERT INTO foo(id, desc) VALUES(2, &quot;fiona&quot;) RETURNING desc`, false, false)</span>
+<span class="a">+	er.Request.Statements[0].ForceQuery = true</span>
+<span class="a">+	rows, _, err := s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute with RETURNING on single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[{&quot;columns&quot;:[&quot;desc&quot;],&quot;types&quot;:[&quot;text&quot;],&quot;values&quot;:[[&quot;fiona&quot;]]}]`, asJSON(rows); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for RETURNING query\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	er = executeRequestFromString(`UPDATE foo SET desc = &#x27;declan&#x27; where desc = &#x27;fiona&#x27; RETURNING *`, false, false)</span>
+<span class="a">+	er.Request.Statements[0].ForceQuery = true</span>
+<span class="a">+	rows, _, err = s.Execute(er)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to execute with RETURNING on single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[{&quot;columns&quot;:[&quot;id&quot;,&quot;desc&quot;],&quot;types&quot;:[&quot;integer&quot;,&quot;text&quot;],&quot;values&quot;:[[1,&quot;declan&quot;],[2,&quot;declan&quot;]]}]`, asJSON(rows); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for RETURNING query\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	qr := queryRequestFromString(&quot;SELECT * FROM foo&quot;, false, false)</span>
+<span class="a">+	qr.Level = proto.ConsistencyLevel_NONE</span>
+<span class="a">+	r, _, _, err := s.Query(qr)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		t.Fatalf(&quot;failed to query single node: %s&quot;, err.Error())</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[&quot;id&quot;,&quot;desc&quot;]`, asJSON(r[0].Columns); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+	if exp, got := `[[1,&quot;declan&quot;],[2,&quot;declan&quot;]]`, asJSON(r[0].Values); exp != got {</span>
+<span class="a">+		t.Fatalf(&quot;unexpected results for query\nexp: %s\ngot: %s&quot;, exp, got)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // Test_SingleNodeExecuteQueryFail ensures database level errors are presented by the store.
+ func Test_SingleNodeExecuteQueryFail(t *testing.T) {
+ 	s, ln := mustNewStore(t)</pre></body></html>

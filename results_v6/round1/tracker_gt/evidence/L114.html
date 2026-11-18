@@ -1,0 +1,70 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L114</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L114</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/azure-pipelines-agent">microsoft/azure-pipelines-agent</a><br><b>File at merge:</b> src/Agent.Worker/TfManager.cs, line 46<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/azure-pipelines-agent/commit/1b7fa9f86236a4c2f9a0b5a86dc17e5efbf41d20">1b7fa9f862</a> (2025-05-06T06:45:51)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/azure-pipelines-agent/tree/b1ecea75b3903fb9da050429d6049f5b7258c4ad">b1ecea75b3</a>)</p><p><b>The line:</b></p><pre><span class="t">                    tfDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m153_47c0856d_adhoc/vstsom.zip&quot;;</span></pre><h2>File at the merge commit, lines 38 to 54</h2><pre>   38 |                 string tfDownloadUrl;
+   39 |                 if (!AgentKnobs.RollbackToDefaultTfExe.GetValue(executionContext).AsBoolean())
+   40 |                 {
+   41 |                     tfDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m153_47c0856d/vstsom.zip&quot;;
+   42 |                     executionContext.Debug(&quot;Using the legacy version of tf.exe&quot;);
+   43 |                 }
+   44 |                 else
+   45 |                 {
+<span class="t">   46 |                     tfDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m153_47c0856d_adhoc/vstsom.zip&quot;;</span>
+   47 |                     executionContext.Debug(&quot;Using the default version of tf.exe&quot;);
+   48 |                 }
+   49 |                 string tempTfDirectory = Path.Combine(externalsPath, &quot;tf_download_temp&quot;);
+   50 | 
+   51 |                 await DownloadAsync(executionContext, tfDownloadUrl, tempTfDirectory, tfLegacyExternalsPath, retryOptions);
+   52 |             }
+   53 |             else
+   54 |             {</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/azure-pipelines-agent/commit/c01ad6a52af168051bfc31aa159b93823c853d7e">c01ad6a52a</a> (2025-05-21T16:26:26+05:30)</h2><p class="k">Revert &quot;Upgrate new version of tf.exe - vstsom.zip - AB#2257240 (#5138)&quot; (#5217)<br>Path after this commit: src/Agent.Worker/TfManager.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Agent.Worker/TfManager.cs b/src/Agent.Worker/TfManager.cs
+index d1f12da1..0dc7f33e 100644
+<span class="d">--- a/src/Agent.Worker/TfManager.cs</span>
+<span class="a">+++ b/src/Agent.Worker/TfManager.cs</span>
+<span class="h">@@ -6,7 +6,6 @@ using System.IO.Compression;</span>
+ using System.Net.Http;
+ using System.Threading;
+ using System.Threading.Tasks;
+<span class="d">-using Agent.Sdk.Knob;</span>
+ 
+ namespace Microsoft.VisualStudio.Services.Agent.Worker
+ {
+<span class="h">@@ -35,17 +34,7 @@ namespace Microsoft.VisualStudio.Services.Agent.Worker</span>
+ 
+             if (!Directory.Exists(tfLegacyExternalsPath))
+             {
+<span class="d">-                string tfDownloadUrl;</span>
+<span class="d">-                if (!AgentKnobs.RollbackToDefaultTfExe.GetValue(executionContext).AsBoolean())</span>
+<span class="d">-                {</span>
+<span class="d">-                    tfDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m153_47c0856d/vstsom.zip&quot;;</span>
+<span class="d">-                    executionContext.Debug(&quot;Using the legacy version of tf.exe&quot;);</span>
+<span class="d">-                }</span>
+<span class="d">-                else</span>
+<span class="d">-                {</span>
+<span class="d m">-                    tfDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m153_47c0856d_adhoc/vstsom.zip&quot;;</span>
+<span class="d">-                    executionContext.Debug(&quot;Using the default version of tf.exe&quot;);</span>
+<span class="d">-                }</span>
+<span class="a">+                const string tfDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m153_47c0856d/vstsom.zip&quot;;</span>
+                 string tempTfDirectory = Path.Combine(externalsPath, &quot;tf_download_temp&quot;);
+ 
+                 await DownloadAsync(executionContext, tfDownloadUrl, tempTfDirectory, tfLegacyExternalsPath, retryOptions);
+<span class="h">@@ -59,17 +48,7 @@ namespace Microsoft.VisualStudio.Services.Agent.Worker</span>
+ 
+             if (!Directory.Exists(vstsomLegacyExternalsPath))
+             {
+<span class="d">-                string vstsomDownloadUrl;</span>
+<span class="d">-                if (!AgentKnobs.RollbackToDefaultTfExe.GetValue(executionContext).AsBoolean())</span>
+<span class="d">-                {</span>
+<span class="d">-                    vstsomDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m122_887c6659/vstsom.zip&quot;;</span>
+<span class="d">-                    executionContext.Debug(&quot;Using the legacy version of vstsom&quot;);</span>
+<span class="d">-                }</span>
+<span class="d">-                else</span>
+<span class="d">-                {</span>
+<span class="d">-                    vstsomDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m153_47c0856d_adhoc/vstsom.zip&quot;;</span>
+<span class="d">-                    executionContext.Debug(&quot;Using the default version of vstsom&quot;);</span>
+<span class="d">-                }</span>
+<span class="a">+                const string vstsomDownloadUrl = &quot;https://vstsagenttools.blob.core.windows.net/tools/vstsom/m122_887c6659/vstsom.zip&quot;;</span>
+                 string tempVstsomDirectory = Path.Combine(externalsPath, &quot;vstsom_download_temp&quot;);
+ 
+                 await DownloadAsync(executionContext, vstsomDownloadUrl, tempVstsomDirectory, vstsomLegacyExternalsPath, retryOptions);</pre></body></html>

@@ -1,0 +1,42 @@
+======================================================================
+Emulating published post-merge studies on the v6conf data
+======================================================================
+
+--- Xia & Miller (2026): pooled agents vs human, line units, repository-stratified Cox
+  v6conf (identity tracking, all lines): unadjusted HR=0.935 [0.925, 0.944] p=1.7e-36 | stratified HR=0.912 [0.598, 1.391] p=0.67
+  v2 tracking, capped (single change: tracking + caps): unadjusted HR=0.839 [0.830, 0.847] p=1.8e-265 | stratified HR=0.860 [0.705, 1.048] p=0.14
+  corrective modifications (keyword_first): unadjusted HR=1.094 [1.070, 1.118] p=5.9e-16 | stratified HR=0.678 [0.369, 1.245] p=0.21
+  corrective modifications (llm_majority): unadjusted HR=1.632 [1.582, 1.683] p=3.6e-212 | stratified HR=1.371 [0.899, 2.090] p=0.14
+  Xia & Miller report: overall HR 1.11 (NS, stratified); corrective HR 1.49 (Table V).
+
+--- Sawada et al. (2026): file level, modification commits per file per month (months 1-6)
+  fully_autonomous  files  2,058  mean commits/file/month 0.156  share of files ever modified 53.8%
+  human             files 10,196  mean commits/file/month 0.140  share of files ever modified 46.4%
+  human_supervised  files  6,023  mean commits/file/month 0.103  share of files ever modified 37.0%
+  human share of commits modifying agent-touched lines (months 1-6): 88.2% (Sawada et al. report about 83%)
+
+--- Popescu et al. (2026): line survival at 3 d / 1 w / 3 w, per agent, pooled across repositories
+  Human            n=405,161  S(3d)=97.0%  S(7d)=95.7%  S(21d)=92.1%
+  Devin            n= 87,634  S(3d)=95.2%  S(7d)=91.1%  S(21d)=88.6%  | within-repo HR=1.059 [0.505, 2.218] p=0.88
+  GitHub Copilot   n= 74,382  S(3d)=98.7%  S(7d)=97.8%  S(21d)=96.0%  | within-repo HR=0.638 [0.442, 0.922] p=0.017
+  OpenAI Codex     n= 48,867  S(3d)=96.7%  S(7d)=95.7%  S(21d)=93.2%  | within-repo HR=0.831 [0.523, 1.319] p=0.43
+  Claude Code      n= 48,182  S(3d)=84.5%  S(7d)=83.0%  S(21d)=81.8%  | within-repo HR=0.934 [0.570, 1.533] p=0.79
+  Cursor           n= 13,340  S(3d)=83.8%  S(7d)=83.5%  S(21d)=77.2%  | within-repo HR=0.379 [0.108, 1.333] p=0.13
+
+--- Kraishan (2026): churn per changed line on the most-changed file, 90 days after merge
+  Human            PRs 1330  median c 0.000  mean c 5.553
+  GitHub Copilot   PRs  492  median c 0.000  mean c 4.940  | pooled Cliff delta vs human -0.10 | within-repo log(1+c) diff -0.081 [-0.341, +0.179] p=0.54 (53 repos)
+  OpenAI Codex     PRs  491  median c 0.000  mean c 4.195  | pooled Cliff delta vs human -0.11 | within-repo log(1+c) diff -0.075 [-0.245, +0.095] p=0.39 (63 repos)
+  Devin            PRs  412  median c 0.368  mean c 5.067  | pooled Cliff delta vs human +0.08 | within-repo log(1+c) diff -0.101 [-0.325, +0.123] p=0.38 (31 repos)
+  Cursor           PRs   44  median c 0.039  mean c 6.407  | pooled Cliff delta vs human +0.02 | within-repo log(1+c) diff +0.118 [-0.483, +0.719] p=0.7 (16 repos)
+  Claude Code      PRs   31  median c 0.133  mean c 4.795  | pooled Cliff delta vs human +0.05 | within-repo log(1+c) diff +0.141 [-0.289, +0.572] p=0.52 (13 repos)
+  Kraishan reports (normalized churn): Claude Code lowest (median 0.5 vs 5.3 human), Copilot delta -.16, Cursor -.08, Codex and Devin at human level.
+
+--- Takerngsaksiri et al. (2026): PR-level, 30 days, Mantel-Haenszel OR stratified by repository (proxy outcome: any modification)
+  fully_autonomous  PRs  412  share with a modification within 30 days 51.7%
+  human             PRs 1330  share with a modification within 30 days 45.9%
+  human_supervised  PRs 1058  share with a modification within 30 days 37.6%
+  agents pooled vs human: crude OR, same repositories 0.81 | MH OR 0.88 [0.74, 1.05] p=0.14 (149 repos)
+  human_supervised  vs human: crude OR, same repositories 0.73 | MH OR 0.95 [0.77, 1.17] p=0.61 (128 repos)
+  fully_autonomous  vs human: crude OR, same repositories 0.86 | MH OR 0.77 [0.58, 1.02] p=0.069 (31 repos)
+  Takerngsaksiri et al. report: verified-fix MH OR 1.62 [1.10, 2.39] (218 repositories), agents pooled.

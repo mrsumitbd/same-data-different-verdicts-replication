@@ -1,0 +1,87 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L013</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L013</h1><p><b>Repository:</b> <a href="https://github.com/567-labs/instructor">567-labs/instructor</a><br><b>File at merge:</b> tests/test_dynamic_model_creation.py, line 46<br><b>Merge commit (birth):</b> <a href="https://github.com/567-labs/instructor/commit/121f901653f92e6d718531cc2a02151d56ad5ca3">121f901653</a> (2025-06-03T20:13:26)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/567-labs/instructor/tree/1f621067bea51aae30799a84c4be0d08017cb316">1f621067be</a>)</p><p><b>The line:</b></p><pre><span class="t">    assert openai_schema_json[&#x27;properties&#x27;][&#x27;email&#x27;][&#x27;description&#x27;] == &#x27;The email of the user.&#x27;</span></pre><h2>File at the merge commit, lines 38 to 46</h2><pre>   38 |     assert &#x27;default&#x27; not in schema[&#x27;properties&#x27;][&#x27;age&#x27;]
+   39 |     assert &#x27;default&#x27; not in schema[&#x27;properties&#x27;][&#x27;email&#x27;]
+   40 |     
+   41 |     OpenAISchemaModel = openai_schema(DynamicModel)
+   42 |     openai_schema_json = OpenAISchemaModel.model_json_schema()
+   43 |     
+   44 |     assert openai_schema_json[&#x27;properties&#x27;][&#x27;name&#x27;][&#x27;description&#x27;] == &#x27;The name of the user.&#x27;
+   45 |     assert openai_schema_json[&#x27;properties&#x27;][&#x27;age&#x27;][&#x27;description&#x27;] == &#x27;The age of the user.&#x27;
+<span class="t">   46 |     assert openai_schema_json[&#x27;properties&#x27;][&#x27;email&#x27;][&#x27;description&#x27;] == &#x27;The email of the user.&#x27;</span></pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/567-labs/instructor/commit/f4dd2771edc619c1df4a8f6093b4e7dcfcfad62b">f4dd2771ed</a> (2025-07-07T16:46:56-07:00)</h2><p class="k">feat: Add native caching support with AutoCache and RedisCache adapters (#1674)<br>Path after this commit: tests/test_dynamic_model_creation.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/test_dynamic_model_creation.py b/tests/test_dynamic_model_creation.py
+index cb6485d6..7af4ef91 100644
+<span class="d">--- a/tests/test_dynamic_model_creation.py</span>
+<span class="a">+++ b/tests/test_dynamic_model_creation.py</span>
+<span class="h">@@ -8,39 +8,47 @@ def test_dynamic_model_creation_with_field_description():</span>
+     This verifies the example in the documentation at docs/concepts/models.md.
+     &quot;&quot;&quot;
+     types = {
+<span class="d">-        &#x27;string&#x27;: str,</span>
+<span class="d">-        &#x27;integer&#x27;: int,</span>
+<span class="d">-        &#x27;email&#x27;: str,</span>
+<span class="a">+        &quot;string&quot;: str,</span>
+<span class="a">+        &quot;integer&quot;: int,</span>
+<span class="a">+        &quot;email&quot;: str,</span>
+     }
+<span class="d">-    </span>
+<span class="a">+</span>
+     mock_cursor = [
+<span class="d">-        (&#x27;name&#x27;, &#x27;string&#x27;, &#x27;The name of the user.&#x27;),</span>
+<span class="d">-        (&#x27;age&#x27;, &#x27;integer&#x27;, &#x27;The age of the user.&#x27;),</span>
+<span class="d">-        (&#x27;email&#x27;, &#x27;email&#x27;, &#x27;The email of the user.&#x27;),</span>
+<span class="a">+        (&quot;name&quot;, &quot;string&quot;, &quot;The name of the user.&quot;),</span>
+<span class="a">+        (&quot;age&quot;, &quot;integer&quot;, &quot;The age of the user.&quot;),</span>
+<span class="a">+        (&quot;email&quot;, &quot;email&quot;, &quot;The email of the user.&quot;),</span>
+     ]
+<span class="d">-    </span>
+<span class="a">+</span>
+     DynamicModel = create_model(
+<span class="d">-        &#x27;User&#x27;,</span>
+<span class="a">+        &quot;User&quot;,</span>
+         **{
+             property_name: (types[property_type], Field(description=description))
+             for property_name, property_type, description in mock_cursor
+         },
+         __base__=BaseModel,
+     )
+<span class="d">-    </span>
+<span class="a">+</span>
+     schema = DynamicModel.model_json_schema()
+<span class="d">-    </span>
+<span class="d">-    assert schema[&#x27;properties&#x27;][&#x27;name&#x27;][&#x27;description&#x27;] == &#x27;The name of the user.&#x27;</span>
+<span class="d">-    assert schema[&#x27;properties&#x27;][&#x27;age&#x27;][&#x27;description&#x27;] == &#x27;The age of the user.&#x27;</span>
+<span class="d">-    assert schema[&#x27;properties&#x27;][&#x27;email&#x27;][&#x27;description&#x27;] == &#x27;The email of the user.&#x27;</span>
+<span class="d">-    </span>
+<span class="d">-    assert &#x27;default&#x27; not in schema[&#x27;properties&#x27;][&#x27;name&#x27;]</span>
+<span class="d">-    assert &#x27;default&#x27; not in schema[&#x27;properties&#x27;][&#x27;age&#x27;]</span>
+<span class="d">-    assert &#x27;default&#x27; not in schema[&#x27;properties&#x27;][&#x27;email&#x27;]</span>
+<span class="d">-    </span>
+<span class="a">+</span>
+<span class="a">+    assert schema[&quot;properties&quot;][&quot;name&quot;][&quot;description&quot;] == &quot;The name of the user.&quot;</span>
+<span class="a">+    assert schema[&quot;properties&quot;][&quot;age&quot;][&quot;description&quot;] == &quot;The age of the user.&quot;</span>
+<span class="a">+    assert schema[&quot;properties&quot;][&quot;email&quot;][&quot;description&quot;] == &quot;The email of the user.&quot;</span>
+<span class="a">+</span>
+<span class="a">+    assert &quot;default&quot; not in schema[&quot;properties&quot;][&quot;name&quot;]</span>
+<span class="a">+    assert &quot;default&quot; not in schema[&quot;properties&quot;][&quot;age&quot;]</span>
+<span class="a">+    assert &quot;default&quot; not in schema[&quot;properties&quot;][&quot;email&quot;]</span>
+<span class="a">+</span>
+     OpenAISchemaModel = openai_schema(DynamicModel)
+     openai_schema_json = OpenAISchemaModel.model_json_schema()
+<span class="d">-    </span>
+<span class="d">-    assert openai_schema_json[&#x27;properties&#x27;][&#x27;name&#x27;][&#x27;description&#x27;] == &#x27;The name of the user.&#x27;</span>
+<span class="d">-    assert openai_schema_json[&#x27;properties&#x27;][&#x27;age&#x27;][&#x27;description&#x27;] == &#x27;The age of the user.&#x27;</span>
+<span class="d m">-    assert openai_schema_json[&#x27;properties&#x27;][&#x27;email&#x27;][&#x27;description&#x27;] == &#x27;The email of the user.&#x27;</span>
+<span class="a">+</span>
+<span class="a">+    assert (</span>
+<span class="a">+        openai_schema_json[&quot;properties&quot;][&quot;name&quot;][&quot;description&quot;]</span>
+<span class="a">+        == &quot;The name of the user.&quot;</span>
+<span class="a">+    )</span>
+<span class="a">+    assert (</span>
+<span class="a">+        openai_schema_json[&quot;properties&quot;][&quot;age&quot;][&quot;description&quot;] == &quot;The age of the user.&quot;</span>
+<span class="a">+    )</span>
+<span class="a">+    assert (</span>
+<span class="a">+        openai_schema_json[&quot;properties&quot;][&quot;email&quot;][&quot;description&quot;]</span>
+<span class="a">+        == &quot;The email of the user.&quot;</span>
+<span class="a">+    )</span></pre></body></html>

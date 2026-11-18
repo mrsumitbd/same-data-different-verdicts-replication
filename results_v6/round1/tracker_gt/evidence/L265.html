@@ -1,0 +1,838 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L265</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L265</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/glaredb_core/src/functions/table/builtin/list_entries.rs, line 447<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/5e769ff9c084bae334b18ff936ef86eb802c3530">5e769ff9c0</a> (2025-04-01T16:00:21)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">                    DataType::List(ListTypeMeta::new(DataType::Utf8)),</span></pre><h2>File at the merge commit, lines 439 to 455</h2><pre>  439 |             input,
+  440 |             schema: ColumnSchema::new([
+  441 |                 Field::new(&quot;database_name&quot;, DataType::Utf8, false),
+  442 |                 Field::new(&quot;schema_name&quot;, DataType::Utf8, false),
+  443 |                 Field::new(&quot;function_name&quot;, DataType::Utf8, false),
+  444 |                 Field::new(&quot;function_type&quot;, DataType::Utf8, false),
+  445 |                 Field::new(
+  446 |                     &quot;arguments&quot;,
+<span class="t">  447 |                     DataType::List(ListTypeMeta::new(DataType::Utf8)),</span>
+  448 |                     false,
+  449 |                 ),
+  450 |                 Field::new(
+  451 |                     &quot;argument_types&quot;,
+  452 |                     DataType::List(ListTypeMeta::new(DataType::Utf8)),
+  453 |                     false,
+  454 |                 ),
+  455 |                 Field::new(&quot;return_type&quot;, DataType::Utf8, false),</pre><p class="k">Below are all 10 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/ab4631f49884857612a063bf9e9cdb782c8c7d44">ab4631f498</a> (2025-04-01T22:01:49+00:00)</h2><p class="k">feat: Add `category` column for `list_functions` (#3565)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index cb7ed1f4..69a6c71b 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -442,6 +442,7 @@ impl TableScanFunction for ListFunctions {</span>
+                 Field::new(&quot;schema_name&quot;, DataType::Utf8, false),
+                 Field::new(&quot;function_name&quot;, DataType::Utf8, false),
+                 Field::new(&quot;function_type&quot;, DataType::Utf8, false),
+<span class="a">+                Field::new(&quot;category&quot;, DataType::Utf8, false),</span>
+                 Field::new(
+                     &quot;arguments&quot;,
+<span class=" m">                     DataType::List(ListTypeMeta::new(DataType::Utf8)),</span>
+<span class="h">@@ -569,6 +570,18 @@ impl TableScanFunction for ListFunctions {</span>
+                     Ok(())
+                 }
+                 4 =&gt; {
+<span class="a">+                    // Category</span>
+<span class="a">+                    let (data, validity) = output.data_and_validity_mut();</span>
+<span class="a">+                    let mut categories = PhysicalUtf8::get_addressable_mut(data)?;</span>
+<span class="a">+                    for idx in 0..count {</span>
+<span class="a">+                        match state.entries[idx + state.offset].doc.as_ref() {</span>
+<span class="a">+                            Some(doc) =&gt; categories.put(idx, doc.category.as_str()),</span>
+<span class="a">+                            None =&gt; validity.set_invalid(idx),</span>
+<span class="a">+                        }</span>
+<span class="a">+                    }</span>
+<span class="a">+                    Ok(())</span>
+<span class="a">+                }</span>
+<span class="a">+                5 =&gt; {</span>
+                     // Arguments
+                     for idx in 0..count {
+                         let ent = &amp;state.entries[idx + state.offset];
+<span class="h">@@ -595,7 +608,7 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+                     Ok(())
+                 }
+<span class="d">-                5 =&gt; {</span>
+<span class="a">+                6 =&gt; {</span>
+                     // Argument types
+                     for idx in 0..count {
+                         let mut types = Vec::new(); // TODO: No need to allocate every time.
+<span class="h">@@ -614,7 +627,7 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+                     Ok(())
+                 }
+<span class="d">-                6 =&gt; {</span>
+<span class="a">+                7 =&gt; {</span>
+                     // Return type
+                     let mut ret_types = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     let mut s_buf = String::new();
+<span class="h">@@ -629,7 +642,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                7 =&gt; {</span>
+<span class="a">+                8 =&gt; {</span>
+                     // Description
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut descriptions = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -641,7 +654,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                8 =&gt; {</span>
+<span class="a">+                9 =&gt; {</span>
+                     // Example
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut examples = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -656,7 +669,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                9 =&gt; {</span>
+<span class="a">+                10 =&gt; {</span>
+                     // Example output
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut example_outputs = PhysicalUtf8::get_addressable_mut(data)?;</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/84856761d761e0fe58ef7cd1d93178cf0fe100cd">84856761d7</a> (2025-04-02T18:22:29+00:00)</h2><p class="k">Ensure all function descriptions end with periods (#3577)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index 69a6c71b..3722f4b9 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -29,7 +29,7 @@ pub const FUNCTION_SET_LIST_TABLES: TableFunctionSet = TableFunctionSet {</span>
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+         category: Category::System,
+<span class="d">-        description: &quot;Lists all tables this session has access to&quot;,</span>
+<span class="a">+        description: &quot;Lists all tables this session has access to.&quot;,</span>
+         arguments: &amp;[],
+         example: None,
+     }],
+<span class="h">@@ -44,7 +44,7 @@ pub const FUNCTION_SET_LIST_VIEWS: TableFunctionSet = TableFunctionSet {</span>
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+         category: Category::System,
+<span class="d">-        description: &quot;Lists all views this session has access to&quot;,</span>
+<span class="a">+        description: &quot;Lists all views this session has access to.&quot;,</span>
+         arguments: &amp;[],
+         example: None,
+     }],
+<span class="h">@@ -59,7 +59,7 @@ pub const FUNCTION_SET_LIST_FUNCTIONS: TableFunctionSet = TableFunctionSet {</span>
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+         category: Category::System,
+<span class="d">-        description: &quot;Lists all functions in the database with their types and metadata&quot;,</span>
+<span class="a">+        description: &quot;Lists all functions in the database with their types and metadata.&quot;,</span>
+         arguments: &amp;[],
+         example: None,
+     }],</pre><h2>Commit #3: <a href="https://github.com/glaredb/glaredb/commit/5c6ba16409627b61b56ec6c5d52d9691d2cb878e">5c6ba16409</a> (2025-04-05T21:43:21+00:00)</h2><p class="k">feat: FS abstraction (#3592)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index 3722f4b9..a62b4648 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -11,7 +11,6 @@ use crate::arrays::batch::Batch;</span>
+ use crate::arrays::datatype::{DataType, DataTypeId, ListTypeMeta};
+ use crate::arrays::field::{ColumnSchema, Field};
+ use crate::arrays::scalar::ScalarValue;
+<span class="d">-use crate::catalog::context::DatabaseContext;</span>
+ use crate::catalog::database::Database;
+ use crate::catalog::entry::{CatalogEntry, CatalogEntryInner, CatalogEntryType};
+ use crate::catalog::{Catalog, Schema};
+<span class="h">@@ -19,10 +18,10 @@ use crate::execution::operators::{ExecutionProperties, PollPull};</span>
+ use crate::functions::Signature;
+ use crate::functions::documentation::{Category, Documentation};
+ use crate::functions::function_set::TableFunctionSet;
+<span class="d">-use crate::functions::table::scan::TableScanFunction;</span>
+<span class="a">+use crate::functions::table::scan::{ScanContext, TableScanFunction};</span>
+ use crate::functions::table::{RawTableFunction, TableFunctionBindState, TableFunctionInput};
+ use crate::logical::statistics::StatisticsValue;
+<span class="d">-use crate::storage::projections::Projections;</span>
+<span class="a">+use crate::storage::projections::{ProjectedColumn, Projections};</span>
+ 
+ pub const FUNCTION_SET_LIST_TABLES: TableFunctionSet = TableFunctionSet {
+     name: &quot;list_tables&quot;,
+<span class="h">@@ -156,10 +155,14 @@ impl TableScanFunction for ListTables {</span>
+ 
+     async fn bind(
+         &amp;&#x27;static self,
+<span class="d">-        db_context: &amp;DatabaseContext,</span>
+<span class="a">+        scan_context: ScanContext&lt;&#x27;_&gt;,</span>
+         input: TableFunctionInput,
+     ) -&gt; Result&lt;TableFunctionBindState&lt;Self::BindState&gt;&gt; {
+<span class="d">-        let databases: Vec&lt;_&gt; = db_context.iter_databases().cloned().collect();</span>
+<span class="a">+        let databases: Vec&lt;_&gt; = scan_context</span>
+<span class="a">+            .database_context</span>
+<span class="a">+            .iter_databases()</span>
+<span class="a">+            .cloned()</span>
+<span class="a">+            .collect();</span>
+         let state = ListEntriesBindState::load_entries(
+             databases,
+             |_| true,
+<span class="h">@@ -182,11 +185,11 @@ impl TableScanFunction for ListTables {</span>
+ 
+     fn create_pull_operator_state(
+         bind_state: &amp;Self::BindState,
+<span class="d">-        projections: &amp;Projections,</span>
+<span class="a">+        projections: Projections,</span>
+         _props: ExecutionProperties,
+     ) -&gt; Result&lt;Self::OperatorState&gt; {
+         Ok(ListEntriesOperatorState {
+<span class="d">-            projections: projections.clone(),</span>
+<span class="a">+            projections,</span>
+             entries: bind_state.entries.clone(),
+         })
+     }
+<span class="h">@@ -218,7 +221,7 @@ impl TableScanFunction for ListTables {</span>
+         op_state
+             .projections
+             .for_each_column(output, &amp;mut |col_idx, output| match col_idx {
+<span class="d">-                0 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(0) =&gt; {</span>
+                     // Catalog name
+                     let mut db_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -226,7 +229,7 @@ impl TableScanFunction for ListTables {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                1 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(1) =&gt; {</span>
+                     // Schema name
+                     let mut schema_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -234,7 +237,7 @@ impl TableScanFunction for ListTables {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                2 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(2) =&gt; {</span>
+                     // Table name
+                     let mut table_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -242,7 +245,7 @@ impl TableScanFunction for ListTables {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                other =&gt; panic!(&quot;unexpected projection: {other}&quot;),</span>
+<span class="a">+                other =&gt; panic!(&quot;unexpected projection: {other:?}&quot;),</span>
+             })?;
+ 
+         output.set_num_rows(count)?;
+<span class="h">@@ -266,10 +269,14 @@ impl TableScanFunction for ListViews {</span>
+ 
+     async fn bind(
+         &amp;&#x27;static self,
+<span class="d">-        db_context: &amp;DatabaseContext,</span>
+<span class="a">+        scan_context: ScanContext&lt;&#x27;_&gt;,</span>
+         input: TableFunctionInput,
+     ) -&gt; Result&lt;TableFunctionBindState&lt;Self::BindState&gt;&gt; {
+<span class="d">-        let databases: Vec&lt;_&gt; = db_context.iter_databases().cloned().collect();</span>
+<span class="a">+        let databases: Vec&lt;_&gt; = scan_context</span>
+<span class="a">+            .database_context</span>
+<span class="a">+            .iter_databases()</span>
+<span class="a">+            .cloned()</span>
+<span class="a">+            .collect();</span>
+         let state = ListEntriesBindState::load_entries(
+             databases,
+             |_| true,
+<span class="h">@@ -292,11 +299,11 @@ impl TableScanFunction for ListViews {</span>
+ 
+     fn create_pull_operator_state(
+         bind_state: &amp;Self::BindState,
+<span class="d">-        projections: &amp;Projections,</span>
+<span class="a">+        projections: Projections,</span>
+         _props: ExecutionProperties,
+     ) -&gt; Result&lt;Self::OperatorState&gt; {
+         Ok(ListEntriesOperatorState {
+<span class="d">-            projections: projections.clone(),</span>
+<span class="a">+            projections,</span>
+             entries: bind_state.entries.clone(),
+         })
+     }
+<span class="h">@@ -328,7 +335,7 @@ impl TableScanFunction for ListViews {</span>
+         op_state
+             .projections
+             .for_each_column(output, &amp;mut |col_idx, output| match col_idx {
+<span class="d">-                0 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(0) =&gt; {</span>
+                     // Catalog name
+                     let mut db_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -336,7 +343,7 @@ impl TableScanFunction for ListViews {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                1 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(1) =&gt; {</span>
+                     // Schema name
+                     let mut schema_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -344,7 +351,7 @@ impl TableScanFunction for ListViews {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                2 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(2) =&gt; {</span>
+                     // View name
+                     let mut table_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -352,7 +359,7 @@ impl TableScanFunction for ListViews {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                other =&gt; panic!(&quot;unexpected projection: {other}&quot;),</span>
+<span class="a">+                other =&gt; panic!(&quot;unexpected projection: {other:?}&quot;),</span>
+             })?;
+ 
+         output.set_num_rows(count)?;
+<span class="h">@@ -414,10 +421,14 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+     async fn bind(
+         &amp;&#x27;static self,
+<span class="d">-        db_context: &amp;DatabaseContext,</span>
+<span class="a">+        scan_context: ScanContext&lt;&#x27;_&gt;,</span>
+         input: TableFunctionInput,
+     ) -&gt; Result&lt;TableFunctionBindState&lt;Self::BindState&gt;&gt; {
+<span class="d">-        let databases: Vec&lt;_&gt; = db_context.iter_databases().cloned().collect();</span>
+<span class="a">+        let databases: Vec&lt;_&gt; = scan_context</span>
+<span class="a">+            .database_context</span>
+<span class="a">+            .iter_databases()</span>
+<span class="a">+            .cloned()</span>
+<span class="a">+            .collect();</span>
+         // TODO: Do we want COPY functions in the output? Not yet
+         let state = ListEntriesBindState::load_entries(
+             databases,
+<span class="h">@@ -464,11 +475,11 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+     fn create_pull_operator_state(
+         bind_state: &amp;Self::BindState,
+<span class="d">-        projections: &amp;Projections,</span>
+<span class="a">+        projections: Projections,</span>
+         _props: ExecutionProperties,
+     ) -&gt; Result&lt;Self::OperatorState&gt; {
+         Ok(ListEntriesOperatorState {
+<span class="d">-            projections: projections.clone(),</span>
+<span class="a">+            projections,</span>
+             entries: bind_state.entries.clone(),
+         })
+     }
+<span class="h">@@ -534,7 +545,7 @@ impl TableScanFunction for ListFunctions {</span>
+         op_state
+             .projections
+             .for_each_column(output, &amp;mut |col_idx, output| match col_idx {
+<span class="d">-                0 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(0) =&gt; {</span>
+                     // Catalog name
+                     let mut db_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -542,7 +553,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                1 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(1) =&gt; {</span>
+                     // Schema name
+                     let mut schema_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -550,7 +561,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                2 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(2) =&gt; {</span>
+                     // Function name
+                     let mut function_names = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -558,7 +569,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                3 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(3) =&gt; {</span>
+                     // Function type
+                     let mut function_types = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -569,7 +580,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                4 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(4) =&gt; {</span>
+                     // Category
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut categories = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -581,7 +592,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                5 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(5) =&gt; {</span>
+                     // Arguments
+                     for idx in 0..count {
+                         let ent = &amp;state.entries[idx + state.offset];
+<span class="h">@@ -608,7 +619,7 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+                     Ok(())
+                 }
+<span class="d">-                6 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(6) =&gt; {</span>
+                     // Argument types
+                     for idx in 0..count {
+                         let mut types = Vec::new(); // TODO: No need to allocate every time.
+<span class="h">@@ -627,7 +638,7 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+                     Ok(())
+                 }
+<span class="d">-                7 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(7) =&gt; {</span>
+                     // Return type
+                     let mut ret_types = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     let mut s_buf = String::new();
+<span class="h">@@ -642,7 +653,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                8 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(8) =&gt; {</span>
+                     // Description
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut descriptions = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -654,7 +665,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                9 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(9) =&gt; {</span>
+                     // Example
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut examples = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -669,7 +680,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                10 =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(10) =&gt; {</span>
+                     // Example output
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut example_outputs = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -684,7 +695,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                other =&gt; panic!(&quot;unexpected projection: {other}&quot;),</span>
+<span class="a">+                other =&gt; panic!(&quot;unexpected projection: {other:?}&quot;),</span>
+             })?;
+ 
+         output.set_num_rows(count)?;</pre><h2>Commit #4: <a href="https://github.com/glaredb/glaredb/commit/46781b7061df955b1e3fdd556c51db8c2feaa08d">46781b7061</a> (2025-05-05T14:49:03-04:00)</h2><p class="k">perf: Scan filters (#3775)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index a62b4648..43a0a506 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -22,6 +22,7 @@ use crate::functions::table::scan::{ScanContext, TableScanFunction};</span>
+ use crate::functions::table::{RawTableFunction, TableFunctionBindState, TableFunctionInput};
+ use crate::logical::statistics::StatisticsValue;
+ use crate::storage::projections::{ProjectedColumn, Projections};
+<span class="a">+use crate::storage::scan_filter::PhysicalScanFilter;</span>
+ 
+ pub const FUNCTION_SET_LIST_TABLES: TableFunctionSet = TableFunctionSet {
+     name: &quot;list_tables&quot;,
+<span class="h">@@ -186,6 +187,7 @@ impl TableScanFunction for ListTables {</span>
+     fn create_pull_operator_state(
+         bind_state: &amp;Self::BindState,
+         projections: Projections,
+<span class="a">+        _filters: &amp;[PhysicalScanFilter],</span>
+         _props: ExecutionProperties,
+     ) -&gt; Result&lt;Self::OperatorState&gt; {
+         Ok(ListEntriesOperatorState {
+<span class="h">@@ -300,6 +302,7 @@ impl TableScanFunction for ListViews {</span>
+     fn create_pull_operator_state(
+         bind_state: &amp;Self::BindState,
+         projections: Projections,
+<span class="a">+        _filters: &amp;[PhysicalScanFilter],</span>
+         _props: ExecutionProperties,
+     ) -&gt; Result&lt;Self::OperatorState&gt; {
+         Ok(ListEntriesOperatorState {
+<span class="h">@@ -476,6 +479,7 @@ impl TableScanFunction for ListFunctions {</span>
+     fn create_pull_operator_state(
+         bind_state: &amp;Self::BindState,
+         projections: Projections,
+<span class="a">+        _filters: &amp;[PhysicalScanFilter],</span>
+         _props: ExecutionProperties,
+     ) -&gt; Result&lt;Self::OperatorState&gt; {
+         Ok(ListEntriesOperatorState {</pre><h2>Commit #5: <a href="https://github.com/glaredb/glaredb/commit/a16d42451749180f30a91623be0e35247371c081">a16d424517</a> (2025-05-06T09:44:07-04:00)</h2><p class="k">chore: Refactor DataType (#3776)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index 43a0a506..330fc3a6 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -8,7 +8,7 @@ use glaredb_error::{DbError, Result};</span>
+ 
+ use crate::arrays::array::physical_type::{AddressableMut, MutableScalarStorage, PhysicalUtf8};
+ use crate::arrays::batch::Batch;
+<span class="d">-use crate::arrays::datatype::{DataType, DataTypeId, ListTypeMeta};</span>
+<span class="a">+use crate::arrays::datatype::{DataType, DataTypeId};</span>
+ use crate::arrays::field::{ColumnSchema, Field};
+ use crate::arrays::scalar::ScalarValue;
+ use crate::catalog::database::Database;
+<span class="h">@@ -176,9 +176,9 @@ impl TableScanFunction for ListTables {</span>
+             state,
+             input,
+             schema: ColumnSchema::new([
+<span class="d">-                Field::new(&quot;database_name&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;schema_name&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;table_name&quot;, DataType::Utf8, false),</span>
+<span class="a">+                Field::new(&quot;database_name&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;schema_name&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;table_name&quot;, DataType::utf8(), false),</span>
+             ]),
+             cardinality: StatisticsValue::Unknown,
+         })
+<span class="h">@@ -291,9 +291,9 @@ impl TableScanFunction for ListViews {</span>
+             state,
+             input,
+             schema: ColumnSchema::new([
+<span class="d">-                Field::new(&quot;database_name&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;schema_name&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;view_name&quot;, DataType::Utf8, false),</span>
+<span class="a">+                Field::new(&quot;database_name&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;schema_name&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;view_name&quot;, DataType::utf8(), false),</span>
+             ]),
+             cardinality: StatisticsValue::Unknown,
+         })
+<span class="h">@@ -452,25 +452,17 @@ impl TableScanFunction for ListFunctions {</span>
+             state,
+             input,
+             schema: ColumnSchema::new([
+<span class="d">-                Field::new(&quot;database_name&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;schema_name&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;function_name&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;function_type&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;category&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(</span>
+<span class="d">-                    &quot;arguments&quot;,</span>
+<span class="d m">-                    DataType::List(ListTypeMeta::new(DataType::Utf8)),</span>
+<span class="d">-                    false,</span>
+<span class="d">-                ),</span>
+<span class="d">-                Field::new(</span>
+<span class="d">-                    &quot;argument_types&quot;,</span>
+<span class="d m">-                    DataType::List(ListTypeMeta::new(DataType::Utf8)),</span>
+<span class="d">-                    false,</span>
+<span class="d">-                ),</span>
+<span class="d">-                Field::new(&quot;return_type&quot;, DataType::Utf8, false),</span>
+<span class="d">-                Field::new(&quot;description&quot;, DataType::Utf8, true),</span>
+<span class="d">-                Field::new(&quot;example&quot;, DataType::Utf8, true),</span>
+<span class="d">-                Field::new(&quot;example_output&quot;, DataType::Utf8, true),</span>
+<span class="a">+                Field::new(&quot;database_name&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;schema_name&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;function_name&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;function_type&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;category&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;arguments&quot;, DataType::list(DataType::utf8()), false),</span>
+<span class="a">+                Field::new(&quot;argument_types&quot;, DataType::list(DataType::utf8()), false),</span>
+<span class="a">+                Field::new(&quot;return_type&quot;, DataType::utf8(), false),</span>
+<span class="a">+                Field::new(&quot;description&quot;, DataType::utf8(), true),</span>
+<span class="a">+                Field::new(&quot;example&quot;, DataType::utf8(), true),</span>
+<span class="a">+                Field::new(&quot;example_output&quot;, DataType::utf8(), true),</span>
+             ]),
+             cardinality: StatisticsValue::Unknown,
+         })</pre><h2>Commit #6: <a href="https://github.com/glaredb/glaredb/commit/0fa889a85ce8b1866f7b8438239dfeb93ca84c3f">0fa889a85c</a> (2025-05-08T11:26:35-04:00)</h2><p class="k">feat: `approx_count_distinct` aggregate function (#3783)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index 330fc3a6..4b1235ca 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -20,7 +20,7 @@ use crate::functions::documentation::{Category, Documentation};</span>
+ use crate::functions::function_set::TableFunctionSet;
+ use crate::functions::table::scan::{ScanContext, TableScanFunction};
+ use crate::functions::table::{RawTableFunction, TableFunctionBindState, TableFunctionInput};
+<span class="d">-use crate::logical::statistics::StatisticsValue;</span>
+<span class="a">+use crate::statistics::value::StatisticsValue;</span>
+ use crate::storage::projections::{ProjectedColumn, Projections};
+ use crate::storage::scan_filter::PhysicalScanFilter;
+ </pre><h2>Commit #7: <a href="https://github.com/glaredb/glaredb/commit/bb83651a6d03b94e0234fe1ba608e36895b95b0f">bb83651a6d</a> (2025-05-23T12:44:20-04:00)</h2><p class="k">feat: Multi-file scan (#3808)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index 4b1235ca..1684291f 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -175,11 +175,12 @@ impl TableScanFunction for ListTables {</span>
+         Ok(TableFunctionBindState {
+             state,
+             input,
+<span class="d">-            schema: ColumnSchema::new([</span>
+<span class="a">+            data_schema: ColumnSchema::new([</span>
+                 Field::new(&quot;database_name&quot;, DataType::utf8(), false),
+                 Field::new(&quot;schema_name&quot;, DataType::utf8(), false),
+                 Field::new(&quot;table_name&quot;, DataType::utf8(), false),
+             ]),
+<span class="a">+            meta_schema: None,</span>
+             cardinality: StatisticsValue::Unknown,
+         })
+     }
+<span class="h">@@ -290,11 +291,12 @@ impl TableScanFunction for ListViews {</span>
+         Ok(TableFunctionBindState {
+             state,
+             input,
+<span class="d">-            schema: ColumnSchema::new([</span>
+<span class="a">+            data_schema: ColumnSchema::new([</span>
+                 Field::new(&quot;database_name&quot;, DataType::utf8(), false),
+                 Field::new(&quot;schema_name&quot;, DataType::utf8(), false),
+                 Field::new(&quot;view_name&quot;, DataType::utf8(), false),
+             ]),
+<span class="a">+            meta_schema: None,</span>
+             cardinality: StatisticsValue::Unknown,
+         })
+     }
+<span class="h">@@ -451,7 +453,7 @@ impl TableScanFunction for ListFunctions {</span>
+         Ok(TableFunctionBindState {
+             state,
+             input,
+<span class="d">-            schema: ColumnSchema::new([</span>
+<span class="a">+            data_schema: ColumnSchema::new([</span>
+                 Field::new(&quot;database_name&quot;, DataType::utf8(), false),
+                 Field::new(&quot;schema_name&quot;, DataType::utf8(), false),
+                 Field::new(&quot;function_name&quot;, DataType::utf8(), false),
+<span class="h">@@ -464,6 +466,7 @@ impl TableScanFunction for ListFunctions {</span>
+                 Field::new(&quot;example&quot;, DataType::utf8(), true),
+                 Field::new(&quot;example_output&quot;, DataType::utf8(), true),
+             ]),
+<span class="a">+            meta_schema: None,</span>
+             cardinality: StatisticsValue::Unknown,
+         })
+     }</pre><h2>Commit #8: <a href="https://github.com/glaredb/glaredb/commit/fb17b8f6b6e03aa56e98287260e24dcf29566a41">fb17b8f6b6</a> (2025-06-02T12:46:53-04:00)</h2><p class="k">chore: Add `alias_of` column to `list_functions` output (#3893)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index 1684291f..f651807f 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -17,7 +17,7 @@ use crate::catalog::{Catalog, Schema};</span>
+ use crate::execution::operators::{ExecutionProperties, PollPull};
+ use crate::functions::Signature;
+ use crate::functions::documentation::{Category, Documentation};
+<span class="d">-use crate::functions::function_set::TableFunctionSet;</span>
+<span class="a">+use crate::functions::function_set::{FunctionSet, TableFunctionSet};</span>
+ use crate::functions::table::scan::{ScanContext, TableScanFunction};
+ use crate::functions::table::{RawTableFunction, TableFunctionBindState, TableFunctionInput};
+ use crate::statistics::value::StatisticsValue;
+<span class="h">@@ -389,9 +389,14 @@ pub struct ListFunctionsPartitionState {</span>
+ 
+ #[derive(Debug, Clone)]
+ struct NamespacedFunction {
+<span class="a">+    /// Qualified entry.</span>
+     entry: NamespacedEntry,
+<span class="a">+    /// Signature of the function.</span>
+     signature: &amp;&#x27;static Signature,
+<span class="a">+    /// Optional documentation for the function.</span>
+     doc: Option&lt;&amp;&#x27;static Documentation&gt;,
+<span class="a">+    /// If this function is an alias for another function.</span>
+<span class="a">+    alias_of: Option&lt;&amp;&#x27;static str&gt;,</span>
+ }
+ 
+ /// Get the documentation object that matches the provided arity.
+<span class="h">@@ -457,6 +462,7 @@ impl TableScanFunction for ListFunctions {</span>
+                 Field::new(&quot;database_name&quot;, DataType::utf8(), false),
+                 Field::new(&quot;schema_name&quot;, DataType::utf8(), false),
+                 Field::new(&quot;function_name&quot;, DataType::utf8(), false),
+<span class="a">+                Field::new(&quot;alias_of&quot;, DataType::utf8(), true),</span>
+                 Field::new(&quot;function_type&quot;, DataType::utf8(), false),
+                 Field::new(&quot;category&quot;, DataType::utf8(), false),
+                 Field::new(&quot;arguments&quot;, DataType::list(DataType::utf8()), false),
+<span class="h">@@ -493,6 +499,16 @@ impl TableScanFunction for ListFunctions {</span>
+         for (idx, chunk) in op_state.entries.chunks(props.batch_size).enumerate() {
+             let part_idx = idx % states.len();
+ 
+<span class="a">+            fn alias_of&lt;F&gt;(ent: &amp;CatalogEntry, fn_set: &amp;FunctionSet&lt;F&gt;) -&gt; Option&lt;&amp;&#x27;static str&gt; {</span>
+<span class="a">+                // Assume that if the entry name doens&#x27;t match the function</span>
+<span class="a">+                // name, then it&#x27;s an alias.</span>
+<span class="a">+                if ent.name == fn_set.name {</span>
+<span class="a">+                    None</span>
+<span class="a">+                } else {</span>
+<span class="a">+                    Some(fn_set.name)</span>
+<span class="a">+                }</span>
+<span class="a">+            }</span>
+<span class="a">+</span>
+             // TODO: Do I care about perf here?
+             for entry in chunk {
+                 // entry entry entry
+<span class="h">@@ -503,6 +519,7 @@ impl TableScanFunction for ListFunctions {</span>
+                                 entry: entry.clone(),
+                                 signature: sig,
+                                 doc: get_doc_for_arity(f.function.doc, sig.positional_args.len()),
+<span class="a">+                                alias_of: alias_of(&amp;entry.ent, f.function),</span>
+                             });
+                         }
+                     }
+<span class="h">@@ -512,6 +529,7 @@ impl TableScanFunction for ListFunctions {</span>
+                                 entry: entry.clone(),
+                                 signature: sig,
+                                 doc: get_doc_for_arity(f.function.doc, sig.positional_args.len()),
+<span class="a">+                                alias_of: alias_of(&amp;entry.ent, f.function),</span>
+                             });
+                         }
+                     }
+<span class="h">@@ -521,6 +539,7 @@ impl TableScanFunction for ListFunctions {</span>
+                                 entry: entry.clone(),
+                                 signature: sig,
+                                 doc: get_doc_for_arity(f.function.doc, sig.positional_args.len()),
+<span class="a">+                                alias_of: alias_of(&amp;entry.ent, f.function),</span>
+                             });
+                         }
+                     }
+<span class="h">@@ -569,6 +588,18 @@ impl TableScanFunction for ListFunctions {</span>
+                     Ok(())
+                 }
+                 ProjectedColumn::Data(3) =&gt; {
+<span class="a">+                    // alias_of</span>
+<span class="a">+                    let (data, validity) = output.data_and_validity_mut();</span>
+<span class="a">+                    let mut data = PhysicalUtf8::get_addressable_mut(data)?;</span>
+<span class="a">+                    for idx in 0..count {</span>
+<span class="a">+                        match state.entries[idx + state.offset].alias_of {</span>
+<span class="a">+                            Some(alias_of) =&gt; data.put(idx, alias_of),</span>
+<span class="a">+                            None =&gt; validity.set_invalid(idx),</span>
+<span class="a">+                        }</span>
+<span class="a">+                    }</span>
+<span class="a">+                    Ok(())</span>
+<span class="a">+                }</span>
+<span class="a">+                ProjectedColumn::Data(4) =&gt; {</span>
+                     // Function type
+                     let mut function_types = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     for idx in 0..count {
+<span class="h">@@ -579,7 +610,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                ProjectedColumn::Data(4) =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(5) =&gt; {</span>
+                     // Category
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut categories = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -591,7 +622,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                ProjectedColumn::Data(5) =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(6) =&gt; {</span>
+                     // Arguments
+                     for idx in 0..count {
+                         let ent = &amp;state.entries[idx + state.offset];
+<span class="h">@@ -618,7 +649,7 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+                     Ok(())
+                 }
+<span class="d">-                ProjectedColumn::Data(6) =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(7) =&gt; {</span>
+                     // Argument types
+                     for idx in 0..count {
+                         let mut types = Vec::new(); // TODO: No need to allocate every time.
+<span class="h">@@ -637,7 +668,7 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+                     Ok(())
+                 }
+<span class="d">-                ProjectedColumn::Data(7) =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(8) =&gt; {</span>
+                     // Return type
+                     let mut ret_types = PhysicalUtf8::get_addressable_mut(&amp;mut output.data)?;
+                     let mut s_buf = String::new();
+<span class="h">@@ -652,7 +683,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                ProjectedColumn::Data(8) =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(9) =&gt; {</span>
+                     // Description
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut descriptions = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -664,7 +695,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                ProjectedColumn::Data(9) =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(10) =&gt; {</span>
+                     // Example
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut examples = PhysicalUtf8::get_addressable_mut(data)?;
+<span class="h">@@ -679,7 +710,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     }
+                     Ok(())
+                 }
+<span class="d">-                ProjectedColumn::Data(10) =&gt; {</span>
+<span class="a">+                ProjectedColumn::Data(11) =&gt; {</span>
+                     // Example output
+                     let (data, validity) = output.data_and_validity_mut();
+                     let mut example_outputs = PhysicalUtf8::get_addressable_mut(data)?;</pre><h2>Commit #9: <a href="https://github.com/glaredb/glaredb/commit/d1a3bddf09bbb574c4b7cf981f4c9fe8b0950c57">d1a3bddf09</a> (2025-06-05T16:56:02-04:00)</h2><p class="k">chore: Split up aggregate ref docs (#3911)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index f651807f..ca19d088 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -689,7 +689,7 @@ impl TableScanFunction for ListFunctions {</span>
+                     let mut descriptions = PhysicalUtf8::get_addressable_mut(data)?;
+                     for idx in 0..count {
+                         match state.entries[idx + state.offset].doc {
+<span class="d">-                            Some(doc) =&gt; descriptions.put(idx, doc.description),</span>
+<span class="a">+                            Some(doc) =&gt; descriptions.put(idx, doc.description.trim()),</span>
+                             None =&gt; validity.set_invalid(idx),
+                         }
+                     }</pre><h2>Commit #10: <a href="https://github.com/glaredb/glaredb/commit/d924c67b71f88b7091a1c80554e1ac613546779a">d924c67b71</a> (2025-06-20T12:26:18-04:00)</h2><p class="k">chore: Adjust arguments to table function implementation methods (#3945)<br>Path after this commit: crates/glaredb_core/src/functions/table/builtin/list_entries.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs
+index ca19d088..71c1cc06 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/table/builtin/list_entries.rs</span>
+<span class="h">@@ -155,7 +155,6 @@ impl TableScanFunction for ListTables {</span>
+     type PartitionState = ListEntriesPartitionState;
+ 
+     async fn bind(
+<span class="d">-        &amp;&#x27;static self,</span>
+         scan_context: ScanContext&lt;&#x27;_&gt;,
+         input: TableFunctionInput,
+     ) -&gt; Result&lt;TableFunctionBindState&lt;Self::BindState&gt;&gt; {
+<span class="h">@@ -198,6 +197,7 @@ impl TableScanFunction for ListTables {</span>
+     }
+ 
+     fn create_pull_partition_states(
+<span class="a">+        _bind_state: &amp;Self::BindState,</span>
+         op_state: &amp;Self::OperatorState,
+         props: ExecutionProperties,
+         partitions: usize,
+<span class="h">@@ -214,6 +214,7 @@ impl TableScanFunction for ListTables {</span>
+ 
+     fn poll_pull(
+         _cx: &amp;mut Context,
+<span class="a">+        _bind_state: &amp;Self::BindState,</span>
+         op_state: &amp;Self::OperatorState,
+         state: &amp;mut Self::PartitionState,
+         output: &amp;mut Batch,
+<span class="h">@@ -271,7 +272,6 @@ impl TableScanFunction for ListViews {</span>
+     type PartitionState = ListEntriesPartitionState;
+ 
+     async fn bind(
+<span class="d">-        &amp;&#x27;static self,</span>
+         scan_context: ScanContext&lt;&#x27;_&gt;,
+         input: TableFunctionInput,
+     ) -&gt; Result&lt;TableFunctionBindState&lt;Self::BindState&gt;&gt; {
+<span class="h">@@ -314,6 +314,7 @@ impl TableScanFunction for ListViews {</span>
+     }
+ 
+     fn create_pull_partition_states(
+<span class="a">+        _bind_state: &amp;Self::BindState,</span>
+         op_state: &amp;Self::OperatorState,
+         props: ExecutionProperties,
+         partitions: usize,
+<span class="h">@@ -330,6 +331,7 @@ impl TableScanFunction for ListViews {</span>
+ 
+     fn poll_pull(
+         _cx: &amp;mut Context,
+<span class="a">+        _bind_state: &amp;Self::BindState,</span>
+         op_state: &amp;Self::OperatorState,
+         state: &amp;mut Self::PartitionState,
+         output: &amp;mut Batch,
+<span class="h">@@ -430,7 +432,6 @@ impl TableScanFunction for ListFunctions {</span>
+     type PartitionState = ListFunctionsPartitionState;
+ 
+     async fn bind(
+<span class="d">-        &amp;&#x27;static self,</span>
+         scan_context: ScanContext&lt;&#x27;_&gt;,
+         input: TableFunctionInput,
+     ) -&gt; Result&lt;TableFunctionBindState&lt;Self::BindState&gt;&gt; {
+<span class="h">@@ -490,6 +491,7 @@ impl TableScanFunction for ListFunctions {</span>
+     }
+ 
+     fn create_pull_partition_states(
+<span class="a">+        _bind_state: &amp;Self::BindState,</span>
+         op_state: &amp;Self::OperatorState,
+         props: ExecutionProperties,
+         partitions: usize,
+<span class="h">@@ -553,6 +555,7 @@ impl TableScanFunction for ListFunctions {</span>
+ 
+     fn poll_pull(
+         _cx: &amp;mut Context,
+<span class="a">+        _bind_state: &amp;Self::BindState,</span>
+         op_state: &amp;Self::OperatorState,
+         state: &amp;mut Self::PartitionState,
+         output: &amp;mut Batch,</pre></body></html>

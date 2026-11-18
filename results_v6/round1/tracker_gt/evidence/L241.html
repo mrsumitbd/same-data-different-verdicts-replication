@@ -1,0 +1,238 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L241</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L241</h1><p><b>Repository:</b> <a href="https://github.com/567-labs/instructor">567-labs/instructor</a><br><b>File at merge:</b> tests/llm/test_anthropic/test_stream.py, line 193<br><b>Merge commit (birth):</b> <a href="https://github.com/567-labs/instructor/commit/94da7313e738f078f7dcf431eaa6c3313d6ac6b1">94da7313e7</a> (2025-07-18T15:14:52)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/567-labs/instructor/tree/1f621067bea51aae30799a84c4be0d08017cb316">1f621067be</a>)</p><p><b>The line:</b></p><pre><span class="t">    client = instructor.from_provider(model, mode=mode, async_client=True)</span></pre><h2>File at the merge commit, lines 185 to 201</h2><pre>  185 |         assert isinstance(m, (Weather, GoogleSearch))
+  186 |         count += 1
+  187 |     assert count == 3
+  188 | 
+  189 | 
+  190 | @pytest.mark.asyncio
+  191 | @pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))
+  192 | async def test_async_iterable_create_union_model(model, mode):
+<span class="t">  193 |     client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+  194 |     model = client.chat.completions.create_iterable(
+  195 |         messages=[
+  196 |             {
+  197 |                 &quot;role&quot;: &quot;system&quot;,
+  198 |                 &quot;content&quot;: &quot;You must always use tools and use a single weather call for each city&quot;,
+  199 |             },
+  200 |             {
+  201 |                 &quot;role&quot;: &quot;user&quot;,</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/567-labs/instructor/commit/cbe04e3ca1fd3b9752f2e591b134e97b49cfc389">cbe04e3ca1</a> (2025-11-12T00:03:21-05:00)</h2><p class="k">Standardize provider factory methods in codebase (#1898)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: tests/llm/test_core_providers/test_basic_extraction.py, tests/llm/test_core_providers/test_response_modes.py, tests/llm/test_core_providers/test_retries.py, tests/llm/test_core_providers/test_simple_types.py, tests/llm/test_core_providers/test_streaming.py.</p><pre>diff --git a/tests/llm/test_anthropic/test_stream.py b/tests/llm/test_anthropic/test_stream.py
+deleted file mode 100644
+index c36001af..00000000
+<span class="d">--- a/tests/llm/test_anthropic/test_stream.py</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,212 +0,0 @@</span>
+<span class="d">-from itertools import product</span>
+<span class="d">-from collections.abc import Iterable</span>
+<span class="d">-from pydantic import BaseModel</span>
+<span class="d">-import pytest</span>
+<span class="d">-import instructor</span>
+<span class="d">-from instructor.dsl.partial import Partial</span>
+<span class="d">-from typing import Union, Literal</span>
+<span class="d">-from .util import models, modes</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class UserExtract(BaseModel):</span>
+<span class="d">-    name: str</span>
+<span class="d">-    age: int</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model, mode, stream&quot;, product(models, modes, [True, False]))</span>
+<span class="d">-def test_iterable_model(model, mode, stream):</span>
+<span class="d">-    client = instructor.from_provider(model, mode=mode)</span>
+<span class="d">-    model = client.create(</span>
+<span class="d">-        response_model=Iterable[UserExtract],</span>
+<span class="d">-        max_retries=2,</span>
+<span class="d">-        stream=stream,</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Make two up people&quot;},</span>
+<span class="d">-        ],</span>
+<span class="d">-    )</span>
+<span class="d">-    for m in model:</span>
+<span class="d">-        assert isinstance(m, UserExtract)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))</span>
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-async def test_iterable_model_async(model, mode):</span>
+<span class="d m">-    client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+<span class="d">-    model = await client.chat.completions.create(</span>
+<span class="d">-        response_model=Iterable[UserExtract],</span>
+<span class="d">-        max_retries=2,</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Make two up people&quot;},</span>
+<span class="d">-        ],</span>
+<span class="d">-    )</span>
+<span class="d">-    async for m in model:</span>
+<span class="d">-        assert isinstance(m, UserExtract)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model,mode&quot;, product(models, modes))</span>
+<span class="d">-def test_partial_model(model, mode):</span>
+<span class="d">-    client = instructor.from_provider(model, mode=mode)</span>
+<span class="d">-    model = client.create(</span>
+<span class="d">-        response_model=Partial[UserExtract],</span>
+<span class="d">-        max_retries=2,</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-        stream=True,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Jason Liu is 12 years old&quot;},</span>
+<span class="d">-        ],</span>
+<span class="d">-    )</span>
+<span class="d">-    for m in model:</span>
+<span class="d">-        assert isinstance(m, UserExtract)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model,mode&quot;, product(models, modes))</span>
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-async def test_partial_model_async(model, mode):</span>
+<span class="d m">-    client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+<span class="d">-    model = await client.create(</span>
+<span class="d">-        response_model=Partial[UserExtract],</span>
+<span class="d">-        max_retries=2,</span>
+<span class="d">-        stream=True,</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Jason Liu is 12 years old&quot;},</span>
+<span class="d">-        ],</span>
+<span class="d">-    )</span>
+<span class="d">-    async for m in model:</span>
+<span class="d">-        assert isinstance(m, UserExtract)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model,mode&quot;, product(models, modes))</span>
+<span class="d">-def test_model(model, mode):</span>
+<span class="d">-    client = instructor.from_provider(model, mode=mode)</span>
+<span class="d">-    model = client.create(</span>
+<span class="d">-        response_model=UserExtract,</span>
+<span class="d">-        max_retries=2,</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-        system=&quot;You are a helpful assistant that extracts user information from sentences&quot;,</span>
+<span class="d">-        messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Jason is 8 years old&quot;}],</span>
+<span class="d">-    )</span>
+<span class="d">-</span>
+<span class="d">-    assert model.name == &quot;Jason&quot;</span>
+<span class="d">-    assert model.age == 8</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model,mode&quot;, product(models, modes))</span>
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-async def test_model_async(model, mode):</span>
+<span class="d m">-    client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+<span class="d">-    model = await client.create(</span>
+<span class="d">-        response_model=UserExtract,</span>
+<span class="d">-        max_retries=2,</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-        system=&quot;You are a helpful assistant that extracts user information from sentences&quot;,</span>
+<span class="d">-        messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Jason is 8 years old&quot;}],</span>
+<span class="d">-    )</span>
+<span class="d">-</span>
+<span class="d">-    assert model.name == &quot;Jason&quot;</span>
+<span class="d">-    assert model.age == 8</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class Weather(BaseModel):</span>
+<span class="d">-    location: str</span>
+<span class="d">-    units: Literal[&quot;imperial&quot;, &quot;metric&quot;]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class GoogleSearch(BaseModel):</span>
+<span class="d">-    query: str</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))</span>
+<span class="d">-def test_sync_iterable_union_model(model, mode):</span>
+<span class="d">-    client = instructor.from_provider(model, mode=mode)</span>
+<span class="d">-    model = client.chat.completions.create(</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;What is the weather in toronto, dallas and what is the tallest building in the world?&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-        ],</span>
+<span class="d">-        response_model=Iterable[Union[Weather, GoogleSearch]],</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-    )</span>
+<span class="d">-    count = 0</span>
+<span class="d">-    for m in model:</span>
+<span class="d">-        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="d">-        count += 1</span>
+<span class="d">-    assert count == 3</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))</span>
+<span class="d">-def test_iterable_create_union_model(model, mode):</span>
+<span class="d">-    client = instructor.from_provider(model, mode=mode)</span>
+<span class="d">-    model = client.chat.completions.create_iterable(</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;system&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;You must always use tools and use a single weather call for each city&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-        ],</span>
+<span class="d">-        response_model=Union[Weather, GoogleSearch],</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-    )</span>
+<span class="d">-    count = 0</span>
+<span class="d">-    for m in model:</span>
+<span class="d">-        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="d">-        count += 1</span>
+<span class="d">-    assert count == 3</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))</span>
+<span class="d">-async def test_async_iterable_union_model(model, mode):</span>
+<span class="d m">-    client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+<span class="d">-    model = await client.chat.completions.create(</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;system&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;You must always use tools and use a single weather call for each city&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-        ],</span>
+<span class="d">-        response_model=Iterable[Union[Weather, GoogleSearch]],</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-    )</span>
+<span class="d">-    count = 0</span>
+<span class="d">-    async for m in model:</span>
+<span class="d">-        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="d">-        count += 1</span>
+<span class="d">-    assert count == 3</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-@pytest.mark.asyncio</span>
+<span class="d">-@pytest.mark.parametrize(&quot;model, mode&quot;, product(models, modes))</span>
+<span class="d">-async def test_async_iterable_create_union_model(model, mode):</span>
+<span class="d m">-    client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+<span class="d">-    model = client.chat.completions.create_iterable(</span>
+<span class="d">-        messages=[</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;system&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;You must always use tools and use a single weather call for each city&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-            {</span>
+<span class="d">-                &quot;role&quot;: &quot;user&quot;,</span>
+<span class="d">-                &quot;content&quot;: &quot;What is the weather in toronto and dallas and who won the super bowl?&quot;,</span>
+<span class="d">-            },</span>
+<span class="d">-        ],</span>
+<span class="d">-        response_model=Union[Weather, GoogleSearch],</span>
+<span class="d">-        max_tokens=1024,</span>
+<span class="d">-    )</span>
+<span class="d">-    count = 0</span>
+<span class="d">-    async for m in model:</span>
+<span class="d">-        assert isinstance(m, (Weather, GoogleSearch))</span>
+<span class="d">-        count += 1</span>
+<span class="d">-    assert count == 3</span></pre></body></html>

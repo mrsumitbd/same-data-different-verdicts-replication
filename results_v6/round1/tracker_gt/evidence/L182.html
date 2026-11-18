@@ -1,0 +1,347 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L182</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L182</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-rust">azure/azure-sdk-for-rust</a><br><b>File at merge:</b> sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs, line 174<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-sdk-for-rust/commit/ee975d0775719b7d2e9c7910661fbc0bee0db814">ee975d0775</a> (2025-05-29T22:10:09)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-rust/tree/b4fbd3eefaacaa9efa2f2e66f5f2554f3b356a89">b4fbd3eefa</a>)</p><p><b>The line:</b></p><pre><span class="t">            _: Option&lt;TokenRequestOptions&gt;,</span></pre><h2>File at the merge commit, lines 166 to 182</h2><pre>  166 |     struct TestTokenCredential(String);
+  167 | 
+  168 |     #[cfg_attr(target_arch = &quot;wasm32&quot;, async_trait::async_trait(?Send))]
+  169 |     #[cfg_attr(not(target_arch = &quot;wasm32&quot;), async_trait::async_trait)]
+  170 |     impl TokenCredential for TestTokenCredential {
+  171 |         async fn get_token(
+  172 |             &amp;self,
+  173 |             scopes: &amp;[&amp;str],
+<span class="t">  174 |             _: Option&lt;TokenRequestOptions&gt;,</span>
+  175 |         ) -&gt; azure_core::Result&lt;AccessToken&gt; {
+  176 |             let token = format!(&quot;{}+{}&quot;, self.0, scopes.join(&quot;,&quot;));
+  177 |             Ok(AccessToken::new(
+  178 |                 token,
+  179 |                 OffsetDateTime::now_utc().saturating_add(time::Duration::minutes(5)),
+  180 |             ))
+  181 |         }
+  182 |     }</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-rust/commit/7e4c7d9ca073ecfa9f7ed39e90e4be6ce219d600">7e4c7d9ca0</a> (2025-06-19T13:39:48-07:00)</h2><p class="k">Standardize on time::Duration and time::OffsetDateTime for time elements (#2713)<br>Path after this commit: sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs
+index d8a2dadee7..989779dd09 100644
+<span class="d">--- a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="a">+++ b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="h">@@ -10,13 +10,13 @@</span>
+ #[cfg_attr(not(feature = &quot;key_auth&quot;), allow(unused_imports))]
+ use azure_core::{
+     credentials::{Secret, TokenCredential},
+<span class="d">-    date::{self, OffsetDateTime},</span>
+     http::{
+         headers::{HeaderValue, AUTHORIZATION, MS_DATE, VERSION},
+         policies::{Policy, PolicyResult},
+         request::Request,
+         Context, Url,
+     },
+<span class="a">+    time::{self, OffsetDateTime},</span>
+ };
+ use std::sync::Arc;
+ use tracing::trace;
+<span class="h">@@ -74,7 +74,7 @@ impl Policy for AuthorizationPolicy {</span>
+         );
+ 
+         // x-ms-date and the string used in the signature must be exactly the same, so just generate it here once.
+<span class="d">-        let date_string = date::to_rfc7231(&amp;OffsetDateTime::now_utc()).to_lowercase();</span>
+<span class="a">+        let date_string = time::to_rfc7231(&amp;OffsetDateTime::now_utc()).to_lowercase();</span>
+ 
+         let resource_link: &amp;ResourceLink = ctx
+             .value()
+<span class="h">@@ -147,10 +147,9 @@ mod tests {</span>
+ 
+     use azure_core::{
+         credentials::{AccessToken, TokenCredential, TokenRequestOptions},
+<span class="d">-        date,</span>
+         http::Method,
+<span class="a">+        time::{Duration, OffsetDateTime},</span>
+     };
+<span class="d">-    use time::OffsetDateTime;</span>
+     use url::Url;
+ 
+     use crate::{
+<span class="h">@@ -176,15 +175,16 @@ mod tests {</span>
+             let token = format!(&quot;{}+{}&quot;, self.0, scopes.join(&quot;,&quot;));
+             Ok(AccessToken::new(
+                 token,
+<span class="d">-                OffsetDateTime::now_utc().saturating_add(time::Duration::minutes(5)),</span>
+<span class="a">+                OffsetDateTime::now_utc().saturating_add(Duration::minutes(5)),</span>
+             ))
+         }
+     }
+ 
+     #[tokio::test]
+     async fn generate_authorization_for_token_credential() {
+<span class="d">-        let time_nonce = date::parse_rfc3339(&quot;1900-01-01T01:00:00.000000000+00:00&quot;).unwrap();</span>
+<span class="d">-        let date_string = date::to_rfc7231(&amp;time_nonce).to_lowercase();</span>
+<span class="a">+        let time_nonce =</span>
+<span class="a">+            azure_core::time::parse_rfc3339(&quot;1900-01-01T01:00:00.000000000+00:00&quot;).unwrap();</span>
+<span class="a">+        let date_string = azure_core::time::to_rfc7231(&amp;time_nonce).to_lowercase();</span>
+         let cred = Arc::new(TestTokenCredential(&quot;test_token&quot;.to_string()));
+         let auth_token = Credential::Token(cred);
+ 
+<span class="h">@@ -213,8 +213,9 @@ mod tests {</span>
+     #[tokio::test]
+     #[cfg(feature = &quot;key_auth&quot;)]
+     async fn generate_authorization_for_primary_key_0() {
+<span class="d">-        let time_nonce = date::parse_rfc3339(&quot;1900-01-01T01:00:00.000000000+00:00&quot;).unwrap();</span>
+<span class="d">-        let date_string = date::to_rfc7231(&amp;time_nonce).to_lowercase();</span>
+<span class="a">+        let time_nonce =</span>
+<span class="a">+            azure_core::time::parse_rfc3339(&quot;1900-01-01T01:00:00.000000000+00:00&quot;).unwrap();</span>
+<span class="a">+        let date_string = azure_core::time::to_rfc7231(&amp;time_nonce).to_lowercase();</span>
+ 
+         let auth_token = Credential::PrimaryKey(
+             &quot;8F8xXXOptJxkblM1DBXW7a6NMI5oE8NnwPGYBmwxLCKfejOK7B7yhcCHMGvN3PBrlMLIOeol1Hv9RCdzAZR5sg==&quot;.into(),
+<span class="h">@@ -247,8 +248,9 @@ mod tests {</span>
+     #[tokio::test]
+     #[cfg(feature = &quot;key_auth&quot;)]
+     async fn generate_authorization_for_primary_key_1() {
+<span class="d">-        let time_nonce = date::parse_rfc3339(&quot;2017-04-27T00:51:12.000000000+00:00&quot;).unwrap();</span>
+<span class="d">-        let date_string = date::to_rfc7231(&amp;time_nonce).to_lowercase();</span>
+<span class="a">+        let time_nonce =</span>
+<span class="a">+            azure_core::time::parse_rfc3339(&quot;2017-04-27T00:51:12.000000000+00:00&quot;).unwrap();</span>
+<span class="a">+        let date_string = azure_core::time::to_rfc7231(&amp;time_nonce).to_lowercase();</span>
+ 
+         let auth_token = Credential::PrimaryKey(
+             &quot;dsZQi3KtZmCv1ljt3VNWNm7sQUF1y5rJfC6kv5JiwvW0EndXdDku/dkKBp8/ufDToSxL&quot;.into(),</pre><h2>Commit #2: <a href="https://github.com/azure/azure-sdk-for-rust/commit/131a0227e7113b52eb920e424e52ad925aeda31f">131a0227e7</a> (2025-07-22T13:22:55-07:00)</h2><p class="k">Request.method() returns a copy of the method, not a reference to the method (#2808)<br>Path after this commit: sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs
+index 989779dd09..b59522822a 100644
+<span class="d">--- a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="a">+++ b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="h">@@ -83,7 +83,7 @@ impl Policy for AuthorizationPolicy {</span>
+         let auth = generate_authorization(
+             &amp;self.credential,
+             request.url(),
+<span class="d">-            SignatureTarget::new(*request.method(), resource_link, &amp;date_string),</span>
+<span class="a">+            SignatureTarget::new(request.method(), resource_link, &amp;date_string),</span>
+         )
+         .await?;
+ </pre><h2>Commit #3: <a href="https://github.com/azure/azure-sdk-for-rust/commit/86c31c438a485a5493e1a46e14e1fbf6f8282f36">86c31c438a</a> (2025-09-11T23:10:54+00:00)</h2><p class="k">Credentials use azure_core Pipelines (#2986)<br>Path after this commit: sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs
+index b59522822a..19cf51c2a0 100644
+<span class="d">--- a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="a">+++ b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="h">@@ -170,7 +170,7 @@ mod tests {</span>
+         async fn get_token(
+             &amp;self,
+             scopes: &amp;[&amp;str],
+<span class="d m">-            _: Option&lt;TokenRequestOptions&gt;,</span>
+<span class="a">+            _: Option&lt;TokenRequestOptions&lt;&#x27;_&gt;&gt;,</span>
+         ) -&gt; azure_core::Result&lt;AccessToken&gt; {
+             let token = format!(&quot;{}+{}&quot;, self.0, scopes.join(&quot;,&quot;));
+             Ok(AccessToken::new(</pre><h2>Commit #4: <a href="https://github.com/azure/azure-sdk-for-rust/commit/c3c36f51b353d760d2a7cce3d801ad5be6abc491">c3c36f51b3</a> (2025-10-23T16:20:26+00:00)</h2><p class="k">Adds new AAD scope value instead of account scope (#3246)<br>Path after this commit: sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs
+index 19cf51c2a0..2ba012bca8 100644
+<span class="d">--- a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="a">+++ b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="h">@@ -14,7 +14,7 @@ use azure_core::{</span>
+         headers::{HeaderValue, AUTHORIZATION, MS_DATE, VERSION},
+         policies::{Policy, PolicyResult},
+         request::Request,
+<span class="d">-        Context, Url,</span>
+<span class="a">+        Context,</span>
+     },
+     time::{self, OffsetDateTime},
+ };
+<span class="h">@@ -26,6 +26,7 @@ use crate::{pipeline::signature_target::SignatureTarget, resource_context::Resou</span>
+ use crate::utils::url_encode;
+ 
+ const AZURE_VERSION: &amp;str = &quot;2020-07-15&quot;;
+<span class="a">+const COSMOS_AAD_SCOPE: &amp;str = &quot;https://cosmos.azure.com/.default&quot;;</span>
+ 
+ #[derive(Debug, Clone)]
+ enum Credential {
+<span class="h">@@ -82,7 +83,6 @@ impl Policy for AuthorizationPolicy {</span>
+ 
+         let auth = generate_authorization(
+             &amp;self.credential,
+<span class="d">-            request.url(),</span>
+             SignatureTarget::new(request.method(), resource_link, &amp;date_string),
+         )
+         .await?;
+<span class="h">@@ -110,15 +110,13 @@ impl Policy for AuthorizationPolicy {</span>
+ /// NOTE: Resource tokens are not yet supported.
+ async fn generate_authorization(
+     auth_token: &amp;Credential,
+<span class="d">-    url: &amp;Url,</span>
+<span class="d">-</span>
+     // Unused unless feature=&quot;key_auth&quot;, but I don&#x27;t want to mess with excluding it since it makes call sites more complicated
+     #[allow(unused_variables)] signature_target: SignatureTarget&lt;&#x27;_&gt;,
+ ) -&gt; azure_core::Result&lt;String&gt; {
+     let token = match auth_token {
+         Credential::Token(token_credential) =&gt; {
+             let token = token_credential
+<span class="d">-                .get_token(&amp;[&amp;scope_from_url(url)], None)</span>
+<span class="a">+                .get_token(&amp;[COSMOS_AAD_SCOPE], None)</span>
+                 .await?
+                 .token
+                 .secret()
+<span class="h">@@ -133,14 +131,6 @@ async fn generate_authorization(</span>
+     Ok(url_encode(token))
+ }
+ 
+<span class="d">-/// This function generates the scope string from the passed url. The scope string is used to</span>
+<span class="d">-/// request the AAD token.</span>
+<span class="d">-fn scope_from_url(url: &amp;Url) -&gt; String {</span>
+<span class="d">-    let scheme = url.scheme();</span>
+<span class="d">-    let hostname = url.host_str().unwrap();</span>
+<span class="d">-    format!(&quot;{scheme}://{hostname}/.default&quot;)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ #[cfg(test)]
+ mod tests {
+     use std::sync::Arc;
+<span class="h">@@ -150,11 +140,10 @@ mod tests {</span>
+         http::Method,
+         time::{Duration, OffsetDateTime},
+     };
+<span class="d">-    use url::Url;</span>
+ 
+     use crate::{
+         pipeline::{
+<span class="d">-            authorization_policy::{generate_authorization, scope_from_url, Credential},</span>
+<span class="a">+            authorization_policy::{generate_authorization, Credential, COSMOS_AAD_SCOPE},</span>
+             signature_target::SignatureTarget,
+         },
+         resource_context::{ResourceLink, ResourceType},
+<span class="h">@@ -188,12 +177,8 @@ mod tests {</span>
+         let cred = Arc::new(TestTokenCredential(&quot;test_token&quot;.to_string()));
+         let auth_token = Credential::Token(cred);
+ 
+<span class="d">-        // Use a fake URL since the actual endpoint URL is not important for this test</span>
+<span class="d">-        let url = Url::parse(&quot;https://test_account.example.com/dbs/ToDoList&quot;).unwrap();</span>
+<span class="d">-</span>
+         let ret = generate_authorization(
+             &amp;auth_token,
+<span class="d">-            &amp;url,</span>
+             SignatureTarget::new(
+                 Method::Get,
+                 &amp;ResourceLink::root(ResourceType::Databases).item(&quot;ToDoList&quot;),
+<span class="h">@@ -203,10 +188,8 @@ mod tests {</span>
+         .await
+         .unwrap();
+ 
+<span class="d">-        let expected: String = url_encode(</span>
+<span class="d">-            b&quot;type=aad&amp;ver=1.0&amp;sig=test_token+https://test_account.example.com/.default&quot;,</span>
+<span class="d">-        );</span>
+<span class="d">-</span>
+<span class="a">+        let expected: String =</span>
+<span class="a">+            url_encode(format!(&quot;type=aad&amp;ver=1.0&amp;sig=test_token+{}&quot;, COSMOS_AAD_SCOPE).as_bytes());</span>
+         assert_eq!(ret, expected);
+     }
+ 
+<span class="h">@@ -221,12 +204,8 @@ mod tests {</span>
+             &quot;8F8xXXOptJxkblM1DBXW7a6NMI5oE8NnwPGYBmwxLCKfejOK7B7yhcCHMGvN3PBrlMLIOeol1Hv9RCdzAZR5sg==&quot;.into(),
+         );
+ 
+<span class="d">-        // Use a fake URL since the actual endpoint URL is not important for this test</span>
+<span class="d">-        let url = Url::parse(&quot;https://test_account.example.com/dbs/ToDoList&quot;).unwrap();</span>
+<span class="d">-</span>
+         let ret = generate_authorization(
+             &amp;auth_token,
+<span class="d">-            &amp;url,</span>
+             SignatureTarget::new(
+                 Method::Get,
+                 &amp;ResourceLink::root(ResourceType::Databases)
+<span class="h">@@ -256,12 +235,8 @@ mod tests {</span>
+             &quot;dsZQi3KtZmCv1ljt3VNWNm7sQUF1y5rJfC6kv5JiwvW0EndXdDku/dkKBp8/ufDToSxL&quot;.into(),
+         );
+ 
+<span class="d">-        // Use a fake URL since the actual endpoint URL is not important for this test</span>
+<span class="d">-        let url = Url::parse(&quot;https://test_account.example.com/dbs/ToDoList&quot;).unwrap();</span>
+<span class="d">-</span>
+         let ret = generate_authorization(
+             &amp;auth_token,
+<span class="d">-            &amp;url,</span>
+             SignatureTarget::new(
+                 Method::Get,
+                 &amp;ResourceLink::root(ResourceType::Databases).item(&quot;ToDoList&quot;),
+<span class="h">@@ -277,9 +252,69 @@ mod tests {</span>
+         assert_eq!(ret, expected);
+     }
+ 
+<span class="d">-    #[test]</span>
+<span class="d">-    fn scope_from_url_extracts_correct_scope() {</span>
+<span class="d">-        let scope = scope_from_url(&amp;Url::parse(&quot;https://example.com/dbs/test_db/colls&quot;).unwrap());</span>
+<span class="d">-        assert_eq!(scope, &quot;https://example.com/.default&quot;);</span>
+<span class="a">+    /// Tests that AAD authentication explicitly uses the constant scope value.</span>
+<span class="a">+    #[tokio::test]</span>
+<span class="a">+    async fn aad_token_uses_constant_scope() {</span>
+<span class="a">+        use std::sync::Mutex;</span>
+<span class="a">+</span>
+<span class="a">+        // Mock credential that captures the exact scopes passed to get_token</span>
+<span class="a">+        #[derive(Debug)]</span>
+<span class="a">+        struct ScopeCapturingCredential {</span>
+<span class="a">+            captured_scopes: Arc&lt;Mutex&lt;Vec&lt;Vec&lt;String&gt;&gt;&gt;&gt;,</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        #[cfg_attr(target_arch = &quot;wasm32&quot;, async_trait::async_trait(?Send))]</span>
+<span class="a">+        #[cfg_attr(not(target_arch = &quot;wasm32&quot;), async_trait::async_trait)]</span>
+<span class="a">+        impl TokenCredential for ScopeCapturingCredential {</span>
+<span class="a">+            async fn get_token(</span>
+<span class="a">+                &amp;self,</span>
+<span class="a">+                scopes: &amp;[&amp;str],</span>
+<span class="a">+                _: Option&lt;TokenRequestOptions&lt;&#x27;_&gt;&gt;,</span>
+<span class="a">+            ) -&gt; azure_core::Result&lt;AccessToken&gt; {</span>
+<span class="a">+                self.captured_scopes</span>
+<span class="a">+                    .lock()</span>
+<span class="a">+                    .unwrap()</span>
+<span class="a">+                    .push(scopes.iter().map(|s| s.to_string()).collect());</span>
+<span class="a">+</span>
+<span class="a">+                Ok(AccessToken::new(</span>
+<span class="a">+                    &quot;mock_token&quot;.to_string(),</span>
+<span class="a">+                    OffsetDateTime::now_utc().saturating_add(Duration::minutes(5)),</span>
+<span class="a">+                ))</span>
+<span class="a">+            }</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        let captured_scopes = Arc::new(Mutex::new(Vec::new()));</span>
+<span class="a">+        let cred = Arc::new(ScopeCapturingCredential {</span>
+<span class="a">+            captured_scopes: captured_scopes.clone(),</span>
+<span class="a">+        });</span>
+<span class="a">+        let auth_token = Credential::Token(cred);</span>
+<span class="a">+</span>
+<span class="a">+        let time_nonce =</span>
+<span class="a">+            azure_core::time::parse_rfc3339(&quot;1900-01-01T01:00:00.000000000+00:00&quot;).unwrap();</span>
+<span class="a">+        let date_string = azure_core::time::to_rfc7231(&amp;time_nonce).to_lowercase();</span>
+<span class="a">+</span>
+<span class="a">+        let _result = generate_authorization(</span>
+<span class="a">+            &amp;auth_token,</span>
+<span class="a">+            SignatureTarget::new(</span>
+<span class="a">+                Method::Get,</span>
+<span class="a">+                &amp;ResourceLink::root(ResourceType::Databases).item(&quot;TestDB&quot;),</span>
+<span class="a">+                &amp;date_string,</span>
+<span class="a">+            ),</span>
+<span class="a">+        )</span>
+<span class="a">+        .await</span>
+<span class="a">+        .unwrap();</span>
+<span class="a">+</span>
+<span class="a">+        // Verifies that get_token was called exactly once with the constant scope</span>
+<span class="a">+        let scopes = captured_scopes.lock().unwrap();</span>
+<span class="a">+        assert_eq!(scopes.len(), 1, &quot;get_token should be called exactly once&quot;);</span>
+<span class="a">+        assert_eq!(</span>
+<span class="a">+            scopes[0].len(),</span>
+<span class="a">+            1,</span>
+<span class="a">+            &quot;get_token should be called with exactly one scope&quot;</span>
+<span class="a">+        );</span>
+<span class="a">+        assert_eq!(</span>
+<span class="a">+            scopes[0][0], COSMOS_AAD_SCOPE,</span>
+<span class="a">+            &quot;get_token should be called with COSMOS_AAD_SCOPE constant&quot;</span>
+<span class="a">+        );</span>
+     }
+ }</pre><h2>Commit #5: <a href="https://github.com/azure/azure-sdk-for-rust/commit/811ac4d5101e73d42ef2cacb54ab5eeb88578ab4">811ac4d510</a> (2025-12-16T09:50:48-08:00)</h2><p class="k">cosmos: run PR validation against the emulator (#3428)<br>Path after this commit: sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs
+index 2ba012bca8..93debf6cae 100644
+<span class="d">--- a/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="a">+++ b/sdk/cosmos/azure_data_cosmos/src/pipeline/authorization_policy.rs</span>
+<span class="h">@@ -19,7 +19,7 @@ use azure_core::{</span>
+     time::{self, OffsetDateTime},
+ };
+ use std::sync::Arc;
+<span class="d">-use tracing::trace;</span>
+<span class="a">+use tracing::{debug, trace};</span>
+ 
+ use crate::{pipeline::signature_target::SignatureTarget, resource_context::ResourceLink};
+ 
+<span class="h">@@ -80,6 +80,7 @@ impl Policy for AuthorizationPolicy {</span>
+         let resource_link: &amp;ResourceLink = ctx
+             .value()
+             .expect(&quot;ResourceContext should have been provided by CosmosPipeline&quot;);
+<span class="a">+        debug!(?resource_link, &quot;generating authorization for resource&quot;);</span>
+ 
+         let auth = generate_authorization(
+             &amp;self.credential,</pre></body></html>

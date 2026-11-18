@@ -1,0 +1,160 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L152</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L152</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>File at merge:</b> apps/web/client/src/server/api/routers/canvas.ts, line 15<br><b>Merge commit (birth):</b> <a href="https://github.com/onlook-dev/onlook/commit/414371a27fd3b5ac0042a59656208786a48847b0">414371a27f</a> (2025-05-27T17:22:48)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">                where: eq(canvases.projectId, input.projectId),</span></pre><h2>File at the merge commit, lines 7 to 23</h2><pre>    7 |     get: protectedProcedure
+    8 |         .input(
+    9 |             z.object({
+   10 |                 projectId: z.string(),
+   11 |             }),
+   12 |         )
+   13 |         .query(async ({ ctx, input }) =&gt; {
+   14 |             const dbCanvas = await ctx.db.query.canvases.findFirst({
+<span class="t">   15 |                 where: eq(canvases.projectId, input.projectId),</span>
+   16 |             });
+   17 |             if (!dbCanvas) {
+   18 |                 return null;
+   19 |             }
+   20 |             return dbCanvas;
+   21 |         }),
+   22 |     update: protectedProcedure.input(canvasUpdateSchema).mutation(async ({ ctx, input }) =&gt; {
+   23 |         try {</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/b00722d441f78a76b147926a3d074acc76f407e4">b00722d441</a> (2025-06-18T15:42:02-04:00)</h2><p class="k">feat: add stripe webhooks and subscription management (#2174)<br>Path after this commit: apps/web/client/src/server/api/routers/canvas.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/canvas.ts b/apps/web/client/src/server/api/routers/canvas.ts
+index cf52a3fa..e7c431fa 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/canvas.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/canvas.ts</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-import { canvases, canvasUpdateSchema, toCanvas } from &#x27;@onlook/db&#x27;;</span>
+<span class="a">+import { canvases, canvasUpdateSchema } from &#x27;@onlook/db&#x27;;</span>
+ import { eq } from &#x27;drizzle-orm&#x27;;
+ import { z } from &#x27;zod&#x27;;
+ import { createTRPCRouter, protectedProcedure } from &#x27;../trpc&#x27;;</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/8130d896343703be418003dd74bcf8657a17f2bf">8130d89634</a> (2025-06-24T22:28:32-07:00)</h2><p class="k">feat: subscription integration (#2243)<br>Path after this commit: apps/web/client/src/server/api/routers/project/canvas.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/canvas.ts b/apps/web/client/src/server/api/routers/project/canvas.ts
+similarity index 94%
+rename from apps/web/client/src/server/api/routers/canvas.ts
+rename to apps/web/client/src/server/api/routers/project/canvas.ts
+index e7c431fa..ed2f282c 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/canvas.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/project/canvas.ts</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ import { canvases, canvasUpdateSchema } from &#x27;@onlook/db&#x27;;
+ import { eq } from &#x27;drizzle-orm&#x27;;
+ import { z } from &#x27;zod&#x27;;
+<span class="d">-import { createTRPCRouter, protectedProcedure } from &#x27;../trpc&#x27;;</span>
+<span class="a">+import { createTRPCRouter, protectedProcedure } from &#x27;../../trpc&#x27;;</span>
+ 
+ export const canvasRouter = createTRPCRouter({
+     get: protectedProcedure</pre><h2>Commit #3: <a href="https://github.com/onlook-dev/onlook/commit/504c65705438d8b42c28682e24e5eddb5528ec4a">504c657054</a> (2025-06-29T18:35:58-07:00)</h2><p class="k">fix: refactor create manager (#2305)<br>Path after this commit: apps/web/client/src/server/api/routers/project/canvas.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/apps/web/client/src/server/api/routers/project/canvas.ts b/apps/web/client/src/server/api/routers/project/canvas.ts
+index ed2f282c..df4a2e70 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/project/canvas.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/project/canvas.ts</span>
+<span class="h">@@ -1,4 +1,8 @@</span>
+<span class="d">-import { canvases, canvasUpdateSchema } from &#x27;@onlook/db&#x27;;</span>
+<span class="a">+import {</span>
+<span class="a">+    canvases, canvasUpdateSchema,</span>
+<span class="a">+    createDefaultUserCanvas, toCanvas, toFrame, userCanvases,</span>
+<span class="a">+    type UserCanvas</span>
+<span class="a">+} from &#x27;@onlook/db&#x27;;</span>
+ import { eq } from &#x27;drizzle-orm&#x27;;
+ import { z } from &#x27;zod&#x27;;
+ import { createTRPCRouter, protectedProcedure } from &#x27;../../trpc&#x27;;
+<span class="h">@@ -19,6 +23,32 @@ export const canvasRouter = createTRPCRouter({</span>
+             }
+             return dbCanvas;
+         }),
+<span class="a">+    getWithFrames: protectedProcedure</span>
+<span class="a">+        .input(</span>
+<span class="a">+            z.object({</span>
+<span class="a">+                projectId: z.string(),</span>
+<span class="a">+            }),</span>
+<span class="a">+        )</span>
+<span class="a">+        .query(async ({ ctx, input }) =&gt; {</span>
+<span class="a">+            const dbCanvas = await ctx.db.query.canvases.findFirst({</span>
+<span class="a m">+                where: eq(canvases.projectId, input.projectId),</span>
+<span class="a">+                with: {</span>
+<span class="a">+                    frames: true,</span>
+<span class="a">+                    userCanvases: {</span>
+<span class="a">+                        where: eq(userCanvases.userId, ctx.user.id),</span>
+<span class="a">+                    },</span>
+<span class="a">+                },</span>
+<span class="a">+            });</span>
+<span class="a">+            if (!dbCanvas) {</span>
+<span class="a">+                return null;</span>
+<span class="a">+            }</span>
+<span class="a">+            const userCanvas: UserCanvas = dbCanvas.userCanvases[0] ?? createDefaultUserCanvas(ctx.user.id, dbCanvas.id);</span>
+<span class="a">+            return {</span>
+<span class="a">+                userCanvas: toCanvas(userCanvas),</span>
+<span class="a">+                frames: dbCanvas.frames.map(toFrame),</span>
+<span class="a">+            };</span>
+<span class="a">+        }),</span>
+<span class="a">+</span>
+     update: protectedProcedure.input(canvasUpdateSchema).mutation(async ({ ctx, input }) =&gt; {
+         try {
+             if (!input.id) {</pre><h2>Commit #4: <a href="https://github.com/onlook-dev/onlook/commit/b328ead2f2e2afa7bed9281ba29817ed5b36f8e5">b328ead2f2</a> (2025-08-14T13:27:09-07:00)</h2><p class="k">feat: using firecrawl to screenshot (#2665)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: apps/web/client/src/server/api/routers/user/user-canvas.ts.</p><pre>diff --git a/apps/web/client/src/server/api/routers/project/canvas.ts b/apps/web/client/src/server/api/routers/project/canvas.ts
+deleted file mode 100644
+index df4a2e70..00000000
+<span class="d">--- a/apps/web/client/src/server/api/routers/project/canvas.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,64 +0,0 @@</span>
+<span class="d">-import {</span>
+<span class="d">-    canvases, canvasUpdateSchema,</span>
+<span class="d">-    createDefaultUserCanvas, toCanvas, toFrame, userCanvases,</span>
+<span class="d">-    type UserCanvas</span>
+<span class="d">-} from &#x27;@onlook/db&#x27;;</span>
+<span class="d">-import { eq } from &#x27;drizzle-orm&#x27;;</span>
+<span class="d">-import { z } from &#x27;zod&#x27;;</span>
+<span class="d">-import { createTRPCRouter, protectedProcedure } from &#x27;../../trpc&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-export const canvasRouter = createTRPCRouter({</span>
+<span class="d">-    get: protectedProcedure</span>
+<span class="d">-        .input(</span>
+<span class="d">-            z.object({</span>
+<span class="d">-                projectId: z.string(),</span>
+<span class="d">-            }),</span>
+<span class="d">-        )</span>
+<span class="d">-        .query(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            const dbCanvas = await ctx.db.query.canvases.findFirst({</span>
+<span class="d m">-                where: eq(canvases.projectId, input.projectId),</span>
+<span class="d">-            });</span>
+<span class="d">-            if (!dbCanvas) {</span>
+<span class="d">-                return null;</span>
+<span class="d">-            }</span>
+<span class="d">-            return dbCanvas;</span>
+<span class="d">-        }),</span>
+<span class="d">-    getWithFrames: protectedProcedure</span>
+<span class="d">-        .input(</span>
+<span class="d">-            z.object({</span>
+<span class="d">-                projectId: z.string(),</span>
+<span class="d">-            }),</span>
+<span class="d">-        )</span>
+<span class="d">-        .query(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            const dbCanvas = await ctx.db.query.canvases.findFirst({</span>
+<span class="d m">-                where: eq(canvases.projectId, input.projectId),</span>
+<span class="d">-                with: {</span>
+<span class="d">-                    frames: true,</span>
+<span class="d">-                    userCanvases: {</span>
+<span class="d">-                        where: eq(userCanvases.userId, ctx.user.id),</span>
+<span class="d">-                    },</span>
+<span class="d">-                },</span>
+<span class="d">-            });</span>
+<span class="d">-            if (!dbCanvas) {</span>
+<span class="d">-                return null;</span>
+<span class="d">-            }</span>
+<span class="d">-            const userCanvas: UserCanvas = dbCanvas.userCanvases[0] ?? createDefaultUserCanvas(ctx.user.id, dbCanvas.id);</span>
+<span class="d">-            return {</span>
+<span class="d">-                userCanvas: toCanvas(userCanvas),</span>
+<span class="d">-                frames: dbCanvas.frames.map(toFrame),</span>
+<span class="d">-            };</span>
+<span class="d">-        }),</span>
+<span class="d">-</span>
+<span class="d">-    update: protectedProcedure.input(canvasUpdateSchema).mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-        try {</span>
+<span class="d">-            if (!input.id) {</span>
+<span class="d">-                throw new Error(&#x27;Canvas ID is required&#x27;);</span>
+<span class="d">-            }</span>
+<span class="d">-            await ctx.db.update(canvases).set(input).where(eq(canvases.id, input.id));</span>
+<span class="d">-            return true;</span>
+<span class="d">-        } catch (error) {</span>
+<span class="d">-            console.error(&#x27;Error updating canvas&#x27;, error);</span>
+<span class="d">-            return false;</span>
+<span class="d">-        }</span>
+<span class="d">-    }),</span>
+<span class="d">-});</span></pre></body></html>

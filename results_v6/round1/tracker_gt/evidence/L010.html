@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L010</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L010</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspnetcore">dotnet/aspnetcore</a><br><b>File at merge:</b> src/Components/Components/src/PersistentComponentStateSerializer.cs, line 6<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspnetcore/commit/8883b98afedee35e8360db3f24ce8cd2e17217ad">8883b98afe</a> (2025-07-07T16:01:15)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspnetcore/tree/9cb6424153e9f9d1350a2f4e84b437007369e227">9cb6424153</a>)</p><p><b>The line:</b></p><pre><span class="t">namespace Microsoft.AspNetCore.Components;</span></pre><h2>File at the merge commit, lines 1 to 14</h2><pre>    1 | // Licensed to the .NET Foundation under one or more agreements.
+    2 | // The .NET Foundation licenses this file to you under the MIT license.
+    3 | 
+    4 | using System.Buffers;
+    5 | 
+<span class="t">    6 | namespace Microsoft.AspNetCore.Components;</span>
+    7 | 
+    8 | /// &lt;summary&gt;
+    9 | /// Provides custom serialization logic for persistent component state values of type &lt;typeparamref name=&quot;T&quot;/&gt;.
+   10 | /// &lt;/summary&gt;
+   11 | /// &lt;typeparam name=&quot;T&quot;&gt;The type of the value to serialize.&lt;/typeparam&gt;
+   12 | public abstract class PersistentComponentStateSerializer&lt;T&gt; : IPersistentComponentStateSerializer
+   13 | {
+   14 |     /// &lt;summary&gt;</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspnetcore/commit/52ea66758edf951e2dfd7f103d6868b8d8a0b73c">52ea66758e</a> (2025-08-04T15:50:09+02:00)</h2><p class="k">[Blazor] Support persisting component state on enhanced navigation (#62824)<br>Path after this commit: src/Components/Components/src/PersistentState/PersistentComponentStateSerializer.cs. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: src/Components/Components/src/PersistentState/RestoreBehavior.cs, src/Components/Components/src/PersistentState/RestoreComponentStateRegistration.cs, src/Components/Components/src/PersistentState/RestoreContext.cs, src/Components/Components/src/PersistentState/RestoreOptions.cs, src/Components/Components/src/PersistentState/RestoringComponentStateSubscription.cs.</p><pre>diff --git a/src/Components/Components/src/PersistentComponentStateSerializer.cs b/src/Components/Components/src/PersistentState/PersistentComponentStateSerializer.cs
+similarity index 100%
+rename from src/Components/Components/src/PersistentComponentStateSerializer.cs
+rename to src/Components/Components/src/PersistentState/PersistentComponentStateSerializer.cs</pre></body></html>

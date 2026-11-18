@@ -1,0 +1,266 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L210</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L210</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> src/crewai/llms/base_llm.py, line 55<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/807c13e144c268ed2164e519d5097a84b52031f0">807c13e144</a> (2025-03-25T16:39:08)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">                     Can be a string or list of message dictionaries.</span></pre><h2>File at the merge commit, lines 47 to 63</h2><pre>   47 |         tools: Optional[List[dict]] = None,
+   48 |         callbacks: Optional[List[Any]] = None,
+   49 |         available_functions: Optional[Dict[str, Any]] = None,
+   50 |     ) -&gt; Union[str, Any]:
+   51 |         &quot;&quot;&quot;Call the LLM with the given messages.
+   52 | 
+   53 |         Args:
+   54 |             messages: Input messages for the LLM.
+<span class="t">   55 |                      Can be a string or list of message dictionaries.</span>
+   56 |                      If string, it will be converted to a single user message.
+   57 |                      If list, each dict must have &#x27;role&#x27; and &#x27;content&#x27; keys.
+   58 |             tools: Optional list of tool schemas for function calling.
+   59 |                   Each tool should define its name, description, and parameters.
+   60 |             callbacks: Optional list of callback functions to be executed
+   61 |                       during and after the LLM call.
+   62 |             available_functions: Optional dict mapping function names to callables
+   63 |                                that can be invoked by the LLM.</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/b7bf15681e768e5417c69058343392d4f411c751">b7bf15681e</a> (2025-07-01T09:30:16-04:00)</h2><p class="k">feat: add capability to track LLM calls by task and agent (#3087)<br>Path after this commit: src/crewai/llms/base_llm.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/llms/base_llm.py b/src/crewai/llms/base_llm.py
+index c51e8847d..2085d47d7 100644
+<span class="d">--- a/src/crewai/llms/base_llm.py</span>
+<span class="a">+++ b/src/crewai/llms/base_llm.py</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ from abc import ABC, abstractmethod
+<span class="d">-from typing import Any, Callable, Dict, List, Optional, Union</span>
+<span class="a">+from typing import Any, Dict, List, Optional, Union</span>
+ 
+ 
+ class BaseLLM(ABC):
+<span class="h">@@ -47,6 +47,8 @@ class BaseLLM(ABC):</span>
+         tools: Optional[List[dict]] = None,
+         callbacks: Optional[List[Any]] = None,
+         available_functions: Optional[Dict[str, Any]] = None,
+<span class="a">+        from_task: Optional[Any] = None,</span>
+<span class="a">+        from_agent: Optional[Any] = None,</span>
+     ) -&gt; Union[str, Any]:
+         &quot;&quot;&quot;Call the LLM with the given messages.
+ 
+<span class="h">@@ -61,6 +63,7 @@ class BaseLLM(ABC):</span>
+                       during and after the LLM call.
+             available_functions: Optional dict mapping function names to callables
+                                that can be invoked by the LLM.
+<span class="a">+            from_task: Optional task caller to be used for the LLM call.</span>
+ 
+         Returns:
+             Either a text response from the LLM (str) or</pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/83682d511f637d32226f6985aa0c89442c8c02aa">83682d511f</a> (2025-09-10T08:30:49-04:00)</h2><p class="k">chore: modernize LLM interface typing and add constants (#3483)<br>Path after this commit: src/crewai/llms/base_llm.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/llms/base_llm.py b/src/crewai/llms/base_llm.py
+index 2085d47d7..0cd95c347 100644
+<span class="d">--- a/src/crewai/llms/base_llm.py</span>
+<span class="a">+++ b/src/crewai/llms/base_llm.py</span>
+<span class="h">@@ -1,5 +1,14 @@</span>
+<span class="a">+&quot;&quot;&quot;Base LLM abstract class for CrewAI.</span>
+<span class="a">+</span>
+<span class="a">+This module provides the abstract base class for all LLM implementations</span>
+<span class="a">+in CrewAI.</span>
+<span class="a">+&quot;&quot;&quot;</span>
+<span class="a">+</span>
+ from abc import ABC, abstractmethod
+<span class="d">-from typing import Any, Dict, List, Optional, Union</span>
+<span class="a">+from typing import Any, Final</span>
+<span class="a">+</span>
+<span class="a">+DEFAULT_CONTEXT_WINDOW_SIZE: Final[int] = 4096</span>
+<span class="a">+DEFAULT_SUPPORTS_STOP_WORDS: Final[bool] = True</span>
+ 
+ 
+ class BaseLLM(ABC):
+<span class="h">@@ -15,41 +24,38 @@ class BaseLLM(ABC):</span>
+     messages when things go wrong.
+ 
+     Attributes:
+<span class="d">-        stop (list): A list of stop sequences that the LLM should use to stop generation.</span>
+<span class="d">-            This is used by the CrewAgentExecutor and other components.</span>
+<span class="a">+        model: The model identifier/name.</span>
+<span class="a">+        temperature: Optional temperature setting for response generation.</span>
+<span class="a">+        stop: A list of stop sequences that the LLM should use to stop generation.</span>
+     &quot;&quot;&quot;
+ 
+<span class="d">-    model: str</span>
+<span class="d">-    temperature: Optional[float] = None</span>
+<span class="d">-    stop: Optional[List[str]] = None</span>
+<span class="d">-</span>
+     def __init__(
+         self,
+         model: str,
+<span class="d">-        temperature: Optional[float] = None,</span>
+<span class="d">-    ):</span>
+<span class="a">+        temperature: float | None = None,</span>
+<span class="a">+        stop: list[str] | None = None,</span>
+<span class="a">+    ) -&gt; None:</span>
+         &quot;&quot;&quot;Initialize the BaseLLM with default attributes.
+ 
+<span class="d">-        This constructor sets default values for attributes that are expected</span>
+<span class="d">-        by the CrewAgentExecutor and other components.</span>
+<span class="d">-</span>
+<span class="d">-        All custom LLM implementations should call super().__init__() to ensure</span>
+<span class="d">-        that these default attributes are properly initialized.</span>
+<span class="a">+        Args:</span>
+<span class="a">+            model: The model identifier/name.</span>
+<span class="a">+            temperature: Optional temperature setting for response generation.</span>
+<span class="a">+            stop: Optional list of stop sequences for generation.</span>
+         &quot;&quot;&quot;
+         self.model = model
+         self.temperature = temperature
+<span class="d">-        self.stop = []</span>
+<span class="a">+        self.stop: list[str] = stop or []</span>
+ 
+     @abstractmethod
+     def call(
+         self,
+<span class="d">-        messages: Union[str, List[Dict[str, str]]],</span>
+<span class="d">-        tools: Optional[List[dict]] = None,</span>
+<span class="d">-        callbacks: Optional[List[Any]] = None,</span>
+<span class="d">-        available_functions: Optional[Dict[str, Any]] = None,</span>
+<span class="d">-        from_task: Optional[Any] = None,</span>
+<span class="d">-        from_agent: Optional[Any] = None,</span>
+<span class="d">-    ) -&gt; Union[str, Any]:</span>
+<span class="a">+        messages: str | list[dict[str, str]],</span>
+<span class="a">+        tools: list[dict] | None = None,</span>
+<span class="a">+        callbacks: list[Any] | None = None,</span>
+<span class="a">+        available_functions: dict[str, Any] | None = None,</span>
+<span class="a">+        from_task: Any | None = None,</span>
+<span class="a">+        from_agent: Any | None = None,</span>
+<span class="a">+    ) -&gt; str | Any:</span>
+         &quot;&quot;&quot;Call the LLM with the given messages.
+ 
+         Args:
+<span class="h">@@ -64,6 +70,7 @@ class BaseLLM(ABC):</span>
+             available_functions: Optional dict mapping function names to callables
+                                that can be invoked by the LLM.
+             from_task: Optional task caller to be used for the LLM call.
+<span class="a">+            from_agent: Optional agent caller to be used for the LLM call.</span>
+ 
+         Returns:
+             Either a text response from the LLM (str) or
+<span class="h">@@ -74,21 +81,20 @@ class BaseLLM(ABC):</span>
+             TimeoutError: If the LLM request times out.
+             RuntimeError: If the LLM request fails for other reasons.
+         &quot;&quot;&quot;
+<span class="d">-        pass</span>
+ 
+     def supports_stop_words(self) -&gt; bool:
+         &quot;&quot;&quot;Check if the LLM supports stop words.
+ 
+         Returns:
+<span class="d">-            bool: True if the LLM supports stop words, False otherwise.</span>
+<span class="a">+            True if the LLM supports stop words, False otherwise.</span>
+         &quot;&quot;&quot;
+<span class="d">-        return True  # Default implementation assumes support for stop words</span>
+<span class="a">+        return DEFAULT_SUPPORTS_STOP_WORDS</span>
+ 
+     def get_context_window_size(self) -&gt; int:
+         &quot;&quot;&quot;Get the context window size for the LLM.
+ 
+         Returns:
+<span class="d">-            int: The number of tokens/characters the model can handle.</span>
+<span class="a">+            The number of tokens/characters the model can handle.</span>
+         &quot;&quot;&quot;
+         # Default implementation - subclasses should override with model-specific values
+<span class="d">-        return 4096</span>
+<span class="a">+        return DEFAULT_CONTEXT_WINDOW_SIZE</span></pre><h2>Commit #3: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: lib/crewai/src/crewai/llms/base_llm.py.</p><pre>diff --git a/src/crewai/llms/base_llm.py b/src/crewai/llms/base_llm.py
+deleted file mode 100644
+index 0cd95c347..000000000
+<span class="d">--- a/src/crewai/llms/base_llm.py</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,100 +0,0 @@</span>
+<span class="d">-&quot;&quot;&quot;Base LLM abstract class for CrewAI.</span>
+<span class="d">-</span>
+<span class="d">-This module provides the abstract base class for all LLM implementations</span>
+<span class="d">-in CrewAI.</span>
+<span class="d">-&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-from abc import ABC, abstractmethod</span>
+<span class="d">-from typing import Any, Final</span>
+<span class="d">-</span>
+<span class="d">-DEFAULT_CONTEXT_WINDOW_SIZE: Final[int] = 4096</span>
+<span class="d">-DEFAULT_SUPPORTS_STOP_WORDS: Final[bool] = True</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class BaseLLM(ABC):</span>
+<span class="d">-    &quot;&quot;&quot;Abstract base class for LLM implementations.</span>
+<span class="d">-</span>
+<span class="d">-    This class defines the interface that all LLM implementations must follow.</span>
+<span class="d">-    Users can extend this class to create custom LLM implementations that don&#x27;t</span>
+<span class="d">-    rely on litellm&#x27;s authentication mechanism.</span>
+<span class="d">-</span>
+<span class="d">-    Custom LLM implementations should handle error cases gracefully, including</span>
+<span class="d">-    timeouts, authentication failures, and malformed responses. They should also</span>
+<span class="d">-    implement proper validation for input parameters and provide clear error</span>
+<span class="d">-    messages when things go wrong.</span>
+<span class="d">-</span>
+<span class="d">-    Attributes:</span>
+<span class="d">-        model: The model identifier/name.</span>
+<span class="d">-        temperature: Optional temperature setting for response generation.</span>
+<span class="d">-        stop: A list of stop sequences that the LLM should use to stop generation.</span>
+<span class="d">-    &quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    def __init__(</span>
+<span class="d">-        self,</span>
+<span class="d">-        model: str,</span>
+<span class="d">-        temperature: float | None = None,</span>
+<span class="d">-        stop: list[str] | None = None,</span>
+<span class="d">-    ) -&gt; None:</span>
+<span class="d">-        &quot;&quot;&quot;Initialize the BaseLLM with default attributes.</span>
+<span class="d">-</span>
+<span class="d">-        Args:</span>
+<span class="d">-            model: The model identifier/name.</span>
+<span class="d">-            temperature: Optional temperature setting for response generation.</span>
+<span class="d">-            stop: Optional list of stop sequences for generation.</span>
+<span class="d">-        &quot;&quot;&quot;</span>
+<span class="d">-        self.model = model</span>
+<span class="d">-        self.temperature = temperature</span>
+<span class="d">-        self.stop: list[str] = stop or []</span>
+<span class="d">-</span>
+<span class="d">-    @abstractmethod</span>
+<span class="d">-    def call(</span>
+<span class="d">-        self,</span>
+<span class="d">-        messages: str | list[dict[str, str]],</span>
+<span class="d">-        tools: list[dict] | None = None,</span>
+<span class="d">-        callbacks: list[Any] | None = None,</span>
+<span class="d">-        available_functions: dict[str, Any] | None = None,</span>
+<span class="d">-        from_task: Any | None = None,</span>
+<span class="d">-        from_agent: Any | None = None,</span>
+<span class="d">-    ) -&gt; str | Any:</span>
+<span class="d">-        &quot;&quot;&quot;Call the LLM with the given messages.</span>
+<span class="d">-</span>
+<span class="d">-        Args:</span>
+<span class="d">-            messages: Input messages for the LLM.</span>
+<span class="d m">-                     Can be a string or list of message dictionaries.</span>
+<span class="d">-                     If string, it will be converted to a single user message.</span>
+<span class="d">-                     If list, each dict must have &#x27;role&#x27; and &#x27;content&#x27; keys.</span>
+<span class="d">-            tools: Optional list of tool schemas for function calling.</span>
+<span class="d">-                  Each tool should define its name, description, and parameters.</span>
+<span class="d">-            callbacks: Optional list of callback functions to be executed</span>
+<span class="d">-                      during and after the LLM call.</span>
+<span class="d">-            available_functions: Optional dict mapping function names to callables</span>
+<span class="d">-                               that can be invoked by the LLM.</span>
+<span class="d">-            from_task: Optional task caller to be used for the LLM call.</span>
+<span class="d">-            from_agent: Optional agent caller to be used for the LLM call.</span>
+<span class="d">-</span>
+<span class="d">-        Returns:</span>
+<span class="d">-            Either a text response from the LLM (str) or</span>
+<span class="d">-            the result of a tool function call (Any).</span>
+<span class="d">-</span>
+<span class="d">-        Raises:</span>
+<span class="d">-            ValueError: If the messages format is invalid.</span>
+<span class="d">-            TimeoutError: If the LLM request times out.</span>
+<span class="d">-            RuntimeError: If the LLM request fails for other reasons.</span>
+<span class="d">-        &quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    def supports_stop_words(self) -&gt; bool:</span>
+<span class="d">-        &quot;&quot;&quot;Check if the LLM supports stop words.</span>
+<span class="d">-</span>
+<span class="d">-        Returns:</span>
+<span class="d">-            True if the LLM supports stop words, False otherwise.</span>
+<span class="d">-        &quot;&quot;&quot;</span>
+<span class="d">-        return DEFAULT_SUPPORTS_STOP_WORDS</span>
+<span class="d">-</span>
+<span class="d">-    def get_context_window_size(self) -&gt; int:</span>
+<span class="d">-        &quot;&quot;&quot;Get the context window size for the LLM.</span>
+<span class="d">-</span>
+<span class="d">-        Returns:</span>
+<span class="d">-            The number of tokens/characters the model can handle.</span>
+<span class="d">-        &quot;&quot;&quot;</span>
+<span class="d">-        # Default implementation - subclasses should override with model-specific values</span>
+<span class="d">-        return DEFAULT_CONTEXT_WINDOW_SIZE</span></pre></body></html>

@@ -1,0 +1,98 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L057</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L057</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-python">azure/azure-sdk-for-python</a><br><b>File at merge:</b> sdk/servicebus/azure-servicebus/samples/sync_samples/send_queue.py, line 86<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-sdk-for-python/commit/ddf423f0ebb5ec3cbb047d952861e8a722fc5996">ddf423f0eb</a> (2025-06-10T16:13:45)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-python/tree/c0328981505b7d6c7b6923441ff072c8373e4d03">c032898150</a>)</p><p><b>The line:</b></p><pre><span class="t">    This is useful when you need to call sync Service Bus operations from async code.</span></pre><h2>File at the merge commit, lines 78 to 94</h2><pre>   78 |             # Wait for all threads to complete
+   79 |             for future in futures:
+   80 |                 future.result()
+   81 | 
+   82 | 
+   83 | def send_with_run_in_executor():
+   84 |     &quot;&quot;&quot;
+   85 |     Example showing how to use asyncio.run_in_executor for sync operations in async context.
+<span class="t">   86 |     This is useful when you need to call sync Service Bus operations from async code.</span>
+   87 |     &quot;&quot;&quot;
+   88 |     async def async_main():
+   89 |         loop = asyncio.get_event_loop()
+   90 |         
+   91 |         def sync_send_operation():
+   92 |             credential = DefaultAzureCredential()
+   93 |             servicebus_client = ServiceBusClient(FULLY_QUALIFIED_NAMESPACE, credential)
+   94 |             with servicebus_client:</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-python/commit/bcf11d3df1714384c0eb030301b572d9ae5a889f">bcf11d3df1</a> (2025-06-12T12:44:17-07:00)</h2><p class="k">Add comprehensive TROUBLESHOOTING.md file for Azure Service Bus Python SDK (#41352)<br>Path after this commit: sdk/servicebus/azure-servicebus/samples/sync_samples/send_queue.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/sdk/servicebus/azure-servicebus/samples/sync_samples/send_queue.py b/sdk/servicebus/azure-servicebus/samples/sync_samples/send_queue.py
+index c1ada7751a..f63479a049 100644
+<span class="d">--- a/sdk/servicebus/azure-servicebus/samples/sync_samples/send_queue.py</span>
+<span class="a">+++ b/sdk/servicebus/azure-servicebus/samples/sync_samples/send_queue.py</span>
+<span class="h">@@ -8,13 +8,13 @@</span>
+ &quot;&quot;&quot;
+ Example to show sending message(s) to a Service Bus Queue.
+ 
+<span class="d">-WARNING: ServiceBusClient, ServiceBusSender, and ServiceBusMessageBatch are not thread-safe.</span>
+<span class="d">-Do not share these instances between threads without proper thread-safe management using mechanisms like threading.Lock.</span>
+<span class="a">+WARNING: `ServiceBusClient`, `ServiceBusSender`, and `ServiceBusMessageBatch` are not thread-safe.</span>
+<span class="a">+Do not share these instances between threads without proper thread-safe management using mechanisms like `threading.Lock()`.</span>
+<span class="a">+Note: Native async APIs should be used instead of running in a `ThreadPoolExecutor`, if possible.</span>
+ &quot;&quot;&quot;
+ 
+ import os
+ import threading
+<span class="d">-import asyncio</span>
+ from concurrent.futures import ThreadPoolExecutor
+ 
+ from azure.servicebus import ServiceBusClient, ServiceBusMessage
+<span class="h">@@ -47,9 +47,6 @@ def send_batch_message(sender):</span>
+     sender.send_messages(batch_message)
+ 
+ 
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-</span>
+ def send_concurrent_with_shared_client_and_lock():
+     &quot;&quot;&quot;
+     Example showing concurrent sending with a shared client using threading.Lock.
+<span class="h">@@ -79,32 +76,6 @@ def send_concurrent_with_shared_client_and_lock():</span>
+             for future in futures:
+                 future.result()
+ 
+<span class="d">-</span>
+<span class="d">-def send_with_run_in_executor():</span>
+<span class="d">-    &quot;&quot;&quot;</span>
+<span class="d">-    Example showing how to use asyncio.run_in_executor for sync operations in async context.</span>
+<span class="d m">-    This is useful when you need to call sync Service Bus operations from async code.</span>
+<span class="d">-    &quot;&quot;&quot;</span>
+<span class="d">-    async def async_main():</span>
+<span class="d">-        loop = asyncio.get_event_loop()</span>
+<span class="d">-        </span>
+<span class="d">-        def sync_send_operation():</span>
+<span class="d">-            credential = DefaultAzureCredential()</span>
+<span class="d">-            servicebus_client = ServiceBusClient(FULLY_QUALIFIED_NAMESPACE, credential)</span>
+<span class="d">-            with servicebus_client:</span>
+<span class="d">-                sender = servicebus_client.get_queue_sender(queue_name=QUEUE_NAME)</span>
+<span class="d">-                with sender:</span>
+<span class="d">-                    message = ServiceBusMessage(&quot;Message sent via run_in_executor&quot;)</span>
+<span class="d">-                    sender.send_messages(message)</span>
+<span class="d">-                    return &quot;Message sent successfully&quot;</span>
+<span class="d">-        </span>
+<span class="d">-        # Run the synchronous operation in an executor</span>
+<span class="d">-        result = await loop.run_in_executor(None, sync_send_operation)</span>
+<span class="d">-        print(f&quot;run_in_executor result: {result}&quot;)</span>
+<span class="d">-    </span>
+<span class="d">-    asyncio.run(async_main())</span>
+<span class="d">-</span>
+<span class="d">-</span>
+ credential = DefaultAzureCredential()
+ servicebus_client = ServiceBusClient(FULLY_QUALIFIED_NAMESPACE, credential, logging_enable=True)
+ with servicebus_client:
+<span class="h">@@ -114,12 +85,7 @@ with servicebus_client:</span>
+         send_a_list_of_messages(sender)
+         send_batch_message(sender)
+ 
+<span class="d">-print(&quot;Send message is done.&quot;)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="a">+    print(&quot;Send message is done.&quot;)</span>
+ 
+ print(&quot;\nDemonstrating concurrent sending with shared client and locks...&quot;)
+ send_concurrent_with_shared_client_and_lock()
+<span class="d">-</span>
+<span class="d">-print(&quot;\nDemonstrating run_in_executor pattern...&quot;)</span>
+<span class="d">-send_with_run_in_executor()</span></pre></body></html>

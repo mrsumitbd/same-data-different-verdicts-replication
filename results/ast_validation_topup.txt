@@ -1,0 +1,14 @@
+======================================================================
+AST validation top-up sample (leaf-only precision)
+======================================================================
+Target: 32 leaf-only rows per tier across main + top-up; 10 structural decoys per tier; main-sample units excluded; seed 42
+
+tier x rule label: available (not in main sample) -> drawn
+  human_supervised  leaf-only    1,527 -> 24
+  human_supervised  structural  18,733 -> 10
+  fully_autonomous  leaf-only    1,920 -> 23
+  fully_autonomous  structural  11,056 -> 10
+  human             leaf-only    1,848 -> 23
+  human             structural  43,229 -> 10
+  total 100
+Context: found 100 of 100; deleted files 13; long diffs cut 39

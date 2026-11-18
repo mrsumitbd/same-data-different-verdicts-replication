@@ -1,0 +1,254 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L159</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L159</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs, line 18<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/223e7138f581b149465946b111d59fd720190351">223e7138f5</a> (2025-03-31T14:08:32)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">use crate::functions::scalar::RawScalarFunction;</span></pre><h2>File at the merge commit, lines 10 to 26</h2><pre>   10 |     PhysicalF64,
+   11 | };
+   12 | use crate::arrays::datatype::{DataType, DataTypeId};
+   13 | use crate::arrays::executor::OutBuffer;
+   14 | use crate::arrays::executor::scalar::UnaryExecutor;
+   15 | use crate::functions::Signature;
+   16 | use crate::functions::documentation::{Category, Documentation};
+   17 | use crate::functions::function_set::ScalarFunctionSet;
+<span class="t">   18 | use crate::functions::scalar::RawScalarFunction;</span>
+   19 | use crate::util::iter::IntoExactSizeIterator;
+   20 | 
+   21 | pub const FUNCTION_SET_ROUND: ScalarFunctionSet = ScalarFunctionSet {
+   22 |     name: &quot;round&quot;,
+   23 |     aliases: &amp;[],
+   24 |     doc: &amp;[&amp;Documentation {
+   25 |         category: Category::Numeric,
+   26 |         description: &quot;Round number to the nearest whole value&quot;,</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/84856761d761e0fe58ef7cd1d93178cf0fe100cd">84856761d7</a> (2025-04-02T18:22:29+00:00)</h2><p class="k">Ensure all function descriptions end with periods (#3577)<br>Path after this commit: crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs b/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs
+index b7212164..509fecaa 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs</span>
+<span class="h">@@ -23,7 +23,7 @@ pub const FUNCTION_SET_ROUND: ScalarFunctionSet = ScalarFunctionSet {</span>
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+         category: Category::Numeric,
+<span class="d">-        description: &quot;Round number to the nearest whole value&quot;,</span>
+<span class="a">+        description: &quot;Round number to the nearest whole value.&quot;,</span>
+         arguments: &amp;[&quot;float&quot;],
+         example: None,
+     }],</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/a16d42451749180f30a91623be0e35247371c081">a16d424517</a> (2025-05-06T09:44:07-04:00)</h2><p class="k">chore: Refactor DataType (#3776)<br>Path after this commit: crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs b/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs
+index 509fecaa..ca326445 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs</span>
+<span class="h">@@ -30,15 +30,15 @@ pub const FUNCTION_SET_ROUND: ScalarFunctionSet = ScalarFunctionSet {</span>
+     functions: &amp;[
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Float16], DataTypeId::Float16),
+<span class="d">-            &amp;UnaryInputNumericScalar::&lt;PhysicalF16, RoundOp&gt;::new(&amp;DataType::Float16),</span>
+<span class="a">+            &amp;UnaryInputNumericScalar::&lt;PhysicalF16, RoundOp&gt;::new(DataType::FLOAT16),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Float32], DataTypeId::Float32),
+<span class="d">-            &amp;UnaryInputNumericScalar::&lt;PhysicalF32, RoundOp&gt;::new(&amp;DataType::Float32),</span>
+<span class="a">+            &amp;UnaryInputNumericScalar::&lt;PhysicalF32, RoundOp&gt;::new(DataType::FLOAT32),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Float64], DataTypeId::Float64),
+<span class="d">-            &amp;UnaryInputNumericScalar::&lt;PhysicalF64, RoundOp&gt;::new(&amp;DataType::Float64),</span>
+<span class="a">+            &amp;UnaryInputNumericScalar::&lt;PhysicalF64, RoundOp&gt;::new(DataType::FLOAT64),</span>
+         ),
+     ],
+ };</pre><h2>Commit #3: <a href="https://github.com/glaredb/glaredb/commit/1889064fc576d7d67b166d1013493a831981bea5">1889064fc5</a> (2025-05-18T13:31:55-04:00)</h2><p class="k">feat: Round to scale (#3818)<br>Path after this commit: crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs b/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs
+index ca326445..a9a7b838 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/scalar/builtin/numeric/round.rs</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-use glaredb_error::Result;</span>
+<span class="a">+use glaredb_error::{Result, ResultExt};</span>
+ use num_traits::Float;
+ 
+ use super::{UnaryInputNumericOperation, UnaryInputNumericScalar};
+<span class="h">@@ -9,44 +9,93 @@ use crate::arrays::array::physical_type::{</span>
+     PhysicalF32,
+     PhysicalF64,
+ };
+<span class="d">-use crate::arrays::datatype::{DataType, DataTypeId};</span>
+<span class="a">+use crate::arrays::batch::Batch;</span>
+<span class="a">+use crate::arrays::datatype::{DataType, DataTypeId, DecimalTypeMeta};</span>
+ use crate::arrays::executor::OutBuffer;
+ use crate::arrays::executor::scalar::UnaryExecutor;
+<span class="a">+use crate::arrays::scalar::decimal::{Decimal64Type, Decimal128Type, DecimalType};</span>
+<span class="a">+use crate::expr::Expression;</span>
+ use crate::functions::Signature;
+<span class="d">-use crate::functions::documentation::{Category, Documentation};</span>
+<span class="a">+use crate::functions::bind_state::BindState;</span>
+<span class="a">+use crate::functions::cast::CastFunction;</span>
+<span class="a">+use crate::functions::cast::behavior::CastFailBehavior;</span>
+<span class="a">+use crate::functions::cast::builtin::to_decimal::{DecimalToDecimal, DecimalToDecimalState};</span>
+<span class="a">+use crate::functions::documentation::{Category, Documentation, Example};</span>
+ use crate::functions::function_set::ScalarFunctionSet;
+<span class="d m">-use crate::functions::scalar::RawScalarFunction;</span>
+<span class="a">+use crate::functions::scalar::{RawScalarFunction, ScalarFunction};</span>
+<span class="a">+use crate::optimizer::expr_rewrite::ExpressionRewriteRule;</span>
+<span class="a">+use crate::optimizer::expr_rewrite::const_fold::ConstFold;</span>
+ use crate::util::iter::IntoExactSizeIterator;
+ 
+ pub const FUNCTION_SET_ROUND: ScalarFunctionSet = ScalarFunctionSet {
+     name: &quot;round&quot;,
+     aliases: &amp;[],
+<span class="d">-    doc: &amp;[&amp;Documentation {</span>
+<span class="d">-        category: Category::Numeric,</span>
+<span class="d">-        description: &quot;Round number to the nearest whole value.&quot;,</span>
+<span class="d">-        arguments: &amp;[&quot;float&quot;],</span>
+<span class="d">-        example: None,</span>
+<span class="d">-    }],</span>
+<span class="a">+    doc: &amp;[</span>
+<span class="a">+        &amp;Documentation {</span>
+<span class="a">+            category: Category::Numeric,</span>
+<span class="a">+            description: &quot;Round a number to the nearest whole value.&quot;,</span>
+<span class="a">+            arguments: &amp;[&quot;number&quot;],</span>
+<span class="a">+            example: Some(Example {</span>
+<span class="a">+                example: &quot;round(3.14159)&quot;,</span>
+<span class="a">+                output: &quot;3&quot;,</span>
+<span class="a">+            }),</span>
+<span class="a">+        },</span>
+<span class="a">+        &amp;Documentation {</span>
+<span class="a">+            category: Category::Numeric,</span>
+<span class="a">+            description: &quot;Round a number to a given scale.&quot;,</span>
+<span class="a">+            arguments: &amp;[&quot;number&quot;, &quot;scale&quot;],</span>
+<span class="a">+            example: Some(Example {</span>
+<span class="a">+                example: &quot;round(3.14159, 2)&quot;,</span>
+<span class="a">+                output: &quot;3.14&quot;,</span>
+<span class="a">+            }),</span>
+<span class="a">+        },</span>
+<span class="a">+    ],</span>
+     functions: &amp;[
+<span class="a">+        // Floats</span>
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Float16], DataTypeId::Float16),
+<span class="d">-            &amp;UnaryInputNumericScalar::&lt;PhysicalF16, RoundOp&gt;::new(DataType::FLOAT16),</span>
+<span class="a">+            &amp;UnaryInputNumericScalar::&lt;PhysicalF16, RoundFloat&gt;::new(DataType::FLOAT16),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Float32], DataTypeId::Float32),
+<span class="d">-            &amp;UnaryInputNumericScalar::&lt;PhysicalF32, RoundOp&gt;::new(DataType::FLOAT32),</span>
+<span class="a">+            &amp;UnaryInputNumericScalar::&lt;PhysicalF32, RoundFloat&gt;::new(DataType::FLOAT32),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Float64], DataTypeId::Float64),
+<span class="d">-            &amp;UnaryInputNumericScalar::&lt;PhysicalF64, RoundOp&gt;::new(DataType::FLOAT64),</span>
+<span class="a">+            &amp;UnaryInputNumericScalar::&lt;PhysicalF64, RoundFloat&gt;::new(DataType::FLOAT64),</span>
+<span class="a">+        ),</span>
+<span class="a">+        // Decimals</span>
+<span class="a">+        // round(3.1415)</span>
+<span class="a">+        RawScalarFunction::new(</span>
+<span class="a">+            &amp;Signature::new(&amp;[DataTypeId::Decimal64], DataTypeId::Decimal64),</span>
+<span class="a">+            &amp;RoundDecimal::&lt;Decimal64Type&gt;::new(),</span>
+<span class="a">+        ),</span>
+<span class="a">+        RawScalarFunction::new(</span>
+<span class="a">+            &amp;Signature::new(&amp;[DataTypeId::Decimal128], DataTypeId::Decimal128),</span>
+<span class="a">+            &amp;RoundDecimal::&lt;Decimal128Type&gt;::new(),</span>
+<span class="a">+        ),</span>
+<span class="a">+        // round(3.1415, 2)</span>
+<span class="a">+        RawScalarFunction::new(</span>
+<span class="a">+            &amp;Signature::new(</span>
+<span class="a">+                &amp;[DataTypeId::Decimal64, DataTypeId::Int64],</span>
+<span class="a">+                DataTypeId::Decimal64,</span>
+<span class="a">+            ),</span>
+<span class="a">+            &amp;RoundDecimal::&lt;Decimal64Type&gt;::new(),</span>
+<span class="a">+        ),</span>
+<span class="a">+        RawScalarFunction::new(</span>
+<span class="a">+            &amp;Signature::new(</span>
+<span class="a">+                &amp;[DataTypeId::Decimal128, DataTypeId::Int64],</span>
+<span class="a">+                DataTypeId::Decimal128,</span>
+<span class="a">+            ),</span>
+<span class="a">+            &amp;RoundDecimal::&lt;Decimal128Type&gt;::new(),</span>
+         ),
+     ],
+ };
+ 
+ #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+<span class="d">-pub struct RoundOp;</span>
+<span class="a">+pub struct RoundFloat;</span>
+ 
+<span class="d">-impl UnaryInputNumericOperation for RoundOp {</span>
+<span class="a">+impl UnaryInputNumericOperation for RoundFloat {</span>
+     fn execute_float&lt;S&gt;(
+         input: &amp;Array,
+         selection: impl IntoExactSizeIterator&lt;Item = usize&gt;,
+<span class="h">@@ -64,3 +113,81 @@ impl UnaryInputNumericOperation for RoundOp {</span>
+         )
+     }
+ }
+<span class="a">+</span>
+<span class="a">+/// Rounds decimal inputs by casting them.</span>
+<span class="a">+#[derive(Debug, Clone, Copy)]</span>
+<span class="a">+pub struct RoundDecimal&lt;D: DecimalType&gt; {</span>
+<span class="a">+    cast_fn: DecimalToDecimal&lt;D, D&gt;,</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+impl&lt;D&gt; RoundDecimal&lt;D&gt;</span>
+<span class="a">+where</span>
+<span class="a">+    D: DecimalType,</span>
+<span class="a">+{</span>
+<span class="a">+    pub const fn new() -&gt; Self {</span>
+<span class="a">+        RoundDecimal {</span>
+<span class="a">+            cast_fn: DecimalToDecimal::new(),</span>
+<span class="a">+        }</span>
+<span class="a">+    }</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+impl&lt;D&gt; ScalarFunction for RoundDecimal&lt;D&gt;</span>
+<span class="a">+where</span>
+<span class="a">+    D: DecimalType,</span>
+<span class="a">+{</span>
+<span class="a">+    type State = DecimalToDecimalState&lt;D::Primitive&gt;;</span>
+<span class="a">+</span>
+<span class="a">+    fn bind(&amp;self, inputs: Vec&lt;Expression&gt;) -&gt; Result&lt;BindState&lt;Self::State&gt;&gt; {</span>
+<span class="a">+        // TODO: This currently just does the easy thing and scales by a</span>
+<span class="a">+        // constant.</span>
+<span class="a">+        //</span>
+<span class="a">+        // If we allowed the scale to be variable, then we wouldn&#x27;t be able to</span>
+<span class="a">+        // determine output decimal size.</span>
+<span class="a">+        //</span>
+<span class="a">+        // This _also_ limits the max scale to the currently decimal scale.</span>
+<span class="a">+        // Postgres allows the scale to increase, and will return numerics with</span>
+<span class="a">+        // the increased scale... but that would require we adjust precision,</span>
+<span class="a">+        // and we can deal with that later.</span>
+<span class="a">+        //</span>
+<span class="a">+        // For example:</span>
+<span class="a">+        // - DECIMAL(18, 4) rounded to scale of 1 =&gt; DECIMAL(18, 1)</span>
+<span class="a">+        // - DECIMAL(18, 4) rounded to scale of 6 =&gt; DECIMAL(18, 4)</span>
+<span class="a">+</span>
+<span class="a">+        let new_scale = match inputs.get(1) {</span>
+<span class="a">+            Some(scale_expr) =&gt; {</span>
+<span class="a">+                let scale = ConstFold::rewrite(scale_expr.clone())?</span>
+<span class="a">+                    .try_into_scalar()?</span>
+<span class="a">+                    .try_as_i64()?;</span>
+<span class="a">+                i8::try_from(scale).context(&quot;Decimal scale too large&quot;)?</span>
+<span class="a">+            }</span>
+<span class="a">+            None =&gt; 0, // `round(3.14)` == `round(3.14, 0)`</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        let input_datatype = inputs[0].datatype()?;</span>
+<span class="a">+        let input_meta = D::decimal_meta(&amp;input_datatype)?;</span>
+<span class="a">+        // TODO: Negative scale?</span>
+<span class="a">+        let new_scale = i8::min(new_scale, input_meta.scale);</span>
+<span class="a">+        let new_meta = DecimalTypeMeta::new(input_meta.precision, new_scale);</span>
+<span class="a">+</span>
+<span class="a">+        let new_datatype = D::datatype_from_decimal_meta(new_meta);</span>
+<span class="a">+</span>
+<span class="a">+        let state = self.cast_fn.bind(&amp;input_datatype, &amp;new_datatype)?;</span>
+<span class="a">+</span>
+<span class="a">+        Ok(BindState {</span>
+<span class="a">+            state,</span>
+<span class="a">+            return_type: new_datatype,</span>
+<span class="a">+            inputs,</span>
+<span class="a">+        })</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    fn execute(state: &amp;Self::State, input: &amp;Batch, output: &amp;mut Array) -&gt; Result&lt;()&gt; {</span>
+<span class="a">+        let error_state = CastFailBehavior::Error.new_state();</span>
+<span class="a">+        DecimalToDecimal::&lt;D, D&gt;::cast(</span>
+<span class="a">+            state,</span>
+<span class="a">+            error_state,</span>
+<span class="a">+            &amp;input.arrays[0],</span>
+<span class="a">+            input.selection(),</span>
+<span class="a">+            output,</span>
+<span class="a">+        )</span>
+<span class="a">+    }</span>
+<span class="a">+}</span></pre></body></html>

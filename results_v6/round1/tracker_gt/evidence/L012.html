@@ -1,0 +1,91 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L012</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L012</h1><p><b>Repository:</b> <a href="https://github.com/awslabs/mcp">awslabs/mcp</a><br><b>File at merge:</b> src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py, line 61<br><b>Merge commit (birth):</b> <a href="https://github.com/awslabs/mcp/commit/68c304e330c1a623cd4ee62842c3c1dae9dee073">68c304e330</a> (2025-05-16T18:23:58)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/awslabs/mcp/tree/e3ad693e04f85e98b95a41650c381561cbb753ea">e3ad693e04</a>)</p><p><b>The line:</b></p><pre><span class="t">        name: The Redis key.</span></pre><h2>File at the merge commit, lines 53 to 69</h2><pre>   53 |         return {&#x27;error&#x27;: str(e)}
+   54 | 
+   55 | 
+   56 | @mcp.tool()
+   57 | async def expire(name: str, expire_seconds: int) -&gt; str:
+   58 |     &quot;&quot;&quot;Set an expiration time for a Redis key.
+   59 | 
+   60 |     Args:
+<span class="t">   61 |         name: The Redis key.</span>
+   62 |         expire_seconds: Time in seconds after which the key should expire.
+   63 | 
+   64 |     Returns:
+   65 |         A success message or an error message.
+   66 |     &quot;&quot;&quot;
+   67 |     try:
+   68 |         r = ValkeyConnectionManager.get_connection()
+   69 |         success = r.expire(name, expire_seconds)</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/awslabs/mcp/commit/6827ea31fbdef08e648b0c422e4158f913001f59">6827ea31fb</a> (2025-06-04T15:44:58+00:00)</h2><p class="k">feat: fix and check license header automation (#510)<br>Path after this commit: src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py b/src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py
+index ec786d4c..0d123fab 100644
+<span class="d">--- a/src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py</span>
+<span class="a">+++ b/src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py</span>
+<span class="h">@@ -1,13 +1,16 @@</span>
+ # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ #
+<span class="d">-# Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance</span>
+<span class="d">-# with the License. A copy of the License is located at</span>
+<span class="a">+# Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="a">+# you may not use this file except in compliance with the License.</span>
+<span class="a">+# You may obtain a copy of the License at</span>
+ #
+<span class="d">-#    http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="a">+#     http://www.apache.org/licenses/LICENSE-2.0</span>
+ #
+<span class="d">-# or in the &#x27;license&#x27; file accompanying this file. This file is distributed on an &#x27;AS IS&#x27; BASIS, WITHOUT WARRANTIES</span>
+<span class="d">-# OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions</span>
+<span class="d">-# and limitations under the License.</span>
+<span class="a">+# Unless required by applicable law or agreed to in writing, software</span>
+<span class="a">+# distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="a">+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="a">+# See the License for the specific language governing permissions and</span>
+<span class="a">+# limitations under the License.</span>
+ 
+ from awslabs.valkey_mcp_server.common.connection import ValkeyConnectionManager
+ from awslabs.valkey_mcp_server.common.server import mcp</pre><h2>Commit #2: <a href="https://github.com/awslabs/mcp/commit/5334bdad6e7a665b7712637d58748a2860f49dc6">5334bdad6e</a> (2025-06-13T17:27:42+00:00)</h2><p class="k">feat: add readonly support for Valkey and Memcached MCP servers (#577)<br>Path after this commit: src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py b/src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py
+index 0d123fab..1d90d2f9 100644
+<span class="d">--- a/src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py</span>
+<span class="a">+++ b/src/valkey-mcp-server/awslabs/valkey_mcp_server/tools/misc.py</span>
+<span class="h">@@ -14,6 +14,7 @@</span>
+ 
+ from awslabs.valkey_mcp_server.common.connection import ValkeyConnectionManager
+ from awslabs.valkey_mcp_server.common.server import mcp
+<span class="a">+from awslabs.valkey_mcp_server.context import Context</span>
+ from typing import Any, Dict
+ from valkey.exceptions import ValkeyError as RedisError
+ 
+<span class="h">@@ -28,6 +29,10 @@ async def delete(key: str) -&gt; str:</span>
+     Returns:
+         str: Confirmation message or an error message.
+     &quot;&quot;&quot;
+<span class="a">+    # Check if readonly mode is enabled</span>
+<span class="a">+    if Context.readonly_mode():</span>
+<span class="a">+        return &#x27;Error: Cannot delete key in readonly mode&#x27;</span>
+<span class="a">+</span>
+     try:
+         r = ValkeyConnectionManager.get_connection()
+         result = r.delete(key)
+<span class="h">@@ -67,6 +72,10 @@ async def expire(name: str, expire_seconds: int) -&gt; str:</span>
+     Returns:
+         A success message or an error message.
+     &quot;&quot;&quot;
+<span class="a">+    # Check if readonly mode is enabled</span>
+<span class="a">+    if Context.readonly_mode():</span>
+<span class="a">+        return &#x27;Error: Cannot set expiration in readonly mode&#x27;</span>
+<span class="a">+</span>
+     try:
+         r = ValkeyConnectionManager.get_connection()
+         success = r.expire(name, expire_seconds)
+<span class="h">@@ -92,6 +101,10 @@ async def rename(old_key: str, new_key: str) -&gt; Dict[str, Any]:</span>
+             On success: {&quot;status&quot;: &quot;success&quot;, &quot;message&quot;: &quot;...&quot;}
+             On error: {&quot;error&quot;: &quot;...&quot;}
+     &quot;&quot;&quot;
+<span class="a">+    # Check if readonly mode is enabled</span>
+<span class="a">+    if Context.readonly_mode():</span>
+<span class="a">+        return {&#x27;error&#x27;: &#x27;Cannot rename key in readonly mode&#x27;}</span>
+<span class="a">+</span>
+     try:
+         r = ValkeyConnectionManager.get_connection()
+ </pre></body></html>

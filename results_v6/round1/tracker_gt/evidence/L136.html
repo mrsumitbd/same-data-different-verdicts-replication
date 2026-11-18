@@ -1,0 +1,195 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L136</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L136</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/testfx">microsoft/testfx</a><br><b>File at merge:</b> test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs, line 272<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/testfx/commit/bd581d6bc2d351db8c693d2e8926b888c0fa23e0">bd581d6bc2</a> (2025-06-18T08:20:30)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/testfx/tree/4e84b8461ead6927f6323338a9f13bb4c09aabc4">4e84b8461e</a>)</p><p><b>The line:</b></p><pre><span class="t">        Action action = () =&gt; Assert.IsPositive(-5, &quot;A Message&quot;);</span></pre><h2>File at the merge commit, lines 264 to 280</h2><pre>  264 | 
+  265 |         // Assert
+  266 |         action.Should().Throw&lt;AssertFailedException&gt;();
+  267 |     }
+  268 | 
+  269 |     public void IsPositiveShouldThrowWithMessage()
+  270 |     {
+  271 |         // Act
+<span class="t">  272 |         Action action = () =&gt; Assert.IsPositive(-5, &quot;A Message&quot;);</span>
+  273 | 
+  274 |         // Assert
+  275 |         action.Should().Throw&lt;AssertFailedException&gt;()
+  276 |             .WithMessage(&quot;Assert.IsPositive failed. Expected value &lt;-5&gt; to be positive. A Message&quot;);
+  277 |     }
+  278 | 
+  279 |     public void IsPositiveShouldThrowWithMessageAndParameters()
+  280 |     {</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/testfx/commit/521414eee1750e357572e1747c6f54a1264b67d6">521414eee1</a> (2025-06-24T19:51:21+00:00)</h2><p class="k">Adjust new assert APIs before shipping (#5866)<br>Path after this commit: test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs b/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs
+index 113d6cfc0..33267fd00 100644
+<span class="d">--- a/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs</span>
+<span class="a">+++ b/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs</span>
+<span class="h">@@ -45,16 +45,6 @@ public partial class AssertTests : TestContainer</span>
+             .WithMessage(&quot;Assert.IsGreaterThan failed. Actual value &lt;5&gt; is not greater than expected value &lt;10&gt;. A Message&quot;);
+     }
+ 
+<span class="d">-    public void IsGreaterThanShouldThrowWithMessageAndParameters()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Act</span>
+<span class="d">-        Action action = () =&gt; Assert.IsGreaterThan(10, 5, &quot;A Message {0}&quot;, &quot;param&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        // Assert</span>
+<span class="d">-        action.Should().Throw&lt;AssertFailedException&gt;()</span>
+<span class="d">-            .WithMessage(&quot;Assert.IsGreaterThan failed. Actual value &lt;5&gt; is not greater than expected value &lt;10&gt;. A Message param&quot;);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     public void IsGreaterThanShouldWorkWithDoubles() =&gt;
+         Assert.IsGreaterThan(5.0, 5.5);
+ 
+<span class="h">@@ -99,16 +89,6 @@ public partial class AssertTests : TestContainer</span>
+             .WithMessage(&quot;Assert.IsGreaterThanOrEqualTo failed. Actual value &lt;5&gt; is not greater than or equal to expected value &lt;10&gt;. A Message&quot;);
+     }
+ 
+<span class="d">-    public void IsGreaterThanOrEqualToShouldThrowWithMessageAndParameters()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Act</span>
+<span class="d">-        Action action = () =&gt; Assert.IsGreaterThanOrEqualTo(10, 5, &quot;A Message {0}&quot;, &quot;param&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        // Assert</span>
+<span class="d">-        action.Should().Throw&lt;AssertFailedException&gt;()</span>
+<span class="d">-            .WithMessage(&quot;Assert.IsGreaterThanOrEqualTo failed. Actual value &lt;5&gt; is not greater than or equal to expected value &lt;10&gt;. A Message param&quot;);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     public void IsGreaterThanOrEqualToShouldWorkWithDoubles() =&gt;
+         Assert.IsGreaterThanOrEqualTo(5.0, 5.5);
+ 
+<span class="h">@@ -153,16 +133,6 @@ public partial class AssertTests : TestContainer</span>
+             .WithMessage(&quot;Assert.IsLessThan failed. Actual value &lt;10&gt; is not less than expected value &lt;5&gt;. A Message&quot;);
+     }
+ 
+<span class="d">-    public void IsLessThanShouldThrowWithMessageAndParameters()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Act</span>
+<span class="d">-        Action action = () =&gt; Assert.IsLessThan(5, 10, &quot;A Message {0}&quot;, &quot;param&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        // Assert</span>
+<span class="d">-        action.Should().Throw&lt;AssertFailedException&gt;()</span>
+<span class="d">-            .WithMessage(&quot;Assert.IsLessThan failed. Actual value &lt;10&gt; is not less than expected value &lt;5&gt;. A Message param&quot;);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     public void IsLessThanShouldWorkWithDoubles() =&gt;
+         Assert.IsLessThan(5.5, 5.0);
+ 
+<span class="h">@@ -207,16 +177,6 @@ public partial class AssertTests : TestContainer</span>
+             .WithMessage(&quot;Assert.IsLessThanOrEqualTo failed. Actual value &lt;10&gt; is not less than or equal to expected value &lt;5&gt;. A Message&quot;);
+     }
+ 
+<span class="d">-    public void IsLessThanOrEqualToShouldThrowWithMessageAndParameters()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Act</span>
+<span class="d">-        Action action = () =&gt; Assert.IsLessThanOrEqualTo(5, 10, &quot;A Message {0}&quot;, &quot;param&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        // Assert</span>
+<span class="d">-        action.Should().Throw&lt;AssertFailedException&gt;()</span>
+<span class="d">-            .WithMessage(&quot;Assert.IsLessThanOrEqualTo failed. Actual value &lt;10&gt; is not less than or equal to expected value &lt;5&gt;. A Message param&quot;);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     public void IsLessThanOrEqualToShouldWorkWithDoubles() =&gt;
+         Assert.IsLessThanOrEqualTo(5.5, 5.0);
+ 
+<span class="h">@@ -276,16 +236,6 @@ public partial class AssertTests : TestContainer</span>
+             .WithMessage(&quot;Assert.IsPositive failed. Expected value &lt;-5&gt; to be positive. A Message&quot;);
+     }
+ 
+<span class="d">-    public void IsPositiveShouldThrowWithMessageAndParameters()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Act</span>
+<span class="d">-        Action action = () =&gt; Assert.IsPositive(-5, &quot;A Message {0}&quot;, &quot;param&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        // Assert</span>
+<span class="d">-        action.Should().Throw&lt;AssertFailedException&gt;()</span>
+<span class="d">-            .WithMessage(&quot;Assert.IsPositive failed. Expected value &lt;-5&gt; to be positive. A Message param&quot;);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     public void IsPositiveShouldWorkWithDoubles() =&gt;
+         Assert.IsPositive(5.5);
+ 
+<span class="h">@@ -351,16 +301,6 @@ public partial class AssertTests : TestContainer</span>
+             .WithMessage(&quot;Assert.IsNegative failed. Expected value &lt;5&gt; to be negative. A Message&quot;);
+     }
+ 
+<span class="d">-    public void IsNegativeShouldThrowWithMessageAndParameters()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Act</span>
+<span class="d">-        Action action = () =&gt; Assert.IsNegative(5, &quot;A Message {0}&quot;, &quot;param&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        // Assert</span>
+<span class="d">-        action.Should().Throw&lt;AssertFailedException&gt;()</span>
+<span class="d">-            .WithMessage(&quot;Assert.IsNegative failed. Expected value &lt;5&gt; to be negative. A Message param&quot;);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     public void IsNegativeShouldWorkWithDoubles() =&gt;
+         Assert.IsNegative(-5.5);
+ </pre><h2>Commit #2: <a href="https://github.com/microsoft/testfx/commit/4c428c0d0b72c650cabd8c7eaa2dc31dfcb7c709">4c428c0d0b</a> (2025-07-30T11:37:44+00:00)</h2><p class="k">Bump dependencies (#6243)<br>Path after this commit: test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs b/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs
+index 33267fd00..4b17cb9ae 100644
+<span class="d">--- a/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs</span>
+<span class="a">+++ b/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+ // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+ 
+<span class="d">-using FluentAssertions;</span>
+<span class="a">+using AwesomeAssertions;</span>
+ 
+ using TestFramework.ForTestingMSTest;
+ </pre><h2>Commit #3: <a href="https://github.com/microsoft/testfx/commit/eb5b6faddef438da605c707b063443d90a027762">eb5b6fadde</a> (2025-10-02T07:30:45+02:00)</h2><p class="k">Merge rel/4.0 to main (#6647)<br>Path after this commit: test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs b/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs
+index 4b17cb9ae..a574b23c5 100644
+<span class="d">--- a/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs</span>
+<span class="a">+++ b/test/UnitTests/TestFramework.UnitTests/Assertions/AssertTests.IComparableTests.cs</span>
+<span class="h">@@ -42,7 +42,7 @@ public partial class AssertTests : TestContainer</span>
+ 
+         // Assert
+         action.Should().Throw&lt;AssertFailedException&gt;()
+<span class="d">-            .WithMessage(&quot;Assert.IsGreaterThan failed. Actual value &lt;5&gt; is not greater than expected value &lt;10&gt;. A Message&quot;);</span>
+<span class="a">+            .WithMessage(&quot;Assert.IsGreaterThan failed. Actual value &lt;5&gt; is not greater than expected value &lt;10&gt;. &#x27;lowerBound&#x27; expression: &#x27;10&#x27;, &#x27;value&#x27; expression: &#x27;5&#x27;. A Message&quot;);</span>
+     }
+ 
+     public void IsGreaterThanShouldWorkWithDoubles() =&gt;
+<span class="h">@@ -86,7 +86,7 @@ public partial class AssertTests : TestContainer</span>
+ 
+         // Assert
+         action.Should().Throw&lt;AssertFailedException&gt;()
+<span class="d">-            .WithMessage(&quot;Assert.IsGreaterThanOrEqualTo failed. Actual value &lt;5&gt; is not greater than or equal to expected value &lt;10&gt;. A Message&quot;);</span>
+<span class="a">+            .WithMessage(&quot;Assert.IsGreaterThanOrEqualTo failed. Actual value &lt;5&gt; is not greater than or equal to expected value &lt;10&gt;. &#x27;lowerBound&#x27; expression: &#x27;10&#x27;, &#x27;value&#x27; expression: &#x27;5&#x27;. A Message&quot;);</span>
+     }
+ 
+     public void IsGreaterThanOrEqualToShouldWorkWithDoubles() =&gt;
+<span class="h">@@ -130,7 +130,7 @@ public partial class AssertTests : TestContainer</span>
+ 
+         // Assert
+         action.Should().Throw&lt;AssertFailedException&gt;()
+<span class="d">-            .WithMessage(&quot;Assert.IsLessThan failed. Actual value &lt;10&gt; is not less than expected value &lt;5&gt;. A Message&quot;);</span>
+<span class="a">+            .WithMessage(&quot;Assert.IsLessThan failed. Actual value &lt;10&gt; is not less than expected value &lt;5&gt;. &#x27;upperBound&#x27; expression: &#x27;5&#x27;, &#x27;value&#x27; expression: &#x27;10&#x27;. A Message&quot;);</span>
+     }
+ 
+     public void IsLessThanShouldWorkWithDoubles() =&gt;
+<span class="h">@@ -174,7 +174,7 @@ public partial class AssertTests : TestContainer</span>
+ 
+         // Assert
+         action.Should().Throw&lt;AssertFailedException&gt;()
+<span class="d">-            .WithMessage(&quot;Assert.IsLessThanOrEqualTo failed. Actual value &lt;10&gt; is not less than or equal to expected value &lt;5&gt;. A Message&quot;);</span>
+<span class="a">+            .WithMessage(&quot;Assert.IsLessThanOrEqualTo failed. Actual value &lt;10&gt; is not less than or equal to expected value &lt;5&gt;. &#x27;upperBound&#x27; expression: &#x27;5&#x27;, &#x27;value&#x27; expression: &#x27;10&#x27;. A Message&quot;);</span>
+     }
+ 
+     public void IsLessThanOrEqualToShouldWorkWithDoubles() =&gt;
+<span class="h">@@ -233,7 +233,7 @@ public partial class AssertTests : TestContainer</span>
+ 
+         // Assert
+         action.Should().Throw&lt;AssertFailedException&gt;()
+<span class="d">-            .WithMessage(&quot;Assert.IsPositive failed. Expected value &lt;-5&gt; to be positive. A Message&quot;);</span>
+<span class="a">+            .WithMessage(&quot;Assert.IsPositive failed. Expected value &lt;-5&gt; to be positive. &#x27;value&#x27; expression: &#x27;-5&#x27;. A Message&quot;);</span>
+     }
+ 
+     public void IsPositiveShouldWorkWithDoubles() =&gt;
+<span class="h">@@ -298,7 +298,7 @@ public partial class AssertTests : TestContainer</span>
+ 
+         // Assert
+         action.Should().Throw&lt;AssertFailedException&gt;()
+<span class="d">-            .WithMessage(&quot;Assert.IsNegative failed. Expected value &lt;5&gt; to be negative. A Message&quot;);</span>
+<span class="a">+            .WithMessage(&quot;Assert.IsNegative failed. Expected value &lt;5&gt; to be negative. &#x27;value&#x27; expression: &#x27;5&#x27;. A Message&quot;);</span>
+     }
+ 
+     public void IsNegativeShouldWorkWithDoubles() =&gt;</pre></body></html>

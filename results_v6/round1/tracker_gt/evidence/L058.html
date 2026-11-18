@@ -1,0 +1,367 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L058</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L058</h1><p><b>Repository:</b> <a href="https://github.com/jlowin/fastmcp">jlowin/fastmcp</a><br><b>File at merge:</b> src/fastmcp/cli/install/mcp_json.py, line 59<br><b>Merge commit (birth):</b> <a href="https://github.com/jlowin/fastmcp/commit/a65bfd10bef143eafda9ceec4ab9b14a209d2d7c">a65bfd10be</a> (2025-07-20T01:16:09)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/jlowin/fastmcp/tree/38ec476f2e378f8405c4aee733beb8ae48e7f803">38ec476f2e</a>)</p><p><b>The line:</b></p><pre><span class="t">            args.extend([&quot;--project&quot;, str(project)])</span></pre><h2>File at the merge commit, lines 51 to 67</h2><pre>   51 |         args = [&quot;run&quot;]
+   52 | 
+   53 |         # Add Python version if specified
+   54 |         if python_version:
+   55 |             args.extend([&quot;--python&quot;, python_version])
+   56 | 
+   57 |         # Add project if specified
+   58 |         if project:
+<span class="t">   59 |             args.extend([&quot;--project&quot;, str(project)])</span>
+   60 | 
+   61 |         # Collect all packages in a set to deduplicate
+   62 |         packages = {&quot;fastmcp&quot;}
+   63 |         if with_packages:
+   64 |             packages.update(pkg for pkg in with_packages if pkg)
+   65 | 
+   66 |         # Add all packages with --with
+   67 |         for pkg in sorted(packages):</pre><p class="k">Below are all 11 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/jlowin/fastmcp/commit/d52d6d8fffb49db54846a97aebcdb18845169eef">d52d6d8fff</a> (2025-08-06T13:12:52-04:00)</h2><p class="k">Support factory functions in fastmcp run (#1384)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index 1afaa7a3..b5145c18 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -113,7 +113,7 @@ def install_mcp_json(</span>
+         return False
+ 
+ 
+<span class="d">-def mcp_json_command(</span>
+<span class="a">+async def mcp_json_command(</span>
+     server_spec: str,
+     *,
+     server_name: Annotated[
+<span class="h">@@ -188,7 +188,7 @@ def mcp_json_command(</span>
+     Args:
+         server_spec: Python file to install, optionally with :object suffix
+     &quot;&quot;&quot;
+<span class="d">-    file, server_object, name, packages, env_dict = process_common_args(</span>
+<span class="a">+    file, server_object, name, packages, env_dict = await process_common_args(</span>
+         server_spec, server_name, with_packages, env_vars, env_file
+     )
+ </pre><h2>Commit #2: <a href="https://github.com/jlowin/fastmcp/commit/302eb9c3f5d57db5b2b7bbe986e44a78b129418d">302eb9c3f5</a> (2025-08-22T20:19:22-04:00)</h2><p class="k">Remove invalid-argument-type ignore and fix type errors (#1588)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index b5145c18..bc845bf2 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -135,7 +135,7 @@ async def mcp_json_command(</span>
+         cyclopts.Parameter(
+             &quot;--with&quot;,
+             help=&quot;Additional packages to install&quot;,
+<span class="d">-            negative=False,</span>
+<span class="a">+            negative=&quot;&quot;,</span>
+         ),
+     ] = [],
+     env_vars: Annotated[
+<span class="h">@@ -143,7 +143,7 @@ async def mcp_json_command(</span>
+         cyclopts.Parameter(
+             &quot;--env&quot;,
+             help=&quot;Environment variables in KEY=VALUE format&quot;,
+<span class="d">-            negative=False,</span>
+<span class="a">+            negative=&quot;&quot;,</span>
+         ),
+     ] = [],
+     env_file: Annotated[
+<span class="h">@@ -158,7 +158,7 @@ async def mcp_json_command(</span>
+         cyclopts.Parameter(
+             &quot;--copy&quot;,
+             help=&quot;Copy configuration to clipboard instead of printing to stdout&quot;,
+<span class="d">-            negative=False,</span>
+<span class="a">+            negative=&quot;&quot;,</span>
+         ),
+     ] = False,
+     python: Annotated[</pre><h2>Commit #3: <a href="https://github.com/jlowin/fastmcp/commit/007af5d9b35fece2292aaa1cde31ab79e9f788ae">007af5d9b3</a> (2025-08-23T19:54:25-04:00)</h2><p class="k">Merge branch &#x27;main&#x27; of https://github.com/jlowin/fastmcp<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index bc845bf2..2a8ed1dc 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -9,6 +9,7 @@ import cyclopts</span>
+ import pyperclip
+ from rich import print
+ 
+<span class="a">+from fastmcp.utilities.cli import build_uv_run_args</span>
+ from fastmcp.utilities.logging import get_logger
+ 
+ from .shared import process_common_args
+<span class="h">@@ -47,31 +48,14 @@ def install_mcp_json(</span>
+         True if generation was successful, False otherwise
+     &quot;&quot;&quot;
+     try:
+<span class="d">-        # Build uv run command</span>
+<span class="d">-        args = [&quot;run&quot;]</span>
+<span class="d">-</span>
+<span class="d">-        # Add Python version if specified</span>
+<span class="d">-        if python_version:</span>
+<span class="d">-            args.extend([&quot;--python&quot;, python_version])</span>
+<span class="d">-</span>
+<span class="d">-        # Add project if specified</span>
+<span class="d">-        if project:</span>
+<span class="d m">-            args.extend([&quot;--project&quot;, str(project)])</span>
+<span class="d">-</span>
+<span class="d">-        # Collect all packages in a set to deduplicate</span>
+<span class="d">-        packages = {&quot;fastmcp&quot;}</span>
+<span class="d">-        if with_packages:</span>
+<span class="d">-            packages.update(pkg for pkg in with_packages if pkg)</span>
+<span class="d">-</span>
+<span class="d">-        # Add all packages with --with</span>
+<span class="d">-        for pkg in sorted(packages):</span>
+<span class="d">-            args.extend([&quot;--with&quot;, pkg])</span>
+<span class="d">-</span>
+<span class="d">-        if with_editable:</span>
+<span class="d">-            args.extend([&quot;--with-editable&quot;, str(with_editable)])</span>
+<span class="d">-</span>
+<span class="d">-        if with_requirements:</span>
+<span class="d">-            args.extend([&quot;--with-requirements&quot;, str(with_requirements)])</span>
+<span class="a">+        # Build uv run command using centralized function</span>
+<span class="a">+        args = build_uv_run_args(</span>
+<span class="a">+            with_editable=with_editable,</span>
+<span class="a">+            with_packages=with_packages,</span>
+<span class="a">+            python_version=python_version,</span>
+<span class="a">+            with_requirements=with_requirements,</span>
+<span class="a">+            project=project,</span>
+<span class="a">+        )</span>
+ 
+         # Build server spec from parsed components
+         if server_object:</pre><h2>Commit #4: <a href="https://github.com/jlowin/fastmcp/commit/1f3f82d245f97632b9bd9ccb63746acad9c87f71">1f3f82d245</a> (2025-08-24T16:32:37-04:00)</h2><p class="k">Implement typed source system for FastMCP configuration (#1607)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index 2a8ed1dc..be9443fa 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -9,7 +9,7 @@ import cyclopts</span>
+ import pyperclip
+ from rich import print
+ 
+<span class="d">-from fastmcp.utilities.cli import build_uv_run_args</span>
+<span class="a">+from fastmcp.utilities.fastmcp_config import Environment</span>
+ from fastmcp.utilities.logging import get_logger
+ 
+ from .shared import process_common_args
+<span class="h">@@ -48,14 +48,22 @@ def install_mcp_json(</span>
+         True if generation was successful, False otherwise
+     &quot;&quot;&quot;
+     try:
+<span class="d">-        # Build uv run command using centralized function</span>
+<span class="d">-        args = build_uv_run_args(</span>
+<span class="d">-            with_editable=with_editable,</span>
+<span class="d">-            with_packages=with_packages,</span>
+<span class="d">-            python_version=python_version,</span>
+<span class="d">-            with_requirements=with_requirements,</span>
+<span class="d">-            project=project,</span>
+<span class="a">+        # Deduplicate packages and exclude &#x27;fastmcp&#x27; since Environment adds it automatically</span>
+<span class="a">+        deduplicated_packages = None</span>
+<span class="a">+        if with_packages:</span>
+<span class="a">+            deduplicated = list(dict.fromkeys(with_packages))</span>
+<span class="a">+            deduplicated_packages = [pkg for pkg in deduplicated if pkg != &quot;fastmcp&quot;]</span>
+<span class="a">+            if not deduplicated_packages:</span>
+<span class="a">+                deduplicated_packages = None</span>
+<span class="a">+</span>
+<span class="a">+        env_config = Environment(</span>
+<span class="a">+            python=python_version,</span>
+<span class="a">+            dependencies=deduplicated_packages,</span>
+<span class="a">+            requirements=str(with_requirements) if with_requirements else None,</span>
+<span class="a">+            project=str(project) if project else None,</span>
+<span class="a">+            editable=str(with_editable) if with_editable else None,</span>
+         )
+<span class="a">+        args = env_config.build_uv_args()</span>
+ 
+         # Build server spec from parsed components
+         if server_object:</pre><h2>Commit #5: <a href="https://github.com/jlowin/fastmcp/commit/465e4033e7f00bd162de83f214e85ae5c168061c">465e4033e7</a> (2025-08-25T22:09:27-04:00)</h2><p class="k">Improve fastmcp.json environment configuration and project-based deployments (#1631)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index be9443fa..9315c40e 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -61,7 +61,7 @@ def install_mcp_json(</span>
+             dependencies=deduplicated_packages,
+             requirements=str(with_requirements) if with_requirements else None,
+             project=str(project) if project else None,
+<span class="d">-            editable=str(with_editable) if with_editable else None,</span>
+<span class="a">+            editable=[str(with_editable)] if with_editable else None,</span>
+         )
+         args = env_config.build_uv_args()
+ </pre><h2>Commit #6: <a href="https://github.com/jlowin/fastmcp/commit/ddf691cf5356c68a22275e1f1d107803228d66be">ddf691cf53</a> (2025-08-26T10:06:51-04:00)</h2><p class="k">Support multiple --with-editable flags in CLI commands (#1634)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index 9315c40e..42696ae6 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -22,7 +22,7 @@ def install_mcp_json(</span>
+     server_object: str | None,
+     name: str,
+     *,
+<span class="d">-    with_editable: Path | None = None,</span>
+<span class="a">+    with_editable: list[Path] | None = None,</span>
+     with_packages: list[str] | None = None,
+     env_vars: dict[str, str] | None = None,
+     copy: bool = False,
+<span class="h">@@ -36,7 +36,7 @@ def install_mcp_json(</span>
+         file: Path to the server file
+         server_object: Optional server object name (for :object suffix)
+         name: Name for the server in MCP config
+<span class="d">-        with_editable: Optional directory to install in editable mode</span>
+<span class="a">+        with_editable: Optional list of directories to install in editable mode</span>
+         with_packages: Optional list of additional packages to install
+         env_vars: Optional dictionary of environment variables
+         copy: If True, copy to clipboard instead of printing to stdout
+<span class="h">@@ -61,7 +61,7 @@ def install_mcp_json(</span>
+             dependencies=deduplicated_packages,
+             requirements=str(with_requirements) if with_requirements else None,
+             project=str(project) if project else None,
+<span class="d">-            editable=[str(with_editable)] if with_editable else None,</span>
+<span class="a">+            editable=[str(p) for p in with_editable] if with_editable else None,</span>
+         )
+         args = env_config.build_uv_args()
+ 
+<span class="h">@@ -116,28 +116,29 @@ async def mcp_json_command(</span>
+         ),
+     ] = None,
+     with_editable: Annotated[
+<span class="d">-        Path | None,</span>
+<span class="a">+        list[Path] | None,</span>
+         cyclopts.Parameter(
+<span class="d">-            name=[&quot;--with-editable&quot;, &quot;-e&quot;],</span>
+<span class="d">-            help=&quot;Directory with pyproject.toml to install in editable mode&quot;,</span>
+<span class="a">+            &quot;--with-editable&quot;,</span>
+<span class="a">+            help=&quot;Directory with pyproject.toml to install in editable mode (can be used multiple times)&quot;,</span>
+<span class="a">+            negative=&quot;&quot;,</span>
+         ),
+     ] = None,
+     with_packages: Annotated[
+<span class="d">-        list[str],</span>
+<span class="a">+        list[str] | None,</span>
+         cyclopts.Parameter(
+             &quot;--with&quot;,
+<span class="d">-            help=&quot;Additional packages to install&quot;,</span>
+<span class="a">+            help=&quot;Additional packages to install (can be used multiple times)&quot;,</span>
+             negative=&quot;&quot;,
+         ),
+<span class="d">-    ] = [],</span>
+<span class="a">+    ] = None,</span>
+     env_vars: Annotated[
+<span class="d">-        list[str],</span>
+<span class="a">+        list[str] | None,</span>
+         cyclopts.Parameter(
+             &quot;--env&quot;,
+<span class="d">-            help=&quot;Environment variables in KEY=VALUE format&quot;,</span>
+<span class="a">+            help=&quot;Environment variables in KEY=VALUE format (can be used multiple times)&quot;,</span>
+             negative=&quot;&quot;,
+         ),
+<span class="d">-    ] = [],</span>
+<span class="a">+    ] = None,</span>
+     env_file: Annotated[
+         Path | None,
+         cyclopts.Parameter(
+<span class="h">@@ -180,6 +181,10 @@ async def mcp_json_command(</span>
+     Args:
+         server_spec: Python file to install, optionally with :object suffix
+     &quot;&quot;&quot;
+<span class="a">+    # Convert None to empty lists for list parameters</span>
+<span class="a">+    with_editable = with_editable or []</span>
+<span class="a">+    with_packages = with_packages or []</span>
+<span class="a">+    env_vars = env_vars or []</span>
+     file, server_object, name, packages, env_dict = await process_common_args(
+         server_spec, server_name, with_packages, env_vars, env_file
+     )</pre><h2>Commit #7: <a href="https://github.com/jlowin/fastmcp/commit/536ccde9e88c42690a75d6783f124c82d993a4b6">536ccde9e8</a> (2025-08-29T09:43:39-04:00)</h2><p class="k">Consolidate CLI config parsing and prevent infinite loops (#1660)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index 42696ae6..5ea46659 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -63,21 +63,19 @@ def install_mcp_json(</span>
+             project=str(project) if project else None,
+             editable=[str(p) for p in with_editable] if with_editable else None,
+         )
+<span class="d">-        args = env_config.build_uv_args()</span>
+<span class="d">-</span>
+         # Build server spec from parsed components
+         if server_object:
+             server_spec = f&quot;{file.resolve()}:{server_object}&quot;
+         else:
+             server_spec = str(file.resolve())
+ 
+<span class="d">-        # Add fastmcp run command</span>
+<span class="d">-        args.extend([&quot;fastmcp&quot;, &quot;run&quot;, server_spec])</span>
+<span class="a">+        # Build the full command</span>
+<span class="a">+        full_command = env_config.build_uv_run_command([&quot;fastmcp&quot;, &quot;run&quot;, server_spec])</span>
+ 
+         # Build MCP server configuration
+         server_config = {
+<span class="d">-            &quot;command&quot;: &quot;uv&quot;,</span>
+<span class="d">-            &quot;args&quot;: args,</span>
+<span class="a">+            &quot;command&quot;: full_command[0],</span>
+<span class="a">+            &quot;args&quot;: full_command[1:],</span>
+         }
+ 
+         # Add environment variables if provided</pre><h2>Commit #8: <a href="https://github.com/jlowin/fastmcp/commit/6d46192659200eb1d93f1741c4cf42be432e291b">6d46192659</a> (2025-08-29T21:37:39-04:00)</h2><p class="k">Internal refactor: fastmcp config to mcp server config (#1672)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index 5ea46659..7fab1e06 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -9,8 +9,8 @@ import cyclopts</span>
+ import pyperclip
+ from rich import print
+ 
+<span class="d">-from fastmcp.utilities.fastmcp_config import Environment</span>
+ from fastmcp.utilities.logging import get_logger
+<span class="a">+from fastmcp.utilities.mcp_server_config import Environment</span>
+ 
+ from .shared import process_common_args
+ </pre><h2>Commit #9: <a href="https://github.com/jlowin/fastmcp/commit/ea47d232bc7c4c360a36ffafe9bdca25a9612a0e">ea47d232bc</a> (2025-08-29T22:29:35-04:00)</h2><p class="k">Refactor Environment to support multiple runtime types (#1673)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index 7fab1e06..aa860eeb 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -10,7 +10,7 @@ import pyperclip</span>
+ from rich import print
+ 
+ from fastmcp.utilities.logging import get_logger
+<span class="d">-from fastmcp.utilities.mcp_server_config import Environment</span>
+<span class="a">+from fastmcp.utilities.mcp_server_config.v1.environments.uv import UVEnvironment</span>
+ 
+ from .shared import process_common_args
+ 
+<span class="h">@@ -56,7 +56,7 @@ def install_mcp_json(</span>
+             if not deduplicated_packages:
+                 deduplicated_packages = None
+ 
+<span class="d">-        env_config = Environment(</span>
+<span class="a">+        env_config = UVEnvironment(</span>
+             python=python_version,
+             dependencies=deduplicated_packages,
+             requirements=str(with_requirements) if with_requirements else None,
+<span class="h">@@ -70,7 +70,7 @@ def install_mcp_json(</span>
+             server_spec = str(file.resolve())
+ 
+         # Build the full command
+<span class="d">-        full_command = env_config.build_uv_run_command([&quot;fastmcp&quot;, &quot;run&quot;, server_spec])</span>
+<span class="a">+        full_command = env_config.build_command([&quot;fastmcp&quot;, &quot;run&quot;, server_spec])</span>
+ 
+         # Build MCP server configuration
+         server_config = {</pre><h2>Commit #10: <a href="https://github.com/jlowin/fastmcp/commit/66da6d2f6a846d2107f5433559d7ba9876141b2c">66da6d2f6a</a> (2025-09-06T14:21:56-04:00)</h2><p class="k">Clean up uvenvironment and ensure `uv run --with fastmcp` is used by install commands (#1769)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index aa860eeb..7dcb0c0d 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -48,17 +48,9 @@ def install_mcp_json(</span>
+         True if generation was successful, False otherwise
+     &quot;&quot;&quot;
+     try:
+<span class="d">-        # Deduplicate packages and exclude &#x27;fastmcp&#x27; since Environment adds it automatically</span>
+<span class="d">-        deduplicated_packages = None</span>
+<span class="d">-        if with_packages:</span>
+<span class="d">-            deduplicated = list(dict.fromkeys(with_packages))</span>
+<span class="d">-            deduplicated_packages = [pkg for pkg in deduplicated if pkg != &quot;fastmcp&quot;]</span>
+<span class="d">-            if not deduplicated_packages:</span>
+<span class="d">-                deduplicated_packages = None</span>
+<span class="d">-</span>
+         env_config = UVEnvironment(
+             python=python_version,
+<span class="d">-            dependencies=deduplicated_packages,</span>
+<span class="a">+            dependencies=(with_packages or []) + [&quot;fastmcp&quot;],</span>
+             requirements=str(with_requirements) if with_requirements else None,
+             project=str(project) if project else None,
+             editable=[str(p) for p in with_editable] if with_editable else None,</pre><h2>Commit #11: <a href="https://github.com/jlowin/fastmcp/commit/3a21e7b9b22bd3cc533c19d7a9bac866f961f85e">3a21e7b9b2</a> (2025-09-29T20:04:12-04:00)</h2><p class="k">Fix path resolution in install commands (#1951)<br>Path after this commit: src/fastmcp/cli/install/mcp_json.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/fastmcp/cli/install/mcp_json.py b/src/fastmcp/cli/install/mcp_json.py
+index 7dcb0c0d..95ccb3ca 100644
+<span class="d">--- a/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="a">+++ b/src/fastmcp/cli/install/mcp_json.py</span>
+<span class="h">@@ -51,9 +51,9 @@ def install_mcp_json(</span>
+         env_config = UVEnvironment(
+             python=python_version,
+             dependencies=(with_packages or []) + [&quot;fastmcp&quot;],
+<span class="d">-            requirements=str(with_requirements) if with_requirements else None,</span>
+<span class="d">-            project=str(project) if project else None,</span>
+<span class="d">-            editable=[str(p) for p in with_editable] if with_editable else None,</span>
+<span class="a">+            requirements=with_requirements,</span>
+<span class="a">+            project=project,</span>
+<span class="a">+            editable=with_editable,</span>
+         )
+         # Build server spec from parsed components
+         if server_object:</pre></body></html>

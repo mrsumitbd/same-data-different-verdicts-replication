@@ -1,0 +1,102 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L014</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L014</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/ext_iceberg/src/functions/metadata.rs, line 469<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/d1f9d842dc7478f939a3c738abbd9db522474c0e">d1f9d842dc</a> (2025-06-03T21:05:58)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">            ProjectedColumn::Data(4) =&gt; {</span></pre><h2>File at the merge commit, lines 461 to 477</h2><pre>  461 |             ProjectedColumn::Data(3) =&gt; {
+  462 |                 // file_format
+  463 |                 let mut data = PhysicalUtf8::get_addressable_mut(arr.data_mut())?;
+  464 |                 for (idx, ent) in flattened_iter().enumerate() {
+  465 |                     data.put(idx, &amp;ent.entry.data_file.file_format);
+  466 |                 }
+  467 |                 Ok(())
+  468 |             }
+<span class="t">  469 |             ProjectedColumn::Data(4) =&gt; {</span>
+  470 |                 // record_count
+  471 |                 let mut data = PhysicalI64::get_addressable_mut(arr.data_mut())?;
+  472 |                 for (idx, ent) in flattened_iter().enumerate() {
+  473 |                     data.put(idx, &amp;ent.entry.data_file.record_count);
+  474 |                 }
+  475 |                 Ok(())
+  476 |             }
+  477 |             other =&gt; panic!(&quot;invalid projection: {other:?}&quot;),</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/57e9344619bdf33e066abcdccb11e47c9de6943c">57e9344619</a> (2025-06-04T12:25:10-04:00)</h2><p class="k">chore: Namespace all extension functions, allow aliases in default schema (#3901)<br>Path after this commit: crates/ext_iceberg/src/functions/metadata.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/ext_iceberg/src/functions/metadata.rs b/crates/ext_iceberg/src/functions/metadata.rs
+index 5556c068..d06bc6a5 100644
+<span class="d">--- a/crates/ext_iceberg/src/functions/metadata.rs</span>
+<span class="a">+++ b/crates/ext_iceberg/src/functions/metadata.rs</span>
+<span class="h">@@ -32,7 +32,7 @@ use crate::table::spec;</span>
+ use crate::table::state::TableState;
+ 
+ pub const FUNCTION_SET_ICEBERG_METADATA: TableFunctionSet = TableFunctionSet {
+<span class="d">-    name: &quot;iceberg_metadata&quot;,</span>
+<span class="a">+    name: &quot;metadata&quot;,</span>
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+         category: Category::Table,
+<span class="h">@@ -47,7 +47,7 @@ pub const FUNCTION_SET_ICEBERG_METADATA: TableFunctionSet = TableFunctionSet {</span>
+ };
+ 
+ pub const FUNCTION_SET_ICEBERG_SNAPSHOTS: TableFunctionSet = TableFunctionSet {
+<span class="d">-    name: &quot;iceberg_snapshots&quot;,</span>
+<span class="a">+    name: &quot;snapshots&quot;,</span>
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+         category: Category::Table,
+<span class="h">@@ -62,7 +62,7 @@ pub const FUNCTION_SET_ICEBERG_SNAPSHOTS: TableFunctionSet = TableFunctionSet {</span>
+ };
+ 
+ pub const FUNCTION_SET_ICEBERG_MANIFEST_LIST: TableFunctionSet = TableFunctionSet {
+<span class="d">-    name: &quot;iceberg_manifest_list&quot;,</span>
+<span class="a">+    name: &quot;manifest_list&quot;,</span>
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+         category: Category::Table,
+<span class="h">@@ -77,7 +77,7 @@ pub const FUNCTION_SET_ICEBERG_MANIFEST_LIST: TableFunctionSet = TableFunctionSe</span>
+ };
+ 
+ pub const FUNCTION_SET_ICEBERG_DATA_FILES: TableFunctionSet = TableFunctionSet {
+<span class="d">-    name: &quot;iceberg_data_files&quot;,</span>
+<span class="a">+    name: &quot;data_files&quot;,</span>
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+         category: Category::Table,</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/fc27146de6845685cbb2270351733c658b7643cb">fc27146de6</a> (2025-06-04T15:25:56-04:00)</h2><p class="k">chore: Add iceberg docs (#3903)<br>Path after this commit: crates/ext_iceberg/src/functions/metadata.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/ext_iceberg/src/functions/metadata.rs b/crates/ext_iceberg/src/functions/metadata.rs
+index d06bc6a5..85cfb742 100644
+<span class="d">--- a/crates/ext_iceberg/src/functions/metadata.rs</span>
+<span class="a">+++ b/crates/ext_iceberg/src/functions/metadata.rs</span>
+<span class="h">@@ -31,6 +31,8 @@ use glaredb_error::{OptionExt, Result};</span>
+ use crate::table::spec;
+ use crate::table::state::TableState;
+ 
+<span class="a">+// TODO: Some of these would benefit from &#x27;snapshot&#x27; parameter.</span>
+<span class="a">+</span>
+ pub const FUNCTION_SET_ICEBERG_METADATA: TableFunctionSet = TableFunctionSet {
+     name: &quot;metadata&quot;,
+     aliases: &amp;[],</pre><h2>Commit #3: <a href="https://github.com/glaredb/glaredb/commit/1cf167ad859afaa50fc28db3ace6f546629769fb">1cf167ad85</a> (2025-06-19T15:56:10+00:00)</h2><p class="k">Rename all ext_* crates to glaredb_ext_* prefix (#3933)<br>Path after this commit: crates/glaredb_ext_iceberg/src/functions/metadata.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/ext_iceberg/src/functions/metadata.rs b/crates/glaredb_ext_iceberg/src/functions/metadata.rs
+similarity index 100%
+rename from crates/ext_iceberg/src/functions/metadata.rs
+rename to crates/glaredb_ext_iceberg/src/functions/metadata.rs</pre><h2>Commit #4: <a href="https://github.com/glaredb/glaredb/commit/d924c67b71f88b7091a1c80554e1ac613546779a">d924c67b71</a> (2025-06-20T12:26:18-04:00)</h2><p class="k">chore: Adjust arguments to table function implementation methods (#3945)<br>Path after this commit: crates/glaredb_ext_iceberg/src/functions/metadata.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_ext_iceberg/src/functions/metadata.rs b/crates/glaredb_ext_iceberg/src/functions/metadata.rs
+index 85cfb742..70fd9a17 100644
+<span class="d">--- a/crates/glaredb_ext_iceberg/src/functions/metadata.rs</span>
+<span class="a">+++ b/crates/glaredb_ext_iceberg/src/functions/metadata.rs</span>
+<span class="h">@@ -526,7 +526,6 @@ where</span>
+     type PartitionState = MetadataFunctionPartitionState&lt;F&gt;;
+ 
+     async fn bind(
+<span class="d">-        &amp;&#x27;static self,</span>
+         scan_context: ScanContext&lt;&#x27;_&gt;,
+         input: TableFunctionInput,
+     ) -&gt; Result&lt;TableFunctionBindState&lt;Self::BindState&gt;&gt; {
+<span class="h">@@ -570,6 +569,7 @@ where</span>
+     }
+ 
+     fn create_pull_partition_states(
+<span class="a">+        _bind_state: &amp;Self::BindState,</span>
+         _op_state: &amp;Self::OperatorState,
+         _props: ExecutionProperties,
+         partitions: usize,
+<span class="h">@@ -586,6 +586,7 @@ where</span>
+ 
+     fn poll_pull(
+         _cx: &amp;mut Context,
+<span class="a">+        _bind_state: &amp;Self::BindState,</span>
+         op_state: &amp;Self::OperatorState,
+         state: &amp;mut Self::PartitionState,
+         output: &amp;mut Batch,</pre></body></html>

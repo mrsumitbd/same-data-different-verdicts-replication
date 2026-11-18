@@ -1,0 +1,10 @@
+======================================================================
+RQ4 intent by modifier type, 618 human-labelled commits (results_v6/labels618)
+Modifier: human=558, agent=60, missing=0
+Shares (%) corrective/perfective/adaptive/preventive[/unknown]; chi-square agent vs human modifier
+======================================================================
+human labels   human-modified 22.8/26.7/42.3/8.2        agent-modified 23.3/13.3/46.7/16.7       | p=0.040 V=0.12
+keyword        human-modified 34.2/16.5/29.6/9.5/10.2u  agent-modified 50.0/13.3/26.7/8.3/1.7u   | p=0.073 V=0.12
+deepseek       human-modified 21.9/24.9/50.2/3.0        agent-modified 21.7/16.7/48.3/13.3       | p=0.001 V=0.16
+gpt_oss        human-modified 19.2/24.7/51.8/4.3        agent-modified 18.3/21.7/50.0/10.0       | p=0.274 V=0.08
+minimax        human-modified 24.0/24.9/48.0/3.0        agent-modified 21.7/15.0/51.7/11.7       | p=0.005 V=0.14

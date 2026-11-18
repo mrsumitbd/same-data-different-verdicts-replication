@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L276 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L276: after the move</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>Original file:</b> packages/grida-canvas-transparency-grid/transparency-grid.ts (see L276.html)<br><b>Move commit:</b> <a href="https://github.com/gridaco/grida/commit/ccb06d4fae4a34dcb6b239a40e7ff2ad6709904c">ccb06d4fae</a> (commit #1 on L276.html)<br><b>Destination file (your label):</b> packages/grida-canvas-transparency-grid/transparency-grid-2d.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t">    ctx.setTransform(</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 66).</p><h2>Destination file at the move commit, lines 58 to 74</h2><pre>   58 |   }
+   59 | 
+   60 |   draw() {
+   61 |     const ctx = this.ctx;
+   62 |     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+   63 |     ctx.save();
+   64 | 
+   65 |     const [[sx, , tx], [, sy, ty]] = this.transform;
+<span class="t">   66 |     ctx.setTransform(</span>
+   67 |       sx * this.dpr,
+   68 |       0,
+   69 |       0,
+   70 |       sy * this.dpr,
+   71 |       tx * this.dpr,
+   72 |       ty * this.dpr
+   73 |     );
+   74 |     ctx.fillStyle = this.color;</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches the destination file after the move in the window.</b></p></body></html>

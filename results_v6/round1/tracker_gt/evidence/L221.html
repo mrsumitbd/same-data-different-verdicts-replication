@@ -1,0 +1,352 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L221</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L221</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>File at merge:</b> apps/studio/src/lib/editor/engine/copy/index.ts, line 107<br><b>Merge commit (birth):</b> <a href="https://github.com/onlook-dev/onlook/commit/5d8aedcb48174fc78406526004743e242d970b03">5d8aedcb48</a> (2025-01-18T02:06:34)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">                    const reader = new FileReader();</span></pre><h2>File at the merge commit, lines 99 to 115</h2><pre>   99 | 
+  100 |     async pasteImageFromClipboard(): Promise&lt;boolean&gt; {
+  101 |         try {
+  102 |             const clipboard = await navigator.clipboard.read();
+  103 |             for (const item of clipboard) {
+  104 |                 const imageType = item.types.find((type) =&gt; type.startsWith(&#x27;image/&#x27;));
+  105 |                 if (imageType) {
+  106 |                     const blob = await item.getType(imageType);
+<span class="t">  107 |                     const reader = new FileReader();</span>
+  108 |                     reader.readAsDataURL(blob);
+  109 |                     reader.onloadend = () =&gt; {
+  110 |                         const base64data = reader.result as string;
+  111 |                         this.editorEngine.image.insert(base64data, imageType);
+  112 |                     };
+  113 |                     return true;
+  114 |                 }
+  115 |             }</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/508f6130ce5f45d5709ad91e4706290afb10495c">508f6130ce</a> (2025-01-24T03:22:38-05:00)</h2><p class="k">Clear clipboard on copy (#1091)<br>Path after this commit: apps/studio/src/lib/editor/engine/copy/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/studio/src/lib/editor/engine/copy/index.ts b/apps/studio/src/lib/editor/engine/copy/index.ts
+index c0d03f88..d69cb2c5 100644
+<span class="d">--- a/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="a">+++ b/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="h">@@ -42,6 +42,15 @@ export class CopyManager {</span>
+         }
+         const codeBlock = await this.editorEngine.code.getCodeBlock(selectedEl.oid);
+         this.copied = { element: targetEl, codeBlock };
+<span class="a">+        this.clearClipboard();</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    clearClipboard() {</span>
+<span class="a">+        try {</span>
+<span class="a">+            navigator.clipboard.writeText(&#x27;&#x27;);</span>
+<span class="a">+        } catch (error) {</span>
+<span class="a">+            console.warn(&#x27;Failed to clear clipboard:&#x27;, error);</span>
+<span class="a">+        }</span>
+     }
+ 
+     async paste() {</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/129527b6e55aa4f5a43a4c05c855e138133ac45a">129527b6e5</a> (2025-02-13T15:26:31-05:00)</h2><p class="k">fix: messed up layer tree when copy/group/ungroup nested element (#1355)<br>Path after this commit: apps/studio/src/lib/editor/engine/copy/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/studio/src/lib/editor/engine/copy/index.ts b/apps/studio/src/lib/editor/engine/copy/index.ts
+index d69cb2c5..6fc32164 100644
+<span class="d">--- a/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="a">+++ b/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="h">@@ -136,9 +136,17 @@ export class CopyManager {</span>
+             [EditorAttributes.DATA_ONLOOK_INSERTED]: &#x27;true&#x27;,
+         };
+ 
+<span class="a">+        // Process children recursively</span>
+<span class="a">+        const processedChildren = copiedEl.children?.map((child) =&gt; {</span>
+<span class="a">+            const newChildDomId = createDomId();</span>
+<span class="a">+            const newChildOid = createOid();</span>
+<span class="a">+            return this.getCleanedCopyEl(child, newChildDomId, newChildOid);</span>
+<span class="a">+        });</span>
+<span class="a">+</span>
+         return {
+             ...copiedEl,
+             attributes: filteredAttr,
+<span class="a">+            children: processedChildren || [],</span>
+         };
+     }
+ </pre><h2>Commit #3: <a href="https://github.com/onlook-dev/onlook/commit/3a9e2932f151d6379e06d15e09fd136ca3042dfb">3a9e2932f1</a> (2025-02-17T18:05:10-05:00)</h2><p class="k">fix: issue when undo and redo with image action (#1405)<br>Path after this commit: apps/studio/src/lib/editor/engine/copy/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/studio/src/lib/editor/engine/copy/index.ts b/apps/studio/src/lib/editor/engine/copy/index.ts
+index 6fc32164..18c5fd6e 100644
+<span class="d">--- a/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="a">+++ b/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="h">@@ -97,10 +97,10 @@ export class CopyManager {</span>
+             location,
+             editText: null,
+             pasteParams: {
+<span class="d">-                codeBlock: this.copied.codeBlock,</span>
+                 oid: newOid,
+                 domId: newDomId,
+             },
+<span class="a">+            codeBlock: this.copied.codeBlock,</span>
+         };
+ 
+         this.editorEngine.action.run(action);</pre><h2>Commit #4: <a href="https://github.com/onlook-dev/onlook/commit/23216bacc94cad4fd3113cea35c9593483a6a957">23216bacc9</a> (2025-04-13T22:03:58-04:00)</h2><p class="k">Web version pt.7 (#1775)<br>Path after this commit: apps/studio/src/lib/editor/engine/copy/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/studio/src/lib/editor/engine/copy/index.ts b/apps/studio/src/lib/editor/engine/copy/index.ts
+index 18c5fd6e..ada1b5b1 100644
+<span class="d">--- a/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="a">+++ b/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="h">@@ -26,7 +26,7 @@ export class CopyManager {</span>
+             return;
+         }
+         const selectedEl = this.editorEngine.elements.selected[0];
+<span class="d">-        const webviewId = selectedEl.webviewId;</span>
+<span class="a">+        const webviewId = selectedEl.frameId;</span>
+         const webview = this.editorEngine.webviews.getWebview(webviewId);
+         if (!webview) {
+             console.error(&#x27;Failed to get webview&#x27;);
+<span class="h">@@ -73,7 +73,7 @@ export class CopyManager {</span>
+         const targets: Array&lt;ActionTarget&gt; = this.editorEngine.elements.selected.map(
+             (selectedEl) =&gt; {
+                 const target: ActionTarget = {
+<span class="d">-                    webviewId: selectedEl.webviewId,</span>
+<span class="a">+                    frameId: selectedEl.frameId,</span>
+                     domId: selectedEl.domId,
+                     oid: selectedEl.oid,
+                 };
+<span class="h">@@ -167,7 +167,7 @@ export class CopyManager {</span>
+     }
+ 
+     async getInsertLocation(selectedEl: DomElement): Promise&lt;ActionLocation | undefined&gt; {
+<span class="d">-        const webviewId = selectedEl.webviewId;</span>
+<span class="a">+        const webviewId = selectedEl.frameId;</span>
+         const webview = this.editorEngine.webviews.getWebview(webviewId);
+         if (!webview) {
+             console.error(&#x27;Failed to get webview&#x27;);</pre><h2>Commit #5: <a href="https://github.com/onlook-dev/onlook/commit/1bf82056ab2f31506e139f50ed342335f9cb6947">1bf82056ab</a> (2025-04-13T23:44:19-04:00)</h2><p class="k">revert frameid change in studio (#1779)<br>Path after this commit: apps/studio/src/lib/editor/engine/copy/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/studio/src/lib/editor/engine/copy/index.ts b/apps/studio/src/lib/editor/engine/copy/index.ts
+index ada1b5b1..18c5fd6e 100644
+<span class="d">--- a/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="a">+++ b/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="h">@@ -26,7 +26,7 @@ export class CopyManager {</span>
+             return;
+         }
+         const selectedEl = this.editorEngine.elements.selected[0];
+<span class="d">-        const webviewId = selectedEl.frameId;</span>
+<span class="a">+        const webviewId = selectedEl.webviewId;</span>
+         const webview = this.editorEngine.webviews.getWebview(webviewId);
+         if (!webview) {
+             console.error(&#x27;Failed to get webview&#x27;);
+<span class="h">@@ -73,7 +73,7 @@ export class CopyManager {</span>
+         const targets: Array&lt;ActionTarget&gt; = this.editorEngine.elements.selected.map(
+             (selectedEl) =&gt; {
+                 const target: ActionTarget = {
+<span class="d">-                    frameId: selectedEl.frameId,</span>
+<span class="a">+                    webviewId: selectedEl.webviewId,</span>
+                     domId: selectedEl.domId,
+                     oid: selectedEl.oid,
+                 };
+<span class="h">@@ -167,7 +167,7 @@ export class CopyManager {</span>
+     }
+ 
+     async getInsertLocation(selectedEl: DomElement): Promise&lt;ActionLocation | undefined&gt; {
+<span class="d">-        const webviewId = selectedEl.frameId;</span>
+<span class="a">+        const webviewId = selectedEl.webviewId;</span>
+         const webview = this.editorEngine.webviews.getWebview(webviewId);
+         if (!webview) {
+             console.error(&#x27;Failed to get webview&#x27;);</pre><h2>Commit #6: <a href="https://github.com/onlook-dev/onlook/commit/f7a8060cc456b1968464e5bde9d8fca16648eb1e">f7a8060cc4</a> (2025-05-14T19:16:52-04:00)</h2><p class="k">Migrate to web version (#1837)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: apps/web/client/src/app/_components/hero/create.tsx.</p><pre>diff --git a/apps/studio/src/lib/editor/engine/copy/index.ts b/apps/studio/src/lib/editor/engine/copy/index.ts
+deleted file mode 100644
+index 18c5fd6e..00000000
+<span class="d">--- a/apps/studio/src/lib/editor/engine/copy/index.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,211 +0,0 @@</span>
+<span class="d">-import { createDomId, createOid } from &#x27;@/lib/utils&#x27;;</span>
+<span class="d">-import type {</span>
+<span class="d">-    ActionElement,</span>
+<span class="d">-    ActionLocation,</span>
+<span class="d">-    ActionTarget,</span>
+<span class="d">-    InsertElementAction,</span>
+<span class="d">-} from &#x27;@onlook/models/actions&#x27;;</span>
+<span class="d">-import { EditorAttributes } from &#x27;@onlook/models/constants&#x27;;</span>
+<span class="d">-import type { DomElement } from &#x27;@onlook/models/element&#x27;;</span>
+<span class="d">-import { makeAutoObservable } from &#x27;mobx&#x27;;</span>
+<span class="d">-import type { EditorEngine } from &#x27;..&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-export class CopyManager {</span>
+<span class="d">-    copied: {</span>
+<span class="d">-        element: ActionElement;</span>
+<span class="d">-        codeBlock: string | null;</span>
+<span class="d">-    } | null = null;</span>
+<span class="d">-</span>
+<span class="d">-    constructor(private editorEngine: EditorEngine) {</span>
+<span class="d">-        makeAutoObservable(this);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    async copy() {</span>
+<span class="d">-        const selected = this.editorEngine.elements.selected;</span>
+<span class="d">-        if (selected.length === 0) {</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-        const selectedEl = this.editorEngine.elements.selected[0];</span>
+<span class="d">-        const webviewId = selectedEl.webviewId;</span>
+<span class="d">-        const webview = this.editorEngine.webviews.getWebview(webviewId);</span>
+<span class="d">-        if (!webview) {</span>
+<span class="d">-            console.error(&#x27;Failed to get webview&#x27;);</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        const targetEl: ActionElement | null = await webview.executeJavaScript(</span>
+<span class="d">-            `window.api?.getActionElementByDomId(&#x27;${selectedEl.domId}&#x27;)`,</span>
+<span class="d">-        );</span>
+<span class="d">-        if (!targetEl) {</span>
+<span class="d">-            console.error(&#x27;Failed to copy element&#x27;);</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-        const codeBlock = await this.editorEngine.code.getCodeBlock(selectedEl.oid);</span>
+<span class="d">-        this.copied = { element: targetEl, codeBlock };</span>
+<span class="d">-        this.clearClipboard();</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    clearClipboard() {</span>
+<span class="d">-        try {</span>
+<span class="d">-            navigator.clipboard.writeText(&#x27;&#x27;);</span>
+<span class="d">-        } catch (error) {</span>
+<span class="d">-            console.warn(&#x27;Failed to clear clipboard:&#x27;, error);</span>
+<span class="d">-        }</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    async paste() {</span>
+<span class="d">-        const selected = this.editorEngine.elements.selected;</span>
+<span class="d">-        if (selected.length === 0) {</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        if (await this.pasteImageFromClipboard()) {</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        if (!this.copied) {</span>
+<span class="d">-            console.warn(&#x27;Nothing to paste&#x27;);</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        const selectedEl = this.editorEngine.elements.selected[0];</span>
+<span class="d">-</span>
+<span class="d">-        const targets: Array&lt;ActionTarget&gt; = this.editorEngine.elements.selected.map(</span>
+<span class="d">-            (selectedEl) =&gt; {</span>
+<span class="d">-                const target: ActionTarget = {</span>
+<span class="d">-                    webviewId: selectedEl.webviewId,</span>
+<span class="d">-                    domId: selectedEl.domId,</span>
+<span class="d">-                    oid: selectedEl.oid,</span>
+<span class="d">-                };</span>
+<span class="d">-                return target;</span>
+<span class="d">-            },</span>
+<span class="d">-        );</span>
+<span class="d">-</span>
+<span class="d">-        const location = await this.getInsertLocation(selectedEl);</span>
+<span class="d">-        if (!location) {</span>
+<span class="d">-            console.error(&#x27;Failed to get insert location&#x27;);</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        const newOid = createOid();</span>
+<span class="d">-        const newDomId = createDomId();</span>
+<span class="d">-</span>
+<span class="d">-        const action: InsertElementAction = {</span>
+<span class="d">-            type: &#x27;insert-element&#x27;,</span>
+<span class="d">-            targets: targets,</span>
+<span class="d">-            element: this.getCleanedCopyEl(this.copied.element, newDomId, newOid),</span>
+<span class="d">-            location,</span>
+<span class="d">-            editText: null,</span>
+<span class="d">-            pasteParams: {</span>
+<span class="d">-                oid: newOid,</span>
+<span class="d">-                domId: newDomId,</span>
+<span class="d">-            },</span>
+<span class="d">-            codeBlock: this.copied.codeBlock,</span>
+<span class="d">-        };</span>
+<span class="d">-</span>
+<span class="d">-        this.editorEngine.action.run(action);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    async pasteImageFromClipboard(): Promise&lt;boolean&gt; {</span>
+<span class="d">-        try {</span>
+<span class="d">-            const clipboard = await navigator.clipboard.read();</span>
+<span class="d">-            for (const item of clipboard) {</span>
+<span class="d">-                const imageType = item.types.find((type) =&gt; type.startsWith(&#x27;image/&#x27;));</span>
+<span class="d">-                if (imageType) {</span>
+<span class="d">-                    const blob = await item.getType(imageType);</span>
+<span class="d m">-                    const reader = new FileReader();</span>
+<span class="d">-                    reader.readAsDataURL(blob);</span>
+<span class="d">-                    reader.onloadend = () =&gt; {</span>
+<span class="d">-                        const base64data = reader.result as string;</span>
+<span class="d">-                        this.editorEngine.image.insert(base64data, imageType);</span>
+<span class="d">-                    };</span>
+<span class="d">-                    return true;</span>
+<span class="d">-                }</span>
+<span class="d">-            }</span>
+<span class="d">-        } catch (error) {</span>
+<span class="d">-            console.error(&#x27;Failed to read clipboard:&#x27;, error);</span>
+<span class="d">-        }</span>
+<span class="d">-        return false;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    getCleanedCopyEl(copiedEl: ActionElement, domId: string, oid: string): ActionElement {</span>
+<span class="d">-        const filteredAttr: Record&lt;string, string&gt; = {</span>
+<span class="d">-            class: copiedEl.attributes[&#x27;class&#x27;] || &#x27;&#x27;,</span>
+<span class="d">-            [EditorAttributes.DATA_ONLOOK_DOM_ID]: domId,</span>
+<span class="d">-            [EditorAttributes.DATA_ONLOOK_ID]: oid,</span>
+<span class="d">-            [EditorAttributes.DATA_ONLOOK_INSERTED]: &#x27;true&#x27;,</span>
+<span class="d">-        };</span>
+<span class="d">-</span>
+<span class="d">-        // Process children recursively</span>
+<span class="d">-        const processedChildren = copiedEl.children?.map((child) =&gt; {</span>
+<span class="d">-            const newChildDomId = createDomId();</span>
+<span class="d">-            const newChildOid = createOid();</span>
+<span class="d">-            return this.getCleanedCopyEl(child, newChildDomId, newChildOid);</span>
+<span class="d">-        });</span>
+<span class="d">-</span>
+<span class="d">-        return {</span>
+<span class="d">-            ...copiedEl,</span>
+<span class="d">-            attributes: filteredAttr,</span>
+<span class="d">-            children: processedChildren || [],</span>
+<span class="d">-        };</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    async cut() {</span>
+<span class="d">-        await this.copy();</span>
+<span class="d">-        this.editorEngine.elements.delete();</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    async duplicate() {</span>
+<span class="d">-        const savedCopied = this.copied;</span>
+<span class="d">-        await this.copy();</span>
+<span class="d">-        await this.paste();</span>
+<span class="d">-        this.copied = savedCopied;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    clear() {</span>
+<span class="d">-        this.copied = null;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    async getInsertLocation(selectedEl: DomElement): Promise&lt;ActionLocation | undefined&gt; {</span>
+<span class="d">-        const webviewId = selectedEl.webviewId;</span>
+<span class="d">-        const webview = this.editorEngine.webviews.getWebview(webviewId);</span>
+<span class="d">-        if (!webview) {</span>
+<span class="d">-            console.error(&#x27;Failed to get webview&#x27;);</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        const insertAsSibling =</span>
+<span class="d">-            selectedEl.tagName === &#x27;img&#x27; ||</span>
+<span class="d">-            selectedEl.domId === this.copied?.element.domId ||</span>
+<span class="d">-            selectedEl.oid === this.copied?.element.oid;</span>
+<span class="d">-</span>
+<span class="d">-        if (insertAsSibling) {</span>
+<span class="d">-            const location: ActionLocation | null = await webview.executeJavaScript(</span>
+<span class="d">-                `window.api?.getActionLocation(&#x27;${selectedEl.domId}&#x27;)`,</span>
+<span class="d">-            );</span>
+<span class="d">-            if (!location) {</span>
+<span class="d">-                console.error(&#x27;Failed to get location&#x27;);</span>
+<span class="d">-                return;</span>
+<span class="d">-            }</span>
+<span class="d">-            // Insert as sibling after the selected element</span>
+<span class="d">-            if (location.type === &#x27;index&#x27;) {</span>
+<span class="d">-                location.index += 1;</span>
+<span class="d">-            }</span>
+<span class="d">-            return location;</span>
+<span class="d">-        } else {</span>
+<span class="d">-            return {</span>
+<span class="d">-                type: &#x27;append&#x27;,</span>
+<span class="d">-                targetDomId: selectedEl.domId,</span>
+<span class="d">-                targetOid: selectedEl.instanceId || selectedEl.oid,</span>
+<span class="d">-            };</span>
+<span class="d">-        }</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    dispose() {</span>
+<span class="d">-        // Clear state</span>
+<span class="d">-        this.clear();</span>
+<span class="d">-</span>
+<span class="d">-        // Clear references</span>
+<span class="d">-        this.editorEngine = null as any;</span>
+<span class="d">-    }</span>
+<span class="d">-}</span></pre></body></html>

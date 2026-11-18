@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L084</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L084</h1><p><b>Repository:</b> <a href="https://github.com/antiwork/gumroad">antiwork/gumroad</a><br><b>File at merge:</b> app/javascript/data/customers.ts, line 394<br><b>Merge commit (birth):</b> <a href="https://github.com/antiwork/gumroad/commit/de1457baa70b5cbf26e9000307a0bcc3acd2206e">de1457baa7</a> (2025-05-23T20:28:34)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/antiwork/gumroad/tree/841de7d7b8f8d4c47f52dce8d9320d49edb249ca">841de7d7b8</a>)</p><p><b>The line:</b></p><pre><span class="t">    if (!response.ok) throw new ResponseError();</span></pre><h2>File at the merge commit, lines 386 to 402</h2><pre>  386 | 
+  387 | export const updateReviewResponse = (purchaseId: string, message: string) =&gt;
+  388 |   request({
+  389 |     method: &quot;PUT&quot;,
+  390 |     accept: &quot;json&quot;,
+  391 |     url: Routes.product_review_response_path(purchaseId),
+  392 |     data: { message },
+  393 |   }).then((response) =&gt; {
+<span class="t">  394 |     if (!response.ok) throw new ResponseError();</span>
+  395 |   });
+  396 | 
+  397 | export const deleteReviewResponse = (purchaseId: string) =&gt;
+  398 |   request({
+  399 |     method: &quot;DELETE&quot;,
+  400 |     accept: &quot;json&quot;,
+  401 |     url: Routes.product_review_response_path(purchaseId),
+  402 |   }).then((response) =&gt; {</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/antiwork/gumroad/commit/d0a3748c99fa1c28d123fe484968527a259abde1">d0a3748c99</a> (2025-10-14T12:35:33-03:00)</h2><p class="k">feat: Add customer download counts in dashboard drawer  (#1653)<br>Path after this commit: app/javascript/data/customers.ts. Lines with exactly this text in the file after the commit: 14.</p><pre>diff --git a/app/javascript/data/customers.ts b/app/javascript/data/customers.ts
+index 9ac26cf65..ee9918917 100644
+<span class="d">--- a/app/javascript/data/customers.ts</span>
+<span class="a">+++ b/app/javascript/data/customers.ts</span>
+<span class="h">@@ -125,6 +125,7 @@ export type Customer = {</span>
+     term: string | null;
+     content: string | null;
+   } | null;
+<span class="a">+  download_count?: number | null;</span>
+ };
+ 
+ export type Query = {</pre></body></html>

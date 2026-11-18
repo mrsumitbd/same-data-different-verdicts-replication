@@ -1,0 +1,680 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L150</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L150</h1><p><b>Repository:</b> <a href="https://github.com/pdfme/pdfme">pdfme/pdfme</a><br><b>File at merge:</b> packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx, line 250<br><b>Merge commit (birth):</b> <a href="https://github.com/pdfme/pdfme/commit/2eff1734ca85e3068ffa78d14558e15b58b366a8">2eff1734ca</a> (2025-03-05T10:46:54)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/pdfme/pdfme/tree/69f6be160bc79b30cbdc1125e18f8a49d0e33929">69f6be160b</a>)</p><p><b>The line:</b></p><pre><span class="t">      // Create a safe copy</span></pre><h2>File at the merge commit, lines 242 to 258</h2><pre>  242 |     // Create a safe copy of the schema
+  243 |     (() =&gt; {
+  244 |       // First check if the defaultSchema is an object
+  245 |       if (typeof activePlugin.propPanel.defaultSchema !== &#x27;object&#x27; || 
+  246 |           activePlugin.propPanel.defaultSchema === null) {
+  247 |         return emptySchema;
+  248 |       }
+  249 |       
+<span class="t">  250 |       // Create a safe copy</span>
+  251 |       const result: Record&lt;string, unknown&gt; = {};
+  252 |       
+  253 |       // Only copy properties that exist on the object
+  254 |       for (const key in activePlugin.propPanel.defaultSchema) {
+  255 |         if (Object.prototype.hasOwnProperty.call(activePlugin.propPanel.defaultSchema, key)) {
+  256 |           result[key] = (activePlugin.propPanel.defaultSchema as Record&lt;string, unknown&gt;)[key];
+  257 |         }
+  258 |       }</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/pdfme/pdfme/commit/9fa60cba14da09e817440c51a187c9a2b5afa02a">9fa60cba14</a> (2025-03-06T11:18:13+09:00)</h2><p class="k">Refactor type definitions and improve type safety in dynamic template handling (#816)<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx
+index 8d0e9061..acc7e33f 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="h">@@ -45,7 +45,7 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+   const i18n = useContext(I18nContext);
+   const pluginsRegistry = useContext(PluginsRegistry);
+   const options = useContext(OptionsContext);
+<span class="d">-  </span>
+<span class="a">+</span>
+   // Define a type-safe i18n function that accepts string keys
+   const typedI18n = (key: string): string =&gt; {
+     // Use a type assertion to handle the union type constraint
+<span class="h">@@ -109,22 +109,17 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+   // Reference to a function that validates schema name uniqueness
+   const uniqueSchemaName = useRef(
+     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+<span class="d">-    (_unused: string): boolean =&gt; true</span>
+<span class="a">+    (_unused: string): boolean =&gt; true,</span>
+   );
+ 
+   // Use proper type for validator function parameter
+<span class="d">-  const validateUniqueSchemaName = (</span>
+<span class="d">-    _: unknown, </span>
+<span class="d">-    value: string</span>
+<span class="d">-  ): boolean =&gt; uniqueSchemaName.current(value);</span>
+<span class="a">+  const validateUniqueSchemaName = (_: unknown, value: string): boolean =&gt;</span>
+<span class="a">+    uniqueSchemaName.current(value);</span>
+ 
+   // Use explicit type for debounce function that matches the expected signature
+<span class="d">-  const handleWatch = debounce(function(...args: unknown[]) {</span>
+<span class="a">+  const handleWatch = debounce(function (...args: unknown[]) {</span>
+     const formSchema = args[0] as Record&lt;string, unknown&gt;;
+<span class="d">-    const formAndSchemaValuesDiffer = (</span>
+<span class="d">-      formValue: unknown, </span>
+<span class="d">-      schemaValue: unknown</span>
+<span class="d">-    ): boolean =&gt; {</span>
+<span class="a">+    const formAndSchemaValuesDiffer = (formValue: unknown, schemaValue: unknown): boolean =&gt; {</span>
+       if (typeof formValue === &#x27;object&#x27; &amp;&amp; formValue !== null) {
+         return JSON.stringify(formValue) !== JSON.stringify(schemaValue);
+       }
+<span class="h">@@ -177,18 +172,19 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+   }, 100);
+ 
+   // Find the active plugin with proper type safety
+<span class="d">-  const activePlugin = Object.values(pluginsRegistry).find(</span>
+<span class="d">-    (plugin) =&gt; {</span>
+<span class="d">-      if (!plugin || typeof plugin !== &#x27;object&#x27;) return false;</span>
+<span class="d">-      if (!plugin.propPanel || typeof plugin.propPanel !== &#x27;object&#x27;) return false;</span>
+<span class="d">-      if (!plugin.propPanel.defaultSchema || typeof plugin.propPanel.defaultSchema !== &#x27;object&#x27;) return false;</span>
+<span class="d">-      </span>
+<span class="d">-      const defaultSchema = plugin.propPanel.defaultSchema as Record&lt;string, unknown&gt;;</span>
+<span class="d">-      return &#x27;type&#x27; in defaultSchema &amp;&amp; </span>
+<span class="d">-             typeof defaultSchema.type === &#x27;string&#x27; &amp;&amp; </span>
+<span class="d">-             defaultSchema.type === activeSchema.type;</span>
+<span class="d">-    }</span>
+<span class="d">-  );</span>
+<span class="a">+  const activePlugin = Object.values(pluginsRegistry).find((plugin) =&gt; {</span>
+<span class="a">+    if (!plugin || typeof plugin !== &#x27;object&#x27;) return false;</span>
+<span class="a">+    if (!plugin.propPanel || typeof plugin.propPanel !== &#x27;object&#x27;) return false;</span>
+<span class="a">+    if (!plugin.propPanel.defaultSchema || typeof plugin.propPanel.defaultSchema !== &#x27;object&#x27;)</span>
+<span class="a">+      return false;</span>
+<span class="a">+</span>
+<span class="a">+    const defaultSchema = plugin.propPanel.defaultSchema as Record&lt;string, unknown&gt;;</span>
+<span class="a">+    return (</span>
+<span class="a">+      &#x27;type&#x27; in defaultSchema &amp;&amp;</span>
+<span class="a">+      typeof defaultSchema.type === &#x27;string&#x27; &amp;&amp;</span>
+<span class="a">+      defaultSchema.type === activeSchema.type</span>
+<span class="a">+    );</span>
+<span class="a">+  });</span>
+ 
+   // Safely access the propPanel schema
+   const activePropPanelSchema = activePlugin?.propPanel?.schema;
+<span class="h">@@ -200,7 +196,7 @@ Check this document: https://pdfme.com/docs/custom-schemas`);</span>
+   // Create type-safe options for the type dropdown
+   // Create a type-safe options array for the dropdown
+   const typeOptions: Array&lt;{ label: string; value: string | undefined }&gt; = [];
+<span class="d">-  </span>
+<span class="a">+</span>
+   // Safely populate the options array
+   Object.entries(pluginsRegistry).forEach(([label, value]) =&gt; {
+     // Skip invalid plugins
+<span class="h">@@ -208,58 +204,59 @@ Check this document: https://pdfme.com/docs/custom-schemas`);</span>
+       typeOptions.push({ label, value: undefined });
+       return;
+     }
+<span class="d">-    </span>
+<span class="d">-    if (!(&#x27;propPanel&#x27; in value) || </span>
+<span class="d">-        !value.propPanel || </span>
+<span class="d">-        typeof value.propPanel !== &#x27;object&#x27;) {</span>
+<span class="a">+</span>
+<span class="a">+    if (!(&#x27;propPanel&#x27; in value) || !value.propPanel || typeof value.propPanel !== &#x27;object&#x27;) {</span>
+       typeOptions.push({ label, value: undefined });
+       return;
+     }
+<span class="d">-    </span>
+<span class="d">-    if (!(&#x27;defaultSchema&#x27; in value.propPanel) || </span>
+<span class="d">-        !value.propPanel.defaultSchema || </span>
+<span class="d">-        typeof value.propPanel.defaultSchema !== &#x27;object&#x27;) {</span>
+<span class="a">+</span>
+<span class="a">+    if (</span>
+<span class="a">+      !(&#x27;defaultSchema&#x27; in value.propPanel) ||</span>
+<span class="a">+      !value.propPanel.defaultSchema ||</span>
+<span class="a">+      typeof value.propPanel.defaultSchema !== &#x27;object&#x27;</span>
+<span class="a">+    ) {</span>
+       typeOptions.push({ label, value: undefined });
+       return;
+     }
+<span class="d">-    </span>
+<span class="a">+</span>
+     // Safely extract the type
+     const defaultSchema = value.propPanel.defaultSchema as Record&lt;string, unknown&gt;;
+     let schemaType: string | undefined = undefined;
+<span class="d">-    </span>
+<span class="a">+</span>
+     if (&#x27;type&#x27; in defaultSchema &amp;&amp; typeof defaultSchema.type === &#x27;string&#x27;) {
+       schemaType = defaultSchema.type;
+     }
+<span class="d">-    </span>
+<span class="a">+</span>
+     typeOptions.push({ label, value: schemaType });
+   });
+   // Create a safe empty schema as fallback
+   const emptySchema: Record&lt;string, unknown&gt; = {};
+<span class="d">-  </span>
+<span class="a">+</span>
+   // Safely access the default schema with proper null checking
+<span class="d">-  const defaultSchema: Record&lt;string, unknown&gt; = </span>
+<span class="d">-    activePlugin?.propPanel?.defaultSchema ? </span>
+<span class="d">-    // Create a safe copy of the schema</span>
+<span class="d">-    (() =&gt; {</span>
+<span class="d">-      // First check if the defaultSchema is an object</span>
+<span class="d">-      if (typeof activePlugin.propPanel.defaultSchema !== &#x27;object&#x27; || </span>
+<span class="d">-          activePlugin.propPanel.defaultSchema === null) {</span>
+<span class="d">-        return emptySchema;</span>
+<span class="d">-      }</span>
+<span class="d">-      </span>
+<span class="d m">-      // Create a safe copy</span>
+<span class="d">-      const result: Record&lt;string, unknown&gt; = {};</span>
+<span class="d">-      </span>
+<span class="d">-      // Only copy properties that exist on the object</span>
+<span class="d">-      for (const key in activePlugin.propPanel.defaultSchema) {</span>
+<span class="d">-        if (Object.prototype.hasOwnProperty.call(activePlugin.propPanel.defaultSchema, key)) {</span>
+<span class="d">-          result[key] = (activePlugin.propPanel.defaultSchema as Record&lt;string, unknown&gt;)[key];</span>
+<span class="a">+  const defaultSchema: Record&lt;string, unknown&gt; = activePlugin?.propPanel?.defaultSchema</span>
+<span class="a">+    ? // Create a safe copy of the schema</span>
+<span class="a">+      (() =&gt; {</span>
+<span class="a">+        // First check if the defaultSchema is an object</span>
+<span class="a">+        if (</span>
+<span class="a">+          typeof activePlugin.propPanel.defaultSchema !== &#x27;object&#x27; ||</span>
+<span class="a">+          activePlugin.propPanel.defaultSchema === null</span>
+<span class="a">+        ) {</span>
+<span class="a">+          return emptySchema;</span>
+         }
+<span class="d">-      }</span>
+<span class="d">-      </span>
+<span class="d">-      return result;</span>
+<span class="d">-    })() : </span>
+<span class="d">-    emptySchema;</span>
+<span class="a">+</span>
+<span class="a m">+        // Create a safe copy</span>
+<span class="a">+        const result: Record&lt;string, unknown&gt; = {};</span>
+<span class="a">+</span>
+<span class="a">+        // Only copy properties that exist on the object</span>
+<span class="a">+        for (const key in activePlugin.propPanel.defaultSchema) {</span>
+<span class="a">+          if (Object.prototype.hasOwnProperty.call(activePlugin.propPanel.defaultSchema, key)) {</span>
+<span class="a">+            result[key] = (activePlugin.propPanel.defaultSchema as Record&lt;string, unknown&gt;)[key];</span>
+<span class="a">+          }</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        return result;</span>
+<span class="a">+      })()</span>
+<span class="a">+    : emptySchema;</span>
+ 
+   // Create a type-safe schema object
+   const propPanelSchema: PropPanelSchema = {
+<span class="h">@@ -347,11 +344,20 @@ Check this document: https://pdfme.com/docs/custom-schemas`);</span>
+ 
+   // Create a safe copy of the properties
+   const safeProperties = { ...propPanelSchema.properties };
+<span class="d">-  </span>
+<span class="a">+</span>
+   if (typeof activePropPanelSchema === &#x27;function&#x27;) {
+     // Create a new object without the schemasList property
+<span class="d">-    const { size, schemas, pageSize, changeSchemas, activeElements, deselectSchema, activeSchema } = props;</span>
+<span class="d">-    const propPanelProps = { size, schemas, pageSize, changeSchemas, activeElements, deselectSchema, activeSchema };</span>
+<span class="a">+    const { size, schemas, pageSize, changeSchemas, activeElements, deselectSchema, activeSchema } =</span>
+<span class="a">+      props;</span>
+<span class="a">+    const propPanelProps = {</span>
+<span class="a">+      size,</span>
+<span class="a">+      schemas,</span>
+<span class="a">+      pageSize,</span>
+<span class="a">+      changeSchemas,</span>
+<span class="a">+      activeElements,</span>
+<span class="a">+      deselectSchema,</span>
+<span class="a">+      activeSchema,</span>
+<span class="a">+    };</span>
+ 
+     // Use the typedI18n function to avoid type issues
+     const functionResult = activePropPanelSchema({
+<span class="h">@@ -360,13 +366,14 @@ Check this document: https://pdfme.com/docs/custom-schemas`);</span>
+       theme: token,
+       i18n: typedI18n,
+     });
+<span class="d">-    </span>
+<span class="a">+</span>
+     // Safely handle the result
+     const apps = functionResult &amp;&amp; typeof functionResult === &#x27;object&#x27; ? functionResult : {};
+<span class="d">-    </span>
+<span class="a">+</span>
+     // Create a divider if needed
+<span class="d">-    const dividerObj = Object.keys(apps).length === 0 ? {} : { &#x27;--&#x27;: { type: &#x27;void&#x27;, widget: &#x27;Divider&#x27; } };</span>
+<span class="d">-    </span>
+<span class="a">+    const dividerObj =</span>
+<span class="a">+      Object.keys(apps).length === 0 ? {} : { &#x27;--&#x27;: { type: &#x27;void&#x27;, widget: &#x27;Divider&#x27; } };</span>
+<span class="a">+</span>
+     // Assign properties safely - use type assertion to satisfy TypeScript
+     propPanelSchema.properties = {
+       ...safeProperties,
+<span class="h">@@ -375,11 +382,15 @@ Check this document: https://pdfme.com/docs/custom-schemas`);</span>
+     };
+   } else {
+     // Handle non-function case
+<span class="d">-    const apps = activePropPanelSchema &amp;&amp; typeof activePropPanelSchema === &#x27;object&#x27; ? activePropPanelSchema : {};</span>
+<span class="d">-    </span>
+<span class="a">+    const apps =</span>
+<span class="a">+      activePropPanelSchema &amp;&amp; typeof activePropPanelSchema === &#x27;object&#x27;</span>
+<span class="a">+        ? activePropPanelSchema</span>
+<span class="a">+        : {};</span>
+<span class="a">+</span>
+     // Create a divider if needed
+<span class="d">-    const dividerObj = Object.keys(apps).length === 0 ? {} : { &#x27;--&#x27;: { type: &#x27;void&#x27;, widget: &#x27;Divider&#x27; } };</span>
+<span class="d">-    </span>
+<span class="a">+    const dividerObj =</span>
+<span class="a">+      Object.keys(apps).length === 0 ? {} : { &#x27;--&#x27;: { type: &#x27;void&#x27;, widget: &#x27;Divider&#x27; } };</span>
+<span class="a">+</span>
+     // Assign properties safely - use type assertion to satisfy TypeScript
+     propPanelSchema.properties = {
+       ...safeProperties,</pre><h2>Commit #2: <a href="https://github.com/pdfme/pdfme/commit/f137dab01c47cf36559126043246447aa7c077a9">f137dab01c</a> (2025-05-16T13:54:20+09:00)</h2><p class="k">improve DX with pluginRepository and make plugin checking more robust (#1007)<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx
+index acc7e33f..bde887e5 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="h">@@ -64,8 +64,8 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+       ),
+       ButtonGroup: (p) =&gt; &lt;ButtonGroupWidget {...p} {...props} options={options} /&gt;,
+     };
+<span class="d">-    for (const plugin of Object.values(pluginsRegistry)) {</span>
+<span class="d">-      const widgets = plugin?.propPanel.widgets || {};</span>
+<span class="a">+    for (const plugin of pluginsRegistry.values()) {</span>
+<span class="a">+      const widgets = plugin.propPanel.widgets || {};</span>
+       Object.entries(widgets).forEach(([widgetKey, widgetValue]) =&gt; {
+         newWidgets[widgetKey] = (p) =&gt; (
+           &lt;WidgetRenderer
+<span class="h">@@ -171,64 +171,18 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+     }
+   }, 100);
+ 
+<span class="d">-  // Find the active plugin with proper type safety</span>
+<span class="d">-  const activePlugin = Object.values(pluginsRegistry).find((plugin) =&gt; {</span>
+<span class="d">-    if (!plugin || typeof plugin !== &#x27;object&#x27;) return false;</span>
+<span class="d">-    if (!plugin.propPanel || typeof plugin.propPanel !== &#x27;object&#x27;) return false;</span>
+<span class="d">-    if (!plugin.propPanel.defaultSchema || typeof plugin.propPanel.defaultSchema !== &#x27;object&#x27;)</span>
+<span class="d">-      return false;</span>
+<span class="d">-</span>
+<span class="d">-    const defaultSchema = plugin.propPanel.defaultSchema as Record&lt;string, unknown&gt;;</span>
+<span class="d">-    return (</span>
+<span class="d">-      &#x27;type&#x27; in defaultSchema &amp;&amp;</span>
+<span class="d">-      typeof defaultSchema.type === &#x27;string&#x27; &amp;&amp;</span>
+<span class="d">-      defaultSchema.type === activeSchema.type</span>
+<span class="d">-    );</span>
+<span class="d">-  });</span>
+<span class="d">-</span>
+<span class="d">-  // Safely access the propPanel schema</span>
+<span class="d">-  const activePropPanelSchema = activePlugin?.propPanel?.schema;</span>
+<span class="d">-  if (!activePropPanelSchema) {</span>
+<span class="d">-    console.error(`[@pdfme/ui] No propPanel.schema for ${activeSchema.type}.</span>
+<span class="d">-Check this document: https://pdfme.com/docs/custom-schemas`);</span>
+<span class="a">+  const activePlugin = pluginsRegistry.findByType(activeSchema.type);</span>
+<span class="a">+  if (!activePlugin) {</span>
+<span class="a">+    throw Error(`[@pdfme/ui] Failed to find plugin used for ${activeSchema.type}`);</span>
+   }
+ 
+<span class="d">-  // Create type-safe options for the type dropdown</span>
+<span class="d">-  // Create a type-safe options array for the dropdown</span>
+<span class="a">+  const activePropPanelSchema = activePlugin.propPanel.schema;</span>
+   const typeOptions: Array&lt;{ label: string; value: string | undefined }&gt; = [];
+ 
+<span class="d">-  // Safely populate the options array</span>
+<span class="d">-  Object.entries(pluginsRegistry).forEach(([label, value]) =&gt; {</span>
+<span class="d">-    // Skip invalid plugins</span>
+<span class="d">-    if (!value || typeof value !== &#x27;object&#x27;) {</span>
+<span class="d">-      typeOptions.push({ label, value: undefined });</span>
+<span class="d">-      return;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    if (!(&#x27;propPanel&#x27; in value) || !value.propPanel || typeof value.propPanel !== &#x27;object&#x27;) {</span>
+<span class="d">-      typeOptions.push({ label, value: undefined });</span>
+<span class="d">-      return;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    if (</span>
+<span class="d">-      !(&#x27;defaultSchema&#x27; in value.propPanel) ||</span>
+<span class="d">-      !value.propPanel.defaultSchema ||</span>
+<span class="d">-      typeof value.propPanel.defaultSchema !== &#x27;object&#x27;</span>
+<span class="d">-    ) {</span>
+<span class="d">-      typeOptions.push({ label, value: undefined });</span>
+<span class="d">-      return;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    // Safely extract the type</span>
+<span class="d">-    const defaultSchema = value.propPanel.defaultSchema as Record&lt;string, unknown&gt;;</span>
+<span class="d">-    let schemaType: string | undefined = undefined;</span>
+<span class="d">-</span>
+<span class="d">-    if (&#x27;type&#x27; in defaultSchema &amp;&amp; typeof defaultSchema.type === &#x27;string&#x27;) {</span>
+<span class="d">-      schemaType = defaultSchema.type;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    typeOptions.push({ label, value: schemaType });</span>
+<span class="a">+  pluginsRegistry.entries().forEach(([label, plugin]) =&gt; {</span>
+<span class="a">+    typeOptions.push({ label, value: plugin.propPanel.defaultSchema?.type ?? undefined });</span>
+   });
+<span class="a">+</span>
+   // Create a safe empty schema as fallback
+   const emptySchema: Record&lt;string, unknown&gt; = {};
+ 
+<span class="h">@@ -236,15 +190,6 @@ Check this document: https://pdfme.com/docs/custom-schemas`);</span>
+   const defaultSchema: Record&lt;string, unknown&gt; = activePlugin?.propPanel?.defaultSchema
+     ? // Create a safe copy of the schema
+       (() =&gt; {
+<span class="d">-        // First check if the defaultSchema is an object</span>
+<span class="d">-        if (</span>
+<span class="d">-          typeof activePlugin.propPanel.defaultSchema !== &#x27;object&#x27; ||</span>
+<span class="d">-          activePlugin.propPanel.defaultSchema === null</span>
+<span class="d">-        ) {</span>
+<span class="d">-          return emptySchema;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d m">-        // Create a safe copy</span>
+         const result: Record&lt;string, unknown&gt; = {};
+ 
+         // Only copy properties that exist on the object</pre><h2>Commit #3: <a href="https://github.com/pdfme/pdfme/commit/22f199e76da9861416e0a2fc4c53c4c204d82579">22f199e76d</a> (2025-11-09T09:46:05+09:00)</h2><p class="k">feat(ui): add out-of-bounds validation for schema positioning and update related types<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx
+index bde887e5..6cf7f57a 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="h">@@ -8,6 +8,7 @@ import type {</span>
+   PropPanelSchema,
+   Schema,
+ } from &#x27;@pdfme/common&#x27;;
+<span class="a">+import { isBlankPdf } from &#x27;@pdfme/common&#x27;;</span>
+ import type { SidebarProps } from &#x27;../../../../types.js&#x27;;
+ import { Menu } from &#x27;lucide-react&#x27;;
+ import { I18nContext, PluginsRegistry, OptionsContext } from &#x27;../../../../contexts.js&#x27;;
+<span class="h">@@ -29,6 +30,7 @@ type DetailViewProps = Pick&lt;</span>
+   | &#x27;schemas&#x27;
+   | &#x27;schemasList&#x27;
+   | &#x27;pageSize&#x27;
+<span class="a">+  | &#x27;basePdf&#x27;</span>
+   | &#x27;changeSchemas&#x27;
+   | &#x27;activeElements&#x27;
+   | &#x27;deselectSchema&#x27;
+<span class="h">@@ -39,7 +41,8 @@ type DetailViewProps = Pick&lt;</span>
+ const DetailView = (props: DetailViewProps) =&gt; {
+   const { token } = theme.useToken();
+ 
+<span class="d">-  const { size, schemasList, changeSchemas, deselectSchema, activeSchema } = props;</span>
+<span class="a">+  const { size, schemasList, changeSchemas, deselectSchema, activeSchema, pageSize, basePdf } =</span>
+<span class="a">+    props;</span>
+   const form = useForm();
+ 
+   const i18n = useContext(I18nContext);
+<span class="h">@@ -116,6 +119,37 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+   const validateUniqueSchemaName = (_: unknown, value: string): boolean =&gt;
+     uniqueSchemaName.current(value);
+ 
+<span class="a">+  // Calculate padding values once</span>
+<span class="a">+  const [paddingTop, paddingRight, paddingBottom, paddingLeft] = isBlankPdf(basePdf)</span>
+<span class="a">+    ? basePdf.padding</span>
+<span class="a">+    : [0, 0, 0, 0];</span>
+<span class="a">+</span>
+<span class="a">+  // Cross-field validation: only checks when both fields are individually valid</span>
+<span class="a">+  const validatePosition = (_: unknown, value: number, fieldName: string): boolean =&gt; {</span>
+<span class="a">+    const formValues = form.getValues() as Record&lt;string, unknown&gt;;</span>
+<span class="a">+    const position = formValues.position as { x: number; y: number } | undefined;</span>
+<span class="a">+    const width = formValues.width as number | undefined;</span>
+<span class="a">+    const height = formValues.height as number | undefined;</span>
+<span class="a">+</span>
+<span class="a">+    if (!position || width === undefined || height === undefined) return true;</span>
+<span class="a">+</span>
+<span class="a">+    if (fieldName === &#x27;x&#x27;) {</span>
+<span class="a">+      if (value &lt; paddingLeft || value &gt; pageSize.width - paddingRight) return true;</span>
+<span class="a">+      if (width &gt; 0 &amp;&amp; value + width &gt; pageSize.width - paddingRight) return false;</span>
+<span class="a">+    } else if (fieldName === &#x27;y&#x27;) {</span>
+<span class="a">+      if (value &lt; paddingTop || value &gt; pageSize.height - paddingBottom) return true;</span>
+<span class="a">+      if (height &gt; 0 &amp;&amp; value + height &gt; pageSize.height - paddingBottom) return false;</span>
+<span class="a">+    } else if (fieldName === &#x27;width&#x27;) {</span>
+<span class="a">+      if (position.x &lt; paddingLeft || position.x &gt; pageSize.width - paddingRight) return true;</span>
+<span class="a">+      if (value &gt; 0 &amp;&amp; position.x + value &gt; pageSize.width - paddingRight) return false;</span>
+<span class="a">+    } else if (fieldName === &#x27;height&#x27;) {</span>
+<span class="a">+      if (position.y &lt; paddingTop || position.y &gt; pageSize.height - paddingBottom) return true;</span>
+<span class="a">+      if (value &gt; 0 &amp;&amp; position.y + value &gt; pageSize.height - paddingBottom) return false;</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    return true;</span>
+<span class="a">+  };</span>
+<span class="a">+</span>
+   // Use explicit type for debounce function that matches the expected signature
+   const handleWatch = debounce(function (...args: unknown[]) {
+     const formSchema = args[0] as Record&lt;string, unknown&gt;;
+<span class="h">@@ -203,6 +237,10 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+       })()
+     : emptySchema;
+ 
+<span class="a">+  // Calculate max values considering padding</span>
+<span class="a">+  const maxWidth = pageSize.width - paddingLeft - paddingRight;</span>
+<span class="a">+  const maxHeight = pageSize.height - paddingTop - paddingBottom;</span>
+<span class="a">+</span>
+   // Create a type-safe schema object
+   const propPanelSchema: PropPanelSchema = {
+     type: &#x27;object&#x27;,
+<span class="h">@@ -247,8 +285,36 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+         type: &#x27;object&#x27;,
+         widget: &#x27;card&#x27;,
+         properties: {
+<span class="d">-          x: { title: &#x27;X&#x27;, type: &#x27;number&#x27;, widget: &#x27;inputNumber&#x27;, required: true, span: 8, min: 0 },</span>
+<span class="d">-          y: { title: &#x27;Y&#x27;, type: &#x27;number&#x27;, widget: &#x27;inputNumber&#x27;, required: true, span: 8, min: 0 },</span>
+<span class="a">+          x: {</span>
+<span class="a">+            title: &#x27;X&#x27;,</span>
+<span class="a">+            type: &#x27;number&#x27;,</span>
+<span class="a">+            widget: &#x27;inputNumber&#x27;,</span>
+<span class="a">+            required: true,</span>
+<span class="a">+            span: 8,</span>
+<span class="a">+            min: paddingLeft,</span>
+<span class="a">+            max: pageSize.width - paddingRight,</span>
+<span class="a">+            rules: [</span>
+<span class="a">+              {</span>
+<span class="a">+                validator: (_: unknown, value: number) =&gt; validatePosition(_, value, &#x27;x&#x27;),</span>
+<span class="a">+                message: typedI18n(&#x27;validation.outOfBounds&#x27;),</span>
+<span class="a">+              },</span>
+<span class="a">+            ],</span>
+<span class="a">+          },</span>
+<span class="a">+          y: {</span>
+<span class="a">+            title: &#x27;Y&#x27;,</span>
+<span class="a">+            type: &#x27;number&#x27;,</span>
+<span class="a">+            widget: &#x27;inputNumber&#x27;,</span>
+<span class="a">+            required: true,</span>
+<span class="a">+            span: 8,</span>
+<span class="a">+            min: paddingTop,</span>
+<span class="a">+            max: pageSize.height - paddingBottom,</span>
+<span class="a">+            rules: [</span>
+<span class="a">+              {</span>
+<span class="a">+                validator: (_: unknown, value: number) =&gt; validatePosition(_, value, &#x27;y&#x27;),</span>
+<span class="a">+                message: typedI18n(&#x27;validation.outOfBounds&#x27;),</span>
+<span class="a">+              },</span>
+<span class="a">+            ],</span>
+<span class="a">+          },</span>
+         },
+       },
+       width: {
+<span class="h">@@ -257,7 +323,13 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+         widget: &#x27;inputNumber&#x27;,
+         required: true,
+         span: 6,
+<span class="d">-        props: { min: 0 },</span>
+<span class="a">+        props: { min: 0, max: maxWidth },</span>
+<span class="a">+        rules: [</span>
+<span class="a">+          {</span>
+<span class="a">+            validator: (_: unknown, value: number) =&gt; validatePosition(_, value, &#x27;width&#x27;),</span>
+<span class="a">+            message: typedI18n(&#x27;validation.outOfBounds&#x27;),</span>
+<span class="a">+          },</span>
+<span class="a">+        ],</span>
+       },
+       height: {
+         title: typedI18n(&#x27;height&#x27;),
+<span class="h">@@ -265,7 +337,13 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+         widget: &#x27;inputNumber&#x27;,
+         required: true,
+         span: 6,
+<span class="d">-        props: { min: 0 },</span>
+<span class="a">+        props: { min: 0, max: maxHeight },</span>
+<span class="a">+        rules: [</span>
+<span class="a">+          {</span>
+<span class="a">+            validator: (_: unknown, value: number) =&gt; validatePosition(_, value, &#x27;height&#x27;),</span>
+<span class="a">+            message: typedI18n(&#x27;validation.outOfBounds&#x27;),</span>
+<span class="a">+          },</span>
+<span class="a">+        ],</span>
+       },
+       rotate: {
+         title: typedI18n(&#x27;rotate&#x27;),</pre><h2>Commit #4: <a href="https://github.com/pdfme/pdfme/commit/b1fd15a9093d9fa99f290543b0a245bcd586500f">b1fd15a909</a> (2025-11-27T15:19:56+09:00)</h2><p class="k">Add HTML component classNames to Designer UI sections and buttons (#1243)<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx
+index 6cf7f57a..ea244c39 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="h">@@ -13,6 +13,7 @@ import type { SidebarProps } from &#x27;../../../../types.js&#x27;;</span>
+ import { Menu } from &#x27;lucide-react&#x27;;
+ import { I18nContext, PluginsRegistry, OptionsContext } from &#x27;../../../../contexts.js&#x27;;
+ import { getSidebarContentHeight, debounce } from &#x27;../../../../helper.js&#x27;;
+<span class="a">+import { DESIGNER_CLASSNAME } from &#x27;../../../../constants.js&#x27;;</span>
+ import { theme, Typography, Button, Divider } from &#x27;antd&#x27;;
+ import AlignWidget from &#x27;./AlignWidget.js&#x27;;
+ import WidgetRenderer from &#x27;./WidgetRenderer.js&#x27;;
+<span class="h">@@ -423,9 +424,10 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+   }
+ 
+   return (
+<span class="d">-    &lt;div&gt;</span>
+<span class="a">+    &lt;div className={DESIGNER_CLASSNAME + &#x27;detail-view&#x27;}&gt;</span>
+       &lt;div style={{ height: 40, display: &#x27;flex&#x27;, alignItems: &#x27;center&#x27; }}&gt;
+         &lt;Button
+<span class="a">+          className={DESIGNER_CLASSNAME + &#x27;back-button&#x27;}</span>
+           style={{
+             position: &#x27;absolute&#x27;,
+             zIndex: 100,</pre><h2>Commit #5: <a href="https://github.com/pdfme/pdfme/commit/75b17ac05d0461883077371e4f868276f884d931">75b17ac05d</a> (2025-11-29T16:12:52+09:00)</h2><p class="k">refactor(ui): tidy designer right sidebar layout (#1247)<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx
+index ea244c39..d98c407b 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import { useForm } from &#x27;form-render&#x27;;
+<span class="d">-import React, { useRef, useContext, useState, useEffect } from &#x27;react&#x27;;</span>
+<span class="a">+import React, { useRef, useContext, useState, useEffect, useCallback } from &#x27;react&#x27;;</span>
+ import type {
+   Dict,
+   ChangeSchemaItem,
+<span class="h">@@ -12,13 +12,14 @@ import { isBlankPdf } from &#x27;@pdfme/common&#x27;;</span>
+ import type { SidebarProps } from &#x27;../../../../types.js&#x27;;
+ import { Menu } from &#x27;lucide-react&#x27;;
+ import { I18nContext, PluginsRegistry, OptionsContext } from &#x27;../../../../contexts.js&#x27;;
+<span class="d">-import { getSidebarContentHeight, debounce } from &#x27;../../../../helper.js&#x27;;</span>
+<span class="a">+import { debounce } from &#x27;../../../../helper.js&#x27;;</span>
+ import { DESIGNER_CLASSNAME } from &#x27;../../../../constants.js&#x27;;
+ import { theme, Typography, Button, Divider } from &#x27;antd&#x27;;
+ import AlignWidget from &#x27;./AlignWidget.js&#x27;;
+ import WidgetRenderer from &#x27;./WidgetRenderer.js&#x27;;
+ import ButtonGroupWidget from &#x27;./ButtonGroupWidget.js&#x27;;
+ import { InternalNamePath, ValidateErrorEntity } from &#x27;rc-field-form/es/interface.js&#x27;;
+<span class="a">+import { SidebarBody, SidebarFrame, SidebarHeader, SIDEBAR_H_PADDING_PX } from &#x27;../layout.js&#x27;;</span>
+ 
+ // Import FormRender as a default import
+ import FormRenderComponent from &#x27;form-render&#x27;;
+<span class="h">@@ -42,8 +43,7 @@ type DetailViewProps = Pick&lt;</span>
+ const DetailView = (props: DetailViewProps) =&gt; {
+   const { token } = theme.useToken();
+ 
+<span class="d">-  const { size, schemasList, changeSchemas, deselectSchema, activeSchema, pageSize, basePdf } =</span>
+<span class="d">-    props;</span>
+<span class="a">+  const { schemasList, changeSchemas, deselectSchema, activeSchema, pageSize, basePdf } = props;</span>
+   const form = useForm();
+ 
+   const i18n = useContext(I18nContext);
+<span class="h">@@ -51,10 +51,13 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+   const options = useContext(OptionsContext);
+ 
+   // Define a type-safe i18n function that accepts string keys
+<span class="d">-  const typedI18n = (key: string): string =&gt; {</span>
+<span class="d">-    // Use a type assertion to handle the union type constraint</span>
+<span class="d">-    return typeof i18n === &#x27;function&#x27; ? i18n(key as keyof Dict) : key;</span>
+<span class="d">-  };</span>
+<span class="a">+  const typedI18n = useCallback(</span>
+<span class="a">+    (key: string): string =&gt; {</span>
+<span class="a">+      // Use a type assertion to handle the union type constraint</span>
+<span class="a">+      return typeof i18n === &#x27;function&#x27; ? i18n(key as keyof Dict) : key;</span>
+<span class="a">+    },</span>
+<span class="a">+    [i18n],</span>
+<span class="a">+  );</span>
+ 
+   const [widgets, setWidgets] = useState&lt;{
+     [key: string]: (props: PropPanelWidgetProps) =&gt; React.JSX.Element;
+<span class="h">@@ -84,7 +87,7 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+       });
+     }
+     setWidgets(newWidgets);
+<span class="d">-  }, [activeSchema, pluginsRegistry, JSON.stringify(options)]);</span>
+<span class="a">+  }, [activeSchema, options, pluginsRegistry, props, token, typedI18n]);</span>
+ 
+   useEffect(() =&gt; {
+     // Create a type-safe copy of the schema with editable property
+<span class="h">@@ -95,7 +98,7 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+     form.setValues(values);
+   }, [activeSchema, form]);
+ 
+<span class="d">-  useEffect(() =&gt; form.resetFields(), [activeSchema.id]);</span>
+<span class="a">+  useEffect(() =&gt; form.resetFields(), [activeSchema.id, form]);</span>
+ 
+   useEffect(() =&gt; {
+     uniqueSchemaName.current = (value: string): boolean =&gt; {
+<span class="h">@@ -424,16 +427,20 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+   }
+ 
+   return (
+<span class="d">-    &lt;div className={DESIGNER_CLASSNAME + &#x27;detail-view&#x27;}&gt;</span>
+<span class="d">-      &lt;div style={{ height: 40, display: &#x27;flex&#x27;, alignItems: &#x27;center&#x27; }}&gt;</span>
+<span class="a">+    &lt;SidebarFrame className={DESIGNER_CLASSNAME + &#x27;detail-view&#x27;}&gt;</span>
+<span class="a">+      &lt;SidebarHeader&gt;</span>
+         &lt;Button
+           className={DESIGNER_CLASSNAME + &#x27;back-button&#x27;}
+           style={{
+             position: &#x27;absolute&#x27;,
+<span class="a">+            left: SIDEBAR_H_PADDING_PX,</span>
+             zIndex: 100,
+             display: &#x27;flex&#x27;,
+             alignItems: &#x27;center&#x27;,
+             justifyContent: &#x27;center&#x27;,
+<span class="a">+            transform: &#x27;translateY(-50%)&#x27;,</span>
+<span class="a">+            top: &#x27;50%&#x27;,</span>
+<span class="a">+            paddingTop: &#x27;3px&#x27;,</span>
+           }}
+           onClick={deselectSchema}
+           icon={&lt;Menu strokeWidth={1.5} size={20} /&gt;}
+<span class="h">@@ -441,15 +448,8 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+         &lt;Text strong style={{ textAlign: &#x27;center&#x27;, width: &#x27;100%&#x27; }}&gt;
+           {typedI18n(&#x27;editField&#x27;)}
+         &lt;/Text&gt;
+<span class="d">-      &lt;/div&gt;</span>
+<span class="d">-      &lt;Divider style={{ marginTop: token.marginXS, marginBottom: token.marginXS }} /&gt;</span>
+<span class="d">-      &lt;div</span>
+<span class="d">-        style={{</span>
+<span class="d">-          height: getSidebarContentHeight(size.height),</span>
+<span class="d">-          overflowY: &#x27;auto&#x27;,</span>
+<span class="d">-          overflowX: &#x27;hidden&#x27;,</span>
+<span class="d">-        }}</span>
+<span class="d">-      &gt;</span>
+<span class="a">+      &lt;/SidebarHeader&gt;</span>
+<span class="a">+      &lt;SidebarBody&gt;</span>
+         &lt;FormRenderComponent
+           form={form}
+           schema={propPanelSchema}
+<span class="h">@@ -457,8 +457,8 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+           watch={{ &#x27;#&#x27;: handleWatch }}
+           locale=&quot;en-US&quot;
+         /&gt;
+<span class="d">-      &lt;/div&gt;</span>
+<span class="d">-    &lt;/div&gt;</span>
+<span class="a">+      &lt;/SidebarBody&gt;</span>
+<span class="a">+    &lt;/SidebarFrame&gt;</span>
+   );
+ };
+ </pre><h2>Commit #6: <a href="https://github.com/pdfme/pdfme/commit/ae82bbc653342941433b2b6b0ff57c72f33c0eaa">ae82bbc653</a> (2025-12-01T13:38:56+09:00)</h2><p class="k">fix: optimize useEffect dependencies in DetailView component<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx
+index d98c407b..267b338b 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/index.tsx</span>
+<span class="h">@@ -87,7 +87,9 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+       });
+     }
+     setWidgets(newWidgets);
+<span class="d">-  }, [activeSchema, options, pluginsRegistry, props, token, typedI18n]);</span>
+<span class="a">+  }, [activeSchema, pluginsRegistry, JSON.stringify(options)]);</span>
+<span class="a">+</span>
+<span class="a">+  useEffect(() =&gt; form.resetFields(), [activeSchema.id]);</span>
+ 
+   useEffect(() =&gt; {
+     // Create a type-safe copy of the schema with editable property
+<span class="h">@@ -96,9 +98,7 @@ const DetailView = (props: DetailViewProps) =&gt; {</span>
+     const readOnly = typeof values.readOnly === &#x27;boolean&#x27; ? values.readOnly : false;
+     values.editable = !readOnly;
+     form.setValues(values);
+<span class="d">-  }, [activeSchema, form]);</span>
+<span class="d">-</span>
+<span class="d">-  useEffect(() =&gt; form.resetFields(), [activeSchema.id, form]);</span>
+<span class="a">+  }, [activeSchema]);</span>
+ 
+   useEffect(() =&gt; {
+     uniqueSchemaName.current = (value: string): boolean =&gt; {</pre></body></html>

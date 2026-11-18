@@ -1,0 +1,343 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L050</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L050</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs, line 120<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/2f034511a13cc08e3614dc5f242579516163ce60">2f034511a1</a> (2025-06-26T05:21:44)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">    public bool IsWarning =&gt; CompletionState is CompletionStates.CompletedWithWarning;</span></pre><h2>File at the merge commit, lines 112 to 128</h2><pre>  112 |     /// &lt;summary&gt;
+  113 |     /// Gets a value indicating whether the publishing activity encountered an error.
+  114 |     /// &lt;/summary&gt;
+  115 |     public bool IsError =&gt; CompletionState is CompletionStates.CompletedWithError;
+  116 | 
+  117 |     /// &lt;summary&gt;
+  118 |     /// Gets a value indicating whether the publishing activity completed with warnings.
+  119 |     /// &lt;/summary&gt;
+<span class="t">  120 |     public bool IsWarning =&gt; CompletionState is CompletionStates.CompletedWithWarning;</span>
+  121 | 
+  122 |     /// &lt;summary&gt;
+  123 |     /// Gets the identifier of the step this task belongs to (only applicable for tasks).
+  124 |     /// &lt;/summary&gt;
+  125 |     public string? StepId { get; init; }
+  126 | 
+  127 |     /// &lt;summary&gt;
+  128 |     /// Gets the completion message for the publishing activity (optional).</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/5f415f762891ee253f42a5940c0cce948ac3b8fd">5f415f7628</a> (2025-06-27T19:30:20-07:00)</h2><p class="k">Implement CLI prompting on top of InteractionService (#10101)<br>Path after this commit: src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs b/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs
+index 6eb97dc12d..3cc614ee12 100644
+<span class="d">--- a/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs</span>
+<span class="a">+++ b/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs</span>
+<span class="h">@@ -128,6 +128,64 @@ internal sealed class PublishingActivityData</span>
+     /// Gets the completion message for the publishing activity (optional).
+     /// &lt;/summary&gt;
+     public string? CompletionMessage { get; init; }
+<span class="a">+</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// Gets the input information for prompt activities, if available.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    public IReadOnlyList&lt;PublishingPromptInput&gt;? Inputs { get; init; }</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+/// &lt;summary&gt;</span>
+<span class="a">+/// Represents an input for a publishing prompt.</span>
+<span class="a">+/// &lt;/summary&gt;</span>
+<span class="a">+internal sealed class PublishingPromptInput</span>
+<span class="a">+{</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// Gets the label for the input.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    public required string Label { get; init; }</span>
+<span class="a">+</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// Gets the type of the input.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    public required string InputType { get; init; }</span>
+<span class="a">+</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// Gets a value indicating whether the input is required.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    public bool Required { get; init; }</span>
+<span class="a">+</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// Gets the options for the input. Only used by select inputs.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    public IReadOnlyList&lt;KeyValuePair&lt;string, string&gt;&gt;? Options { get; init; }</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+/// &lt;summary&gt;</span>
+<span class="a">+/// Specifies the type of input for a publishing prompt input.</span>
+<span class="a">+/// &lt;/summary&gt;</span>
+<span class="a">+internal enum InputType</span>
+<span class="a">+{</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// A single-line text input.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    Text,</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// A secure text input.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    SecretText,</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// A choice input. Selects from a list of options.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    Choice,</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// A boolean input.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    Boolean,</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// A numeric input.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    Number</span>
+ }
+ 
+ /// &lt;summary&gt;
+<span class="h">@@ -138,6 +196,7 @@ internal static class PublishingActivityTypes</span>
+     public const string Step = &quot;step&quot;;
+     public const string Task = &quot;task&quot;;
+     public const string PublishComplete = &quot;publish-complete&quot;;
+<span class="a">+    public const string Prompt = &quot;prompt&quot;;</span>
+ }
+ 
+ internal class BackchannelLogEntry</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/11013227c2875d44ce3c9c0472573999c7aa597e">11013227c2</a> (2025-06-28T23:18:24-07:00)</h2><p class="k">Add Value property to PublishingPromptInput to enable default value flow (#10111)<br>Path after this commit: src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs b/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs
+index 3cc614ee12..f838535f63 100644
+<span class="d">--- a/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs</span>
+<span class="a">+++ b/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs</span>
+<span class="h">@@ -159,6 +159,11 @@ internal sealed class PublishingPromptInput</span>
+     /// Gets the options for the input. Only used by select inputs.
+     /// &lt;/summary&gt;
+     public IReadOnlyList&lt;KeyValuePair&lt;string, string&gt;&gt;? Options { get; init; }
+<span class="a">+</span>
+<span class="a">+    /// &lt;summary&gt;</span>
+<span class="a">+    /// Gets the default value for the input.</span>
+<span class="a">+    /// &lt;/summary&gt;</span>
+<span class="a">+    public string? Value { get; init; }</span>
+ }
+ 
+ /// &lt;summary&gt;</pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/590ede62f0b946462057fd762c0708ee5b44ab35">590ede62f0</a> (2025-07-02T10:39:22-07:00)</h2><p class="k">Dedupe shared backchannel types (#10058)<br>Path after this commit: src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs b/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs
+index f838535f63..2fa5c9a181 100644
+<span class="d">--- a/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs</span>
+<span class="a">+++ b/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs</span>
+<span class="h">@@ -1,57 +1,8 @@</span>
+ // Licensed to the .NET Foundation under one or more agreements.
+ // The .NET Foundation licenses this file to you under the MIT license.
+ 
+<span class="d">-using Microsoft.Extensions.Logging;</span>
+<span class="d">-</span>
+ namespace Aspire.Cli.Backchannel;
+ 
+<span class="d">-/// &lt;summary&gt;</span>
+<span class="d">-/// Represents the state of a resource reported via RPC.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-internal sealed class RpcResourceState</span>
+<span class="d">-{</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the name of the resource.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string Resource { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the type of the resource.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string Type { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the state of the resource.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string State { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the endpoints associated with the resource.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string[] Endpoints { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the health status of the resource.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public string? Health { get; init; }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/// &lt;summary&gt;</span>
+<span class="d">-/// Represents dashboard URLs with authentication tokens.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-internal sealed class DashboardUrlsState</span>
+<span class="d">-{</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the base dashboard URL with a login token.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string BaseUrlWithLoginToken { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the Codespaces dashboard URL with a login token, if available.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public string? CodespacesUrlWithLoginToken { get; init; }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ /// &lt;summary&gt;
+ /// Represents a single line of output to be displayed, along with its associated stream (such as &quot;stdout&quot; or &quot;stderr&quot;).
+ /// &lt;/summary&gt;
+<span class="h">@@ -68,104 +19,6 @@ internal sealed class DisplayLineState(string stream, string line)</span>
+     public string Line { get; } = line;
+ }
+ 
+<span class="d">-/// &lt;summary&gt;</span>
+<span class="d">-/// Envelope for publishing activity items sent over the backchannel.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-internal sealed class PublishingActivity</span>
+<span class="d">-{</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the type discriminator for the publishing activity item.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string Type { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the data containing all properties for the publishing activity item.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required PublishingActivityData Data { get; init; }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/// &lt;summary&gt;</span>
+<span class="d">-/// Common data for all publishing activity items.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-internal sealed class PublishingActivityData</span>
+<span class="d">-{</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the unique identifier for the publishing activity.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string Id { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the status text describing the publishing activity.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string StatusText { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the completion state of the publishing activity.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public string CompletionState { get; init; } = CompletionStates.InProgress;</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets a value indicating whether the publishing activity is complete.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public bool IsComplete =&gt; CompletionState is not CompletionStates.InProgress;</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets a value indicating whether the publishing activity encountered an error.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public bool IsError =&gt; CompletionState is CompletionStates.CompletedWithError;</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets a value indicating whether the publishing activity completed with warnings.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d m">-    public bool IsWarning =&gt; CompletionState is CompletionStates.CompletedWithWarning;</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the identifier of the step this task belongs to (only applicable for tasks).</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public string? StepId { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the completion message for the publishing activity (optional).</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public string? CompletionMessage { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the input information for prompt activities, if available.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public IReadOnlyList&lt;PublishingPromptInput&gt;? Inputs { get; init; }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/// &lt;summary&gt;</span>
+<span class="d">-/// Represents an input for a publishing prompt.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-internal sealed class PublishingPromptInput</span>
+<span class="d">-{</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the label for the input.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string Label { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the type of the input.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public required string InputType { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets a value indicating whether the input is required.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public bool Required { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the options for the input. Only used by select inputs.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public IReadOnlyList&lt;KeyValuePair&lt;string, string&gt;&gt;? Options { get; init; }</span>
+<span class="d">-</span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Gets the default value for the input.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    public string? Value { get; init; }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ /// &lt;summary&gt;
+ /// Specifies the type of input for a publishing prompt input.
+ /// &lt;/summary&gt;
+<span class="h">@@ -192,34 +45,3 @@ internal enum InputType</span>
+     /// &lt;/summary&gt;
+     Number
+ }
+<span class="d">-</span>
+<span class="d">-/// &lt;summary&gt;</span>
+<span class="d">-/// Constants for publishing activity item types.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-internal static class PublishingActivityTypes</span>
+<span class="d">-{</span>
+<span class="d">-    public const string Step = &quot;step&quot;;</span>
+<span class="d">-    public const string Task = &quot;task&quot;;</span>
+<span class="d">-    public const string PublishComplete = &quot;publish-complete&quot;;</span>
+<span class="d">-    public const string Prompt = &quot;prompt&quot;;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-internal class BackchannelLogEntry</span>
+<span class="d">-{</span>
+<span class="d">-    public required EventId EventId { get; set; }</span>
+<span class="d">-    public required LogLevel LogLevel { get; set; }</span>
+<span class="d">-    public required string Message { get; set; }</span>
+<span class="d">-    public required DateTimeOffset Timestamp { get; set; }</span>
+<span class="d">-    public required string CategoryName { get; set; }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/// &lt;summary&gt;</span>
+<span class="d">-/// Constants for completion state values.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-internal static class CompletionStates</span>
+<span class="d">-{</span>
+<span class="d">-    public const string InProgress = &quot;InProgress&quot;;</span>
+<span class="d">-    public const string Completed = &quot;Completed&quot;;</span>
+<span class="d">-    public const string CompletedWithWarning = &quot;CompletedWithWarning&quot;;</span>
+<span class="d">-    public const string CompletedWithError = &quot;CompletedWithError&quot;;</span>
+<span class="d">-}</span></pre><h2>Commit #4: <a href="https://github.com/dotnet/aspire/commit/1631b951e3c8f5ef115f4a84272a6c6e3bfad5b6">1631b951e3</a> (2025-07-30T21:20:31+00:00)</h2><p class="k">Add AppHost debug support (#10369)<br>Path after this commit: src/Aspire.Cli/Backchannel/ExtensionBackchannelDataTypes.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs b/src/Aspire.Cli/Backchannel/ExtensionBackchannelDataTypes.cs
+similarity index 80%
+rename from src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs
+rename to src/Aspire.Cli/Backchannel/ExtensionBackchannelDataTypes.cs
+index 2fa5c9a181..f66fa34f3d 100644
+<span class="d">--- a/src/Aspire.Cli/Backchannel/BackchannelDataTypes.cs</span>
+<span class="a">+++ b/src/Aspire.Cli/Backchannel/ExtensionBackchannelDataTypes.cs</span>
+<span class="h">@@ -1,6 +1,8 @@</span>
+ // Licensed to the .NET Foundation under one or more agreements.
+ // The .NET Foundation licenses this file to you under the MIT license.
+ 
+<span class="a">+using System.Text.Json.Serialization;</span>
+<span class="a">+</span>
+ namespace Aspire.Cli.Backchannel;
+ 
+ /// &lt;summary&gt;
+<span class="h">@@ -45,3 +47,14 @@ internal enum InputType</span>
+     /// &lt;/summary&gt;
+     Number
+ }
+<span class="a">+</span>
+<span class="a">+internal sealed class EnvVar</span>
+<span class="a">+{</span>
+<span class="a">+    // Name of the environment variable</span>
+<span class="a">+    [JsonPropertyName(&quot;name&quot;)]</span>
+<span class="a">+    public string? Name { get; set; }</span>
+<span class="a">+</span>
+<span class="a">+    // Value of the environment variable</span>
+<span class="a">+    [JsonPropertyName(&quot;value&quot;)]</span>
+<span class="a">+    public string? Value { get; set; }</span>
+<span class="a">+}</span></pre></body></html>

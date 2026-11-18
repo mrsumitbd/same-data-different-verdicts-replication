@@ -1,0 +1,247 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L272</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L272</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/sdk">dotnet/sdk</a><br><b>File at merge:</b> test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs, line 1122<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/sdk/commit/184f6034887b1a18e5c7f91b9dd8ea2652fbdd40">184f603488</a> (2025-07-01T20:40:19)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/sdk/tree/56e5364b4c3ed9093cb5dec2e6e8dac3544472fa">56e5364b4c</a>)</p><p><b>The line:</b></p><pre><span class="t">            // We need a buildable project to extract the property to verify it</span></pre><h2>File at the merge commit, lines 1114 to 1130</h2><pre> 1114 |             {
+ 1115 |                 Name = &quot;13monkeys&quot;,
+ 1116 |                 TargetFrameworks = targetFramework,
+ 1117 |             };
+ 1118 | 
+ 1119 |             var testAsset = _testAssetsManager.CreateTestProject(testProject, identifier: targetFramework);
+ 1120 | 
+ 1121 |             // Overwrite the default file. CreateTestProject uses the defined project name for the namespace.
+<span class="t"> 1122 |             // We need a buildable project to extract the property to verify it</span>
+ 1123 |             // since this issue only surfaces in VS when adding a new class through an item template.
+ 1124 |             File.WriteAllText(Path.Combine(testAsset.Path, testProject.Name, $&quot;{testProject.Name}.cs&quot;), @&quot;
+ 1125 | using System;
+ 1126 | using System.Collections.Generic;
+ 1127 | 
+ 1128 | namespace _13monkeys
+ 1129 | {
+ 1130 |     public class _13monkeysClass</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/sdk/commit/27c4bbf77bc10bc7b7a2acdf0601489f44329890">27c4bbf77b</a> (2025-08-19T13:45:29-07:00)</h2><p class="k">Default `dotnet new sln` to slnx format for .NET 10 (#50023)<br>Path after this commit: test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs. Lines with exactly this text in the file after the commit: 4.</p><pre>diff --git a/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs b/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs
+index a7a460ab70..ee23eef9de 100644
+<span class="d">--- a/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs</span>
+<span class="a">+++ b/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs</span>
+<span class="h">@@ -686,7 +686,7 @@ class Program</span>
+                 new DotnetNewCommand(Log)
+                     .WithVirtualHive()
+                     .WithWorkingDirectory(testAsset.TestRoot)
+<span class="d">-                    .Execute(&quot;sln&quot;)</span>
+<span class="a">+                    .Execute(&quot;sln&quot;, &quot;--format&quot;, &quot;sln&quot;)</span>
+                     .Should()
+                     .Pass();
+ </pre><h2>Commit #2: <a href="https://github.com/dotnet/sdk/commit/4b4953ef1c4a999dcb3e6036fe3ecc9e3a87390d">4b4953ef1c</a> (2025-08-26T06:40:33-07:00)</h2><p class="k">Move generating implicit framework defines to a target. (#45696)<br>Path after this commit: test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs. Lines with exactly this text in the file after the commit: 4.</p><pre>diff --git a/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs b/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs
+index ee23eef9de..bfd15ba486 100644
+<span class="d">--- a/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs</span>
+<span class="a">+++ b/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs</span>
+<span class="h">@@ -321,8 +321,10 @@ namespace Microsoft.NET.Build.Tests</span>
+ 
+         [Theory]
+         [InlineData(&quot;.NETStandard,Version=v2.0&quot;, new[] { &quot;NETSTANDARD&quot;, &quot;NETSTANDARD2_0&quot;, &quot;NETSTANDARD1_0_OR_GREATER&quot;, &quot;NETSTANDARD1_1_OR_GREATER&quot;, &quot;NETSTANDARD1_2_OR_GREATER&quot;, &quot;NETSTANDARD1_3_OR_GREATER&quot;, &quot;NETSTANDARD1_4_OR_GREATER&quot;, &quot;NETSTANDARD1_5_OR_GREATER&quot;, &quot;NETSTANDARD1_6_OR_GREATER&quot;, &quot;NETSTANDARD2_0_OR_GREATER&quot; })]
+<span class="a">+        [InlineData(&quot;.NETStandard,Version=v2.0&quot;, new[] { &quot;NETSTANDARD&quot;, &quot;NETSTANDARD2_0&quot;, &quot;NETSTANDARD1_0_OR_GREATER&quot;, &quot;NETSTANDARD1_1_OR_GREATER&quot;, &quot;NETSTANDARD1_2_OR_GREATER&quot;, &quot;NETSTANDARD1_3_OR_GREATER&quot;, &quot;NETSTANDARD1_4_OR_GREATER&quot;, &quot;NETSTANDARD1_5_OR_GREATER&quot;, &quot;NETSTANDARD1_6_OR_GREATER&quot;, &quot;NETSTANDARD2_0_OR_GREATER&quot; }, true)]</span>
+         [InlineData(&quot;netstandard2.0&quot;, new[] { &quot;NETSTANDARD&quot;, &quot;NETSTANDARD2_0&quot;, &quot;NETSTANDARD1_0_OR_GREATER&quot;, &quot;NETSTANDARD1_1_OR_GREATER&quot;, &quot;NETSTANDARD1_2_OR_GREATER&quot;, &quot;NETSTANDARD1_3_OR_GREATER&quot;, &quot;NETSTANDARD1_4_OR_GREATER&quot;, &quot;NETSTANDARD1_5_OR_GREATER&quot;, &quot;NETSTANDARD1_6_OR_GREATER&quot;, &quot;NETSTANDARD2_0_OR_GREATER&quot; })]
+         [InlineData(&quot;net45&quot;, new[] { &quot;NETFRAMEWORK&quot;, &quot;NET45&quot;, &quot;NET20_OR_GREATER&quot;, &quot;NET30_OR_GREATER&quot;, &quot;NET35_OR_GREATER&quot;, &quot;NET40_OR_GREATER&quot;, &quot;NET45_OR_GREATER&quot; })]
+<span class="a">+        [InlineData(&quot;net45&quot;, new[] { &quot;NETFRAMEWORK&quot;, &quot;NET45&quot;, &quot;NET20_OR_GREATER&quot;, &quot;NET30_OR_GREATER&quot;, &quot;NET35_OR_GREATER&quot;, &quot;NET40_OR_GREATER&quot;, &quot;NET45_OR_GREATER&quot; }, true)]</span>
+         [InlineData(&quot;net461&quot;, new[] { &quot;NETFRAMEWORK&quot;, &quot;NET461&quot;, &quot;NET20_OR_GREATER&quot;, &quot;NET30_OR_GREATER&quot;, &quot;NET35_OR_GREATER&quot;, &quot;NET40_OR_GREATER&quot;, &quot;NET45_OR_GREATER&quot;,
+             &quot;NET451_OR_GREATER&quot;, &quot;NET452_OR_GREATER&quot;, &quot;NET46_OR_GREATER&quot;, &quot;NET461_OR_GREATER&quot; })]
+         [InlineData(&quot;net48&quot;, new[] { &quot;NETFRAMEWORK&quot;, &quot;NET48&quot;, &quot;NET20_OR_GREATER&quot;, &quot;NET30_OR_GREATER&quot;, &quot;NET35_OR_GREATER&quot;, &quot;NET40_OR_GREATER&quot;, &quot;NET45_OR_GREATER&quot;,
+<span class="h">@@ -334,11 +336,13 @@ namespace Microsoft.NET.Build.Tests</span>
+             &quot;NETCOREAPP2_1_OR_GREATER&quot;, &quot;NETCOREAPP2_2_OR_GREATER&quot;, &quot;NETCOREAPP3_0_OR_GREATER&quot; })]
+         [InlineData(&quot;net5.0&quot;, new[] { &quot;NETCOREAPP&quot;, &quot;NETCOREAPP1_0_OR_GREATER&quot;, &quot;NETCOREAPP1_1_OR_GREATER&quot;, &quot;NETCOREAPP2_0_OR_GREATER&quot;, &quot;NETCOREAPP2_1_OR_GREATER&quot;,
+             &quot;NETCOREAPP2_2_OR_GREATER&quot;, &quot;NETCOREAPP3_0_OR_GREATER&quot;, &quot;NETCOREAPP3_1_OR_GREATER&quot;, &quot;NET&quot;, &quot;NET5_0&quot;, &quot;NET5_0_OR_GREATER&quot; })]
+<span class="a">+        [InlineData(&quot;net5.0&quot;, new[] { &quot;NETCOREAPP&quot;, &quot;NETCOREAPP1_0_OR_GREATER&quot;, &quot;NETCOREAPP1_1_OR_GREATER&quot;, &quot;NETCOREAPP2_0_OR_GREATER&quot;, &quot;NETCOREAPP2_1_OR_GREATER&quot;,</span>
+<span class="a">+            &quot;NETCOREAPP2_2_OR_GREATER&quot;, &quot;NETCOREAPP3_0_OR_GREATER&quot;, &quot;NETCOREAPP3_1_OR_GREATER&quot;, &quot;NET&quot;, &quot;NET5_0&quot;, &quot;NET5_0_OR_GREATER&quot; }, true)]</span>
+         [InlineData(&quot;.NETPortable,Version=v4.5,Profile=Profile78&quot;, new string[] { })]
+         [InlineData(&quot;.NETFramework,Version=v4.0,Profile=Client&quot;, new string[] { &quot;NETFRAMEWORK&quot;, &quot;NET40&quot;, &quot;NET20_OR_GREATER&quot;, &quot;NET30_OR_GREATER&quot;, &quot;NET35_OR_GREATER&quot;, &quot;NET40_OR_GREATER&quot; })]
+         [InlineData(&quot;Xamarin.iOS,Version=v1.0&quot;, new string[] { &quot;XAMARINIOS&quot;, &quot;XAMARINIOS1_0&quot; })]
+         [InlineData(&quot;UnknownFramework,Version=v3.14&quot;, new string[] { &quot;UNKNOWNFRAMEWORK&quot;, &quot;UNKNOWNFRAMEWORK3_14&quot; })]
+<span class="d">-        public void It_implicitly_defines_compilation_constants_for_the_target_framework(string targetFramework, string[] expectedDefines)</span>
+<span class="a">+        public void It_implicitly_defines_compilation_constants_for_the_target_framework(string targetFramework, string[] expectedDefines, bool addDefineFromCli = false)</span>
+         {
+             var testAsset = _testAssetsManager
+                 .CopyTestAsset(&quot;AppWithLibrary&quot;, &quot;ImplicitFrameworkConstants&quot;, targetFramework, identifier: expectedDefines.GetHashCode().ToString())
+<span class="h">@@ -385,13 +389,14 @@ namespace Microsoft.NET.Build.Tests</span>
+             };
+ 
+             getValuesCommand
+<span class="d">-                .Execute()</span>
+<span class="a">+                .Execute(addDefineFromCli ? [&quot;/p:DefineConstants=HELLOWORLD&quot;] : [])</span>
+                 .Should()
+                 .Pass();
+ 
+             var definedConstants = getValuesCommand.GetValues();
+<span class="a">+            var expectedConstants = expectedDefines.Concat(addDefineFromCli ? [&quot;HELLOWORLD&quot;] : [&quot;DEBUG&quot;, &quot;TRACE&quot;]);</span>
+ 
+<span class="d">-            definedConstants.Should().BeEquivalentTo(new[] { &quot;DEBUG&quot;, &quot;TRACE&quot; }.Concat(expectedDefines).ToArray());</span>
+<span class="a">+            definedConstants.Should().BeEquivalentTo(expectedConstants.ToArray());</span>
+         }
+ 
+         [Theory]</pre><h2>Commit #3: <a href="https://github.com/dotnet/sdk/commit/217fe6eb5e38ba00e38ce4c12ecb191b765cc58a">217fe6eb5e</a> (2025-09-08T09:17:23-07:00)</h2><p class="k">Revert &quot;Fix RootNamespace handling for dashes and starting digits in … (#50502)<br>Path after this commit: test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs b/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs
+index bfd15ba486..3aa930a5f4 100644
+<span class="d">--- a/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs</span>
+<span class="a">+++ b/test/Microsoft.NET.Build.Tests/GivenThatWeWantToBuildALibrary.cs</span>
+<span class="h">@@ -105,24 +105,6 @@ namespace Microsoft.NET.Build.Tests</span>
+             return itemValues;
+         }
+ 
+<span class="d">-        private string GetPropertyValue(string propertyName, string projectFolder, string targetFramework)</span>
+<span class="d">-        {</span>
+<span class="d">-            var getValuesCommand = new GetValuesCommand(Log, projectFolder,</span>
+<span class="d">-                targetFramework, propertyName, GetValuesCommand.ValueType.Property)</span>
+<span class="d">-            {</span>
+<span class="d">-                Configuration = &quot;Debug&quot;</span>
+<span class="d">-            };</span>
+<span class="d">-</span>
+<span class="d">-            getValuesCommand</span>
+<span class="d">-                .Execute()</span>
+<span class="d">-                .Should()</span>
+<span class="d">-                .Pass();</span>
+<span class="d">-</span>
+<span class="d">-            var values = getValuesCommand.GetValues();</span>
+<span class="d">-            values.Count.Should().Be(1);</span>
+<span class="d">-            return values[0];</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+         private TestAsset CreateDocumentationFileLibraryAsset(bool? generateDocumentationFile, string documentationFile, string language, [CallerMemberName] string callingMethod = &quot;&quot;)
+         {
+             string genDocFileIdentifier = generateDocumentationFile == null ? &quot;null&quot; : generateDocumentationFile.Value.ToString();
+<span class="h">@@ -1068,124 +1050,25 @@ namespace ProjectNameWithSpaces</span>
+                 .Should()
+                 .Pass();
+ 
+<span class="d">-            GetPropertyValue(&quot;RootNamespace&quot;, projectFolder, testProject.TargetFrameworks).Should().Be(&quot;Project_Name_With_Spaces&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        [Theory]</span>
+<span class="d">-        [InlineData(&quot;netcoreapp3.1&quot;)]</span>
+<span class="d">-        [InlineData(&quot;netcoreapp5.0&quot;)]</span>
+<span class="d">-        public void It_makes_RootNamespace_safe_when_project_name_has_dashes(string targetFramework)</span>
+<span class="d">-        {</span>
+<span class="d">-            var testProject = new TestProject()</span>
+<span class="d">-            {</span>
+<span class="d">-                Name = &quot;my-project-with-dashes&quot;,</span>
+<span class="d">-                TargetFrameworks = targetFramework,</span>
+<span class="d">-            };</span>
+<span class="d">-</span>
+<span class="d">-            var testAsset = _testAssetsManager.CreateTestProject(testProject, identifier: targetFramework);</span>
+<span class="d">-</span>
+<span class="d">-            // Overwrite the default file. CreateTestProject uses the defined project name for the namespace.</span>
+<span class="d m">-            // We need a buildable project to extract the property to verify it</span>
+<span class="d">-            // since this issue only surfaces in VS when adding a new class through an item template.</span>
+<span class="d">-            File.WriteAllText(Path.Combine(testAsset.Path, testProject.Name, $&quot;{testProject.Name}.cs&quot;), @&quot;</span>
+<span class="d">-using System;</span>
+<span class="d">-using System.Collections.Generic;</span>
+<span class="d">-</span>
+<span class="d">-namespace MyProjectWithDashes</span>
+<span class="d">-{</span>
+<span class="d">-    public class MyProjectWithDashesClass</span>
+<span class="d">-    {</span>
+<span class="d">-        public static string Name { get { return &quot;&quot;my-project-with-dashes&quot;&quot;; } }</span>
+<span class="d">-        public static List&lt;string&gt; List { get { return null; } }</span>
+<span class="d">-    }</span>
+<span class="d">-}&quot;);</span>
+<span class="d">-            string projectFolder = Path.Combine(testAsset.Path, testProject.Name);</span>
+<span class="d">-</span>
+<span class="d">-            var buildCommand = new BuildCommand(testAsset, $&quot;{testProject.Name}&quot;);</span>
+<span class="d">-            buildCommand</span>
+<span class="d">-                .Execute()</span>
+<span class="d">-                .Should()</span>
+<span class="d">-                .Pass();</span>
+<span class="d">-</span>
+<span class="d">-            GetPropertyValue(&quot;RootNamespace&quot;, projectFolder, testProject.TargetFrameworks).Should().Be(&quot;my_project_with_dashes&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        [Theory]</span>
+<span class="d">-        [InlineData(&quot;netcoreapp3.1&quot;)]</span>
+<span class="d">-        [InlineData(&quot;netcoreapp5.0&quot;)]</span>
+<span class="d">-        public void It_makes_RootNamespace_safe_when_project_name_starts_with_digit(string targetFramework)</span>
+<span class="d">-        {</span>
+<span class="d">-            var testProject = new TestProject()</span>
+<span class="a">+            string GetPropertyValue(string propertyName)</span>
+             {
+<span class="d">-                Name = &quot;13monkeys&quot;,</span>
+<span class="d">-                TargetFrameworks = targetFramework,</span>
+<span class="d">-            };</span>
+<span class="d">-</span>
+<span class="d">-            var testAsset = _testAssetsManager.CreateTestProject(testProject, identifier: targetFramework);</span>
+<span class="d">-</span>
+<span class="d">-            // Overwrite the default file. CreateTestProject uses the defined project name for the namespace.</span>
+<span class="d m">-            // We need a buildable project to extract the property to verify it</span>
+<span class="d">-            // since this issue only surfaces in VS when adding a new class through an item template.</span>
+<span class="d">-            File.WriteAllText(Path.Combine(testAsset.Path, testProject.Name, $&quot;{testProject.Name}.cs&quot;), @&quot;</span>
+<span class="d">-using System;</span>
+<span class="d">-using System.Collections.Generic;</span>
+<span class="d">-</span>
+<span class="d">-namespace _13monkeys</span>
+<span class="d">-{</span>
+<span class="d">-    public class _13monkeysClass</span>
+<span class="d">-    {</span>
+<span class="d">-        public static string Name { get { return &quot;&quot;13monkeys&quot;&quot;; } }</span>
+<span class="d">-        public static List&lt;string&gt; List { get { return null; } }</span>
+<span class="d">-    }</span>
+<span class="d">-}&quot;);</span>
+<span class="d">-            string projectFolder = Path.Combine(testAsset.Path, testProject.Name);</span>
+<span class="d">-</span>
+<span class="d">-            var buildCommand = new BuildCommand(testAsset, $&quot;{testProject.Name}&quot;);</span>
+<span class="d">-            buildCommand</span>
+<span class="d">-                .Execute()</span>
+<span class="d">-                .Should()</span>
+<span class="d">-                .Pass();</span>
+<span class="d">-</span>
+<span class="d">-            GetPropertyValue(&quot;RootNamespace&quot;, projectFolder, testProject.TargetFrameworks).Should().Be(&quot;_13monkeys&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        [Theory]</span>
+<span class="d">-        [InlineData(&quot;netcoreapp3.1&quot;)]</span>
+<span class="d">-        [InlineData(&quot;netcoreapp5.0&quot;)]</span>
+<span class="d">-        public void It_makes_RootNamespace_safe_when_project_name_has_dashes_and_starts_with_digit(string targetFramework)</span>
+<span class="d">-        {</span>
+<span class="d">-            var testProject = new TestProject()</span>
+<span class="d">-            {</span>
+<span class="d">-                Name = &quot;13-monkeys-project&quot;,</span>
+<span class="d">-                TargetFrameworks = targetFramework,</span>
+<span class="d">-            };</span>
+<span class="d">-</span>
+<span class="d">-            var testAsset = _testAssetsManager.CreateTestProject(testProject, identifier: targetFramework);</span>
+<span class="d">-</span>
+<span class="d">-            // Overwrite the default file. CreateTestProject uses the defined project name for the namespace.</span>
+<span class="d m">-            // We need a buildable project to extract the property to verify it</span>
+<span class="d">-            // since this issue only surfaces in VS when adding a new class through an item template.</span>
+<span class="d">-            File.WriteAllText(Path.Combine(testAsset.Path, testProject.Name, $&quot;{testProject.Name}.cs&quot;), @&quot;</span>
+<span class="d">-using System;</span>
+<span class="d">-using System.Collections.Generic;</span>
+<span class="a">+                var getValuesCommand = new GetValuesCommand(Log, projectFolder,</span>
+<span class="a">+                    testProject.TargetFrameworks, propertyName, GetValuesCommand.ValueType.Property)</span>
+<span class="a">+                {</span>
+<span class="a">+                    Configuration = &quot;Debug&quot;</span>
+<span class="a">+                };</span>
+ 
+<span class="d">-namespace _13_monkeys_project</span>
+<span class="d">-{</span>
+<span class="d">-    public class _13_monkeys_projectClass</span>
+<span class="d">-    {</span>
+<span class="d">-        public static string Name { get { return &quot;&quot;13-monkeys-project&quot;&quot;; } }</span>
+<span class="d">-        public static List&lt;string&gt; List { get { return null; } }</span>
+<span class="d">-    }</span>
+<span class="d">-}&quot;);</span>
+<span class="d">-            string projectFolder = Path.Combine(testAsset.Path, testProject.Name);</span>
+<span class="a">+                getValuesCommand</span>
+<span class="a">+                    .Execute()</span>
+<span class="a">+                    .Should()</span>
+<span class="a">+                    .Pass();</span>
+ 
+<span class="d">-            var buildCommand = new BuildCommand(testAsset, $&quot;{testProject.Name}&quot;);</span>
+<span class="d">-            buildCommand</span>
+<span class="d">-                .Execute()</span>
+<span class="d">-                .Should()</span>
+<span class="d">-                .Pass();</span>
+<span class="a">+                var values = getValuesCommand.GetValues();</span>
+<span class="a">+                values.Count.Should().Be(1);</span>
+<span class="a">+                return values[0];</span>
+<span class="a">+            }</span>
+ 
+<span class="d">-            GetPropertyValue(&quot;RootNamespace&quot;, projectFolder, testProject.TargetFrameworks).Should().Be(&quot;_13_monkeys_project&quot;);</span>
+<span class="a">+            GetPropertyValue(&quot;RootNamespace&quot;).Should().Be(&quot;Project_Name_With_Spaces&quot;);</span>
+         }
+ 
+         [WindowsOnlyFact(Skip = &quot;We need new SDK packages with different assembly versions to build this (.38 and .39 have the same assembly version)&quot;)]</pre></body></html>

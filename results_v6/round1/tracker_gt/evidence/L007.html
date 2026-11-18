@@ -1,0 +1,246 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L007</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L007</h1><p><b>Repository:</b> <a href="https://github.com/getsentry/sentry-javascript">getsentry/sentry-javascript</a><br><b>File at merge:</b> packages/core/src/types-hoist/hub.ts, line 176<br><b>Merge commit (birth):</b> <a href="https://github.com/getsentry/sentry-javascript/commit/797a4dd45d10eb498281062f751922154b454ee9">797a4dd45d</a> (2025-01-03T08:07:48)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/getsentry/sentry-javascript/tree/4a5ba93d205c6f0a55b48ec737df9406af8381df">4a5ba93d20</a>)</p><p><b>The line:</b></p><pre><span class="t">  getIntegration&lt;T extends Integration&gt;(integration: unknown): T | null;</span></pre><h2>File at the merge commit, lines 168 to 184</h2><pre>  168 |    */
+  169 |   setContext(name: string, context: { [key: string]: any } | null): void;
+  170 | 
+  171 |   /**
+  172 |    * Returns the integration if installed on the current client.
+  173 |    *
+  174 |    * @deprecated Use `Sentry.getClient().getIntegrationByName()` instead.
+  175 |    */
+<span class="t">  176 |   getIntegration&lt;T extends Integration&gt;(integration: unknown): T | null;</span>
+  177 | 
+  178 |   /**
+  179 |    * Starts a new `Session`, sets on the current scope and returns it.
+  180 |    *
+  181 |    * To finish a `session`, it has to be passed directly to `client.captureSession`, which is done automatically
+  182 |    * when using `hub.endSession()` for the session currently stored on the scope.
+  183 |    *
+  184 |    * When there&#x27;s already an existing session on the scope, it&#x27;ll be automatically ended.</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/getsentry/sentry-javascript/commit/b8c83bedb370576f18fdbec6fd7ec636e91c8e69">b8c83bedb3</a> (2025-01-07T10:50:33+01:00)</h2><p class="k">feat(core)!: Remove standalone `Client` interface &amp; deprecate `BaseClient` (#14800)<br>Path after this commit: packages/core/src/types-hoist/hub.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/core/src/types-hoist/hub.ts b/packages/core/src/types-hoist/hub.ts
+index 4f2bef6c5e..bd270df39f 100644
+<span class="d">--- a/packages/core/src/types-hoist/hub.ts</span>
+<span class="a">+++ b/packages/core/src/types-hoist/hub.ts</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+<span class="a">+import type { Client } from &#x27;../client&#x27;;</span>
+ import type { Scope } from &#x27;../scope&#x27;;
+ import type { Breadcrumb, BreadcrumbHint } from &#x27;./breadcrumb&#x27;;
+<span class="d">-import type { Client } from &#x27;./client&#x27;;</span>
+ import type { Event, EventHint } from &#x27;./event&#x27;;
+ import type { Extra, Extras } from &#x27;./extra&#x27;;
+ import type { Integration } from &#x27;./integration&#x27;;</pre><h2>Commit #2: <a href="https://github.com/getsentry/sentry-javascript/commit/2796917b1d6587a2f3b93a2b1c7c14d2ea817cfc">2796917b1d</a> (2025-01-22T12:49:38+01:00)</h2><p class="k">feat!: Remove `getCurrentHub()`, `Hub`, and `getCurrentHubShim()` (#15122)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/core/src/types-hoist/hub.ts b/packages/core/src/types-hoist/hub.ts
+deleted file mode 100644
+index bd270df39f..0000000000
+<span class="d">--- a/packages/core/src/types-hoist/hub.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,209 +0,0 @@</span>
+<span class="d">-import type { Client } from &#x27;../client&#x27;;</span>
+<span class="d">-import type { Scope } from &#x27;../scope&#x27;;</span>
+<span class="d">-import type { Breadcrumb, BreadcrumbHint } from &#x27;./breadcrumb&#x27;;</span>
+<span class="d">-import type { Event, EventHint } from &#x27;./event&#x27;;</span>
+<span class="d">-import type { Extra, Extras } from &#x27;./extra&#x27;;</span>
+<span class="d">-import type { Integration } from &#x27;./integration&#x27;;</span>
+<span class="d">-import type { Primitive } from &#x27;./misc&#x27;;</span>
+<span class="d">-import type { Session } from &#x27;./session&#x27;;</span>
+<span class="d">-import type { SeverityLevel } from &#x27;./severity&#x27;;</span>
+<span class="d">-import type { User } from &#x27;./user&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * Internal class used to make sure we always have the latest internal functions</span>
+<span class="d">- * working in case we have a version conflict.</span>
+<span class="d">- *</span>
+<span class="d">- * @deprecated This interface will be removed in a future major version of the SDK in favour of</span>
+<span class="d">- * `Scope` and `Client` objects and APIs.</span>
+<span class="d">- *</span>
+<span class="d">- * Most APIs referencing `Hub` are themselves and will be removed in version 8 of the SDK. More information:</span>
+<span class="d">- * - [Migration Guide](https://github.com/getsentry/sentry-javascript/blob/develop/MIGRATION.md#deprecate-hub)</span>
+<span class="d">- *</span>
+<span class="d">- */</span>
+<span class="d">-export interface Hub {</span>
+<span class="d">-  /**</span>
+<span class="d">-   * This binds the given client to the current scope.</span>
+<span class="d">-   * @param client An SDK client (client) instance.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `initAndBind()` directly.</span>
+<span class="d">-   */</span>
+<span class="d">-  bindClient(client?: Client): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Creates a new scope with and executes the given operation within.</span>
+<span class="d">-   * The scope is automatically removed once the operation</span>
+<span class="d">-   * finishes or throws.</span>
+<span class="d">-   *</span>
+<span class="d">-   * This is essentially a convenience function for:</span>
+<span class="d">-   *</span>
+<span class="d">-   *     pushScope();</span>
+<span class="d">-   *     callback();</span>
+<span class="d">-   *     popScope();</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param callback that will be enclosed into push/popScope.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.withScope()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  withScope&lt;T&gt;(callback: (scope: Scope) =&gt; T): T;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Returns the client of the top stack.</span>
+<span class="d">-   * @deprecated Use `Sentry.getClient()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  getClient&lt;C extends Client&gt;(): C | undefined;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Returns the scope of the top stack.</span>
+<span class="d">-   * @deprecated Use `Sentry.getCurrentScope()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  getScope(): Scope;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Get the currently active isolation scope.</span>
+<span class="d">-   * The isolation scope is used to isolate data between different hubs.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.getIsolationScope()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  getIsolationScope(): Scope;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Captures an exception event and sends it to Sentry.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param exception An exception-like object.</span>
+<span class="d">-   * @param hint May contain additional information about the original exception.</span>
+<span class="d">-   * @returns The generated eventId.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.captureException()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  captureException(exception: any, hint?: EventHint): string;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Captures a message event and sends it to Sentry.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param message The message to send to Sentry.</span>
+<span class="d">-   * @param level Define the level of the message.</span>
+<span class="d">-   * @param hint May contain additional information about the original exception.</span>
+<span class="d">-   * @returns The generated eventId.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.captureMessage()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  captureMessage(message: string, level?: SeverityLevel, hint?: EventHint): string;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Captures a manually created event and sends it to Sentry.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param event The event to send to Sentry.</span>
+<span class="d">-   * @param hint May contain additional information about the original exception.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.captureEvent()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  captureEvent(event: Event, hint?: EventHint): string;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Records a new breadcrumb which will be attached to future events.</span>
+<span class="d">-   *</span>
+<span class="d">-   * Breadcrumbs will be added to subsequent events to provide more context on</span>
+<span class="d">-   * user&#x27;s actions prior to an error or crash.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param breadcrumb The breadcrumb to record.</span>
+<span class="d">-   * @param hint May contain additional information about the original breadcrumb.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.addBreadcrumb()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  addBreadcrumb(breadcrumb: Breadcrumb, hint?: BreadcrumbHint): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Updates user context information for future events.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param user User context object to be set in the current context. Pass `null` to unset the user.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.setUser()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  setUser(user: User | null): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Set an object that will be merged sent as tags data with the event.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param tags Tags context object to merge into current context.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.setTags()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  setTags(tags: { [key: string]: Primitive }): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Set key:value that will be sent as tags data with the event.</span>
+<span class="d">-   *</span>
+<span class="d">-   * Can also be used to unset a tag, by passing `undefined`.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param key String key of tag</span>
+<span class="d">-   * @param value Value of tag</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.setTag()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  setTag(key: string, value: Primitive): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Set key:value that will be sent as extra data with the event.</span>
+<span class="d">-   * @param key String of extra</span>
+<span class="d">-   * @param extra Any kind of data. This data will be normalized.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.setExtra()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  setExtra(key: string, extra: Extra): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Set an object that will be merged sent as extra data with the event.</span>
+<span class="d">-   * @param extras Extras object to merge into current context.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.setExtras()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  setExtras(extras: Extras): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Sets context data with the given name.</span>
+<span class="d">-   * @param name of the context</span>
+<span class="d">-   * @param context Any kind of data. This data will be normalized.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.setContext()` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  setContext(name: string, context: { [key: string]: any } | null): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Returns the integration if installed on the current client.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use `Sentry.getClient().getIntegrationByName()` instead.</span>
+<span class="d">-   */</span>
+<span class="d m">-  getIntegration&lt;T extends Integration&gt;(integration: unknown): T | null;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Starts a new `Session`, sets on the current scope and returns it.</span>
+<span class="d">-   *</span>
+<span class="d">-   * To finish a `session`, it has to be passed directly to `client.captureSession`, which is done automatically</span>
+<span class="d">-   * when using `hub.endSession()` for the session currently stored on the scope.</span>
+<span class="d">-   *</span>
+<span class="d">-   * When there&#x27;s already an existing session on the scope, it&#x27;ll be automatically ended.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param context Optional properties of the new `Session`.</span>
+<span class="d">-   *</span>
+<span class="d">-   * @returns The session which was just started</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use top-level `startSession` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  startSession(context?: Session): Session;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Ends the session that lives on the current scope and sends it to Sentry</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use top-level `endSession` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  endSession(): void;</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * Sends the current session on the scope to Sentry</span>
+<span class="d">-   *</span>
+<span class="d">-   * @param endSession If set the session will be marked as exited and removed from the scope</span>
+<span class="d">-   *</span>
+<span class="d">-   * @deprecated Use top-level `captureSession` instead.</span>
+<span class="d">-   */</span>
+<span class="d">-  captureSession(endSession?: boolean): void;</span>
+<span class="d">-}</span></pre></body></html>

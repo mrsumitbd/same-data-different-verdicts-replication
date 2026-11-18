@@ -1,0 +1,54 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L280</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L280</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/typespec">microsoft/typespec</a><br><b>File at merge:</b> packages/http-client-java/generator/http-client-generator-test/src/main/java/azure/resourcemanager/operationtemplates/fluent/models/ChangeAllowanceResultInner.java, line 57<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/typespec/commit/cd9cae9fd706df947adc1232af1cd270bf0aac6a">cd9cae9fd7</a> (2025-07-02T07:01:54)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/typespec/tree/07aae1a44ec732b819744f106ae6d8d5e49f5ebf">07aae1a44e</a>)</p><p><b>The line:</b></p><pre><span class="t">     * @throws IllegalArgumentException thrown if the instance is not valid.</span></pre><h2>File at the merge commit, lines 49 to 65</h2><pre>   49 |      */
+   50 |     public String status() {
+   51 |         return this.status;
+   52 |     }
+   53 | 
+   54 |     /**
+   55 |      * Validates the instance.
+   56 |      * 
+<span class="t">   57 |      * @throws IllegalArgumentException thrown if the instance is not valid.</span>
+   58 |      */
+   59 |     public void validate() {
+   60 |         if (status() == null) {
+   61 |             throw LOGGER.atError()
+   62 |                 .log(new IllegalArgumentException(
+   63 |                     &quot;Missing required property status in model ChangeAllowanceResultInner&quot;));
+   64 |         }
+   65 |     }</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/typespec/commit/a01ecd1254ea0dbacbc443993e478217578cde64">a01ecd1254</a> (2025-09-22T02:49:49+00:00)</h2><p class="k">http-client-java, option client-side-validation be false by default (#8502)<br>Path after this commit: packages/http-client-java/generator/http-client-generator-test/src/main/java/azure/resourcemanager/operationtemplates/fluent/models/ChangeAllowanceResultInner.java. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/http-client-java/generator/http-client-generator-test/src/main/java/azure/resourcemanager/operationtemplates/fluent/models/ChangeAllowanceResultInner.java b/packages/http-client-java/generator/http-client-generator-test/src/main/java/azure/resourcemanager/operationtemplates/fluent/models/ChangeAllowanceResultInner.java
+index d0db60fa6..e04458ba4 100644
+<span class="d">--- a/packages/http-client-java/generator/http-client-generator-test/src/main/java/azure/resourcemanager/operationtemplates/fluent/models/ChangeAllowanceResultInner.java</span>
+<span class="a">+++ b/packages/http-client-java/generator/http-client-generator-test/src/main/java/azure/resourcemanager/operationtemplates/fluent/models/ChangeAllowanceResultInner.java</span>
+<span class="h">@@ -5,7 +5,6 @@</span>
+ package azure.resourcemanager.operationtemplates.fluent.models;
+ 
+ import com.azure.core.annotation.Immutable;
+<span class="d">-import com.azure.core.util.logging.ClientLogger;</span>
+ import com.azure.json.JsonReader;
+ import com.azure.json.JsonSerializable;
+ import com.azure.json.JsonToken;
+<span class="h">@@ -51,21 +50,6 @@ public final class ChangeAllowanceResultInner implements JsonSerializable&lt;Change</span>
+         return this.status;
+     }
+ 
+<span class="d">-    /**</span>
+<span class="d">-     * Validates the instance.</span>
+<span class="d">-     * </span>
+<span class="d m">-     * @throws IllegalArgumentException thrown if the instance is not valid.</span>
+<span class="d">-     */</span>
+<span class="d">-    public void validate() {</span>
+<span class="d">-        if (status() == null) {</span>
+<span class="d">-            throw LOGGER.atError()</span>
+<span class="d">-                .log(new IllegalArgumentException(</span>
+<span class="d">-                    &quot;Missing required property status in model ChangeAllowanceResultInner&quot;));</span>
+<span class="d">-        }</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    private static final ClientLogger LOGGER = new ClientLogger(ChangeAllowanceResultInner.class);</span>
+<span class="d">-</span>
+     /**
+      * {@inheritDoc}
+      */</pre></body></html>

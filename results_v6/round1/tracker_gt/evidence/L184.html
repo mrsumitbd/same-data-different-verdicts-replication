@@ -1,0 +1,556 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L184</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L184</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> src/crewai/memory/external/external_memory.py, line 12<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/d7fa8464c70584452c42531d60106753e49aef18">d7fa8464c7</a> (2025-04-07T17:40:35)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">    def __init__(self, storage: Optional[Storage] = None, **data: Any):</span></pre><h2>File at the merge commit, lines 4 to 20</h2><pre>    4 | from crewai.memory.memory import Memory
+    5 | from crewai.memory.storage.interface import Storage
+    6 | 
+    7 | if TYPE_CHECKING:
+    8 |     from crewai.memory.storage.mem0_storage import Mem0Storage
+    9 | 
+   10 | 
+   11 | class ExternalMemory(Memory):
+<span class="t">   12 |     def __init__(self, storage: Optional[Storage] = None, **data: Any):</span>
+   13 |         super().__init__(storage=storage, **data)
+   14 | 
+   15 |     @staticmethod
+   16 |     def _configure_mem0(crew: Any, config: Dict[str, Any]) -&gt; &quot;Mem0Storage&quot;:
+   17 |         from crewai.memory.storage.mem0_storage import Mem0Storage
+   18 | 
+   19 |         return Mem0Storage(type=&quot;external&quot;, crew=crew, config=config)
+   20 | </pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/d2caf11191bc0f641db4111d67b30dcba1cd3e78">d2caf11191</a> (2025-04-10T14:37:24-04:00)</h2><p class="k">Support Python 3.10+ (on CI) and remove redundant Self imports (#2553)<br>Path after this commit: src/crewai/memory/external/external_memory.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/memory/external/external_memory.py b/src/crewai/memory/external/external_memory.py
+index 4ecf3d065..be35f513b 100644
+<span class="d">--- a/src/crewai/memory/external/external_memory.py</span>
+<span class="a">+++ b/src/crewai/memory/external/external_memory.py</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-from typing import TYPE_CHECKING, Any, Dict, Optional, Self</span>
+<span class="a">+from typing import TYPE_CHECKING, Any, Dict, Optional</span>
+ 
+ from crewai.memory.external.external_memory_item import ExternalMemoryItem
+ from crewai.memory.memory import Memory
+<span class="h">@@ -52,7 +52,7 @@ class ExternalMemory(Memory):</span>
+     def reset(self) -&gt; None:
+         self.storage.reset()
+ 
+<span class="d">-    def set_crew(self, crew: Any) -&gt; Self:</span>
+<span class="a">+    def set_crew(self, crew: Any) -&gt; &quot;ExternalMemory&quot;:</span>
+         super().set_crew(crew)
+ 
+         if not self.storage:</pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/ab39753a7513dd3c7abf25798cae56572eb6eeef">ab39753a75</a> (2025-07-01T22:50:39-04:00)</h2><p class="k">Introduce MemoryEvents to monitor their usage (#3098)<br>Path after this commit: src/crewai/memory/external/external_memory.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/memory/external/external_memory.py b/src/crewai/memory/external/external_memory.py
+index be35f513b..9f313bf49 100644
+<span class="d">--- a/src/crewai/memory/external/external_memory.py</span>
+<span class="a">+++ b/src/crewai/memory/external/external_memory.py</span>
+<span class="h">@@ -1,8 +1,18 @@</span>
+ from typing import TYPE_CHECKING, Any, Dict, Optional
+<span class="a">+import time</span>
+ 
+ from crewai.memory.external.external_memory_item import ExternalMemoryItem
+ from crewai.memory.memory import Memory
+ from crewai.memory.storage.interface import Storage
+<span class="a">+from crewai.utilities.events.crewai_event_bus import crewai_event_bus</span>
+<span class="a">+from crewai.utilities.events.memory_events import (</span>
+<span class="a">+    MemoryQueryStartedEvent,</span>
+<span class="a">+    MemoryQueryCompletedEvent,</span>
+<span class="a">+    MemoryQueryFailedEvent,</span>
+<span class="a">+    MemorySaveStartedEvent,</span>
+<span class="a">+    MemorySaveCompletedEvent,</span>
+<span class="a">+    MemorySaveFailedEvent,</span>
+<span class="a">+)</span>
+ 
+ if TYPE_CHECKING:
+     from crewai.memory.storage.mem0_storage import Mem0Storage
+<span class="h">@@ -46,8 +56,91 @@ class ExternalMemory(Memory):</span>
+         agent: Optional[str] = None,
+     ) -&gt; None:
+         &quot;&quot;&quot;Saves a value into the external storage.&quot;&quot;&quot;
+<span class="d">-        item = ExternalMemoryItem(value=value, metadata=metadata, agent=agent)</span>
+<span class="d">-        super().save(value=item.value, metadata=item.metadata, agent=item.agent)</span>
+<span class="a">+        crewai_event_bus.emit(</span>
+<span class="a">+            self,</span>
+<span class="a">+            event=MemorySaveStartedEvent(</span>
+<span class="a">+                value=value,</span>
+<span class="a">+                metadata=metadata,</span>
+<span class="a">+                agent_role=agent,</span>
+<span class="a">+                source_type=&quot;external_memory&quot;,</span>
+<span class="a">+            ),</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+        start_time = time.time()</span>
+<span class="a">+        try:</span>
+<span class="a">+            item = ExternalMemoryItem(value=value, metadata=metadata, agent=agent)</span>
+<span class="a">+            super().save(value=item.value, metadata=item.metadata, agent=item.agent)</span>
+<span class="a">+</span>
+<span class="a">+            crewai_event_bus.emit(</span>
+<span class="a">+                self,</span>
+<span class="a">+                event=MemorySaveCompletedEvent(</span>
+<span class="a">+                    value=value,</span>
+<span class="a">+                    metadata=metadata,</span>
+<span class="a">+                    agent_role=agent,</span>
+<span class="a">+                    save_time_ms=(time.time() - start_time) * 1000,</span>
+<span class="a">+                    source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                ),</span>
+<span class="a">+            )</span>
+<span class="a">+        except Exception as e:</span>
+<span class="a">+            crewai_event_bus.emit(</span>
+<span class="a">+                self,</span>
+<span class="a">+                event=MemorySaveFailedEvent(</span>
+<span class="a">+                    value=value,</span>
+<span class="a">+                    metadata=metadata,</span>
+<span class="a">+                    agent_role=agent,</span>
+<span class="a">+                    error=str(e),</span>
+<span class="a">+                    source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                ),</span>
+<span class="a">+            )</span>
+<span class="a">+            raise</span>
+<span class="a">+</span>
+<span class="a">+    def search(</span>
+<span class="a">+        self,</span>
+<span class="a">+        query: str,</span>
+<span class="a">+        limit: int = 3,</span>
+<span class="a">+        score_threshold: float = 0.35,</span>
+<span class="a">+    ):</span>
+<span class="a">+        crewai_event_bus.emit(</span>
+<span class="a">+            self,</span>
+<span class="a">+            event=MemoryQueryStartedEvent(</span>
+<span class="a">+                query=query,</span>
+<span class="a">+                limit=limit,</span>
+<span class="a">+                score_threshold=score_threshold,</span>
+<span class="a">+                source_type=&quot;external_memory&quot;,</span>
+<span class="a">+            ),</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+        start_time = time.time()</span>
+<span class="a">+        try:</span>
+<span class="a">+            results = super().search(</span>
+<span class="a">+                query=query, limit=limit, score_threshold=score_threshold</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+<span class="a">+            crewai_event_bus.emit(</span>
+<span class="a">+                self,</span>
+<span class="a">+                event=MemoryQueryCompletedEvent(</span>
+<span class="a">+                    query=query,</span>
+<span class="a">+                    results=results,</span>
+<span class="a">+                    limit=limit,</span>
+<span class="a">+                    score_threshold=score_threshold,</span>
+<span class="a">+                    query_time_ms=(time.time() - start_time) * 1000,</span>
+<span class="a">+                    source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                ),</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+<span class="a">+            return results</span>
+<span class="a">+        except Exception as e:</span>
+<span class="a">+            crewai_event_bus.emit(</span>
+<span class="a">+                self,</span>
+<span class="a">+                event=MemoryQueryFailedEvent(</span>
+<span class="a">+                    query=query,</span>
+<span class="a">+                    limit=limit,</span>
+<span class="a">+                    score_threshold=score_threshold,</span>
+<span class="a">+                    error=str(e),</span>
+<span class="a">+                    source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                ),</span>
+<span class="a">+            )</span>
+<span class="a">+            raise</span>
+ 
+     def reset(self) -&gt; None:
+         self.storage.reset()</pre><h2>Commit #3: <a href="https://github.com/crewaiinc/crewai/commit/7addda939829fa41e920d9254488d443a328c4e1">7addda9398</a> (2025-08-26T09:09:46-07:00)</h2><p class="k">Lorenze/better tracing events (#3382)<br>Path after this commit: src/crewai/memory/external/external_memory.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/memory/external/external_memory.py b/src/crewai/memory/external/external_memory.py
+index 9f313bf49..37dee13f8 100644
+<span class="d">--- a/src/crewai/memory/external/external_memory.py</span>
+<span class="a">+++ b/src/crewai/memory/external/external_memory.py</span>
+<span class="h">@@ -53,7 +53,6 @@ class ExternalMemory(Memory):</span>
+         self,
+         value: Any,
+         metadata: Optional[Dict[str, Any]] = None,
+<span class="d">-        agent: Optional[str] = None,</span>
+     ) -&gt; None:
+         &quot;&quot;&quot;Saves a value into the external storage.&quot;&quot;&quot;
+         crewai_event_bus.emit(
+<span class="h">@@ -61,24 +60,30 @@ class ExternalMemory(Memory):</span>
+             event=MemorySaveStartedEvent(
+                 value=value,
+                 metadata=metadata,
+<span class="d">-                agent_role=agent,</span>
+                 source_type=&quot;external_memory&quot;,
+<span class="a">+                from_agent=self.agent,</span>
+<span class="a">+                from_task=self.task,</span>
+             ),
+         )
+ 
+         start_time = time.time()
+         try:
+<span class="d">-            item = ExternalMemoryItem(value=value, metadata=metadata, agent=agent)</span>
+<span class="d">-            super().save(value=item.value, metadata=item.metadata, agent=item.agent)</span>
+<span class="a">+            item = ExternalMemoryItem(</span>
+<span class="a">+                value=value,</span>
+<span class="a">+                metadata=metadata,</span>
+<span class="a">+                agent=self.agent.role if self.agent else None,</span>
+<span class="a">+            )</span>
+<span class="a">+            super().save(value=item.value, metadata=item.metadata)</span>
+ 
+             crewai_event_bus.emit(
+                 self,
+                 event=MemorySaveCompletedEvent(
+                     value=value,
+                     metadata=metadata,
+<span class="d">-                    agent_role=agent,</span>
+                     save_time_ms=(time.time() - start_time) * 1000,
+                     source_type=&quot;external_memory&quot;,
+<span class="a">+                    from_agent=self.agent,</span>
+<span class="a">+                    from_task=self.task,</span>
+                 ),
+             )
+         except Exception as e:
+<span class="h">@@ -87,9 +92,10 @@ class ExternalMemory(Memory):</span>
+                 event=MemorySaveFailedEvent(
+                     value=value,
+                     metadata=metadata,
+<span class="d">-                    agent_role=agent,</span>
+                     error=str(e),
+                     source_type=&quot;external_memory&quot;,
+<span class="a">+                    from_agent=self.agent,</span>
+<span class="a">+                    from_task=self.task,</span>
+                 ),
+             )
+             raise
+<span class="h">@@ -107,6 +113,8 @@ class ExternalMemory(Memory):</span>
+                 limit=limit,
+                 score_threshold=score_threshold,
+                 source_type=&quot;external_memory&quot;,
+<span class="a">+                from_agent=self.agent,</span>
+<span class="a">+                from_task=self.task,</span>
+             ),
+         )
+ 
+<span class="h">@@ -125,6 +133,8 @@ class ExternalMemory(Memory):</span>
+                     score_threshold=score_threshold,
+                     query_time_ms=(time.time() - start_time) * 1000,
+                     source_type=&quot;external_memory&quot;,
+<span class="a">+                    from_agent=self.agent,</span>
+<span class="a">+                    from_task=self.task,</span>
+                 ),
+             )
+ </pre><h2>Commit #4: <a href="https://github.com/crewaiinc/crewai/commit/878c1a649af98a0155bdba5f4c2e903c8b6a1d58">878c1a649a</a> (2025-09-02T10:06:42-04:00)</h2><p class="k">refactor: Move events module to crewai.events (#3425)<br>Path after this commit: src/crewai/memory/external/external_memory.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/crewai/memory/external/external_memory.py b/src/crewai/memory/external/external_memory.py
+index 37dee13f8..7fbbea9a1 100644
+<span class="d">--- a/src/crewai/memory/external/external_memory.py</span>
+<span class="a">+++ b/src/crewai/memory/external/external_memory.py</span>
+<span class="h">@@ -4,8 +4,8 @@ import time</span>
+ from crewai.memory.external.external_memory_item import ExternalMemoryItem
+ from crewai.memory.memory import Memory
+ from crewai.memory.storage.interface import Storage
+<span class="d">-from crewai.utilities.events.crewai_event_bus import crewai_event_bus</span>
+<span class="d">-from crewai.utilities.events.memory_events import (</span>
+<span class="a">+from crewai.events.event_bus import crewai_event_bus</span>
+<span class="a">+from crewai.events.types.memory_events import (</span>
+     MemoryQueryStartedEvent,
+     MemoryQueryCompletedEvent,
+     MemoryQueryFailedEvent,</pre><h2>Commit #5: <a href="https://github.com/crewaiinc/crewai/commit/d4aa676195fa0ddcb7cb599033ff08e4cf3e14d7">d4aa676195</a> (2025-09-18T16:58:03-04:00)</h2><p class="k">feat: add configurable search parameters for RAG, knowledge, and memory (#3531)<br>Path after this commit: src/crewai/memory/external/external_memory.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/crewai/memory/external/external_memory.py b/src/crewai/memory/external/external_memory.py
+index 7fbbea9a1..9cdb6872f 100644
+<span class="d">--- a/src/crewai/memory/external/external_memory.py</span>
+<span class="a">+++ b/src/crewai/memory/external/external_memory.py</span>
+<span class="h">@@ -1,41 +1,41 @@</span>
+<span class="d">-from typing import TYPE_CHECKING, Any, Dict, Optional</span>
+ import time
+<span class="a">+from typing import TYPE_CHECKING, Any</span>
+ 
+<span class="d">-from crewai.memory.external.external_memory_item import ExternalMemoryItem</span>
+<span class="d">-from crewai.memory.memory import Memory</span>
+<span class="d">-from crewai.memory.storage.interface import Storage</span>
+ from crewai.events.event_bus import crewai_event_bus
+ from crewai.events.types.memory_events import (
+<span class="d">-    MemoryQueryStartedEvent,</span>
+     MemoryQueryCompletedEvent,
+     MemoryQueryFailedEvent,
+<span class="d">-    MemorySaveStartedEvent,</span>
+<span class="a">+    MemoryQueryStartedEvent,</span>
+     MemorySaveCompletedEvent,
+     MemorySaveFailedEvent,
+<span class="a">+    MemorySaveStartedEvent,</span>
+ )
+<span class="a">+from crewai.memory.external.external_memory_item import ExternalMemoryItem</span>
+<span class="a">+from crewai.memory.memory import Memory</span>
+<span class="a">+from crewai.memory.storage.interface import Storage</span>
+ 
+ if TYPE_CHECKING:
+     from crewai.memory.storage.mem0_storage import Mem0Storage
+ 
+ 
+ class ExternalMemory(Memory):
+<span class="d m">-    def __init__(self, storage: Optional[Storage] = None, **data: Any):</span>
+<span class="a">+    def __init__(self, storage: Storage | None = None, **data: Any):</span>
+         super().__init__(storage=storage, **data)
+ 
+     @staticmethod
+<span class="d">-    def _configure_mem0(crew: Any, config: Dict[str, Any]) -&gt; &quot;Mem0Storage&quot;:</span>
+<span class="a">+    def _configure_mem0(crew: Any, config: dict[str, Any]) -&gt; &quot;Mem0Storage&quot;:</span>
+         from crewai.memory.storage.mem0_storage import Mem0Storage
+ 
+         return Mem0Storage(type=&quot;external&quot;, crew=crew, config=config)
+ 
+     @staticmethod
+<span class="d">-    def external_supported_storages() -&gt; Dict[str, Any]:</span>
+<span class="a">+    def external_supported_storages() -&gt; dict[str, Any]:</span>
+         return {
+             &quot;mem0&quot;: ExternalMemory._configure_mem0,
+         }
+ 
+     @staticmethod
+<span class="d">-    def create_storage(crew: Any, embedder_config: Optional[Dict[str, Any]]) -&gt; Storage:</span>
+<span class="a">+    def create_storage(crew: Any, embedder_config: dict[str, Any] | None) -&gt; Storage:</span>
+         if not embedder_config:
+             raise ValueError(&quot;embedder_config is required&quot;)
+ 
+<span class="h">@@ -52,7 +52,7 @@ class ExternalMemory(Memory):</span>
+     def save(
+         self,
+         value: Any,
+<span class="d">-        metadata: Optional[Dict[str, Any]] = None,</span>
+<span class="a">+        metadata: dict[str, Any] | None = None,</span>
+     ) -&gt; None:
+         &quot;&quot;&quot;Saves a value into the external storage.&quot;&quot;&quot;
+         crewai_event_bus.emit(
+<span class="h">@@ -103,8 +103,8 @@ class ExternalMemory(Memory):</span>
+     def search(
+         self,
+         query: str,
+<span class="d">-        limit: int = 3,</span>
+<span class="d">-        score_threshold: float = 0.35,</span>
+<span class="a">+        limit: int = 5,</span>
+<span class="a">+        score_threshold: float = 0.6,</span>
+     ):
+         crewai_event_bus.emit(
+             self,</pre><h2>Commit #6: <a href="https://github.com/crewaiinc/crewai/commit/2485ed93d608e6edb89fbf91c813bddf5ae90561">2485ed93d6</a> (2025-09-25T20:48:37-04:00)</h2><p class="k">feat: upgrade chromadb to v1.1.0, improve types<br>Path after this commit: src/crewai/memory/external/external_memory.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/crewai/memory/external/external_memory.py b/src/crewai/memory/external/external_memory.py
+index 9cdb6872f..f1f4af41a 100644
+<span class="d">--- a/src/crewai/memory/external/external_memory.py</span>
+<span class="a">+++ b/src/crewai/memory/external/external_memory.py</span>
+<span class="h">@@ -13,6 +13,7 @@ from crewai.events.types.memory_events import (</span>
+ from crewai.memory.external.external_memory_item import ExternalMemoryItem
+ from crewai.memory.memory import Memory
+ from crewai.memory.storage.interface import Storage
+<span class="a">+from crewai.rag.embeddings.types import ProviderSpec</span>
+ 
+ if TYPE_CHECKING:
+     from crewai.memory.storage.mem0_storage import Mem0Storage
+<span class="h">@@ -35,7 +36,9 @@ class ExternalMemory(Memory):</span>
+         }
+ 
+     @staticmethod
+<span class="d">-    def create_storage(crew: Any, embedder_config: dict[str, Any] | None) -&gt; Storage:</span>
+<span class="a">+    def create_storage(</span>
+<span class="a">+        crew: Any, embedder_config: dict[str, Any] | ProviderSpec | None</span>
+<span class="a">+    ) -&gt; Storage:</span>
+         if not embedder_config:
+             raise ValueError(&quot;embedder_config is required&quot;)
+ 
+<span class="h">@@ -159,6 +162,6 @@ class ExternalMemory(Memory):</span>
+         super().set_crew(crew)
+ 
+         if not self.storage:
+<span class="d">-            self.storage = self.create_storage(crew, self.embedder_config)</span>
+<span class="a">+            self.storage = self.create_storage(crew, self.embedder_config)  # type: ignore[arg-type]</span>
+ 
+         return self</pre><h2>Commit #7: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: lib/crewai/src/crewai/memory/external/external_memory.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/crewai/memory/external/external_memory.py b/lib/crewai/src/crewai/memory/external/external_memory.py
+similarity index 96%
+rename from src/crewai/memory/external/external_memory.py
+rename to lib/crewai/src/crewai/memory/external/external_memory.py
+index f1f4af41a..c48ffd1e3 100644
+<span class="d">--- a/src/crewai/memory/external/external_memory.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/memory/external/external_memory.py</span>
+<span class="h">@@ -1,3 +1,5 @@</span>
+<span class="a">+from __future__ import annotations</span>
+<span class="a">+</span>
+ import time
+ from typing import TYPE_CHECKING, Any
+ 
+<span class="h">@@ -15,6 +17,7 @@ from crewai.memory.memory import Memory</span>
+ from crewai.memory.storage.interface import Storage
+ from crewai.rag.embeddings.types import ProviderSpec
+ 
+<span class="a">+</span>
+ if TYPE_CHECKING:
+     from crewai.memory.storage.mem0_storage import Mem0Storage
+ 
+<span class="h">@@ -24,7 +27,7 @@ class ExternalMemory(Memory):</span>
+         super().__init__(storage=storage, **data)
+ 
+     @staticmethod
+<span class="d">-    def _configure_mem0(crew: Any, config: dict[str, Any]) -&gt; &quot;Mem0Storage&quot;:</span>
+<span class="a">+    def _configure_mem0(crew: Any, config: dict[str, Any]) -&gt; Mem0Storage:</span>
+         from crewai.memory.storage.mem0_storage import Mem0Storage
+ 
+         return Mem0Storage(type=&quot;external&quot;, crew=crew, config=config)
+<span class="h">@@ -158,7 +161,7 @@ class ExternalMemory(Memory):</span>
+     def reset(self) -&gt; None:
+         self.storage.reset()
+ 
+<span class="d">-    def set_crew(self, crew: Any) -&gt; &quot;ExternalMemory&quot;:</span>
+<span class="a">+    def set_crew(self, crew: Any) -&gt; ExternalMemory:</span>
+         super().set_crew(crew)
+ 
+         if not self.storage:</pre><h2>Commit #8: <a href="https://github.com/crewaiinc/crewai/commit/f04c40babf6eff1da449da202f0dca0b4e2ca540">f04c40babf</a> (2025-12-04T12:54:49-05:00)</h2><p class="k">feat: async memory support<br>Path after this commit: lib/crewai/src/crewai/memory/external/external_memory.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/lib/crewai/src/crewai/memory/external/external_memory.py b/lib/crewai/src/crewai/memory/external/external_memory.py
+index c48ffd1e3..6aedf0084 100644
+<span class="d">--- a/lib/crewai/src/crewai/memory/external/external_memory.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/memory/external/external_memory.py</span>
+<span class="h">@@ -30,7 +30,7 @@ class ExternalMemory(Memory):</span>
+     def _configure_mem0(crew: Any, config: dict[str, Any]) -&gt; Mem0Storage:
+         from crewai.memory.storage.mem0_storage import Mem0Storage
+ 
+<span class="d">-        return Mem0Storage(type=&quot;external&quot;, crew=crew, config=config)</span>
+<span class="a">+        return Mem0Storage(type=&quot;external&quot;, crew=crew, config=config)  # type: ignore[no-untyped-call]</span>
+ 
+     @staticmethod
+     def external_supported_storages() -&gt; dict[str, Any]:
+<span class="h">@@ -53,7 +53,10 @@ class ExternalMemory(Memory):</span>
+         if provider not in supported_storages:
+             raise ValueError(f&quot;Provider {provider} not supported&quot;)
+ 
+<span class="d">-        return supported_storages[provider](crew, embedder_config.get(&quot;config&quot;, {}))</span>
+<span class="a">+        storage: Storage = supported_storages[provider](</span>
+<span class="a">+            crew, embedder_config.get(&quot;config&quot;, {})</span>
+<span class="a">+        )</span>
+<span class="a">+        return storage</span>
+ 
+     def save(
+         self,
+<span class="h">@@ -111,7 +114,17 @@ class ExternalMemory(Memory):</span>
+         query: str,
+         limit: int = 5,
+         score_threshold: float = 0.6,
+<span class="d">-    ):</span>
+<span class="a">+    ) -&gt; list[Any]:</span>
+<span class="a">+        &quot;&quot;&quot;Search external memory for relevant entries.</span>
+<span class="a">+</span>
+<span class="a">+        Args:</span>
+<span class="a">+            query: The search query.</span>
+<span class="a">+            limit: Maximum number of results to return.</span>
+<span class="a">+            score_threshold: Minimum similarity score for results.</span>
+<span class="a">+</span>
+<span class="a">+        Returns:</span>
+<span class="a">+            List of matching memory entries.</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+         crewai_event_bus.emit(
+             self,
+             event=MemoryQueryStartedEvent(
+<span class="h">@@ -158,6 +171,124 @@ class ExternalMemory(Memory):</span>
+             )
+             raise
+ 
+<span class="a">+    async def asave(</span>
+<span class="a">+        self,</span>
+<span class="a">+        value: Any,</span>
+<span class="a">+        metadata: dict[str, Any] | None = None,</span>
+<span class="a">+    ) -&gt; None:</span>
+<span class="a">+        &quot;&quot;&quot;Save a value to external memory asynchronously.</span>
+<span class="a">+</span>
+<span class="a">+        Args:</span>
+<span class="a">+            value: The value to save.</span>
+<span class="a">+            metadata: Optional metadata to associate with the value.</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        crewai_event_bus.emit(</span>
+<span class="a">+            self,</span>
+<span class="a">+            event=MemorySaveStartedEvent(</span>
+<span class="a">+                value=value,</span>
+<span class="a">+                metadata=metadata,</span>
+<span class="a">+                source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                from_agent=self.agent,</span>
+<span class="a">+                from_task=self.task,</span>
+<span class="a">+            ),</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+        start_time = time.time()</span>
+<span class="a">+        try:</span>
+<span class="a">+            item = ExternalMemoryItem(</span>
+<span class="a">+                value=value,</span>
+<span class="a">+                metadata=metadata,</span>
+<span class="a">+                agent=self.agent.role if self.agent else None,</span>
+<span class="a">+            )</span>
+<span class="a">+            await super().asave(value=item.value, metadata=item.metadata)</span>
+<span class="a">+</span>
+<span class="a">+            crewai_event_bus.emit(</span>
+<span class="a">+                self,</span>
+<span class="a">+                event=MemorySaveCompletedEvent(</span>
+<span class="a">+                    value=value,</span>
+<span class="a">+                    metadata=metadata,</span>
+<span class="a">+                    save_time_ms=(time.time() - start_time) * 1000,</span>
+<span class="a">+                    source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                    from_agent=self.agent,</span>
+<span class="a">+                    from_task=self.task,</span>
+<span class="a">+                ),</span>
+<span class="a">+            )</span>
+<span class="a">+        except Exception as e:</span>
+<span class="a">+            crewai_event_bus.emit(</span>
+<span class="a">+                self,</span>
+<span class="a">+                event=MemorySaveFailedEvent(</span>
+<span class="a">+                    value=value,</span>
+<span class="a">+                    metadata=metadata,</span>
+<span class="a">+                    error=str(e),</span>
+<span class="a">+                    source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                    from_agent=self.agent,</span>
+<span class="a">+                    from_task=self.task,</span>
+<span class="a">+                ),</span>
+<span class="a">+            )</span>
+<span class="a">+            raise</span>
+<span class="a">+</span>
+<span class="a">+    async def asearch(</span>
+<span class="a">+        self,</span>
+<span class="a">+        query: str,</span>
+<span class="a">+        limit: int = 5,</span>
+<span class="a">+        score_threshold: float = 0.6,</span>
+<span class="a">+    ) -&gt; list[Any]:</span>
+<span class="a">+        &quot;&quot;&quot;Search external memory asynchronously.</span>
+<span class="a">+</span>
+<span class="a">+        Args:</span>
+<span class="a">+            query: The search query.</span>
+<span class="a">+            limit: Maximum number of results to return.</span>
+<span class="a">+            score_threshold: Minimum similarity score for results.</span>
+<span class="a">+</span>
+<span class="a">+        Returns:</span>
+<span class="a">+            List of matching memory entries.</span>
+<span class="a">+        &quot;&quot;&quot;</span>
+<span class="a">+        crewai_event_bus.emit(</span>
+<span class="a">+            self,</span>
+<span class="a">+            event=MemoryQueryStartedEvent(</span>
+<span class="a">+                query=query,</span>
+<span class="a">+                limit=limit,</span>
+<span class="a">+                score_threshold=score_threshold,</span>
+<span class="a">+                source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                from_agent=self.agent,</span>
+<span class="a">+                from_task=self.task,</span>
+<span class="a">+            ),</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+        start_time = time.time()</span>
+<span class="a">+        try:</span>
+<span class="a">+            results = await super().asearch(</span>
+<span class="a">+                query=query, limit=limit, score_threshold=score_threshold</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+<span class="a">+            crewai_event_bus.emit(</span>
+<span class="a">+                self,</span>
+<span class="a">+                event=MemoryQueryCompletedEvent(</span>
+<span class="a">+                    query=query,</span>
+<span class="a">+                    results=results,</span>
+<span class="a">+                    limit=limit,</span>
+<span class="a">+                    score_threshold=score_threshold,</span>
+<span class="a">+                    query_time_ms=(time.time() - start_time) * 1000,</span>
+<span class="a">+                    source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                    from_agent=self.agent,</span>
+<span class="a">+                    from_task=self.task,</span>
+<span class="a">+                ),</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+<span class="a">+            return results</span>
+<span class="a">+        except Exception as e:</span>
+<span class="a">+            crewai_event_bus.emit(</span>
+<span class="a">+                self,</span>
+<span class="a">+                event=MemoryQueryFailedEvent(</span>
+<span class="a">+                    query=query,</span>
+<span class="a">+                    limit=limit,</span>
+<span class="a">+                    score_threshold=score_threshold,</span>
+<span class="a">+                    error=str(e),</span>
+<span class="a">+                    source_type=&quot;external_memory&quot;,</span>
+<span class="a">+                ),</span>
+<span class="a">+            )</span>
+<span class="a">+            raise</span>
+<span class="a">+</span>
+     def reset(self) -&gt; None:
+         self.storage.reset()
+ </pre></body></html>

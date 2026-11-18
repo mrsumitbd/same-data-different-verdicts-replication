@@ -1,0 +1,63 @@
+Tracker ground truth: 300 lines in the sheet, 300 labeled.
+Cells (identity, earlier tracker, line-number; 1 = modified in the window):
+cell  population  tried  eligible  eligible_rate  sampled  eligible_population_est
+ 000       76667     54        50       0.925926       50                  70988.0
+ 001       61538     80        50       0.625000       50                  38461.0
+ 010         844    108        50       0.462963       50                    391.0
+ 011        5671    145        50       0.344828       50                   1956.0
+ 100           1      1         0       0.000000        0                      0.0
+ 101          15     14         2       0.142857        2                      2.0
+ 110        6550     91        49       0.538462       49                   3527.0
+ 111       51098    118        49       0.415254       49                  21219.0
+
+=== Convention: main (n = 299 labeled lines; 1 unclear or not scorable) ===
+
+identity tracking:
+  precision of "modified"      0.997  [0.991, 1.000]  (population-weighted)
+  precision of "retained"      0.992  [0.990, 0.995]  (population-weighted)
+  recall of modified lines     0.967  [0.957, 0.977]  (population-weighted)
+  accuracy                     0.993  [0.991, 0.995]  (population-weighted)
+  sample: claims modified 100, of which truly modified 99; claims retained 199, of which truly retained 165
+  same first commit when both say modified: 97 of 99
+
+earlier study's tracker:
+  precision of "modified"      0.942  [0.931, 0.953]  (population-weighted)
+  precision of "retained"      1.000  [1.000, 1.000]  (population-weighted)
+  recall of modified lines     1.000  [1.000, 1.000]  (population-weighted)
+  accuracy                     0.988  [0.986, 0.991]  (population-weighted)
+  sample: claims modified 197, of which truly modified 131; claims retained 102, of which truly retained 100
+  same first commit when both say modified: 120 of 131
+
+line-number tracking:
+  precision of "modified"      0.356  [0.351, 0.360]  (population-weighted)
+  precision of "retained"      0.952  [0.951, 0.955]  (population-weighted)
+  recall of modified lines     0.860  [0.856, 0.866]  (population-weighted)
+  accuracy                     0.683  [0.681, 0.685]  (population-weighted)
+  sample: claims modified 150, of which truly modified 69; claims retained 149, of which truly retained 85
+  same first commit when both say modified: 47 of 69
+
+=== Convention: strict (n = 300 labeled lines; 0 unclear or not scorable) ===
+
+identity tracking:
+  precision of "modified"      0.997  [0.991, 1.000]  (population-weighted)
+  precision of "retained"      0.979  [0.979, 0.980]  (population-weighted)
+  recall of modified lines     0.915  [0.914, 0.917]  (population-weighted)
+  accuracy                     0.983  [0.981, 0.983]  (population-weighted)
+  sample: claims modified 100, of which truly modified 99; claims retained 200, of which truly retained 107
+  same first commit when both say modified: 96 of 99
+
+earlier study's tracker:
+  precision of "modified"      0.995  [0.989, 0.999]  (population-weighted)
+  precision of "retained"      1.000  [1.000, 1.000]  (population-weighted)
+  recall of modified lines     1.000  [1.000, 1.000]  (population-weighted)
+  accuracy                     0.999  [0.998, 1.000]  (population-weighted)
+  sample: claims modified 198, of which truly modified 190; claims retained 102, of which truly retained 100
+  same first commit when both say modified: 176 of 190
+
+line-number tracking:
+  precision of "modified"      0.376  [0.376, 0.376]  (population-weighted)
+  precision of "retained"      0.949  [0.948, 0.952]  (population-weighted)
+  recall of modified lines     0.859  [0.856, 0.865]  (population-weighted)
+  accuracy                     0.691  [0.690, 0.692]  (population-weighted)
+  sample: claims modified 151, of which truly modified 101; claims retained 149, of which truly retained 58
+  same first commit when both say modified: 74 of 101

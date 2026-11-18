@@ -1,0 +1,9 @@
+one row per modification commit, birth tier by majority vote (as in rq4_results.txt Section B); lag = shortest time since merge among the modified lines
+
+human_supervised code modified by Copilot: 154 commits
+  commits modifying lines written by the same agent: 146
+  median lag (days): 43.71; within 1 day: 5; within 7 days: 33
+
+fully_autonomous code modified by devin-ai-integration[bot]: 85 commits
+  commits modifying lines written by the same agent: 85
+  median lag (days): 2.81; within 1 day: 30; within 7 days: 56

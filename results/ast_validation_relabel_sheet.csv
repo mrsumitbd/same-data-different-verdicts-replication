@@ -1,0 +1,1446 @@
+﻿id,repo,file,language,tier,birth_commit_url,modifying_commit_url,line_before,line_after,enclosing_node,hunk_header,diff_context,human_label,notes
+A059,crewaiinc/crewai,tests/cli/test_create_crew.py,Python,fully-autonomous,https://github.com/crewaiinc/crewai/commit/e0b46492fa1a84cb007736d67e5dc986c614e72b,https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0,"        folder_path, folder_name, class_name = create_folder_structure(""child/"", parent_folder=parent_path)","        folder_path, folder_name, class_name = create_folder_structure(",function_definition,def temp_dir():,"[long diff: only the part around the line is shown; see modifying_commit_url]
+@@ -21,61 +21,68 @@ def temp_dir():
+            assert folder_name == ""hello""
+            assert class_name == ""Hello""
+            assert folder_path.name == ""hello""
+            assert folder_path.exists()
+            assert folder_path.parent == Path(temp_dir)
+    
+    
+   -
+   -
+   -
+    def test_create_folder_structure_with_parent_folder():
+        with tempfile.TemporaryDirectory() as temp_dir:
+            parent_path = Path(temp_dir) / ""parent""
+            parent_path.mkdir()
+    
+>> -        folder_path, folder_name, class_name = create_folder_structure(""child/"", parent_folder=parent_path)
+   +        folder_path, folder_name, class_name = create_folder_structure(
+   +            ""child/"", parent_folder=parent_path
+   +        )
+    
+            assert folder_name == ""child""
+            assert class_name == ""Child""
+            assert folder_path.name == ""child""
+            assert folder_path.parent == parent_path",leaf-only,test_create_folder_structure_with_parent_folder: black multi-line reformat of the create_folder_structure call only; three blank lines removed before the def are outside the unit; same file/commit as T072 (consistent)
+A073,dlt-hub/dlt,tests/helpers/studio/test_utils.py,Python,human,https://github.com/dlt-hub/dlt/commit/e3e641d96ac30df35167b18398c7bf33646e740d,https://github.com/dlt-hub/dlt/commit/21b68e61f179e2dd41b149f2d90adf54da706343,"    os.environ[""STUDIO__DATETIME_FORMAT""] = ""other format""","    os.environ[""DASHBOARD__DATETIME_FORMAT""] = ""other format""",function_definition,def test_pipeline():," @@ -21,15 +21,15 @@ from dlt.common.destination.client import WithStateSync
+    from dlt.common.json import json
+    from dlt.common.pendulum import pendulum as dlt_pendulum
+    from dlt.common.pipeline import get_dlt_pipelines_dir
+    from dlt.common.schema import Schema
+    from dlt.common.storages import FileStorage
+   -from dlt.helpers.studio.config import StudioConfiguration
+   -from dlt.helpers.studio import utils
+   -from dlt.helpers.studio.utils import (
+   +from dlt.helpers.dashboard.config import DashboardConfiguration
+   +from dlt.helpers.dashboard import utils
+   +from dlt.helpers.dashboard.utils import (
+        PICKLE_TRACE_FILE,
+   -    resolve_studio_config,
+   +    resolve_dashboard_config,
+        get_local_pipelines,
+        get_pipeline,
+        pipeline_details,
+        create_table_list,
+        create_column_list,
+@@ -106,24 +106,24 @@ def test_pipeline():
+            pipeline.run(purchases())
+    
+            yield pipeline
+    
+    
+   -def test_resolve_studio_config(test_pipeline):
+   -    """"""Test resolving studio config with a real pipeline""""""
+   +def test_resolve_dashboard_config(test_pipeline):
+   +    """"""Test resolving dashboard config with a real pipeline""""""
+    
+   -    os.environ[""STUDIO__TEST_PIPELINE__DATETIME_FORMAT""] = ""some format""
+>> -    os.environ[""STUDIO__DATETIME_FORMAT""] = ""other format""
+   +    os.environ[""DASHBOARD__TEST_PIPELINE__DATETIME_FORMAT""] = ""some format""
+   +    os.environ[""DASHBOARD__DATETIME_FORMAT""] = ""other format""
+    
+   -    config = resolve_studio_config(test_pipeline)
+   +    config = resolve_dashboard_config(test_pipeline)
+    
+   -    assert isinstance(config, StudioConfiguration)
+   +    assert isinstance(config, DashboardConfiguration)
+        assert isinstance(config.datetime_format, str)
+        assert config.datetime_format == ""some format""
+    
+        other_pipeline = dlt.pipeline(pipeline_name=""other_pipeline"", destination=""duckdb"")
+   -    config = resolve_studio_config(other_pipeline)
+   +    config = resolve_dashboard_config(other_pipeline)
+        assert config.datetime_format == ""other format""
+    
+    
+    def test_get_local_pipelines_with_temp_dir(temp_pipelines_dir):
+        """"""Test getting local pipelines with temporary directory""""""
+@@ -187,11 +187,11 @@ def test_pipeline_details(test_pipeline):
+        assert details_dict[""working_dir""].endswith(test_pipeline.pipeline_name)
+    
+    
+    def test_create_table_list(test_pipeline):
+        """"""Test creating a basic table list with real schema""""""
+   -    config = StudioConfiguration()
+   +    config = DashboardConfiguration()
+    
+        result = create_table_list(config, test_pipeline, show_child_tables=False)
+    
+        # Should exclude _dlt_loads by default
+        table_names = {table[""name""] for table in result}
+@@ -220,11 +220,11 @@ def test_create_table_list(test_pipeline):
+        }
+    
+    
+    def test_create_column_list_basic(test_pipeline):
+        """"""Test creating a basic column list with real schema""""""
+   -    config = StudioConfiguration()
+   +    config = DashboardConfiguration()
+    
+        # Should exclude _dlt columns by default, will also not show incomplete columns
+        result = create_column_list(config, test_pipeline, ""purchases"")
+        column_names = {col[""name""] for col in result}
+        assert column_names == {""customer_id"", ""quantity"", ""id"", ""inventory_id"", ""date""}
+@@ -242,11 +242,11 @@ def test_create_column_list_basic(test_pipeline):
+        }
+    
+    
+    def test_create_column_list_type_hints(test_pipeline):
+        """"""Test creating column list with type hints""""""
+   -    config = StudioConfiguration()
+   +    config = DashboardConfiguration()
+        result = create_column_list(config, test_pipeline, ""purchases"", show_type_hints=True)
+    
+        # Find the id column
+        id_column = next(col for col in result if col[""name""] == ""id"")
+        assert id_column[""data_type""] == ""bigint""
+@@ -280,11 +280,11 @@ def test_get_row_counts_real(test_pipeline):
+        }
+    
+    
+    def test_get_loads(test_pipeline):
+        """"""Test getting loads from real pipeline""""""
+   -    config = StudioConfiguration()
+   +    config = DashboardConfiguration()
+    
+        # Clear cache first
+        get_loads.cache_clear()
+        result = get_loads(config, test_pipeline, limit=100)
+    
+@@ -296,11 +296,11 @@ def test_get_loads(test_pipeline):
+            assert ""load_id"" in load
+    
+    
+    def test_trace(test_pipeline):
+        """"""Test trace overview with real trace data""""""
+   -    config = StudioConfiguration()
+   +    config = DashboardConfiguration()
+        trace = test_pipeline.last_trace.asdict()
+    
+        # overview
+        result = trace_overview(config, trace)
+        assert {item[""name""] for item in result} == {
+@@ -415,11 +415,11 @@ def test_align_dict_keys_with_none_values():
+        assert result[1][""key1""] == ""-""
+    
+    
+    def test_humanize_datetime_values():
+        """"""Test humanizing datetime values""""""
+   -    config = StudioConfiguration()
+   +    config = DashboardConfiguration()
+        config.datetime_format = ""YYYY-MM-DD HH:mm:ss Z""
+    
+        input_dict = {
+            ""started_at"": pendulum.parse(""2023-01-01T12:00:00""),
+            ""finished_at"": pendulum.parse(""2023-01-01T12:30:00""),
+@@ -497,8 +497,8 @@ def test_integration_pipeline_workflow(test_pipeline):
+        query_result = get_query_result(test_pipeline, ""SELECT name FROM customers ORDER BY id"")
+        assert len(query_result) == 13
+        assert query_result.iloc[0][""name""] == ""simon""
+    
+        # Test loads
+   -    config = StudioConfiguration()
+   +    config = DashboardConfiguration()
+        loads = get_loads(config, test_pipeline)
+        assert len(loads) >= 1
+   ",structural,"enclosing unit renamed test_resolve_studio_config to test_resolve_dashboard_config (unit rename = structural); within unit: resolve_studio_config call and StudioConfiguration type renamed, env-var literals changed studio__ to dashboard__; other test bodies in file renamed similarly"
+A087,afadil/wealthfolio,src/pages/settings/use-market-data-settings.ts,TypeScript,human-supervised,https://github.com/afadil/wealthfolio/commit/b2a52461c2dca24d577ccb191965aaabb9221572,https://github.com/afadil/wealthfolio/commit/846f4b1d77ed9ba2053c4fe7e42e889e0c79b892,"        variant: 'success',","        variant: ""success"",",arrow_function,export function useUpdateMarketDataProviderSettings() {," @@ -1,14 +1,14 @@
+   -import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+   -import { QueryKeys } from '@/lib/query-keys';
+   +import { useQuery, useMutation, useQueryClient } from ""@tanstack/react-query"";
+   +import { QueryKeys } from ""@/lib/query-keys"";
+    import {
+      getMarketDataProviderSettings,
+      updateMarketDataProviderSettings,
+      MarketDataProviderSetting,
+   -} from '@/commands/market-data';
+   -import { setSecret, deleteSecret } from '@/commands/secrets';
+   -import { toast } from '@/components/ui/use-toast';
+   +} from ""@/commands/market-data"";
+   +import { setSecret, deleteSecret } from ""@/commands/secrets"";
+   +import { toast } from ""@/components/ui/use-toast"";
+    
+    export function useMarketDataProviderSettings() {
+      return useQuery({
+        queryKey: [QueryKeys.MARKET_DATA_PROVIDER_SETTINGS],
+        queryFn: getMarketDataProviderSettings,
+@@ -23,41 +23,49 @@ export function useUpdateMarketDataProviderSettings() {
+        onMutate: async (variables) => {
+          // Cancel any outgoing refetches to avoid overwriting our optimistic update
+          await queryClient.cancelQueries({ queryKey: [QueryKeys.MARKET_DATA_PROVIDER_SETTINGS] });
+    
+          // Snapshot the previous value
+   -      const previousProviders = queryClient.getQueryData<MarketDataProviderSetting[]>([QueryKeys.MARKET_DATA_PROVIDER_SETTINGS]);
+   +      const previousProviders = queryClient.getQueryData<MarketDataProviderSetting[]>([
+   +        QueryKeys.MARKET_DATA_PROVIDER_SETTINGS,
+   +      ]);
+    
+          // Optimistically update the cache
+   -      queryClient.setQueryData<MarketDataProviderSetting[]>([QueryKeys.MARKET_DATA_PROVIDER_SETTINGS], (old) => {
+   -        if (!old) return old;
+   -        return old.map((provider) =>
+   -          provider.id === variables.providerId
+   -            ? { ...provider, priority: variables.priority, enabled: variables.enabled }
+   -            : provider
+   -        );
+   -      });
+   +      queryClient.setQueryData<MarketDataProviderSetting[]>(
+   +        [QueryKeys.MARKET_DATA_PROVIDER_SETTINGS],
+   +        (old) => {
+   +          if (!old) return old;
+   +          return old.map((provider) =>
+   +            provider.id === variables.providerId
+   +              ? { ...provider, priority: variables.priority, enabled: variables.enabled }
+   +              : provider,
+   +          );
+   +        },
+   +      );
+    
+          // Return a context object with the snapshotted value
+          return { previousProviders };
+        },
+        onSuccess: (data) => {
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.MARKET_DATA_PROVIDER_SETTINGS] });
+          toast({
+            title: `${data.name} settings updated successfully.`,
+>> -        variant: 'success',
+   +        variant: ""success"",
+          });
+        },
+        onError: (error, variables, context) => {
+          // If the mutation fails, use the context returned from onMutate to roll back
+          if (context?.previousProviders) {
+   -        queryClient.setQueryData([QueryKeys.MARKET_DATA_PROVIDER_SETTINGS], context.previousProviders);
+   +        queryClient.setQueryData(
+   +          [QueryKeys.MARKET_DATA_PROVIDER_SETTINGS],
+   +          context.previousProviders,
+   +        );
+          }
+          toast({
+            title: `Failed to update settings for provider ${variables.providerId}`,
+            description: error.message,
+   -        variant: 'destructive',
+   +        variant: ""destructive"",
+          });
+        },
+        onSettled: () => {
+          // Always refetch after error or success to ensure we have the latest data
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.MARKET_DATA_PROVIDER_SETTINGS] });
+@@ -71,19 +79,19 @@ export function useSetApiKey() {
+        mutationFn: async (variables: { providerId: string; apiKey: string }) =>
+          setSecret(variables.providerId, variables.apiKey),
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.MARKET_DATA_PROVIDER_SETTINGS] });
+          toast({
+   -        title: 'API Key saved successfully.',
+   -        variant: 'success',
+   +        title: ""API Key saved successfully."",
+   +        variant: ""success"",
+          });
+        },
+        onError: (error) => {
+          toast({
+   -        title: 'Failed to save API key',
+   +        title: ""Failed to save API key"",
+            description: error.message,
+   -        variant: 'destructive',
+   +        variant: ""destructive"",
+          });
+        },
+      });
+    }
+    
+@@ -92,18 +100,18 @@ export function useDeleteApiKey() {
+      return useMutation({
+        mutationFn: async (variables: { providerId: string }) => deleteSecret(variables.providerId),
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [QueryKeys.MARKET_DATA_PROVIDER_SETTINGS] });
+          toast({
+   -        title: 'API Key deleted successfully.',
+   -        variant: 'success',
+   +        title: ""API Key deleted successfully."",
+   +        variant: ""success"",
+          });
+        },
+        onError: (error) => {
+          toast({
+   -        title: 'Failed to delete API key',
+   +        title: ""Failed to delete API key"",
+            description: error.message,
+   -        variant: 'destructive',
+   +        variant: ""destructive"",
+          });
+        },
+      });
+   -} 
+   \ No newline at end of file
+   +}
+   ",leaf-only,onSuccess handler: prettier quote style change success/destructive single to double quotes only; rest of file is prettier line-join reformatting in other units
+A095,crewaiinc/crewai,tests/test_agent_inject_date.py,Python,fully-autonomous,https://github.com/crewaiinc/crewai/commit/c1672613bc0abd53a269bb6bad27ff989da2329b,https://github.com/crewaiinc/crewai/commit/641c156c17664e074d469fe83023fdc74b5dc349,        ,[line removed or empty],function_definition,from crewai.agent import Agent," @@ -5,113 +5,113 @@ from crewai.agent import Agent
+    from crewai.task import Task
+    
+    
+    def test_agent_inject_date():
+        """"""Test that the inject_date flag injects the current date into the task.
+   -    
+   +
+        Tests that when inject_date=True, the current date is added to the task description.
+        """"""
+   -    with patch('datetime.datetime') as mock_datetime:
+   +    with patch(""datetime.datetime"") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2025, 1, 1)
+>> -        
+   +
+            agent = Agent(
+                role=""test_agent"",
+                goal=""test_goal"",
+                backstory=""test_backstory"",
+                inject_date=True,
+            )
+   -        
+   +
+            task = Task(
+                description=""Test task"",
+                expected_output=""Test output"",
+                agent=agent,
+            )
+   -        
+   +
+            # Store original description
+            original_description = task.description
+   -        
+   +
+            agent._inject_date_to_task(task)
+   -        
+   +
+            assert ""Current Date: 2025-01-01"" in task.description
+            assert task.description != original_description
+    
+    
+    def test_agent_without_inject_date():
+        """"""Test that without inject_date flag, no date is injected.
+   -    
+   +
+        Tests that when inject_date=False (default), no date is added to the task description.
+        """"""
+        agent = Agent(
+            role=""test_agent"",
+            goal=""test_goal"",
+            backstory=""test_backstory"",
+            # inject_date is False by default
+        )
+   -    
+   +
+        task = Task(
+            description=""Test task"",
+            expected_output=""Test output"",
+            agent=agent,
+        )
+   -    
+   +
+        original_description = task.description
+   -    
+   +
+        agent._inject_date_to_task(task)
+   -    
+   +
+        assert task.description == original_description
+    
+    
+    def test_agent_inject_date_custom_format():
+        """"""Test that the inject_date flag with custom date_format works correctly.
+   -    
+   +
+        Tests that when inject_date=True with a custom date_format, the date is formatted correctly.
+        """"""
+   -    with patch('datetime.datetime') as mock_datetime:
+   +    with patch(""datetime.datetime"") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2025, 1, 1)
+   -        
+   +
+            agent = Agent(
+                role=""test_agent"",
+                goal=""test_goal"",
+                backstory=""test_backstory"",
+                inject_date=True,
+                date_format=""%d/%m/%Y"",
+            )
+   -        
+   +
+            task = Task(
+                description=""Test task"",
+                expected_output=""Test output"",
+                agent=agent,
+            )
+   -        
+   +
+            # Store original description
+            original_description = task.description
+   -        
+   +
+            agent._inject_date_to_task(task)
+   -        
+   +
+            assert ""Current Date: 01/01/2025"" in task.description
+            assert task.description != original_description
+    
+    
+    def test_agent_inject_date_invalid_format():
+        """"""Test error handling with invalid date format.
+   -    
+   +
+        Tests that when an invalid date_format is provided, the task description remains unchanged.
+        """"""
+        agent = Agent(
+            role=""test_agent"",
+            goal=""test_goal"",
+            backstory=""test_backstory"",
+            inject_date=True,
+            date_format=""invalid"",
+        )
+   -    
+   +
+        task = Task(
+            description=""Test task"",
+            expected_output=""Test output"",
+            agent=agent,
+        )
+   -    
+   +
+        original_description = task.description
+   -    
+   +
+        agent._inject_date_to_task(task)
+   -    
+   +
+        assert task.description == original_description
+   ",leaf-only,"test_agent_inject_date and file-wide changes are black formatting only: trailing whitespace stripped, quote style single to double; no statement or expression changes"
+A194,onlook-dev/onlook,apps/web/src/components/store/editor/engine/group/index.ts,TypeScript,human,https://github.com/onlook-dev/onlook/commit/25effad44f27cfebd8bccacbcc07ff1021387251,https://github.com/onlook-dev/onlook/commit/f7a8060cc456b1968464e5bde9d8fca16648eb1e,        this.editorEngine.action.run(ungroupAction);,        await this.editorEngine.action.run(ungroupAction);,method_definition,export class GroupManager {," @@ -1,18 +1,18 @@
+   -import { createDomId, createOid } from '@/lib/utils';
+   +import type { DomElement } from '@onlook/models';
+    import type {
+        ActionElement,
+        ActionTarget,
+        GroupContainer,
+        GroupElementsAction,
+        UngroupElementsAction,
+    } from '@onlook/models/actions';
+   -import type { DomElement } from '@onlook/models/element';
+   -import type { EditorEngine } from '..';
+   +import { createDomId, createOid } from '@onlook/utility';
+   +import type { EditorEngine } from '../engine';
+    
+    export class GroupManager {
+   -    constructor(private editorEngine: EditorEngine) { }
+   +    constructor(private editorEngine: EditorEngine) {}
+    
+        async groupSelectedElements() {
+            const selectedEls = this.editorEngine.elements.selected;
+            const groupTarget = this.getGroupParentId(selectedEls);
+            if (!groupTarget) {
+@@ -25,27 +25,32 @@ export class GroupManager {
+            if (!groupAction) {
+                console.error('Failed to get group action');
+                return;
+            }
+    
+   -        this.editorEngine.action.run(groupAction);
+   +        await this.editorEngine.action.run(groupAction);
+        }
+    
+        async ungroupSelectedElement() {
+            if (!this.canUngroupElement()) {
+                console.error('Cannot ungroup elements');
+                return;
+            }
+    
+            const selectedEl = this.editorEngine.elements.selected[0];
+   +        if (!selectedEl) {
+   +            console.error('No selected element');
+   +            return;
+   +        }
+   +
+            const ungroupAction = await this.getUngroupAction(selectedEl);
+            if (!ungroupAction) {
+                console.error('Failed to get ungroup action');
+                return;
+            }
+    
+>> -        this.editorEngine.action.run(ungroupAction);
+   +        await this.editorEngine.action.run(ungroupAction);
+        }
+    
+        getGroupParentId(
+            elements: DomElement[],
+            log = true,
+@@ -55,21 +60,21 @@ export class GroupManager {
+                    console.error('No elements to group');
+                }
+                return null;
+            }
+    
+   -        const frameId = elements[0].frameId;
+   +        const frameId = elements[0]?.frameId;
+            const sameFrame = elements.every((el) => el.frameId === frameId);
+    
+            if (!sameFrame) {
+                if (log) {
+                    console.error('Selected elements are not in the same frame');
+                }
+                return null;
+            }
+    
+   -        const parentDomId = elements[0].parent?.domId;
+   +        const parentDomId = elements[0]?.parent?.domId;
+            if (!parentDomId) {
+                if (log) {
+                    console.error('No parent found');
+                }
+                return null;
+@@ -144,20 +149,21 @@ export class GroupManager {
+            if (!frame) {
+                console.error('Failed to get frame');
+                return null;
+            }
+    
+   -        const parent = selectedEl.parent;
+   -        if (!parent) {
+   +        if (!selectedEl.parent) {
+                console.error('Failed to get parent');
+                return null;
+            }
+    
+            // Container is the selected element
+   -        const actionContainer: ActionElement = await frame.view.getActionElementByDomId(
+   -            selectedEl.domId, true
+   +        const actionContainer: ActionElement = await frame.view.getActionElement(
+   +            selectedEl.domId,
+   +            true,
+            );
+   +
+            if (!actionContainer) {
+                console.error('Failed to get container');
+                return null;
+            }
+    
+@@ -166,10 +172,16 @@ export class GroupManager {
+                oid: actionContainer.oid,
+                tagName: actionContainer.tagName,
+                attributes: actionContainer.attributes,
+            };
+    
+   +        const parent: ActionTarget = {
+   +            frameId: selectedEl.frameId,
+   +            domId: selectedEl.parent.domId,
+   +            oid: selectedEl.parent.oid,
+   +        };
+   +
+            // Children to be spread where container was
+            const targets: ActionTarget[] = actionContainer.children.map((child) => {
+                return {
+                    frameId: selectedEl.frameId,
+                    domId: child.domId,
+@@ -183,10 +195,7 @@ export class GroupManager {
+                container,
+                children: targets,
+            };
+        }
+    
+   -    dispose() {
+   -        // Clear references
+   -        this.editorEngine = null as any;
+   -    }
+   +    clear() {}
+    }
+   ",structural,"ungroupSelectedElement: await added to action.run call and new guard statement if (!selectedEl) with early return added; other methods (dispose to clear, getActionElementByDomId to getActionElement) changed in same class outside the unit"
+A296,crewaiinc/crewai,src/crewai/cli/reset_memories_command.py,Python,human,https://github.com/crewaiinc/crewai/commit/30ef8ed70b5a1104a6347eb648f9ef63c9d387b2,https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0,"        if not any([long, short, entity, kickoff_outputs, knowledge, agent_knowledge, all]):",        if not any(,function_definition,def reset_memories_command(," @@ -26,11 +26,13 @@ def reset_memories_command(
+          knowledge (bool): Whether to reset the knowledge.
+          agent_knowledge (bool): Whether to reset the agents knowledge.
+        """"""
+    
+        try:
+>> -        if not any([long, short, entity, kickoff_outputs, knowledge, agent_knowledge, all]):
+   +        if not any(
+   +            [long, short, entity, kickoff_outputs, knowledge, agent_knowledge, all]
+   +        ):
+                click.echo(
+                    ""No memory type specified. Please specify at least one type to reset.""
+                )
+                return
+    
+   ",leaf-only,reset_memories_command: black multi-line reformat of the if not any(...) condition only; statements and order unchanged
+A321,crewaiinc/crewai,src/crewai/knowledge/source/crew_docling_source.py,Python,human,https://github.com/crewaiinc/crewai/commit/cc129a0bce435642d14df34cf9474ea0cc4838e2,https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0,"    def _chunk_doc(self, doc: ""DoclingDocument"") -> Iterator[str]:","    def _chunk_doc(self, doc: DoclingDocument) -> Iterator[str]:",function_definition,class CrewDoclingSource(BaseKnowledgeSource):," @@ -1,9 +1,12 @@
+   +from __future__ import annotations
+   +
+    from collections.abc import Iterator
+    from pathlib import Path
+    from urllib.parse import urlparse
+    
+   +
+    try:
+        from docling.datamodel.base_models import (  # type: ignore[import-not-found]
+            InputFormat,
+        )
+        from docling.document_converter import (  # type: ignore[import-not-found]
+@@ -45,12 +48,12 @@ class CrewDoclingSource(BaseKnowledgeSource):
+    
+        file_path: list[Path | str] | None = Field(default=None)
+        file_paths: list[Path | str] = Field(default_factory=list)
+        chunks: list[str] = Field(default_factory=list)
+        safe_file_paths: list[Path | str] = Field(default_factory=list)
+   -    content: list[""DoclingDocument""] = Field(default_factory=list)
+   -    document_converter: ""DocumentConverter"" = Field(
+   +    content: list[DoclingDocument] = Field(default_factory=list)
+   +    document_converter: DocumentConverter = Field(
+            default_factory=lambda: DocumentConverter(
+                allowed_formats=[
+                    InputFormat.MD,
+                    InputFormat.ASCIIDOC,
+                    InputFormat.PDF,
+@@ -72,11 +75,11 @@ class CrewDoclingSource(BaseKnowledgeSource):
+                )
+                self.file_paths = self.file_path
+            self.safe_file_paths = self.validate_content()
+            self.content = self._load_content()
+    
+   -    def _load_content(self) -> list[""DoclingDocument""]:
+   +    def _load_content(self) -> list[DoclingDocument]:
+            try:
+                return self._convert_source_to_docling_documents()
+            except ConversionError as e:
+                self._logger.log(
+                    ""error"",
+@@ -94,15 +97,15 @@ class CrewDoclingSource(BaseKnowledgeSource):
+            for doc in self.content:
+                new_chunks_iterable = self._chunk_doc(doc)
+                self.chunks.extend(list(new_chunks_iterable))
+            self._save_documents()
+    
+   -    def _convert_source_to_docling_documents(self) -> list[""DoclingDocument""]:
+   +    def _convert_source_to_docling_documents(self) -> list[DoclingDocument]:
+            conv_results_iter = self.document_converter.convert_all(self.safe_file_paths)
+            return [result.document for result in conv_results_iter]
+    
+>> -    def _chunk_doc(self, doc: ""DoclingDocument"") -> Iterator[str]:
+   +    def _chunk_doc(self, doc: DoclingDocument) -> Iterator[str]:
+            chunker = HierarchicalChunker()
+            for chunk in chunker.chunk(doc):
+                yield chunk.text
+    
+        def validate_content(self) -> list[Path | str]:
+   ",leaf-only,"_chunk_doc: type annotation unquoted DoclingDocument string to name, same type, enabled by from __future__ import annotations added at module level; borderline since annotation expression kind changes but the type is identical; annotation changes in other methods of the class are outside the unit"
+A352,onlook-dev/onlook,apps/web/src/components/store/editor/engine/image/index.ts,TypeScript,human,https://github.com/onlook-dev/onlook/commit/25effad44f27cfebd8bccacbcc07ff1021387251,https://github.com/onlook-dev/onlook/commit/f7a8060cc456b1968464e5bde9d8fca16648eb1e,        this.scanImages();,[line removed or empty],method_definition,," @@ -1,28 +1,26 @@
+   -import type { ProjectsManager } from '@/lib/projects';
+   -import { compressImage, invokeMainChannel, sendAnalytics } from '@/lib/utils';
+   +import type { ProjectManager } from '@/components/store/project/manager';
+    import type { ActionTarget, ImageContentData, InsertImageAction } from '@onlook/models/actions';
+   -import { MainChannels } from '@onlook/models/constants';
+   +import { compressImage } from '@onlook/utility';
+    import mime from 'mime-lite';
+    import { makeAutoObservable } from 'mobx';
+    import { nanoid } from 'nanoid/non-secure';
+   -import type { EditorEngine } from '..';
+   -
+   +import type { EditorEngine } from '../engine';
+    export class ImageManager {
+        private images: ImageContentData[] = [];
+    
+        constructor(
+            private editorEngine: EditorEngine,
+   -        private projectsManager: ProjectsManager,
+   +        private projectManager: ProjectManager,
+        ) {
+   +        // this.scanImages();
+            makeAutoObservable(this);
+>> -        this.scanImages();
+        }
+    
+        async upload(file: File): Promise<void> {
+            try {
+   -            const projectFolder = this.projectsManager.project?.folderPath;
+   +            const projectFolder = this.projectManager.project?.folderPath;
+                if (!projectFolder) {
+                    throw new Error('Project folder not found');
+                }
+    
+                const buffer = await file.arrayBuffer();
+@@ -46,11 +44,11 @@ export class ImageManager {
+            }
+        }
+    
+        async delete(imageName: string): Promise<void> {
+            try {
+   -            const projectFolder = this.projectsManager.project?.folderPath;
+   +            const projectFolder = this.projectManager.project?.folderPath;
+                if (!projectFolder) {
+                    throw new Error('Project folder not found');
+                }
+                await invokeMainChannel<string, string>(
+                    MainChannels.DELETE_IMAGE_FROM_PROJECT,
+@@ -65,11 +63,11 @@ export class ImageManager {
+            }
+        }
+    
+        async rename(imageName: string, newName: string): Promise<void> {
+            try {
+   -            const projectFolder = this.projectsManager.project?.folderPath;
+   +            const projectFolder = this.projectManager.project?.folderPath;
+                if (!projectFolder) {
+                    throw new Error('Project folder not found');
+                }
+                await invokeMainChannel<string, string>(
+                    MainChannels.RENAME_IMAGE_IN_PROJECT,
+@@ -140,20 +138,20 @@ export class ImageManager {
+                console.error('No elements selected');
+                return;
+            }
+    
+            const targets: ActionTarget[] = selected.map((element) => ({
+   -            webviewId: element.frameId,
+   +            frameId: element.frameId,
+                domId: element.domId,
+                oid: element.oid,
+            }));
+    
+            return targets;
+        }
+    
+        async scanImages() {
+   -        const projectRoot = this.projectsManager.project?.folderPath;
+   +        const projectRoot = this.projectManager.project?.folderPath;
+    
+            if (!projectRoot) {
+                console.warn('No project root found');
+                return;
+            }
+@@ -166,9 +164,9 @@ export class ImageManager {
+            } else {
+                this.images = [];
+            }
+        }
+    
+   -    dispose() {
+   +    clear() {
+            this.images = [];
+        }
+    }
+   ",structural,ImageManager constructor: this.scanImages() call removed (commented out); projectsManager to projectManager param rename alone would be leaf-only but the statement removal is structural; dispose to clear rename is in a different method
+T060,crewaiinc/crewai,src/crewai/crew.py,Python,human,https://github.com/crewaiinc/crewai/commit/8f5775365655f54b6d36b071fd1c65399204768e,https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0,import re,[line removed or empty],import_statement,,"[long diff: only the part around the line is shown; see modifying_commit_url]
+@@ -1,18 +1,20 @@
+   +from __future__ import annotations
+   +
+    import asyncio
+   -import json
+>> -import re
+   -import uuid
+   -import warnings
+    from collections.abc import Callable
+    from concurrent.futures import Future
+    from copy import copy as shallow_copy
+    from hashlib import md5
+   +import json
+   +import re
+    from typing import (
+        Any,
+        cast,
+    )
+   +import uuid
+   +import warnings
+    ",leaf-only,"import re statement is byte-identical, only relocated within the reordered import block (whole unit moved unedited = leaf-only); from __future__ import annotations added at module level is a different statement outside the unit"
+T072,crewaiinc/crewai,tests/cli/test_create_crew.py,Python,fully-autonomous,https://github.com/crewaiinc/crewai/commit/e0b46492fa1a84cb007736d67e5dc986c614e72b,https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0,"        with mock.patch(""crewai.cli.create_crew.create_folder_structure"") as mock_create_folder:",        with mock.patch(,function_definition,"def test_create_crew_with_trailing_slash_creates_valid_project(mock_load_env, mo","[long diff: only the part around the line is shown; see modifying_commit_url]
+@@ -101,48 +116,68 @@ def test_create_crew_with_trailing_slash_creates_valid_project(mock_load_env, mo
+                create_crew(""test-project///"", skip_provider=True)
+    
+                mock_create_folder.assert_called_once_with(""test-project///"", None)
+    
+    
+    @mock.patch(""crewai.cli.create_crew.copy_template"")
+    @mock.patch(""crewai.cli.create_crew.write_env_file"")
+    @mock.patch(""crewai.cli.create_crew.load_env_vars"")
+   -def test_create_crew_normal_name_still_works(mock_load_env, mock_write_env, mock_copy_template, temp_dir):
+   +def test_create_crew_normal_name_still_works(
+   +    mock_load_env, mock_write_env, mock_copy_template, temp_dir
+   +):
+        mock_load_env.return_value = {}
+    
+        with tempfile.TemporaryDirectory() as work_dir:
+>> -        with mock.patch(""crewai.cli.create_crew.create_folder_structure"") as mock_create_folder:
+   +        with mock.patch(
+   +            ""crewai.cli.create_crew.create_folder_structure""
+   +        ) as mock_create_folder:
+                mock_folder_path = Path(work_dir) / ""normal_project""
+   -            mock_create_folder.return_value = (mock_folder_path, ""normal_project"", ""NormalProject"")
+   +            mock_create_folder.return_value = (
+   +                mock_folder_path,
+   +                ""normal_project"",
+   +                ""NormalProject"",
+   +            )
+    
+                create_crew(""normal-project"", skip_provider=True)
+    
+                mock_create_folder.assert_called_once_with(""normal-project"", None)
+    ",leaf-only,"test_create_crew_normal_name_still_works: black reformat of signature, mock.patch with-statement, and return tuple only; same file/commit as A059 (consistent)"
+T086,crewaiinc/crewai,tests/agent_reasoning_test.py,Python,fully-autonomous,https://github.com/crewaiinc/crewai/commit/1ef22131e69c35b3633efa24e7b3fc98c50dec8c,https://github.com/crewaiinc/crewai/commit/641c156c17664e074d469fe83023fdc74b5dc349,            }),            ),function_definition,def mock_llm_responses():," @@ -13,249 +13,251 @@ def mock_llm_responses():
+        """"""Fixture for mock LLM responses.""""""
+        return {
+            ""ready"": ""I'll solve this simple math problem.\n\nREADY: I am ready to execute the task.\n\n"",
+            ""not_ready"": ""I need to think about derivatives.\n\nNOT READY: I need to refine my plan because I'm not sure about the derivative rules."",
+            ""ready_after_refine"": ""I'll use the power rule for derivatives where d/dx(x^n) = n*x^(n-1).\n\nREADY: I am ready to execute the task."",
+   -        ""execution"": ""4""
+   +        ""execution"": ""4"",
+        }
+    
+    
+    def test_agent_with_reasoning(mock_llm_responses):
+        """"""Test agent with reasoning.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Simple math task: What's 2+2?"",
+            expected_output=""The answer should be a number."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        agent.llm.call = lambda messages, *args, **kwargs: (
+            mock_llm_responses[""ready""]
+            if any(""create a detailed plan"" in msg.get(""content"", """") for msg in messages)
+            else mock_llm_responses[""execution""]
+        )
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == mock_llm_responses[""execution""]
+        assert ""Reasoning Plan:"" in task.description
+    
+    
+    def test_agent_with_reasoning_not_ready_initially(mock_llm_responses):
+        """"""Test agent with reasoning that requires refinement.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+            max_reasoning_attempts=2,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Complex math task: What's the derivative of x²?"",
+            expected_output=""The answer should be a mathematical expression."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        call_count = [0]
+   -    
+   +
+        def mock_llm_call(messages, *args, **kwargs):
+   -        if any(""create a detailed plan"" in msg.get(""content"", """") for msg in messages) or any(""refine your plan"" in msg.get(""content"", """") for msg in messages):
+   +        if any(
+   +            ""create a detailed plan"" in msg.get(""content"", """") for msg in messages
+   +        ) or any(""refine your plan"" in msg.get(""content"", """") for msg in messages):
+                call_count[0] += 1
+                if call_count[0] == 1:
+                    return mock_llm_responses[""not_ready""]
+                else:
+                    return mock_llm_responses[""ready_after_refine""]
+            else:
+                return ""2x""
+   -    
+   +
+        agent.llm.call = mock_llm_call
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""2x""
+        assert call_count[0] == 2  # Should have made 2 reasoning calls
+        assert ""Reasoning Plan:"" in task.description
+    
+    
+    def test_agent_with_reasoning_max_attempts_reached():
+        """"""Test agent with reasoning that reaches max attempts without being ready.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+            max_reasoning_attempts=2,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Complex math task: Solve the Riemann hypothesis."",
+            expected_output=""A proof or disproof of the hypothesis."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        call_count = [0]
+   -    
+   +
+        def mock_llm_call(messages, *args, **kwargs):
+   -        if any(""create a detailed plan"" in msg.get(""content"", """") for msg in messages) or any(""refine your plan"" in msg.get(""content"", """") for msg in messages):
+   +        if any(
+   +            ""create a detailed plan"" in msg.get(""content"", """") for msg in messages
+   +        ) or any(""refine your plan"" in msg.get(""content"", """") for msg in messages):
+                call_count[0] += 1
+                return f""Attempt {call_count[0]}: I need more time to think.\n\nNOT READY: I need to refine my plan further.""
+            else:
+                return ""This is an unsolved problem in mathematics.""
+   -    
+   +
+        agent.llm.call = mock_llm_call
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""This is an unsolved problem in mathematics.""
+   -    assert call_count[0] == 2  # Should have made exactly 2 reasoning calls (max_attempts)
+   +    assert (
+   +        call_count[0] == 2
+   +    )  # Should have made exactly 2 reasoning calls (max_attempts)
+        assert ""Reasoning Plan:"" in task.description
+    
+    
+    def test_agent_reasoning_input_validation():
+        """"""Test input validation in AgentReasoning.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+   -        reasoning=True
+   +        reasoning=True,
+        )
+   -    
+   +
+        with pytest.raises(ValueError, match=""Both task and agent must be provided""):
+            AgentReasoning(task=None, agent=agent)
+   -    
+   -    task = Task(
+   -        description=""Simple task"",
+   -        expected_output=""Simple output""
+   -    )
+   +
+   +    task = Task(description=""Simple task"", expected_output=""Simple output"")
+        with pytest.raises(ValueError, match=""Both task and agent must be provided""):
+            AgentReasoning(task=task, agent=None)
+    
+    
+    def test_agent_reasoning_error_handling():
+        """"""Test error handling during the reasoning process.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+   -        reasoning=True
+   +        reasoning=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Task that will cause an error"",
+            expected_output=""Output that will never be generated"",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        call_count = [0]
+   -    
+   +
+        def mock_llm_call_error(*args, **kwargs):
+            call_count[0] += 1
+            if call_count[0] <= 2:  # First calls are for reasoning
+                raise Exception(""LLM error during reasoning"")
+            return ""Fallback execution result""  # Return a value for task execution
+   -    
+   +
+        agent.llm.call = mock_llm_call_error
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""Fallback execution result""
+        assert call_count[0] > 2  # Ensure we called the mock multiple times
+    
+    
+    def test_agent_with_function_calling():
+        """"""Test agent with reasoning using function calling.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Simple math task: What's 2+2?"",
+            expected_output=""The answer should be a number."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        agent.llm.supports_function_calling = lambda: True
+   -    
+   +
+        def mock_function_call(messages, *args, **kwargs):
+            if ""tools"" in kwargs:
+   -            return json.dumps({
+   -                ""plan"": ""I'll solve this simple math problem: 2+2=4."",
+   -                ""ready"": True
+>> -            })
+   +            return json.dumps(
+   +                {""plan"": ""I'll solve this simple math problem: 2+2=4."", ""ready"": True}
+   +            )
+            else:
+                return ""4""
+   -    
+   +
+        agent.llm.call = mock_function_call
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""4""
+        assert ""Reasoning Plan:"" in task.description
+        assert ""I'll solve this simple math problem: 2+2=4."" in task.description
+    
+    
+    def test_agent_with_function_calling_fallback():
+        """"""Test agent with reasoning using function calling that falls back to text parsing.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Simple math task: What's 2+2?"",
+            expected_output=""The answer should be a number."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        agent.llm.supports_function_calling = lambda: True
+   -    
+   +
+        def mock_function_call(messages, *args, **kwargs):
+            if ""tools"" in kwargs:
+                return ""Invalid JSON that will trigger fallback. READY: I am ready to execute the task.""
+            else:
+                return ""4""
+   -    
+   +
+        agent.llm.call = mock_function_call
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""4""
+        assert ""Reasoning Plan:"" in task.description
+        assert ""Invalid JSON that will trigger fallback"" in task.description
+   ",leaf-only,"black formatting only: trailing commas, trailing whitespace stripped, quote style, line joins/splits (json.dumps call, any() conditions); same file/commit as T100 (consistent)"
+T100,crewaiinc/crewai,tests/agent_reasoning_test.py,Python,fully-autonomous,https://github.com/crewaiinc/crewai/commit/1ef22131e69c35b3633efa24e7b3fc98c50dec8c,https://github.com/crewaiinc/crewai/commit/641c156c17664e074d469fe83023fdc74b5dc349,"        description=""Simple task"",","    task = Task(description=""Simple task"", expected_output=""Simple output"")",function_definition,def mock_llm_responses():," @@ -13,249 +13,251 @@ def mock_llm_responses():
+        """"""Fixture for mock LLM responses.""""""
+        return {
+            ""ready"": ""I'll solve this simple math problem.\n\nREADY: I am ready to execute the task.\n\n"",
+            ""not_ready"": ""I need to think about derivatives.\n\nNOT READY: I need to refine my plan because I'm not sure about the derivative rules."",
+            ""ready_after_refine"": ""I'll use the power rule for derivatives where d/dx(x^n) = n*x^(n-1).\n\nREADY: I am ready to execute the task."",
+   -        ""execution"": ""4""
+   +        ""execution"": ""4"",
+        }
+    
+    
+    def test_agent_with_reasoning(mock_llm_responses):
+        """"""Test agent with reasoning.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Simple math task: What's 2+2?"",
+            expected_output=""The answer should be a number."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        agent.llm.call = lambda messages, *args, **kwargs: (
+            mock_llm_responses[""ready""]
+            if any(""create a detailed plan"" in msg.get(""content"", """") for msg in messages)
+            else mock_llm_responses[""execution""]
+        )
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == mock_llm_responses[""execution""]
+        assert ""Reasoning Plan:"" in task.description
+    
+    
+    def test_agent_with_reasoning_not_ready_initially(mock_llm_responses):
+        """"""Test agent with reasoning that requires refinement.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+            max_reasoning_attempts=2,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Complex math task: What's the derivative of x²?"",
+            expected_output=""The answer should be a mathematical expression."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        call_count = [0]
+   -    
+   +
+        def mock_llm_call(messages, *args, **kwargs):
+   -        if any(""create a detailed plan"" in msg.get(""content"", """") for msg in messages) or any(""refine your plan"" in msg.get(""content"", """") for msg in messages):
+   +        if any(
+   +            ""create a detailed plan"" in msg.get(""content"", """") for msg in messages
+   +        ) or any(""refine your plan"" in msg.get(""content"", """") for msg in messages):
+                call_count[0] += 1
+                if call_count[0] == 1:
+                    return mock_llm_responses[""not_ready""]
+                else:
+                    return mock_llm_responses[""ready_after_refine""]
+            else:
+                return ""2x""
+   -    
+   +
+        agent.llm.call = mock_llm_call
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""2x""
+        assert call_count[0] == 2  # Should have made 2 reasoning calls
+        assert ""Reasoning Plan:"" in task.description
+    
+    
+    def test_agent_with_reasoning_max_attempts_reached():
+        """"""Test agent with reasoning that reaches max attempts without being ready.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+            max_reasoning_attempts=2,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Complex math task: Solve the Riemann hypothesis."",
+            expected_output=""A proof or disproof of the hypothesis."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        call_count = [0]
+   -    
+   +
+        def mock_llm_call(messages, *args, **kwargs):
+   -        if any(""create a detailed plan"" in msg.get(""content"", """") for msg in messages) or any(""refine your plan"" in msg.get(""content"", """") for msg in messages):
+   +        if any(
+   +            ""create a detailed plan"" in msg.get(""content"", """") for msg in messages
+   +        ) or any(""refine your plan"" in msg.get(""content"", """") for msg in messages):
+                call_count[0] += 1
+                return f""Attempt {call_count[0]}: I need more time to think.\n\nNOT READY: I need to refine my plan further.""
+            else:
+                return ""This is an unsolved problem in mathematics.""
+   -    
+   +
+        agent.llm.call = mock_llm_call
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""This is an unsolved problem in mathematics.""
+   -    assert call_count[0] == 2  # Should have made exactly 2 reasoning calls (max_attempts)
+   +    assert (
+   +        call_count[0] == 2
+   +    )  # Should have made exactly 2 reasoning calls (max_attempts)
+        assert ""Reasoning Plan:"" in task.description
+    
+    
+    def test_agent_reasoning_input_validation():
+        """"""Test input validation in AgentReasoning.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+   -        reasoning=True
+   +        reasoning=True,
+        )
+   -    
+   +
+        with pytest.raises(ValueError, match=""Both task and agent must be provided""):
+            AgentReasoning(task=None, agent=agent)
+   -    
+   -    task = Task(
+>> -        description=""Simple task"",
+   -        expected_output=""Simple output""
+   -    )
+   +
+   +    task = Task(description=""Simple task"", expected_output=""Simple output"")
+        with pytest.raises(ValueError, match=""Both task and agent must be provided""):
+            AgentReasoning(task=task, agent=None)
+    
+    
+    def test_agent_reasoning_error_handling():
+        """"""Test error handling during the reasoning process.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+   -        reasoning=True
+   +        reasoning=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Task that will cause an error"",
+            expected_output=""Output that will never be generated"",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        call_count = [0]
+   -    
+   +
+        def mock_llm_call_error(*args, **kwargs):
+            call_count[0] += 1
+            if call_count[0] <= 2:  # First calls are for reasoning
+                raise Exception(""LLM error during reasoning"")
+            return ""Fallback execution result""  # Return a value for task execution
+   -    
+   +
+        agent.llm.call = mock_llm_call_error
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""Fallback execution result""
+        assert call_count[0] > 2  # Ensure we called the mock multiple times
+    
+    
+    def test_agent_with_function_calling():
+        """"""Test agent with reasoning using function calling.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Simple math task: What's 2+2?"",
+            expected_output=""The answer should be a number."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        agent.llm.supports_function_calling = lambda: True
+   -    
+   +
+        def mock_function_call(messages, *args, **kwargs):
+            if ""tools"" in kwargs:
+   -            return json.dumps({
+   -                ""plan"": ""I'll solve this simple math problem: 2+2=4."",
+   -                ""ready"": True
+   -            })
+   +            return json.dumps(
+   +                {""plan"": ""I'll solve this simple math problem: 2+2=4."", ""ready"": True}
+   +            )
+            else:
+                return ""4""
+   -    
+   +
+        agent.llm.call = mock_function_call
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""4""
+        assert ""Reasoning Plan:"" in task.description
+        assert ""I'll solve this simple math problem: 2+2=4."" in task.description
+    
+    
+    def test_agent_with_function_calling_fallback():
+        """"""Test agent with reasoning using function calling that falls back to text parsing.""""""
+        llm = LLM(""gpt-3.5-turbo"")
+   -    
+   +
+        agent = Agent(
+            role=""Test Agent"",
+            goal=""To test the reasoning feature"",
+            backstory=""I am a test agent created to verify the reasoning feature works correctly."",
+            llm=llm,
+            reasoning=True,
+   -        verbose=True
+   +        verbose=True,
+        )
+   -    
+   +
+        task = Task(
+            description=""Simple math task: What's 2+2?"",
+            expected_output=""The answer should be a number."",
+   -        agent=agent
+   +        agent=agent,
+        )
+   -    
+   +
+        agent.llm.supports_function_calling = lambda: True
+   -    
+   +
+        def mock_function_call(messages, *args, **kwargs):
+            if ""tools"" in kwargs:
+                return ""Invalid JSON that will trigger fallback. READY: I am ready to execute the task.""
+            else:
+                return ""4""
+   -    
+   +
+        agent.llm.call = mock_function_call
+   -    
+   +
+        result = agent.execute_task(task)
+   -    
+   +
+        assert result == ""4""
+        assert ""Reasoning Plan:"" in task.description
+        assert ""Invalid JSON that will trigger fallback"" in task.description
+   ",leaf-only,"test_agent_reasoning_input_validation: task = Task(...) collapsed to one line and blank line removed, black formatting only; same file/commit as T086 (consistent)"

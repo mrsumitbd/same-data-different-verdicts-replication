@@ -1,0 +1,10 @@
+stage,description,repos_remaining,repos_removed
+1_cohort_identification,Repos with both agent and human PRs,816,0
+3_star_filter,Repos with >= 500 stars,814,2
+4_license_filter,Removed non-software licenses,667,147
+5a_archive_filter,Removed archived repos,661,6
+5b_release_filter,Removed repos without releases/tags,602,59
+6_contributor_filter,Removed repos with < 2 contributors,567,35
+8_q1_statistical_filter,"Removed bottom Q1 per language (PR count, issues, size)",267,300
+9_code_ratio_filter,Removed outliers outside 97% CI per language,207,60
+10_final_cohort,Final cohort after all filters,207,0

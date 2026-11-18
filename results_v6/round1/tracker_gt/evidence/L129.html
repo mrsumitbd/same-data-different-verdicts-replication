@@ -1,0 +1,281 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L129</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L129</h1><p><b>Repository:</b> <a href="https://github.com/appsmithorg/appsmith">appsmithorg/appsmith</a><br><b>File at merge:</b> app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/PingScheduledTaskCEImpl.java, line 195<br><b>Merge commit (birth):</b> <a href="https://github.com/appsmithorg/appsmith/commit/5f3b6b8b249d35fe4c7912c47ed3181d1668c0f0">5f3b6b8b24</a> (2025-02-25T11:50:11)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/appsmithorg/appsmith/tree/8f2592704d8b6627387c1608a0545812bcbf95b5">8f2592704d</a>)</p><p><b>The line:</b></p><pre><span class="t">                            entry(&quot;numActions&quot;, statsData.getT4().getT4()),</span></pre><h2>File at the merge commit, lines 187 to 203</h2><pre>  187 |                 })
+  188 |                 .flatMap(statsData -&gt; {
+  189 |                     Map&lt;String, Object&gt; propertiesMap = new java.util.HashMap&lt;&gt;(Map.ofEntries(
+  190 |                             entry(&quot;instanceId&quot;, statsData.getT1()),
+  191 |                             entry(&quot;organizationId&quot;, statsData.getT2()),
+  192 |                             entry(&quot;numOrgs&quot;, statsData.getT4().getT1()),
+  193 |                             entry(&quot;numApps&quot;, statsData.getT4().getT2()),
+  194 |                             entry(&quot;numPages&quot;, statsData.getT4().getT3()),
+<span class="t">  195 |                             entry(&quot;numActions&quot;, statsData.getT4().getT4()),</span>
+  196 |                             entry(&quot;numDatasources&quot;, statsData.getT4().getT5()),
+  197 |                             entry(&quot;numUsers&quot;, statsData.getT4().getT6()),
+  198 |                             entry(&quot;numPublicApps&quot;, statsData.getT5()),
+  199 |                             entry(&quot;version&quot;, projectProperties.getVersion()),
+  200 |                             entry(&quot;edition&quot;, deploymentProperties.getEdition()),
+  201 |                             entry(&quot;cloudProvider&quot;, defaultIfEmpty(deploymentProperties.getCloudProvider(), &quot;&quot;)),
+  202 |                             entry(&quot;efs&quot;, defaultIfEmpty(deploymentProperties.getEfs(), &quot;&quot;)),
+  203 |                             entry(&quot;tool&quot;, defaultIfEmpty(deploymentProperties.getTool(), &quot;&quot;)),</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/appsmithorg/appsmith/commit/f020be7c96f545db26c02990a4a26c6059ed0988">f020be7c96</a> (2025-04-03T14:01:23+05:30)</h2><p class="k">chore: Insert orgId in context for server internal flows (#40039)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java.</p><pre>diff --git a/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/PingScheduledTaskCEImpl.java b/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/PingScheduledTaskCEImpl.java
+deleted file mode 100644
+index 111ebefb7d..0000000000
+<span class="d">--- a/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/PingScheduledTaskCEImpl.java</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,255 +0,0 @@</span>
+<span class="d">-package com.appsmith.server.solutions.ce;</span>
+<span class="d">-</span>
+<span class="d">-import com.appsmith.caching.annotations.DistributedLock;</span>
+<span class="d">-import com.appsmith.server.acl.AclPermission;</span>
+<span class="d">-import com.appsmith.server.configurations.CommonConfig;</span>
+<span class="d">-import com.appsmith.server.configurations.DeploymentProperties;</span>
+<span class="d">-import com.appsmith.server.configurations.ProjectProperties;</span>
+<span class="d">-import com.appsmith.server.configurations.SegmentConfig;</span>
+<span class="d">-import com.appsmith.server.domains.Organization;</span>
+<span class="d">-import com.appsmith.server.helpers.NetworkUtils;</span>
+<span class="d">-import com.appsmith.server.repositories.ApplicationRepository;</span>
+<span class="d">-import com.appsmith.server.repositories.DatasourceRepository;</span>
+<span class="d">-import com.appsmith.server.repositories.NewActionRepository;</span>
+<span class="d">-import com.appsmith.server.repositories.NewPageRepository;</span>
+<span class="d">-import com.appsmith.server.repositories.UserRepository;</span>
+<span class="d">-import com.appsmith.server.repositories.WorkspaceRepository;</span>
+<span class="d">-import com.appsmith.server.services.ConfigService;</span>
+<span class="d">-import com.appsmith.server.services.OrganizationService;</span>
+<span class="d">-import com.appsmith.server.services.PermissionGroupService;</span>
+<span class="d">-import com.appsmith.util.WebClientUtils;</span>
+<span class="d">-import io.micrometer.observation.annotation.Observed;</span>
+<span class="d">-import lombok.RequiredArgsConstructor;</span>
+<span class="d">-import lombok.extern.slf4j.Slf4j;</span>
+<span class="d">-import org.apache.commons.lang3.StringUtils;</span>
+<span class="d">-import org.springframework.http.MediaType;</span>
+<span class="d">-import org.springframework.scheduling.annotation.Scheduled;</span>
+<span class="d">-import org.springframework.web.reactive.function.BodyInserters;</span>
+<span class="d">-import reactor.core.publisher.Mono;</span>
+<span class="d">-import reactor.core.scheduler.Schedulers;</span>
+<span class="d">-import reactor.util.function.Tuple7;</span>
+<span class="d">-</span>
+<span class="d">-import java.time.Duration;</span>
+<span class="d">-import java.time.Instant;</span>
+<span class="d">-import java.time.temporal.ChronoUnit;</span>
+<span class="d">-import java.util.Map;</span>
+<span class="d">-</span>
+<span class="d">-import static com.appsmith.external.constants.AnalyticsConstants.ADMIN_EMAIL_DOMAIN_HASH;</span>
+<span class="d">-import static com.appsmith.external.constants.AnalyticsConstants.EMAIL_DOMAIN_HASH;</span>
+<span class="d">-import static java.util.Map.entry;</span>
+<span class="d">-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * This class represents a scheduled task that pings a data point indicating that this server installation is live.</span>
+<span class="d">- * This ping is only invoked if the Appsmith server is NOT running in Appsmith Cloud &amp; the user has given Appsmith</span>
+<span class="d">- * permissions to collect anonymized data</span>
+<span class="d">- */</span>
+<span class="d">-@Slf4j</span>
+<span class="d">-@RequiredArgsConstructor</span>
+<span class="d">-public class PingScheduledTaskCEImpl implements PingScheduledTaskCE {</span>
+<span class="d">-</span>
+<span class="d">-    private final ConfigService configService;</span>
+<span class="d">-    private final SegmentConfig segmentConfig;</span>
+<span class="d">-    private final CommonConfig commonConfig;</span>
+<span class="d">-</span>
+<span class="d">-    private final WorkspaceRepository workspaceRepository;</span>
+<span class="d">-    private final ApplicationRepository applicationRepository;</span>
+<span class="d">-    private final NewPageRepository newPageRepository;</span>
+<span class="d">-    private final NewActionRepository newActionRepository;</span>
+<span class="d">-    private final DatasourceRepository datasourceRepository;</span>
+<span class="d">-    private final UserRepository userRepository;</span>
+<span class="d">-    private final ProjectProperties projectProperties;</span>
+<span class="d">-    private final DeploymentProperties deploymentProperties;</span>
+<span class="d">-    private final NetworkUtils networkUtils;</span>
+<span class="d">-    private final PermissionGroupService permissionGroupService;</span>
+<span class="d">-    private final OrganizationService organizationService;</span>
+<span class="d">-</span>
+<span class="d">-    // Delay to avoid 429 between the analytics call.</span>
+<span class="d">-    private static final Duration DELAY_BETWEEN_PINGS = Duration.ofMillis(200);</span>
+<span class="d">-</span>
+<span class="d">-    enum UserTrackingType {</span>
+<span class="d">-        DAU,</span>
+<span class="d">-        WAU,</span>
+<span class="d">-        MAU</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    /**</span>
+<span class="d">-     * Gets the external IP address of this server and pings a data point to indicate that this server instance is live.</span>
+<span class="d">-     * We use an initial delay of two minutes to roughly wait for the application along with the migrations are finished</span>
+<span class="d">-     * and ready.</span>
+<span class="d">-     */</span>
+<span class="d">-    // Number of milliseconds between the start of each scheduled calls to this method.</span>
+<span class="d">-    @Scheduled(initialDelay = 2 * 60 * 1000 /* two minutes */, fixedRate = 6 * 60 * 60 * 1000 /* six hours */)</span>
+<span class="d">-    @DistributedLock(</span>
+<span class="d">-            key = &quot;pingSchedule&quot;,</span>
+<span class="d">-            ttl = 5 * 60 * 60, // 5 hours</span>
+<span class="d">-            shouldReleaseLock = false)</span>
+<span class="d">-    @Observed(name = &quot;pingSchedule&quot;)</span>
+<span class="d">-    public void pingSchedule() {</span>
+<span class="d">-        if (commonConfig.isTelemetryDisabled()) {</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        Mono&lt;String&gt; instanceMono = configService.getInstanceId().cache();</span>
+<span class="d">-        Mono&lt;String&gt; ipMono = networkUtils.getExternalAddress().cache();</span>
+<span class="d">-        organizationService</span>
+<span class="d">-                .retrieveAll()</span>
+<span class="d">-                .delayElements(DELAY_BETWEEN_PINGS)</span>
+<span class="d">-                .flatMap(organization -&gt; Mono.zip(Mono.just(organization.getId()), instanceMono, ipMono))</span>
+<span class="d">-                .flatMap(objects -&gt; doPing(objects.getT1(), objects.getT2(), objects.getT3()))</span>
+<span class="d">-                .subscribeOn(Schedulers.single())</span>
+<span class="d">-                .subscribe();</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    /**</span>
+<span class="d">-     * Given a unique ID (called a `userId` here), this method hits the Segment API to save a data point on this server</span>
+<span class="d">-     * instance being live.</span>
+<span class="d">-     *</span>
+<span class="d">-     * @param instanceId A unique identifier for this server instance, usually generated at the server&#x27;s first start.</span>
+<span class="d">-     * @param ipAddress  The external IP address of this instance&#x27;s machine.</span>
+<span class="d">-     * @return A publisher that yields the string response of recording the data point.</span>
+<span class="d">-     */</span>
+<span class="d">-    private Mono&lt;String&gt; doPing(String organizationId, String instanceId, String ipAddress) {</span>
+<span class="d">-        // Note: Hard-coding Segment auth header and the event name intentionally. These are not intended to be</span>
+<span class="d">-        // environment specific values, instead, they are common values for all self-hosted environments. As such, they</span>
+<span class="d">-        // are not intended to be configurable.</span>
+<span class="d">-        final String ceKey = segmentConfig.getCeKey();</span>
+<span class="d">-        if (StringUtils.isEmpty(ceKey)) {</span>
+<span class="d">-            log.error(&quot;The segment ce key is null&quot;);</span>
+<span class="d">-            return Mono.empty();</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        return WebClientUtils.create(&quot;https://api.segment.io&quot;)</span>
+<span class="d">-                .post()</span>
+<span class="d">-                .uri(&quot;/v1/track&quot;)</span>
+<span class="d">-                .headers(headers -&gt; headers.setBasicAuth(ceKey, &quot;&quot;))</span>
+<span class="d">-                .contentType(MediaType.APPLICATION_JSON)</span>
+<span class="d">-                .body(BodyInserters.fromValue(Map.of(</span>
+<span class="d">-                        &quot;userId&quot;,</span>
+<span class="d">-                        instanceId,</span>
+<span class="d">-                        &quot;context&quot;,</span>
+<span class="d">-                        Map.of(&quot;ip&quot;, ipAddress),</span>
+<span class="d">-                        &quot;properties&quot;,</span>
+<span class="d">-                        Map.of(&quot;instanceId&quot;, instanceId, &quot;organizationId&quot;, organizationId),</span>
+<span class="d">-                        &quot;event&quot;,</span>
+<span class="d">-                        &quot;Instance Active&quot;)))</span>
+<span class="d">-                .retrieve()</span>
+<span class="d">-                .bodyToMono(String.class);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    // Number of milliseconds between the start of each scheduled calls to this method.</span>
+<span class="d">-    @Scheduled(initialDelay = 2 * 60 * 1000 /* two minutes */, fixedRate = 24 * 60 * 60 * 1000 /* a day */)</span>
+<span class="d">-    @DistributedLock(key = &quot;pingStats&quot;, ttl = 12 * 60 * 60, shouldReleaseLock = false)</span>
+<span class="d">-    @Observed(name = &quot;pingStats&quot;)</span>
+<span class="d">-    public void pingStats() {</span>
+<span class="d">-        // TODO @CloudBilling remove cloud hosting check and migrate the cron to report organization level stats</span>
+<span class="d">-        if (commonConfig.isTelemetryDisabled() || commonConfig.isCloudHosting()) {</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        final String ceKey = segmentConfig.getCeKey();</span>
+<span class="d">-        if (StringUtils.isEmpty(ceKey)) {</span>
+<span class="d">-            log.error(&quot;The segment ce key is null&quot;);</span>
+<span class="d">-            return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        Mono&lt;String&gt; publicPermissionGroupIdMono = permissionGroupService.getPublicPermissionGroupId();</span>
+<span class="d">-</span>
+<span class="d">-        // Get the non-system generated active user count</span>
+<span class="d">-        Mono&lt;Long&gt; userCountMono = userRepository</span>
+<span class="d">-                .countByDeletedAtIsNullAndIsSystemGeneratedIsNot(true)</span>
+<span class="d">-                .defaultIfEmpty(0L);</span>
+<span class="d">-</span>
+<span class="d">-        Mono&lt;Tuple7&lt;Long, Long, Long, Long, Long, Long, Map&lt;String, Long&gt;&gt;&gt; nonDeletedObjectsCountMono = Mono.zip(</span>
+<span class="d">-                workspaceRepository.countByDeletedAtNull().defaultIfEmpty(0L),</span>
+<span class="d">-                applicationRepository.countByDeletedAtNull().defaultIfEmpty(0L),</span>
+<span class="d">-                newPageRepository.countByDeletedAtNull().defaultIfEmpty(0L),</span>
+<span class="d">-                newActionRepository.countByDeletedAtNull().defaultIfEmpty(0L),</span>
+<span class="d">-                datasourceRepository.countByDeletedAtNull().defaultIfEmpty(0L),</span>
+<span class="d">-                userCountMono,</span>
+<span class="d">-                getUserTrackingDetails());</span>
+<span class="d">-</span>
+<span class="d">-        organizationService</span>
+<span class="d">-                .retrieveAll()</span>
+<span class="d">-                .delayElements(DELAY_BETWEEN_PINGS)</span>
+<span class="d">-                .map(Organization::getId)</span>
+<span class="d">-                .zipWith(publicPermissionGroupIdMono)</span>
+<span class="d">-                .flatMap(tuple2 -&gt; {</span>
+<span class="d">-                    final String organizationId = tuple2.getT1();</span>
+<span class="d">-                    final String publicPermissionGroupId = tuple2.getT2();</span>
+<span class="d">-                    return Mono.zip(</span>
+<span class="d">-                            configService.getInstanceId().defaultIfEmpty(&quot;null&quot;),</span>
+<span class="d">-                            Mono.just(organizationId),</span>
+<span class="d">-                            networkUtils.getExternalAddress(),</span>
+<span class="d">-                            nonDeletedObjectsCountMono,</span>
+<span class="d">-                            applicationRepository.getAllApplicationsCountAccessibleToARoleWithPermission(</span>
+<span class="d">-                                    AclPermission.READ_APPLICATIONS, publicPermissionGroupId));</span>
+<span class="d">-                })</span>
+<span class="d">-                .flatMap(statsData -&gt; {</span>
+<span class="d">-                    Map&lt;String, Object&gt; propertiesMap = new java.util.HashMap&lt;&gt;(Map.ofEntries(</span>
+<span class="d">-                            entry(&quot;instanceId&quot;, statsData.getT1()),</span>
+<span class="d">-                            entry(&quot;organizationId&quot;, statsData.getT2()),</span>
+<span class="d">-                            entry(&quot;numOrgs&quot;, statsData.getT4().getT1()),</span>
+<span class="d">-                            entry(&quot;numApps&quot;, statsData.getT4().getT2()),</span>
+<span class="d">-                            entry(&quot;numPages&quot;, statsData.getT4().getT3()),</span>
+<span class="d m">-                            entry(&quot;numActions&quot;, statsData.getT4().getT4()),</span>
+<span class="d">-                            entry(&quot;numDatasources&quot;, statsData.getT4().getT5()),</span>
+<span class="d">-                            entry(&quot;numUsers&quot;, statsData.getT4().getT6()),</span>
+<span class="d">-                            entry(&quot;numPublicApps&quot;, statsData.getT5()),</span>
+<span class="d">-                            entry(&quot;version&quot;, projectProperties.getVersion()),</span>
+<span class="d">-                            entry(&quot;edition&quot;, deploymentProperties.getEdition()),</span>
+<span class="d">-                            entry(&quot;cloudProvider&quot;, defaultIfEmpty(deploymentProperties.getCloudProvider(), &quot;&quot;)),</span>
+<span class="d">-                            entry(&quot;efs&quot;, defaultIfEmpty(deploymentProperties.getEfs(), &quot;&quot;)),</span>
+<span class="d">-                            entry(&quot;tool&quot;, defaultIfEmpty(deploymentProperties.getTool(), &quot;&quot;)),</span>
+<span class="d">-                            entry(&quot;hostname&quot;, defaultIfEmpty(deploymentProperties.getHostname(), &quot;&quot;)),</span>
+<span class="d">-                            entry(&quot;deployedAt&quot;, defaultIfEmpty(deploymentProperties.getDeployedAt(), &quot;&quot;)),</span>
+<span class="d">-                            entry(ADMIN_EMAIL_DOMAIN_HASH, commonConfig.getAdminEmailDomainHash()),</span>
+<span class="d">-                            entry(EMAIL_DOMAIN_HASH, commonConfig.getAdminEmailDomainHash())));</span>
+<span class="d">-</span>
+<span class="d">-                    propertiesMap.putAll(statsData.getT4().getT7());</span>
+<span class="d">-</span>
+<span class="d">-                    final String ipAddress = statsData.getT3();</span>
+<span class="d">-                    return WebClientUtils.create(&quot;https://api.segment.io&quot;)</span>
+<span class="d">-                            .post()</span>
+<span class="d">-                            .uri(&quot;/v1/track&quot;)</span>
+<span class="d">-                            .headers(headers -&gt; headers.setBasicAuth(ceKey, &quot;&quot;))</span>
+<span class="d">-                            .contentType(MediaType.APPLICATION_JSON)</span>
+<span class="d">-                            .body(BodyInserters.fromValue(Map.of(</span>
+<span class="d">-                                    &quot;userId&quot;,</span>
+<span class="d">-                                    statsData.getT1(),</span>
+<span class="d">-                                    &quot;context&quot;,</span>
+<span class="d">-                                    Map.of(&quot;ip&quot;, ipAddress),</span>
+<span class="d">-                                    &quot;properties&quot;,</span>
+<span class="d">-                                    propertiesMap,</span>
+<span class="d">-                                    &quot;event&quot;,</span>
+<span class="d">-                                    &quot;instance_stats&quot;)))</span>
+<span class="d">-                            .retrieve()</span>
+<span class="d">-                            .bodyToMono(String.class);</span>
+<span class="d">-                })</span>
+<span class="d">-                .doOnError(error -&gt; log.error(&quot;Error sending anonymous counts {0}&quot;, error))</span>
+<span class="d">-                .subscribeOn(Schedulers.boundedElastic())</span>
+<span class="d">-                .subscribe();</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    private Mono&lt;Map&lt;String, Long&gt;&gt; getUserTrackingDetails() {</span>
+<span class="d">-</span>
+<span class="d">-        Mono&lt;Long&gt; dauCountMono = userRepository</span>
+<span class="d">-                .countByDeletedAtIsNullAndLastActiveAtGreaterThanAndIsSystemGeneratedIsNot(</span>
+<span class="d">-                        Instant.now().minus(1, ChronoUnit.DAYS), true)</span>
+<span class="d">-                .defaultIfEmpty(0L);</span>
+<span class="d">-        Mono&lt;Long&gt; wauCountMono = userRepository</span>
+<span class="d">-                .countByDeletedAtIsNullAndLastActiveAtGreaterThanAndIsSystemGeneratedIsNot(</span>
+<span class="d">-                        Instant.now().minus(7, ChronoUnit.DAYS), true)</span>
+<span class="d">-                .defaultIfEmpty(0L);</span>
+<span class="d">-        Mono&lt;Long&gt; mauCountMono = userRepository</span>
+<span class="d">-                .countByDeletedAtIsNullAndLastActiveAtGreaterThanAndIsSystemGeneratedIsNot(</span>
+<span class="d">-                        Instant.now().minus(30, ChronoUnit.DAYS), true)</span>
+<span class="d">-                .defaultIfEmpty(0L);</span>
+<span class="d">-</span>
+<span class="d">-        return Mono.zip(dauCountMono, wauCountMono, mauCountMono)</span>
+<span class="d">-                .map(tuple -&gt; Map.of(</span>
+<span class="d">-                        UserTrackingType.DAU.name(), tuple.getT1(),</span>
+<span class="d">-                        UserTrackingType.WAU.name(), tuple.getT2(),</span>
+<span class="d">-                        UserTrackingType.MAU.name(), tuple.getT3()));</span>
+<span class="d">-    }</span>
+<span class="d">-}</span></pre></body></html>

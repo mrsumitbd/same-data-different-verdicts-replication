@@ -1,0 +1,66 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L111</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L111</h1><p><b>Repository:</b> <a href="https://github.com/metacraft-labs/codetracer">metacraft-labs/codetracer</a><br><b>File at merge:</b> ui-tests/tests/noir/entry.spec.ts, line 3<br><b>Merge commit (birth):</b> <a href="https://github.com/metacraft-labs/codetracer/commit/0dbe45ca8577fed5244b39568ba4f5b9c30e520a">0dbe45ca85</a> (2025-03-19T14:32:32)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/metacraft-labs/codetracer/tree/4805008dec4ec8763a9d61f693bfd0e0bea9607b">4805008dec</a>)</p><p><b>The line:</b></p><pre><span class="t">  window,</span></pre><h2>File at the merge commit, lines 1 to 11</h2><pre>    1 | import { test, expect } from &quot;@playwright/test&quot;;
+    2 | import {
+<span class="t">    3 |   window,</span>
+    4 |   page,
+    5 |   // wait,
+    6 |   // debugCodetracer,
+    7 |   readyOnEntryTest as readyOnEntry,
+    8 |   ctRun,
+    9 | } from &quot;../lib/ct_helpers&quot;;
+   10 | import { StatusBar } from &quot;../page_objects/status_bar&quot;;
+   11 | </pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/metacraft-labs/codetracer/commit/5b82ee584c4dd380c5335dfb75ce3d94a87a408a">5b82ee584c</a> (2025-09-17T16:45:37+03:00)</h2><p class="k">feat(ui-tests): WIP rearrange tets project<br>Path after this commit: ui-tests/tests/noir-tests/entry.spec.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/ui-tests/tests/noir/entry.spec.ts b/ui-tests/tests/noir-tests/entry.spec.ts
+similarity index 85%
+rename from ui-tests/tests/noir/entry.spec.ts
+rename to ui-tests/tests/noir-tests/entry.spec.ts
+index 0fb79e99b..8e42df5ad 100644
+<span class="d">--- a/ui-tests/tests/noir/entry.spec.ts</span>
+<span class="a">+++ b/ui-tests/tests/noir-tests/entry.spec.ts</span>
+<span class="h">@@ -6,8 +6,8 @@ import {</span>
+   // debugCodetracer,
+   readyOnEntryTest as readyOnEntry,
+   ctRun,
+<span class="d">-} from &quot;../lib/ct_helpers&quot;;</span>
+<span class="d">-import { StatusBar } from &quot;../page_objects/status_bar&quot;;</span>
+<span class="a">+} from &quot;../../test-framework/lib/ct_helpers&quot;;</span>
+<span class="a">+import { StatusBar } from &quot;../../test-framework/page-objects/status_bar&quot;;</span>
+ 
+ ctRun(&quot;noir_example/&quot;);
+ </pre><h2>Commit #2: <a href="https://github.com/metacraft-labs/codetracer/commit/3fabcd6e92204e1010b5e3558629fa283d726294">3fabcd6e92</a> (2025-09-17T16:45:37+03:00)</h2><p class="k">feat(ui-tests): rearange test structure<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: ui-tests/tests/program_specific_tests/noir_example.spec.ts.</p><pre>diff --git a/ui-tests/tests/noir-tests/entry.spec.ts b/ui-tests/tests/noir-tests/entry.spec.ts
+deleted file mode 100644
+index 8e42df5ad..000000000
+<span class="d">--- a/ui-tests/tests/noir-tests/entry.spec.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,29 +0,0 @@</span>
+<span class="d">-import { test, expect } from &quot;@playwright/test&quot;;</span>
+<span class="d">-import {</span>
+<span class="d m">-  window,</span>
+<span class="d">-  page,</span>
+<span class="d">-  // wait,</span>
+<span class="d">-  // debugCodetracer,</span>
+<span class="d">-  readyOnEntryTest as readyOnEntry,</span>
+<span class="d">-  ctRun,</span>
+<span class="d">-} from &quot;../../test-framework/lib/ct_helpers&quot;;</span>
+<span class="d">-import { StatusBar } from &quot;../../test-framework/page-objects/status_bar&quot;;</span>
+<span class="d">-</span>
+<span class="d">-ctRun(&quot;noir_example/&quot;);</span>
+<span class="d">-</span>
+<span class="d">-const ENTRY_LINE = 17;</span>
+<span class="d">-</span>
+<span class="d">-test(&quot;we can access the browser window, not just dev tools&quot;, async () =&gt; {</span>
+<span class="d">-  const title = await window.title();</span>
+<span class="d">-  expect(title).toBe(&quot;CodeTracer&quot;);</span>
+<span class="d">-  await window.focus(&quot;div&quot;);</span>
+<span class="d">-});</span>
+<span class="d">-</span>
+<span class="d">-test(&quot;correct entry status path/line&quot;, async () =&gt; {</span>
+<span class="d">-  await readyOnEntry();</span>
+<span class="d">-</span>
+<span class="d">-  const statusBar = new StatusBar(page, page.locator(&quot;.status-bar&quot;));</span>
+<span class="d">-  const simpleLocation = await statusBar.location();</span>
+<span class="d">-  expect(simpleLocation.path.endsWith(&quot;main.nr&quot;)).toBeTruthy();</span>
+<span class="d">-  expect(simpleLocation.line).toBe(ENTRY_LINE);</span>
+<span class="d">-});</span></pre></body></html>

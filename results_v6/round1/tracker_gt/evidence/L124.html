@@ -1,0 +1,436 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L124</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L124</h1><p><b>Repository:</b> <a href="https://github.com/awslabs/mcp">awslabs/mcp</a><br><b>File at merge:</b> src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py, line 33<br><b>Merge commit (birth):</b> <a href="https://github.com/awslabs/mcp/commit/f53bea60e668cf266ecd3e44a970d15b48277db7">f53bea60e6</a> (2025-05-26T03:35:50)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/awslabs/mcp/tree/e3ad693e04f85e98b95a41650c381561cbb753ea">e3ad693e04</a>)</p><p><b>The line:</b></p><pre><span class="t">    @wraps(func)</span></pre><h2>File at the merge commit, lines 25 to 41</h2><pre>   25 |             return {&#x27;error&#x27;: str(e)}
+   26 | 
+   27 |     return wrapper
+   28 | 
+   29 | 
+   30 | def mutation_check(func):
+   31 |     &quot;&quot;&quot;Decorator to block mutations if DDB-MCP-READONLY is set to true.&quot;&quot;&quot;
+   32 | 
+<span class="t">   33 |     @wraps(func)</span>
+   34 |     async def wrapper(*args, **kwargs):
+   35 |         readonly = os.environ.get(&#x27;DDB-MCP-READONLY&#x27;, &#x27;&#x27;).lower()
+   36 |         if readonly in (&#x27;true&#x27;, &#x27;1&#x27;, &#x27;yes&#x27;):  # treat these as true
+   37 |             return {&#x27;error&#x27;: &#x27;Mutation not allowed: DDB-MCP-READONLY is set to true.&#x27;}
+   38 |         return await func(*args, **kwargs)
+   39 | 
+   40 |     return wrapper
+   41 | </pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/awslabs/mcp/commit/6827ea31fbdef08e648b0c422e4158f913001f59">6827ea31fb</a> (2025-06-04T15:44:58+00:00)</h2><p class="k">feat: fix and check license header automation (#510)<br>Path after this commit: src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py b/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py
+index 37b2b781..5a42f89e 100644
+<span class="d">--- a/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py</span>
+<span class="a">+++ b/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py</span>
+<span class="h">@@ -1,3 +1,17 @@</span>
+<span class="a">+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.</span>
+<span class="a">+#</span>
+<span class="a">+# Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="a">+# you may not use this file except in compliance with the License.</span>
+<span class="a">+# You may obtain a copy of the License at</span>
+<span class="a">+#</span>
+<span class="a">+#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="a">+#</span>
+<span class="a">+# Unless required by applicable law or agreed to in writing, software</span>
+<span class="a">+# distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="a">+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="a">+# See the License for the specific language governing permissions and</span>
+<span class="a">+# limitations under the License.</span>
+<span class="a">+</span>
+ import os
+ from functools import wraps
+ from typing import Any, Callable, Dict, List, Literal, Optional</pre><h2>Commit #2: <a href="https://github.com/awslabs/mcp/commit/2ffa0ff06e3604b60b2ba65fb69dde14f5f58016">2ffa0ff06e</a> (2025-10-03T08:52:16+00:00)</h2><p class="k">chore!: Remove DynamoDB Native API wrapper functions from DynamoDB MCP (#1290)<br>Path after this commit: src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py b/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py
+index 5a42f89e..7d8c9dbf 100644
+<span class="d">--- a/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py</span>
+<span class="a">+++ b/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py</span>
+<span class="h">@@ -14,8 +14,7 @@</span>
+ 
+ import os
+ from functools import wraps
+<span class="d">-from typing import Any, Callable, Dict, List, Literal, Optional</span>
+<span class="d">-from typing_extensions import TypedDict</span>
+<span class="a">+from typing import Callable</span>
+ 
+ 
+ def handle_exceptions(func: Callable) -&gt; Callable:
+<span class="h">@@ -52,283 +51,3 @@ def mutation_check(func):</span>
+         return await func(*args, **kwargs)
+ 
+     return wrapper
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-# Type definitions</span>
+<span class="d">-AttributeValue = Dict[Literal[&#x27;S&#x27;, &#x27;N&#x27;, &#x27;B&#x27;, &#x27;BOOL&#x27;, &#x27;NULL&#x27;, &#x27;L&#x27;, &#x27;M&#x27;, &#x27;SS&#x27;, &#x27;NS&#x27;, &#x27;BS&#x27;], Any]</span>
+<span class="d">-KeyAttributeValue = Dict[Literal[&#x27;S&#x27;, &#x27;N&#x27;, &#x27;B&#x27;], Any]</span>
+<span class="d">-</span>
+<span class="d">-# Return value enums</span>
+<span class="d">-ReturnValue = Literal[&#x27;NONE&#x27;, &#x27;ALL_OLD&#x27;, &#x27;UPDATED_OLD&#x27;, &#x27;ALL_NEW&#x27;, &#x27;UPDATED_NEW&#x27;]</span>
+<span class="d">-ReturnConsumedCapacity = Literal[&#x27;INDEXES&#x27;, &#x27;TOTAL&#x27;, &#x27;NONE&#x27;]</span>
+<span class="d">-ReturnItemCollectionMetrics = Literal[&#x27;SIZE&#x27;, &#x27;NONE&#x27;]</span>
+<span class="d">-Select = Literal[&#x27;ALL_ATTRIBUTES&#x27;, &#x27;ALL_PROJECTED_ATTRIBUTES&#x27;, &#x27;SPECIFIC_ATTRIBUTES&#x27;, &#x27;COUNT&#x27;]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class ScanInput(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Parameters for Scan operation.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    TableName: str  # required</span>
+<span class="d">-    IndexName: Optional[str]</span>
+<span class="d">-    AttributesToGet: Optional[List[str]]  # Legacy parameter</span>
+<span class="d">-    Limit: Optional[int]</span>
+<span class="d">-    Select: Optional[Select]</span>
+<span class="d">-    ScanFilter: Optional[</span>
+<span class="d">-        Dict[str, AttributeValue]</span>
+<span class="d">-    ]  # Legacy parameter (must use AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;})</span>
+<span class="d">-    ConditionalOperator: Optional[Literal[&#x27;AND&#x27;, &#x27;OR&#x27;]]  # Legacy parameter</span>
+<span class="d">-    ExclusiveStartKey: Optional[</span>
+<span class="d">-        Dict[str, KeyAttributeValue]</span>
+<span class="d">-    ]  # Primary key attributes in AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    ReturnConsumedCapacity: Optional[ReturnConsumedCapacity]</span>
+<span class="d">-    TotalSegments: Optional[int]</span>
+<span class="d">-    Segment: Optional[int]</span>
+<span class="d">-    ProjectionExpression: Optional[str]</span>
+<span class="d">-    FilterExpression: Optional[str]</span>
+<span class="d">-    ExpressionAttributeNames: Optional[Dict[str, str]]</span>
+<span class="d">-    ExpressionAttributeValues: Optional[</span>
+<span class="d">-        Dict[str, AttributeValue]</span>
+<span class="d">-    ]  # values must use AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    ConsistentRead: Optional[bool]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class QueryInput(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Parameters for Query operation.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    TableName: str  # required</span>
+<span class="d">-    IndexName: Optional[str]</span>
+<span class="d">-    Select: Optional[Select]</span>
+<span class="d">-    AttributesToGet: Optional[List[str]]  # Legacy parameter</span>
+<span class="d">-    Limit: Optional[int]</span>
+<span class="d">-    ConsistentRead: Optional[bool]</span>
+<span class="d">-    KeyConditionExpression: Optional[str]</span>
+<span class="d">-    FilterExpression: Optional[str]</span>
+<span class="d">-    ProjectionExpression: Optional[str]</span>
+<span class="d">-    ExpressionAttributeNames: Optional[Dict[str, str]]</span>
+<span class="d">-    ExpressionAttributeValues: Optional[</span>
+<span class="d">-        Dict[str, AttributeValue]</span>
+<span class="d">-    ]  # values must use AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    ScanIndexForward: Optional[bool]</span>
+<span class="d">-    ExclusiveStartKey: Optional[</span>
+<span class="d">-        Dict[str, KeyAttributeValue]</span>
+<span class="d">-    ]  # Primary key attributes in AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    ReturnConsumedCapacity: Optional[ReturnConsumedCapacity]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class DeleteItemInput(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Parameters for DeleteItem operation.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    TableName: str  # required</span>
+<span class="d">-    Key: Dict[</span>
+<span class="d">-        str, KeyAttributeValue</span>
+<span class="d">-    ]  # required - primary key attributes in AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    ConditionExpression: Optional[str]</span>
+<span class="d">-    ExpressionAttributeNames: Optional[Dict[str, str]]</span>
+<span class="d">-    ExpressionAttributeValues: Optional[</span>
+<span class="d">-        Dict[str, AttributeValue]</span>
+<span class="d">-    ]  # values must use AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    ReturnConsumedCapacity: Optional[ReturnConsumedCapacity]</span>
+<span class="d">-    ReturnItemCollectionMetrics: Optional[ReturnItemCollectionMetrics]</span>
+<span class="d">-    ReturnValues: Optional[ReturnValue]</span>
+<span class="d">-    ReturnValuesOnConditionCheckFailure: Optional[Literal[&#x27;ALL_OLD&#x27;, &#x27;NONE&#x27;]]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class UpdateItemInput(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Parameters for UpdateItem operation.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    TableName: str  # required</span>
+<span class="d">-    Key: Dict[</span>
+<span class="d">-        str, KeyAttributeValue</span>
+<span class="d">-    ]  # required - primary key attributes in AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    UpdateExpression: Optional[str]</span>
+<span class="d">-    ConditionExpression: Optional[str]</span>
+<span class="d">-    ExpressionAttributeNames: Optional[Dict[str, str]]</span>
+<span class="d">-    ExpressionAttributeValues: Optional[</span>
+<span class="d">-        Dict[str, AttributeValue]</span>
+<span class="d">-    ]  # values must use AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    ReturnConsumedCapacity: Optional[ReturnConsumedCapacity]</span>
+<span class="d">-    ReturnItemCollectionMetrics: Optional[ReturnItemCollectionMetrics]</span>
+<span class="d">-    ReturnValues: Optional[ReturnValue]</span>
+<span class="d">-    ReturnValuesOnConditionCheckFailure: Optional[Literal[&#x27;ALL_OLD&#x27;, &#x27;NONE&#x27;]]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class GetItemInput(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Parameters for GetItem operation.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    TableName: str  # required</span>
+<span class="d">-    Key: Dict[</span>
+<span class="d">-        str, KeyAttributeValue</span>
+<span class="d">-    ]  # required - primary key attributes in AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    AttributesToGet: Optional[List[str]]</span>
+<span class="d">-    ConsistentRead: Optional[bool]</span>
+<span class="d">-    ExpressionAttributeNames: Optional[Dict[str, str]]</span>
+<span class="d">-    ProjectionExpression: Optional[str]</span>
+<span class="d">-    ReturnConsumedCapacity: Optional[ReturnConsumedCapacity]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class PutItemInput(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Parameters for PutItem operation.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    TableName: str  # required</span>
+<span class="d">-    Item: Dict[</span>
+<span class="d">-        str, AttributeValue</span>
+<span class="d">-    ]  # required - maps attribute name to AttributeValue (must use AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;})</span>
+<span class="d">-    ConditionExpression: Optional[str]</span>
+<span class="d">-    ExpressionAttributeNames: Optional[Dict[str, str]]</span>
+<span class="d">-    ExpressionAttributeValues: Optional[</span>
+<span class="d">-        Dict[str, AttributeValue]</span>
+<span class="d">-    ]  # values must use AttributeValue format e.g. {&#x27;S&#x27;: &#x27;value&#x27;}</span>
+<span class="d">-    ReturnConsumedCapacity: Optional[ReturnConsumedCapacity]</span>
+<span class="d">-    ReturnItemCollectionMetrics: Optional[ReturnItemCollectionMetrics]</span>
+<span class="d">-    ReturnValues: Optional[ReturnValue]</span>
+<span class="d">-    ReturnValuesOnConditionCheckFailure: Optional[Literal[&#x27;ALL_OLD&#x27;, &#x27;NONE&#x27;]]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class AttributeDefinition(TypedDict):</span>
+<span class="d">-    AttributeName: str</span>
+<span class="d">-    AttributeType: Literal[&#x27;S&#x27;, &#x27;N&#x27;, &#x27;B&#x27;]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class KeySchemaElement(TypedDict):</span>
+<span class="d">-    AttributeName: str</span>
+<span class="d">-    KeyType: Literal[&#x27;HASH&#x27;, &#x27;RANGE&#x27;]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class ProvisionedThroughput(TypedDict):</span>
+<span class="d">-    ReadCapacityUnits: int</span>
+<span class="d">-    WriteCapacityUnits: int</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class Projection(TypedDict, total=False):</span>
+<span class="d">-    ProjectionType: Literal[&#x27;KEYS_ONLY&#x27;, &#x27;INCLUDE&#x27;, &#x27;ALL&#x27;]</span>
+<span class="d">-    NonKeyAttributes: List[str]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class OnDemandThroughput(TypedDict, total=False):</span>
+<span class="d">-    MaxReadRequestUnits: int</span>
+<span class="d">-    MaxWriteRequestUnits: int</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class WarmThroughput(TypedDict, total=False):</span>
+<span class="d">-    ReadUnitsPerSecond: int</span>
+<span class="d">-    WriteUnitsPerSecond: int</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class GlobalSecondaryIndex(TypedDict, total=False):</span>
+<span class="d">-    IndexName: str  # required</span>
+<span class="d">-    KeySchema: List[KeySchemaElement]  # required</span>
+<span class="d">-    Projection: Projection  # required</span>
+<span class="d">-    ProvisionedThroughput: ProvisionedThroughput</span>
+<span class="d">-    OnDemandThroughput: OnDemandThroughput</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class GlobalSecondaryIndexUpdateAction(TypedDict, total=False):</span>
+<span class="d">-    IndexName: str</span>
+<span class="d">-    ProvisionedThroughput: ProvisionedThroughput</span>
+<span class="d">-    OnDemandThroughput: OnDemandThroughput</span>
+<span class="d">-    WarmThroughput: WarmThroughput</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class GlobalSecondaryIndexDeleteAction(TypedDict):</span>
+<span class="d">-    IndexName: str</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class GlobalSecondaryIndexUpdate(TypedDict, total=False):</span>
+<span class="d">-    Create: GlobalSecondaryIndex</span>
+<span class="d">-    Delete: GlobalSecondaryIndexDeleteAction</span>
+<span class="d">-    Update: GlobalSecondaryIndexUpdateAction</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class StreamSpecification(TypedDict, total=False):</span>
+<span class="d">-    StreamEnabled: bool</span>
+<span class="d">-    StreamViewType: Literal[&#x27;KEYS_ONLY&#x27;, &#x27;NEW_IMAGE&#x27;, &#x27;OLD_IMAGE&#x27;, &#x27;NEW_AND_OLD_IMAGES&#x27;]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class Tag(TypedDict):</span>
+<span class="d">-    Key: str</span>
+<span class="d">-    Value: str</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class SSESpecification(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Set Enabled to true for AWS managed key (KMS charges apply). set it to false for AWS owned key.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    Enabled: bool</span>
+<span class="d">-    SSEType: Literal[&#x27;KMS&#x27;]</span>
+<span class="d">-    KMSMasterKeyId: str</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class TimeToLiveSpecification(TypedDict):</span>
+<span class="d">-    AttributeName: str  # The name of the TTL attribute used to store the expiration time for items</span>
+<span class="d">-    Enabled: bool  # Indicates whether TTL is enabled (true) or disabled (false) on the table</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class GetResourcePolicyInput(TypedDict):</span>
+<span class="d">-    ResourceArn: str  # The Amazon Resource Name (ARN) of the DynamoDB resource to which the policy is attached</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class PutResourcePolicyInput(TypedDict, total=False):</span>
+<span class="d">-    Policy: str  # An AWS resource-based policy document in JSON format</span>
+<span class="d">-    ResourceArn: str  # The Amazon Resource Name (ARN) of the DynamoDB resource to which the policy will be attached</span>
+<span class="d">-    ConfirmRemoveSelfResourceAccess: (</span>
+<span class="d">-        bool  # Set to true to confirm removing your permissions to change the policy in the future</span>
+<span class="d">-    )</span>
+<span class="d">-    ExpectedRevisionId: str  # A string value for conditional updates of your policy</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class OnDemandThroughputOverride(TypedDict):</span>
+<span class="d">-    MaxReadRequestUnits: int</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class ProvisionedThroughputOverride(TypedDict):</span>
+<span class="d">-    ReadCapacityUnits: int</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class ReplicaCreate(TypedDict, total=False):</span>
+<span class="d">-    RegionName: str</span>
+<span class="d">-    KMSMasterKeyId: str</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class ReplicaDelete(TypedDict):</span>
+<span class="d">-    RegionName: str</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class ReplicaUpdate(TypedDict, total=False):</span>
+<span class="d">-    KMSMasterKeyId: str</span>
+<span class="d">-    OnDemandThroughputOverride: OnDemandThroughputOverride</span>
+<span class="d">-    ProvisionedThroughputOverride: ProvisionedThroughputOverride</span>
+<span class="d">-    RegionName: str</span>
+<span class="d">-    TableClassOverride: Literal[&#x27;STANDARD&#x27;, &#x27;STANDARD_INFREQUENT_ACCESS&#x27;]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class ReplicationGroupUpdate(TypedDict, total=False):</span>
+<span class="d">-    Create: ReplicaCreate</span>
+<span class="d">-    Update: ReplicaUpdate</span>
+<span class="d">-    Delete: ReplicaDelete</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class CreateTableInput(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Parameters for CreateTable operation.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    TableName: str  # required</span>
+<span class="d">-    AttributeDefinitions: List[AttributeDefinition]  # required</span>
+<span class="d">-    KeySchema: List[KeySchemaElement]  # required</span>
+<span class="d">-    BillingMode: Literal[&#x27;PROVISIONED&#x27;, &#x27;PAY_PER_REQUEST&#x27;]</span>
+<span class="d">-    GlobalSecondaryIndexes: List[GlobalSecondaryIndex]</span>
+<span class="d">-    ProvisionedThroughput: ProvisionedThroughput</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class UpdateTableInput(TypedDict, total=False):</span>
+<span class="d">-    &quot;&quot;&quot;Parameters for UpdateTable operation.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    TableName: str  # required</span>
+<span class="d">-    AttributeDefinitions: List[AttributeDefinition]</span>
+<span class="d">-    BillingMode: Literal[&#x27;PROVISIONED&#x27;, &#x27;PAY_PER_REQUEST&#x27;]</span>
+<span class="d">-    DeletionProtectionEnabled: bool</span>
+<span class="d">-    GlobalSecondaryIndexUpdates: List[GlobalSecondaryIndexUpdate]</span>
+<span class="d">-    OnDemandThroughput: OnDemandThroughput</span>
+<span class="d">-    ProvisionedThroughput: ProvisionedThroughput</span>
+<span class="d">-    ReplicaUpdates: List[ReplicationGroupUpdate]</span>
+<span class="d">-    SSESpecification: SSESpecification</span>
+<span class="d">-    StreamSpecification: StreamSpecification</span>
+<span class="d">-    TableClass: Literal[&#x27;STANDARD&#x27;, &#x27;STANDARD_INFREQUENT_ACCESS&#x27;]</span>
+<span class="d">-    WarmThroughput: WarmThroughput</span></pre><h2>Commit #3: <a href="https://github.com/awslabs/mcp/commit/fad104a2c8f581ec3b4ca27e6c052bbff4ea9c68">fad104a2c8</a> (2025-11-20T16:21:15+00:00)</h2><p class="k">feat(dynamodb): Create dynamodb data model validation tool (#1648)<br>Path after this commit: src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py b/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py
+index 7d8c9dbf..2953d321 100644
+<span class="d">--- a/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py</span>
+<span class="a">+++ b/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py</span>
+<span class="h">@@ -12,7 +12,6 @@</span>
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
+<span class="d">-import os</span>
+ from functools import wraps
+ from typing import Callable
+ 
+<span class="h">@@ -38,16 +37,3 @@ def handle_exceptions(func: Callable) -&gt; Callable:</span>
+             return {&#x27;error&#x27;: str(e)}
+ 
+     return wrapper
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def mutation_check(func):</span>
+<span class="d">-    &quot;&quot;&quot;Decorator to block mutations if DDB-MCP-READONLY is set to true.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d m">-    @wraps(func)</span>
+<span class="d">-    async def wrapper(*args, **kwargs):</span>
+<span class="d">-        readonly = os.environ.get(&#x27;DDB-MCP-READONLY&#x27;, &#x27;&#x27;).lower()</span>
+<span class="d">-        if readonly in (&#x27;true&#x27;, &#x27;1&#x27;, &#x27;yes&#x27;):  # treat these as true</span>
+<span class="d">-            return {&#x27;error&#x27;: &#x27;Mutation not allowed: DDB-MCP-READONLY is set to true.&#x27;}</span>
+<span class="d">-        return await func(*args, **kwargs)</span>
+<span class="d">-</span>
+<span class="d">-    return wrapper</span></pre><h2>Commit #4: <a href="https://github.com/awslabs/mcp/commit/b4522cb53853dca48720f105f05334f66a902de7">b4522cb538</a> (2025-12-16T16:57:10+00:00)</h2><p class="k">feat(dynamodb-mcp-server): Add self-service feature in source_db_analyzer MCP tool. (#1915)<br>Path after this commit: src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py b/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py
+index 2953d321..f4c7b0aa 100644
+<span class="d">--- a/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py</span>
+<span class="a">+++ b/src/dynamodb-mcp-server/awslabs/dynamodb_mcp_server/common.py</span>
+<span class="h">@@ -12,10 +12,65 @@</span>
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
+<span class="a">+import os</span>
+<span class="a">+import re</span>
+ from functools import wraps
+ from typing import Callable
+ 
+ 
+<span class="a">+def validate_database_name(database_name: str) -&gt; None:</span>
+<span class="a">+    &quot;&quot;&quot;Validate database name.</span>
+<span class="a">+</span>
+<span class="a">+    Args:</span>
+<span class="a">+        database_name: The database name to validate</span>
+<span class="a">+</span>
+<span class="a">+    Raises:</span>
+<span class="a">+        ValueError: If the database name contains invalid characters or exceeds length limit</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    # Max identifier length: SQL Server=128, MySQL=64, PostgreSQL=63</span>
+<span class="a">+    # Use 128 as upper bound; each database will enforce its own limit</span>
+<span class="a">+    MAX_DB_NAME_LENGTH = 128</span>
+<span class="a">+</span>
+<span class="a">+    if len(database_name) &gt; MAX_DB_NAME_LENGTH:</span>
+<span class="a">+        raise ValueError(</span>
+<span class="a">+            f&#x27;Invalid database name: {database_name}. &#x27;</span>
+<span class="a">+            f&#x27;Database name must not exceed {MAX_DB_NAME_LENGTH} characters.&#x27;</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+    if not re.match(r&#x27;^[a-zA-Z0-9_.$-]+$&#x27;, database_name):</span>
+<span class="a">+        raise ValueError(</span>
+<span class="a">+            f&#x27;Invalid database name: {database_name}. &#x27;</span>
+<span class="a">+            &#x27;Only alphanumeric characters, underscores, periods, dollar signs, and hyphens are allowed.&#x27;</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def validate_path_within_directory(</span>
+<span class="a">+    file_path: str, base_dir: str, path_description: str = &#x27;file path&#x27;</span>
+<span class="a">+) -&gt; str:</span>
+<span class="a">+    &quot;&quot;&quot;Validate that a resolved path is within the base directory.</span>
+<span class="a">+</span>
+<span class="a">+    Args:</span>
+<span class="a">+        file_path: The file path to validate (can be relative or absolute)</span>
+<span class="a">+        base_dir: The base directory that the file must be within</span>
+<span class="a">+        path_description: Description of the path for error messages (e.g., &quot;query output file&quot;)</span>
+<span class="a">+</span>
+<span class="a">+    Returns:</span>
+<span class="a">+        The canonical absolute path if validation succeeds</span>
+<span class="a">+</span>
+<span class="a">+    Raises:</span>
+<span class="a">+        ValueError: If the path resolves outside the base directory</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    real_base = os.path.normpath(os.path.realpath(base_dir))</span>
+<span class="a">+    real_file = os.path.normpath(os.path.realpath(file_path))</span>
+<span class="a">+</span>
+<span class="a">+    if not (real_file.startswith(real_base + os.sep) or real_file == real_base):</span>
+<span class="a">+        raise ValueError(</span>
+<span class="a">+            f&#x27;Path traversal detected: {path_description} resolves outside {base_dir}&#x27;</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+    return real_file</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ def handle_exceptions(func: Callable) -&gt; Callable:
+     &quot;&quot;&quot;Decorator to handle exceptions in DynamoDB operations.
+ </pre></body></html>

@@ -1,0 +1,153 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L023</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L023</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-net">azure/azure-sdk-for-net</a><br><b>File at merge:</b> sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs, line 238<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-sdk-for-net/commit/453a5a3dee15d526ff45f91ab9604dcd6fa9ef5c">453a5a3dee</a> (2025-07-07T22:25:04)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-net/tree/bac518d3adcf30853ec4211f736b905dde075813">bac518d3ad</a>)</p><p><b>The line:</b></p><pre><span class="t">        System.BinaryData System.ClientModel.Primitives.IPersistableModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment&gt;.Write(System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }</span></pre><h2>File at the merge commit, lines 230 to 246</h2><pre>  230 |         protected virtual void JsonModelWriteCore(System.Text.Json.Utf8JsonWriter writer, System.ClientModel.Primitives.ModelReaderWriterOptions options) { }
+  231 |         public static explicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment (Azure.Response result) { throw null; }
+  232 |         protected virtual Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment PersistableModelCreateCore(System.BinaryData data, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+  233 |         protected virtual System.BinaryData PersistableModelWriteCore(System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+  234 |         Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment System.ClientModel.Primitives.IJsonModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment&gt;.Create(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+  235 |         void System.ClientModel.Primitives.IJsonModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment&gt;.Write(System.Text.Json.Utf8JsonWriter writer, System.ClientModel.Primitives.ModelReaderWriterOptions options) { }
+  236 |         Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment System.ClientModel.Primitives.IPersistableModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment&gt;.Create(System.BinaryData data, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+  237 |         string System.ClientModel.Primitives.IPersistableModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment&gt;.GetFormatFromOptions(System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+<span class="t">  238 |         System.BinaryData System.ClientModel.Primitives.IPersistableModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment&gt;.Write(System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }</span>
+  239 |     }
+  240 |     public partial class KeyVaultRoleAssignmentProperties : System.ClientModel.Primitives.IJsonModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignmentProperties&gt;, System.ClientModel.Primitives.IPersistableModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignmentProperties&gt;
+  241 |     {
+  242 |         internal KeyVaultRoleAssignmentProperties() { }
+  243 |         public string PrincipalId { get { throw null; } }
+  244 |         public string RoleDefinitionId { get { throw null; } }
+  245 |         public Azure.Security.KeyVault.Administration.KeyVaultRoleScope? Scope { get { throw null; } }
+  246 |         protected virtual Azure.Security.KeyVault.Administration.KeyVaultRoleAssignmentProperties JsonModelCreateCore(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-net/commit/dff2cf0fbd46dddeda03d0fcf46442a2fc6533ce">dff2cf0fbd</a> (2025-07-14T17:00:06-07:00)</h2><p class="k">Improve performance of System.ClientModel.SourceGeneration (#51067)<br>Path after this commit: sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs
+index 047624773c0..7f1d67b1cfb 100644
+<span class="d">--- a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="a">+++ b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="h">@@ -1,5 +1,11 @@</span>
+ namespace Azure.Security.KeyVault.Administration
+ {
+<span class="a">+    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.GetSettingsResult))]</span>
+<span class="a">+    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultPermission))]</span>
+<span class="a">+    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment))]</span>
+<span class="a">+    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultRoleAssignmentProperties))]</span>
+<span class="a">+    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultRoleDefinition))]</span>
+<span class="a">+    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultSetting))]</span>
+     public partial class AzureSecurityKeyVaultAdministrationContext : System.ClientModel.Primitives.ModelReaderWriterContext
+     {
+         internal AzureSecurityKeyVaultAdministrationContext() { }</pre><h2>Commit #2: <a href="https://github.com/azure/azure-sdk-for-net/commit/0d75359e81e4fa8fd858442eaa50a98420947643">0d75359e81</a> (2025-07-23T19:09:54-07:00)</h2><p class="k">Update TypeSpec emitter version to prerelease 1.0.0-alpha.20250723.1 (#51430)<br>Path after this commit: sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs
+index 7f1d67b1cfb..9f0d57cdc9a 100644
+<span class="d">--- a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="a">+++ b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="h">@@ -183,6 +183,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public override int GetHashCode() { throw null; }
+         public static bool operator ==(Azure.Security.KeyVault.Administration.KeyVaultDataAction left, Azure.Security.KeyVault.Administration.KeyVaultDataAction right) { throw null; }
+         public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultDataAction (string value) { throw null; }
+<span class="a">+        public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultDataAction? (string value) { throw null; }</span>
+         public static bool operator !=(Azure.Security.KeyVault.Administration.KeyVaultDataAction left, Azure.Security.KeyVault.Administration.KeyVaultDataAction right) { throw null; }
+         public override string ToString() { throw null; }
+     }
+<span class="h">@@ -295,6 +296,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public override int GetHashCode() { throw null; }
+         public static bool operator ==(Azure.Security.KeyVault.Administration.KeyVaultRoleDefinitionType left, Azure.Security.KeyVault.Administration.KeyVaultRoleDefinitionType right) { throw null; }
+         public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleDefinitionType (string value) { throw null; }
+<span class="a">+        public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleDefinitionType? (string value) { throw null; }</span>
+         public static bool operator !=(Azure.Security.KeyVault.Administration.KeyVaultRoleDefinitionType left, Azure.Security.KeyVault.Administration.KeyVaultRoleDefinitionType right) { throw null; }
+         public override string ToString() { throw null; }
+     }
+<span class="h">@@ -314,6 +316,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public override int GetHashCode() { throw null; }
+         public static bool operator ==(Azure.Security.KeyVault.Administration.KeyVaultRoleScope left, Azure.Security.KeyVault.Administration.KeyVaultRoleScope right) { throw null; }
+         public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleScope (string value) { throw null; }
+<span class="a">+        public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleScope? (string value) { throw null; }</span>
+         public static bool operator !=(Azure.Security.KeyVault.Administration.KeyVaultRoleScope left, Azure.Security.KeyVault.Administration.KeyVaultRoleScope right) { throw null; }
+         public override string ToString() { throw null; }
+     }
+<span class="h">@@ -332,6 +335,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public override int GetHashCode() { throw null; }
+         public static bool operator ==(Azure.Security.KeyVault.Administration.KeyVaultRoleType left, Azure.Security.KeyVault.Administration.KeyVaultRoleType right) { throw null; }
+         public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleType (string value) { throw null; }
+<span class="a">+        public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleType? (string value) { throw null; }</span>
+         public static bool operator !=(Azure.Security.KeyVault.Administration.KeyVaultRoleType left, Azure.Security.KeyVault.Administration.KeyVaultRoleType right) { throw null; }
+         public override string ToString() { throw null; }
+     }
+<span class="h">@@ -402,6 +406,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public override int GetHashCode() { throw null; }
+         public static bool operator ==(Azure.Security.KeyVault.Administration.KeyVaultSettingType left, Azure.Security.KeyVault.Administration.KeyVaultSettingType right) { throw null; }
+         public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultSettingType (string value) { throw null; }
+<span class="a">+        public static implicit operator Azure.Security.KeyVault.Administration.KeyVaultSettingType? (string value) { throw null; }</span>
+         public static bool operator !=(Azure.Security.KeyVault.Administration.KeyVaultSettingType left, Azure.Security.KeyVault.Administration.KeyVaultSettingType right) { throw null; }
+         public override string ToString() { throw null; }
+     }</pre><h2>Commit #3: <a href="https://github.com/azure/azure-sdk-for-net/commit/621306fc387bb3c852c42193aa65bad142ab9f5b">621306fc38</a> (2025-07-25T10:10:53+08:00)</h2><p class="k">Bump autorest generator version to 3.0.0-beta.20250724.2 (#51407)<br>Path after this commit: sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs
+index 9f0d57cdc9a..6e338846977 100644
+<span class="d">--- a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="a">+++ b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="h">@@ -1,11 +1,5 @@</span>
+ namespace Azure.Security.KeyVault.Administration
+ {
+<span class="d">-    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.GetSettingsResult))]</span>
+<span class="d">-    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultPermission))]</span>
+<span class="d">-    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment))]</span>
+<span class="d">-    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultRoleAssignmentProperties))]</span>
+<span class="d">-    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultRoleDefinition))]</span>
+<span class="d">-    [System.ClientModel.Primitives.ModelReaderWriterBuildableAttribute(typeof(Azure.Security.KeyVault.Administration.KeyVaultSetting))]</span>
+     public partial class AzureSecurityKeyVaultAdministrationContext : System.ClientModel.Primitives.ModelReaderWriterContext
+     {
+         internal AzureSecurityKeyVaultAdministrationContext() { }</pre><h2>Commit #4: <a href="https://github.com/azure/azure-sdk-for-net/commit/d2cbbe873f6c7f15ef5b211a559f25b1eb0baf50">d2cbbe873f</a> (2025-10-01T17:10:22-07:00)</h2><p class="k">Key Vault 2025-07-01 (#52916)<br>Path after this commit: sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs
+index 6e338846977..84efe366eda 100644
+<span class="d">--- a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="a">+++ b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="h">@@ -60,7 +60,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+     }
+     public partial class KeyVaultAdministrationClientOptions : Azure.Core.ClientOptions
+     {
+<span class="d">-        public KeyVaultAdministrationClientOptions(Azure.Security.KeyVault.Administration.KeyVaultAdministrationClientOptions.ServiceVersion version = Azure.Security.KeyVault.Administration.KeyVaultAdministrationClientOptions.ServiceVersion.V7_6) { }</span>
+<span class="a">+        public KeyVaultAdministrationClientOptions(Azure.Security.KeyVault.Administration.KeyVaultAdministrationClientOptions.ServiceVersion version = Azure.Security.KeyVault.Administration.KeyVaultAdministrationClientOptions.ServiceVersion.V2025_07_01) { }</span>
+         public bool DisableChallengeResourceVerification { get { throw null; } set { } }
+         public Azure.Security.KeyVault.Administration.KeyVaultAdministrationClientOptions.ServiceVersion Version { get { throw null; } }
+         public enum ServiceVersion
+<span class="h">@@ -70,6 +70,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+             V7_4 = 3,
+             V7_5 = 4,
+             V7_6 = 5,
+<span class="a">+            V2025_07_01 = 6,</span>
+         }
+     }
+     public static partial class KeyVaultAdministrationModelFactory</pre><h2>Commit #5: <a href="https://github.com/azure/azure-sdk-for-net/commit/d32371549debd8bce0f21b9acb5317262bf8ae58">d32371549d</a> (2025-10-30T08:46:16-07:00)</h2><p class="k">Update azure-typespec/http-client-csharp version to prerelease 1.0.0-alpha.20251029.2 (#53573)<br>Path after this commit: sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs
+index 84efe366eda..1af0ed54ece 100644
+<span class="d">--- a/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="a">+++ b/sdk/keyvault/Azure.Security.KeyVault.Administration/api/Azure.Security.KeyVault.Administration.netstandard2.0.cs</span>
+<span class="h">@@ -23,7 +23,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public System.Collections.Generic.IReadOnlyList&lt;Azure.Security.KeyVault.Administration.KeyVaultSetting&gt; Settings { get { throw null; } }
+         protected virtual Azure.Security.KeyVault.Administration.GetSettingsResult JsonModelCreateCore(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         protected virtual void JsonModelWriteCore(System.Text.Json.Utf8JsonWriter writer, System.ClientModel.Primitives.ModelReaderWriterOptions options) { }
+<span class="d">-        public static explicit operator Azure.Security.KeyVault.Administration.GetSettingsResult (Azure.Response result) { throw null; }</span>
+<span class="a">+        public static explicit operator Azure.Security.KeyVault.Administration.GetSettingsResult (Azure.Response response) { throw null; }</span>
+         protected virtual Azure.Security.KeyVault.Administration.GetSettingsResult PersistableModelCreateCore(System.BinaryData data, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         protected virtual System.BinaryData PersistableModelWriteCore(System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         Azure.Security.KeyVault.Administration.GetSettingsResult System.ClientModel.Primitives.IJsonModel&lt;Azure.Security.KeyVault.Administration.GetSettingsResult&gt;.Create(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+<span class="h">@@ -230,7 +230,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public string Type { get { throw null; } }
+         protected virtual Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment JsonModelCreateCore(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         protected virtual void JsonModelWriteCore(System.Text.Json.Utf8JsonWriter writer, System.ClientModel.Primitives.ModelReaderWriterOptions options) { }
+<span class="d">-        public static explicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment (Azure.Response result) { throw null; }</span>
+<span class="a">+        public static explicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment (Azure.Response response) { throw null; }</span>
+         protected virtual Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment PersistableModelCreateCore(System.BinaryData data, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         protected virtual System.BinaryData PersistableModelWriteCore(System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment System.ClientModel.Primitives.IJsonModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleAssignment&gt;.Create(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+<span class="h">@@ -268,7 +268,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public Azure.Security.KeyVault.Administration.KeyVaultRoleDefinitionType? Type { get { throw null; } }
+         protected virtual Azure.Security.KeyVault.Administration.KeyVaultRoleDefinition JsonModelCreateCore(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         protected virtual void JsonModelWriteCore(System.Text.Json.Utf8JsonWriter writer, System.ClientModel.Primitives.ModelReaderWriterOptions options) { }
+<span class="d">-        public static explicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleDefinition (Azure.Response result) { throw null; }</span>
+<span class="a">+        public static explicit operator Azure.Security.KeyVault.Administration.KeyVaultRoleDefinition (Azure.Response response) { throw null; }</span>
+         protected virtual Azure.Security.KeyVault.Administration.KeyVaultRoleDefinition PersistableModelCreateCore(System.BinaryData data, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         protected virtual System.BinaryData PersistableModelWriteCore(System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         Azure.Security.KeyVault.Administration.KeyVaultRoleDefinition System.ClientModel.Primitives.IJsonModel&lt;Azure.Security.KeyVault.Administration.KeyVaultRoleDefinition&gt;.Create(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+<span class="h">@@ -364,7 +364,7 @@ namespace Azure.Security.KeyVault.Administration</span>
+         public Azure.Security.KeyVault.Administration.KeyVaultSettingValue Value { get { throw null; } }
+         protected virtual Azure.Security.KeyVault.Administration.KeyVaultSetting JsonModelCreateCore(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         protected virtual void JsonModelWriteCore(System.Text.Json.Utf8JsonWriter writer, System.ClientModel.Primitives.ModelReaderWriterOptions options) { }
+<span class="d">-        public static explicit operator Azure.Security.KeyVault.Administration.KeyVaultSetting (Azure.Response result) { throw null; }</span>
+<span class="a">+        public static explicit operator Azure.Security.KeyVault.Administration.KeyVaultSetting (Azure.Response response) { throw null; }</span>
+         protected virtual Azure.Security.KeyVault.Administration.KeyVaultSetting PersistableModelCreateCore(System.BinaryData data, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         protected virtual System.BinaryData PersistableModelWriteCore(System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
+         Azure.Security.KeyVault.Administration.KeyVaultSetting System.ClientModel.Primitives.IJsonModel&lt;Azure.Security.KeyVault.Administration.KeyVaultSetting&gt;.Create(ref System.Text.Json.Utf8JsonReader reader, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }</pre></body></html>

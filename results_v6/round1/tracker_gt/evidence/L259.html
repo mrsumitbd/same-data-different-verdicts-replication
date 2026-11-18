@@ -1,0 +1,580 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L259</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L259</h1><p><b>Repository:</b> <a href="https://github.com/jina-ai/node-deepresearch">jina-ai/node-deepresearch</a><br><b>File at merge:</b> src/utils/image-tools.ts, line 12<br><b>Merge commit (birth):</b> <a href="https://github.com/jina-ai/node-deepresearch/commit/a768755783b967db9f8a0b680ed4222924ac08a0">a768755783</a> (2025-06-10T03:55:46)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/jina-ai/node-deepresearch/tree/d44cec6524d927d2bd1687e0f4b16847a16685bf">d44cec6524</a>)</p><p><b>The line:</b></p><pre><span class="t">    if (!(resp.ok &amp;&amp; resp.body)) {</span></pre><h2>File at the merge commit, lines 4 to 20</h2><pre>    4 | import { ImageObject } from &#x27;../types&#x27;;
+    5 | import { cosineSimilarity } from &#x27;../tools/cosine&#x27;;
+    6 | export type { Canvas, Image } from &#x27;@napi-rs/canvas&#x27;;
+    7 | import { Storage } from &#x27;@google-cloud/storage&#x27;;
+    8 | import { randomUUID } from &#x27;crypto&#x27;;
+    9 | 
+   10 | export const downloadFile = async (uri: string) =&gt; {
+   11 |     const resp = await fetch(uri);
+<span class="t">   12 |     if (!(resp.ok &amp;&amp; resp.body)) {</span>
+   13 |         throw new Error(`Unexpected response ${resp.statusText}`);
+   14 |     }
+   15 |     const contentLength = parseInt(resp.headers.get(&#x27;content-length&#x27;) || &#x27;0&#x27;);
+   16 |     if (contentLength &gt; 1024 * 1024 * 100) {
+   17 |         throw new Error(&#x27;File too large&#x27;);
+   18 |     }
+   19 |     const buff = await resp.arrayBuffer();
+   20 | </pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/jina-ai/node-deepresearch/commit/ee5f037dac92998234ba49633e6de02e4c65db37">ee5f037dac</a> (2025-06-10T15:13:33+08:00)</h2><p class="k">update dimensions for image tools<br>Path after this commit: src/utils/image-tools.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/utils/image-tools.ts b/src/utils/image-tools.ts
+index bd2b8c7..de184ca 100644
+<span class="d">--- a/src/utils/image-tools.ts</span>
+<span class="a">+++ b/src/utils/image-tools.ts</span>
+<span class="h">@@ -122,7 +122,7 @@ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;</span>
+     const base64Data = (await canvasToDataUrl(canvas)).split(&#x27;,&#x27;)[1];
+ 
+     const {embeddings} = await getEmbeddings([{ image: base64Data }], tracker, {
+<span class="d">-      dimensions: 1024,</span>
+<span class="a">+      dimensions: 512,</span>
+       model: &#x27;jina-clip-v2&#x27;,
+     });
+ </pre><h2>Commit #2: <a href="https://github.com/jina-ai/node-deepresearch/commit/16d858f15e1d3b4eb202d66c30152eefa3cdb4ff">16d858f15e</a> (2025-06-10T15:31:07+08:00)</h2><p class="k">fix: reduce image size<br>Path after this commit: src/utils/image-tools.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/utils/image-tools.ts b/src/utils/image-tools.ts
+index de184ca..7b91534 100644
+<span class="d">--- a/src/utils/image-tools.ts</span>
+<span class="a">+++ b/src/utils/image-tools.ts</span>
+<span class="h">@@ -118,7 +118,7 @@ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;</span>
+     }
+ 
+     const newUrl = await saveImageToFirebase(buff, contentType);
+<span class="d">-    const canvas = fitImageToSquareBox(img, 512);</span>
+<span class="a">+    const canvas = fitImageToSquareBox(img, 256);</span>
+     const base64Data = (await canvasToDataUrl(canvas)).split(&#x27;,&#x27;)[1];
+ 
+     const {embeddings} = await getEmbeddings([{ image: base64Data }], tracker, {</pre><h2>Commit #3: <a href="https://github.com/jina-ai/node-deepresearch/commit/609687aaeb85926b84b99b93364773b3be1fda99">609687aaeb</a> (2025-06-10T17:40:35+08:00)</h2><p class="k">remove save image function<br>Path after this commit: src/utils/image-tools.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/utils/image-tools.ts b/src/utils/image-tools.ts
+index 7b91534..004db23 100644
+<span class="d">--- a/src/utils/image-tools.ts</span>
+<span class="a">+++ b/src/utils/image-tools.ts</span>
+<span class="h">@@ -4,8 +4,6 @@ import { TokenTracker } from &#x27;./token-tracker&#x27;;</span>
+ import { ImageObject } from &#x27;../types&#x27;;
+ import { cosineSimilarity } from &#x27;../tools/cosine&#x27;;
+ export type { Canvas, Image } from &#x27;@napi-rs/canvas&#x27;;
+<span class="d">-import { Storage } from &#x27;@google-cloud/storage&#x27;;</span>
+<span class="d">-import { randomUUID } from &#x27;crypto&#x27;;</span>
+ 
+ export const downloadFile = async (uri: string) =&gt; {
+     const resp = await fetch(uri);
+<span class="h">@@ -52,13 +50,13 @@ const _loadImage = async (input: string | Buffer) =&gt; {</span>
+       throw new Error(&#x27;Invalid input&#x27;);
+   }
+ 
+<span class="d">-  const img = await canvas.loadImage(buff);</span>
+<span class="a">+  const img = await canvas.loadImage(buff).catch((err) =&gt; {</span>
+<span class="a">+    throw new Error(&#x27;Loading image failed: &#x27; + err.message);</span>
+<span class="a">+  });</span>
+   Reflect.set(img, &#x27;contentType&#x27;, contentType);
+ 
+   return {
+     img,
+<span class="d">-    buff,</span>
+<span class="d">-    contentType,</span>
+   };
+ }
+ 
+<span class="h">@@ -107,7 +105,7 @@ export const canvasToBuffer = (canvas: canvas.Canvas, mimeType?: &#x27;image/png&#x27; | &#x27;</span>
+ 
+ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;ImageObject | undefined&gt; =&gt; {
+   try {
+<span class="d">-    const { img, buff, contentType } = await loadImage(url);</span>
+<span class="a">+    const { img } = await loadImage(url);</span>
+     if (!img) {
+       return;
+     }
+<span class="h">@@ -117,7 +115,6 @@ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;</span>
+       return;
+     }
+ 
+<span class="d">-    const newUrl = await saveImageToFirebase(buff, contentType);</span>
+     const canvas = fitImageToSquareBox(img, 256);
+     const base64Data = (await canvasToDataUrl(canvas)).split(&#x27;,&#x27;)[1];
+ 
+<span class="h">@@ -127,7 +124,7 @@ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;</span>
+     });
+ 
+     return {
+<span class="d">-      url: newUrl ?? url,</span>
+<span class="a">+      url,</span>
+       embedding: embeddings,
+     };
+ 
+<span class="h">@@ -194,40 +191,4 @@ export const dedupImagesWithEmbeddings = (</span>
+     // Return all new images if there is an error
+     return newImages;
+   }
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export const saveImageToFirebase = async (</span>
+<span class="d">-  buffer: Buffer,</span>
+<span class="d">-  mimeType?: string | null,</span>
+<span class="d">-): Promise&lt;string | undefined&gt; =&gt; {</span>
+<span class="d">-  if (!process.env.GCLOUD_PROJECT) {</span>
+<span class="d">-    console.error(&#x27;GCLOUD_PROJECT environment variable is not set&#x27;);</span>
+<span class="d">-    return;</span>
+<span class="d">-  }</span>
+<span class="d">-  const firebaseDefaultBucket = new Storage().bucket(`${process.env.GCLOUD_PROJECT}.appspot.com`);</span>
+<span class="d">-</span>
+<span class="d">-  try {</span>
+<span class="d">-    let extension = &#x27;png&#x27;;</span>
+<span class="d">-    const finalMimeType = mimeType || &#x27;image/png&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-    if (!finalMimeType.startsWith(&#x27;image/&#x27;)) {</span>
+<span class="d">-      return;</span>
+<span class="d">-    } else {</span>
+<span class="d">-      extension = finalMimeType?.split(&#x27;/&#x27;)[1] || &#x27;png&#x27;;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    const fileName = `readImages/${randomUUID()}.${extension}`;</span>
+<span class="d">-    </span>
+<span class="d">-    const file = firebaseDefaultBucket.file(fileName);</span>
+<span class="d">-    </span>
+<span class="d">-    await file.save(buffer, {</span>
+<span class="d">-      contentType: finalMimeType,</span>
+<span class="d">-      public: true,</span>
+<span class="d">-    });</span>
+<span class="d">-    </span>
+<span class="d">-    return file.publicUrl();</span>
+<span class="d">-  } catch (error) {</span>
+<span class="d">-    console.error(&#x27;Error saving image to Firebase Storage:&#x27;, error);</span>
+<span class="d">-    return;</span>
+<span class="d">-  }</span>
+<span class="d">-};</span>
+\ No newline at end of file
+<span class="a">+}</span>
+\ No newline at end of file</pre><h2>Commit #4: <a href="https://github.com/jina-ai/node-deepresearch/commit/0ee295b83e2eadf79148ca1aaacab4245f0b47bf">0ee295b83e</a> (2025-06-10T21:15:57+08:00)</h2><p class="k">improve image tools<br>Path after this commit: src/utils/image-tools.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/utils/image-tools.ts b/src/utils/image-tools.ts
+index 004db23..185d094 100644
+<span class="d">--- a/src/utils/image-tools.ts</span>
+<span class="a">+++ b/src/utils/image-tools.ts</span>
+<span class="h">@@ -51,13 +51,11 @@ const _loadImage = async (input: string | Buffer) =&gt; {</span>
+   }
+ 
+   const img = await canvas.loadImage(buff).catch((err) =&gt; {
+<span class="d">-    throw new Error(&#x27;Loading image failed: &#x27; + err.message);</span>
+<span class="a">+    console.error(&#x27;Error loading image:&#x27;, err);</span>
+<span class="a">+    return undefined;</span>
+   });
+<span class="d">-  Reflect.set(img, &#x27;contentType&#x27;, contentType);</span>
+<span class="d">-</span>
+<span class="d">-  return {</span>
+<span class="d">-    img,</span>
+<span class="d">-  };</span>
+<span class="a">+  </span>
+<span class="a">+  return img;</span>
+ }
+ 
+ export const loadImage = async (uri: string | Buffer) =&gt; {
+<span class="h">@@ -105,7 +103,7 @@ export const canvasToBuffer = (canvas: canvas.Canvas, mimeType?: &#x27;image/png&#x27; | &#x27;</span>
+ 
+ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;ImageObject | undefined&gt; =&gt; {
+   try {
+<span class="d">-    const { img } = await loadImage(url);</span>
+<span class="a">+    const img = await loadImage(url);</span>
+     if (!img) {
+       return;
+     }
+<span class="h">@@ -117,6 +115,7 @@ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;</span>
+ 
+     const canvas = fitImageToSquareBox(img, 256);
+     const base64Data = (await canvasToDataUrl(canvas)).split(&#x27;,&#x27;)[1];
+<span class="a">+    img.src = &#x27;&#x27;; // Clear the image source to free memory</span>
+ 
+     const {embeddings} = await getEmbeddings([{ image: base64Data }], tracker, {
+       dimensions: 512,</pre><h2>Commit #5: <a href="https://github.com/jina-ai/node-deepresearch/commit/9edf122a8c6331ca8c8423254a645131df543a82">9edf122a8c</a> (2025-06-10T11:48:19-07:00)</h2><p class="k">refactor: logger<br>Path after this commit: src/utils/image-tools.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/utils/image-tools.ts b/src/utils/image-tools.ts
+index 185d094..df9605d 100644
+<span class="d">--- a/src/utils/image-tools.ts</span>
+<span class="a">+++ b/src/utils/image-tools.ts</span>
+<span class="h">@@ -3,20 +3,21 @@ import { getEmbeddings } from &#x27;../tools/embeddings&#x27;;</span>
+ import { TokenTracker } from &#x27;./token-tracker&#x27;;
+ import { ImageObject } from &#x27;../types&#x27;;
+ import { cosineSimilarity } from &#x27;../tools/cosine&#x27;;
+<span class="a">+import { logInfo, logError, logDebug, logWarning } from &#x27;../logging&#x27;;</span>
+ export type { Canvas, Image } from &#x27;@napi-rs/canvas&#x27;;
+ 
+ export const downloadFile = async (uri: string) =&gt; {
+<span class="d">-    const resp = await fetch(uri);</span>
+<span class="d m">-    if (!(resp.ok &amp;&amp; resp.body)) {</span>
+<span class="d">-        throw new Error(`Unexpected response ${resp.statusText}`);</span>
+<span class="d">-    }</span>
+<span class="d">-    const contentLength = parseInt(resp.headers.get(&#x27;content-length&#x27;) || &#x27;0&#x27;);</span>
+<span class="d">-    if (contentLength &gt; 1024 * 1024 * 100) {</span>
+<span class="d">-        throw new Error(&#x27;File too large&#x27;);</span>
+<span class="d">-    }</span>
+<span class="d">-    const buff = await resp.arrayBuffer();</span>
+<span class="a">+  const resp = await fetch(uri);</span>
+<span class="a m">+  if (!(resp.ok &amp;&amp; resp.body)) {</span>
+<span class="a">+    throw new Error(`Unexpected response ${resp.statusText}`);</span>
+<span class="a">+  }</span>
+<span class="a">+  const contentLength = parseInt(resp.headers.get(&#x27;content-length&#x27;) || &#x27;0&#x27;);</span>
+<span class="a">+  if (contentLength &gt; 1024 * 1024 * 100) {</span>
+<span class="a">+    throw new Error(&#x27;File too large&#x27;);</span>
+<span class="a">+  }</span>
+<span class="a">+  const buff = await resp.arrayBuffer();</span>
+ 
+<span class="d">-    return { buff, contentType: resp.headers.get(&#x27;content-type&#x27;) };</span>
+<span class="a">+  return { buff, contentType: resp.headers.get(&#x27;content-type&#x27;) };</span>
+ };
+ 
+ const _loadImage = async (input: string | Buffer) =&gt; {
+<span class="h">@@ -24,81 +25,81 @@ const _loadImage = async (input: string | Buffer) =&gt; {</span>
+   let contentType;
+ 
+   if (typeof input === &#x27;string&#x27;) {
+<span class="d">-      if (input.startsWith(&#x27;data:&#x27;)) {</span>
+<span class="d">-          const firstComma = input.indexOf(&#x27;,&#x27;);</span>
+<span class="d">-          const header = input.slice(0, firstComma);</span>
+<span class="d">-          const data = input.slice(firstComma + 1);</span>
+<span class="d">-          const encoding = header.split(&#x27;;&#x27;)[1];</span>
+<span class="d">-          contentType = header.split(&#x27;;&#x27;)[0].split(&#x27;:&#x27;)[1];</span>
+<span class="d">-          if (encoding?.startsWith(&#x27;base64&#x27;)) {</span>
+<span class="d">-              buff = Buffer.from(data, &#x27;base64&#x27;);</span>
+<span class="d">-          } else {</span>
+<span class="d">-              buff = Buffer.from(decodeURIComponent(data), &#x27;utf-8&#x27;);</span>
+<span class="d">-          }</span>
+<span class="a">+    if (input.startsWith(&#x27;data:&#x27;)) {</span>
+<span class="a">+      const firstComma = input.indexOf(&#x27;,&#x27;);</span>
+<span class="a">+      const header = input.slice(0, firstComma);</span>
+<span class="a">+      const data = input.slice(firstComma + 1);</span>
+<span class="a">+      const encoding = header.split(&#x27;;&#x27;)[1];</span>
+<span class="a">+      contentType = header.split(&#x27;;&#x27;)[0].split(&#x27;:&#x27;)[1];</span>
+<span class="a">+      if (encoding?.startsWith(&#x27;base64&#x27;)) {</span>
+<span class="a">+        buff = Buffer.from(data, &#x27;base64&#x27;);</span>
+<span class="a">+      } else {</span>
+<span class="a">+        buff = Buffer.from(decodeURIComponent(data), &#x27;utf-8&#x27;);</span>
+       }
+<span class="d">-      if (input.startsWith(&#x27;http&#x27;)) {</span>
+<span class="d">-        if (input.endsWith(&#x27;.svg&#x27;)) {</span>
+<span class="d">-          throw new Error(&#x27;Unsupported image type&#x27;);</span>
+<span class="d">-        }</span>
+<span class="d">-        const r = await downloadFile(input);</span>
+<span class="d">-        buff = Buffer.from(r.buff);</span>
+<span class="d">-        contentType = r.contentType;</span>
+<span class="a">+    }</span>
+<span class="a">+    if (input.startsWith(&#x27;http&#x27;)) {</span>
+<span class="a">+      if (input.endsWith(&#x27;.svg&#x27;)) {</span>
+<span class="a">+        throw new Error(&#x27;Unsupported image type&#x27;);</span>
+       }
+<span class="a">+      const r = await downloadFile(input);</span>
+<span class="a">+      buff = Buffer.from(r.buff);</span>
+<span class="a">+      contentType = r.contentType;</span>
+<span class="a">+    }</span>
+   }
+ 
+   if (!buff) {
+<span class="d">-      throw new Error(&#x27;Invalid input&#x27;);</span>
+<span class="a">+    throw new Error(&#x27;Invalid input&#x27;);</span>
+   }
+ 
+   const img = await canvas.loadImage(buff).catch((err) =&gt; {
+<span class="d">-    console.error(&#x27;Error loading image:&#x27;, err);</span>
+<span class="a">+    logError(&#x27;Error loading image:&#x27;, { error: err });</span>
+     return undefined;
+   });
+<span class="d">-  </span>
+<span class="a">+</span>
+   return img;
+ }
+ 
+ export const loadImage = async (uri: string | Buffer) =&gt; {
+<span class="d">-    try {</span>
+<span class="d">-        const theImage = await _loadImage(uri);</span>
+<span class="a">+  try {</span>
+<span class="a">+    const theImage = await _loadImage(uri);</span>
+ 
+<span class="d">-        return theImage;</span>
+<span class="d">-    } catch (err: any) {</span>
+<span class="d">-        if (err?.message?.includes(&#x27;Unsupported image type&#x27;) || err?.message?.includes(&#x27;unsupported&#x27;)) {</span>
+<span class="d">-            throw new Error(`Unknown image format for ${uri.slice(0, 128)}`);</span>
+<span class="d">-        }</span>
+<span class="d">-        throw err;</span>
+<span class="a">+    return theImage;</span>
+<span class="a">+  } catch (err: any) {</span>
+<span class="a">+    if (err?.message?.includes(&#x27;Unsupported image type&#x27;) || err?.message?.includes(&#x27;unsupported&#x27;)) {</span>
+<span class="a">+      throw new Error(`Unknown image format for ${uri.slice(0, 128)}`);</span>
+     }
+<span class="a">+    throw err;</span>
+<span class="a">+  }</span>
+ }
+ 
+ export const fitImageToSquareBox = (image: canvas.Image | canvas.Canvas, size: number = 1024) =&gt; {
+<span class="d">-    if (image.width &lt;= size &amp;&amp; image.height &lt;= size) {</span>
+<span class="d">-      const canvasInstance = canvas.createCanvas(image.width, image.height);</span>
+<span class="d">-      const ctx = canvasInstance.getContext(&#x27;2d&#x27;);</span>
+<span class="d">-      ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvasInstance.width, canvasInstance.height);</span>
+<span class="d">-      </span>
+<span class="d">-      return canvasInstance;</span>
+<span class="d">-    }</span>
+<span class="a">+  if (image.width &lt;= size &amp;&amp; image.height &lt;= size) {</span>
+<span class="a">+    const canvasInstance = canvas.createCanvas(image.width, image.height);</span>
+<span class="a">+    const ctx = canvasInstance.getContext(&#x27;2d&#x27;);</span>
+<span class="a">+    ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvasInstance.width, canvasInstance.height);</span>
+ 
+<span class="d">-    const aspectRatio = image.width / image.height;</span>
+<span class="a">+    return canvasInstance;</span>
+<span class="a">+  }</span>
+ 
+<span class="d">-    const resizedWidth = Math.round(aspectRatio &gt; 1 ? size : size * aspectRatio);</span>
+<span class="d">-    const resizedHeight = Math.round(aspectRatio &gt; 1 ? size / aspectRatio : size);</span>
+<span class="a">+  const aspectRatio = image.width / image.height;</span>
+ 
+<span class="d">-    const canvasInstance = canvas.createCanvas(resizedWidth, resizedHeight);</span>
+<span class="d">-    const ctx = canvasInstance.getContext(&#x27;2d&#x27;);</span>
+<span class="d">-    ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, resizedWidth, resizedHeight);</span>
+<span class="a">+  const resizedWidth = Math.round(aspectRatio &gt; 1 ? size : size * aspectRatio);</span>
+<span class="a">+  const resizedHeight = Math.round(aspectRatio &gt; 1 ? size / aspectRatio : size);</span>
+ 
+<span class="d">-    return canvasInstance;</span>
+<span class="a">+  const canvasInstance = canvas.createCanvas(resizedWidth, resizedHeight);</span>
+<span class="a">+  const ctx = canvasInstance.getContext(&#x27;2d&#x27;);</span>
+<span class="a">+  ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, resizedWidth, resizedHeight);</span>
+<span class="a">+</span>
+<span class="a">+  return canvasInstance;</span>
+ }
+ 
+ 
+ export const canvasToDataUrl = (canvas: canvas.Canvas, mimeType?: &#x27;image/png&#x27; | &#x27;image/jpeg&#x27;) =&gt; {
+<span class="d">-    return canvas.toDataURLAsync((mimeType || &#x27;image/png&#x27;) as &#x27;image/png&#x27;);</span>
+<span class="a">+  return canvas.toDataURLAsync((mimeType || &#x27;image/png&#x27;) as &#x27;image/png&#x27;);</span>
+ }
+ 
+ export const canvasToBuffer = (canvas: canvas.Canvas, mimeType?: &#x27;image/png&#x27; | &#x27;image/jpeg&#x27;) =&gt; {
+<span class="d">-    return canvas.toBuffer((mimeType || &#x27;image/png&#x27;) as &#x27;image/png&#x27;);</span>
+<span class="a">+  return canvas.toBuffer((mimeType || &#x27;image/png&#x27;) as &#x27;image/png&#x27;);</span>
+ }
+ 
+ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;ImageObject | undefined&gt; =&gt; {
+<span class="h">@@ -117,7 +118,7 @@ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;</span>
+     const base64Data = (await canvasToDataUrl(canvas)).split(&#x27;,&#x27;)[1];
+     img.src = &#x27;&#x27;; // Clear the image source to free memory
+ 
+<span class="d">-    const {embeddings} = await getEmbeddings([{ image: base64Data }], tracker, {</span>
+<span class="a">+    const { embeddings } = await getEmbeddings([{ image: base64Data }], tracker, {</span>
+       dimensions: 512,
+       model: &#x27;jina-clip-v2&#x27;,
+     });
+<span class="h">@@ -136,7 +137,7 @@ export const dedupImagesWithEmbeddings = (</span>
+   newImages: ImageObject[], // New images with embeddings
+   existingImages: ImageObject[], // Existing images with embeddings
+   similarityThreshold: number = 0.86, // Default similarity threshold
+<span class="d">-): ImageObject[]  =&gt;{</span>
+<span class="a">+): ImageObject[] =&gt; {</span>
+   try {
+     // Quick return for single new image with no existing images
+     if (newImages.length === 1 &amp;&amp; existingImages.length === 0) {
+<span class="h">@@ -185,7 +186,7 @@ export const dedupImagesWithEmbeddings = (</span>
+ 
+     return uniqueImages;
+   } catch (error) {
+<span class="d">-    console.error(&#x27;Error in image deduplication analysis:&#x27;, error);</span>
+<span class="a">+    logError(&#x27;Error in image deduplication analysis:&#x27;, { error });</span>
+ 
+     // Return all new images if there is an error
+     return newImages;</pre><h2>Commit #6: <a href="https://github.com/jina-ai/node-deepresearch/commit/df7bfc72c50d6b732aace1ac18624db4a07f09d4">df7bfc72c5</a> (2025-06-12T10:01:03+08:00)</h2><p class="k">fix oom issue (#114)<br>Path after this commit: src/utils/image-tools.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/utils/image-tools.ts b/src/utils/image-tools.ts
+index df9605d..c0f5e77 100644
+<span class="d">--- a/src/utils/image-tools.ts</span>
+<span class="a">+++ b/src/utils/image-tools.ts</span>
+<span class="h">@@ -1,10 +1,9 @@</span>
+<span class="d">-import canvas from &#x27;@napi-rs/canvas&#x27;;</span>
+ import { getEmbeddings } from &#x27;../tools/embeddings&#x27;;
+ import { TokenTracker } from &#x27;./token-tracker&#x27;;
+ import { ImageObject } from &#x27;../types&#x27;;
+ import { cosineSimilarity } from &#x27;../tools/cosine&#x27;;
+ import { logInfo, logError, logDebug, logWarning } from &#x27;../logging&#x27;;
+<span class="d">-export type { Canvas, Image } from &#x27;@napi-rs/canvas&#x27;;</span>
+<span class="a">+import sharp from &#x27;sharp&#x27;;</span>
+ 
+ export const downloadFile = async (uri: string) =&gt; {
+   const resp = await fetch(uri);
+<span class="h">@@ -16,13 +15,17 @@ export const downloadFile = async (uri: string) =&gt; {</span>
+     throw new Error(&#x27;File too large&#x27;);
+   }
+   const buff = await resp.arrayBuffer();
+<span class="a">+  const contentType = resp.headers.get(&#x27;content-type&#x27;);</span>
+<span class="a">+  if (!contentType || !contentType.startsWith(&#x27;image/&#x27;)) {</span>
+<span class="a">+    throw new Error(`Invalid content type ${contentType}, expected image/*`);</span>
+<span class="a">+  }</span>
+ 
+<span class="d">-  return { buff, contentType: resp.headers.get(&#x27;content-type&#x27;) };</span>
+<span class="a">+  return { buff, contentType };</span>
+ };
+ 
+<span class="d">-const _loadImage = async (input: string | Buffer) =&gt; {</span>
+<span class="a">+const loadImage = async (input: string | Buffer) =&gt; {</span>
+   let buff;
+<span class="d">-  let contentType;</span>
+<span class="a">+  let contentType: string = &#x27;&#x27;;</span>
+ 
+   if (typeof input === &#x27;string&#x27;) {
+     if (input.startsWith(&#x27;data:&#x27;)) {
+<span class="h">@@ -51,72 +54,64 @@ const _loadImage = async (input: string | Buffer) =&gt; {</span>
+     throw new Error(&#x27;Invalid input&#x27;);
+   }
+ 
+<span class="d">-  const img = await canvas.loadImage(buff).catch((err) =&gt; {</span>
+<span class="d">-    logError(&#x27;Error loading image:&#x27;, { error: err });</span>
+<span class="d">-    return undefined;</span>
+<span class="d">-  });</span>
+<span class="a">+  if (buff.length &gt; 20 * 1024 * 1024) {</span>
+<span class="a">+    throw new Error(&#x27;Image too large&#x27;);</span>
+<span class="a">+  }</span>
+ 
+<span class="d">-  return img;</span>
+<span class="a">+  return {</span>
+<span class="a">+    buff,</span>
+<span class="a">+    contentType,</span>
+<span class="a">+  };</span>
+ }
+ 
+<span class="d">-export const loadImage = async (uri: string | Buffer) =&gt; {</span>
+<span class="d">-  try {</span>
+<span class="d">-    const theImage = await _loadImage(uri);</span>
+<span class="a">+const ImageTypes = [&#x27;png&#x27;, &#x27;jpeg&#x27;, &#x27;jpg&#x27;, &#x27;webp&#x27;, &#x27;avif&#x27;, &#x27;tiff&#x27;, &#x27;gif&#x27;, &#x27;svg&#x27;, &#x27;bmp&#x27;, &#x27;heif&#x27;, &#x27;jxl&#x27;, &#x27;jp2&#x27;, &#x27;ppm&#x27;, &#x27;raw&#x27;, &#x27;exr&#x27;, &#x27;fits&#x27;, &#x27;rad&#x27;];</span>
+ 
+<span class="d">-    return theImage;</span>
+<span class="d">-  } catch (err: any) {</span>
+<span class="d">-    if (err?.message?.includes(&#x27;Unsupported image type&#x27;) || err?.message?.includes(&#x27;unsupported&#x27;)) {</span>
+<span class="d">-      throw new Error(`Unknown image format for ${uri.slice(0, 128)}`);</span>
+<span class="d">-    }</span>
+<span class="d">-    throw err;</span>
+<span class="a">+export const fitImageToSquareBox = async (imageBuffer: Buffer, contentType: string, size: number = 1024) =&gt; {</span>
+<span class="a">+  if (!imageBuffer || imageBuffer.length === 0) {</span>
+<span class="a">+    throw new Error(&#x27;Invalid image buffer&#x27;);</span>
+   }
+<span class="d">-}</span>
+ 
+<span class="d">-export const fitImageToSquareBox = (image: canvas.Image | canvas.Canvas, size: number = 1024) =&gt; {</span>
+<span class="d">-  if (image.width &lt;= size &amp;&amp; image.height &lt;= size) {</span>
+<span class="d">-    const canvasInstance = canvas.createCanvas(image.width, image.height);</span>
+<span class="d">-    const ctx = canvasInstance.getContext(&#x27;2d&#x27;);</span>
+<span class="d">-    ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvasInstance.width, canvasInstance.height);</span>
+<span class="d">-</span>
+<span class="d">-    return canvasInstance;</span>
+<span class="a">+  const metadata = await sharp(imageBuffer).metadata();</span>
+<span class="a">+  if (!metadata.width || !metadata.height || metadata.width &lt; 256 || metadata.height &lt; 256) {</span>
+<span class="a">+    throw new Error(&#x27;Image must be at least 256x256 pixels&#x27;);</span>
+   }
+ 
+<span class="d">-  const aspectRatio = image.width / image.height;</span>
+<span class="d">-</span>
+<span class="d">-  const resizedWidth = Math.round(aspectRatio &gt; 1 ? size : size * aspectRatio);</span>
+<span class="d">-  const resizedHeight = Math.round(aspectRatio &gt; 1 ? size / aspectRatio : size);</span>
+<span class="d">-</span>
+<span class="d">-  const canvasInstance = canvas.createCanvas(resizedWidth, resizedHeight);</span>
+<span class="d">-  const ctx = canvasInstance.getContext(&#x27;2d&#x27;);</span>
+<span class="d">-  ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, resizedWidth, resizedHeight);</span>
+<span class="d">-</span>
+<span class="d">-  return canvasInstance;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-export const canvasToDataUrl = (canvas: canvas.Canvas, mimeType?: &#x27;image/png&#x27; | &#x27;image/jpeg&#x27;) =&gt; {</span>
+<span class="d">-  return canvas.toDataURLAsync((mimeType || &#x27;image/png&#x27;) as &#x27;image/png&#x27;);</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export const canvasToBuffer = (canvas: canvas.Canvas, mimeType?: &#x27;image/png&#x27; | &#x27;image/jpeg&#x27;) =&gt; {</span>
+<span class="d">-  return canvas.toBuffer((mimeType || &#x27;image/png&#x27;) as &#x27;image/png&#x27;);</span>
+<span class="a">+  let width = metadata.width;</span>
+<span class="a">+  let height = metadata.height;</span>
+<span class="a">+  const targetSize = size;</span>
+<span class="a">+  const imageType = contentType.split(&#x27;/&#x27;)[1];</span>
+<span class="a">+  if (!ImageTypes.includes(imageType)) {</span>
+<span class="a">+    throw new Error(`Unsupported image type: ${imageType}`);</span>
+<span class="a">+  }</span>
+<span class="a">+  </span>
+<span class="a">+  if (width &gt; targetSize || height &gt; targetSize) {</span>
+<span class="a">+    const aspectRatio = width / height;</span>
+<span class="a">+    </span>
+<span class="a">+    if (aspectRatio &gt; 1) {</span>
+<span class="a">+      width = targetSize;</span>
+<span class="a">+      height = Math.round(targetSize / aspectRatio);</span>
+<span class="a">+    } else {</span>
+<span class="a">+      height = targetSize;</span>
+<span class="a">+      width = Math.round(targetSize * aspectRatio);</span>
+<span class="a">+    }</span>
+<span class="a">+  }</span>
+<span class="a">+  </span>
+<span class="a">+  const resizedImageBuffer = await sharp(imageBuffer)</span>
+<span class="a">+    .resize(width, height, {</span>
+<span class="a">+      fit: &#x27;inside&#x27;,</span>
+<span class="a">+      withoutEnlargement: true</span>
+<span class="a">+    })</span>
+<span class="a">+    .toFormat(imageType as any)</span>
+<span class="a">+    .toBuffer();</span>
+<span class="a">+</span>
+<span class="a">+  return resizedImageBuffer.toString(&#x27;base64&#x27;);</span>
+ }
+ 
+ export const processImage = async (url: string, tracker: TokenTracker): Promise&lt;ImageObject | undefined&gt; =&gt; {
+   try {
+<span class="d">-    const img = await loadImage(url);</span>
+<span class="d">-    if (!img) {</span>
+<span class="d">-      return;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    // Check if the image is smaller than 256x256</span>
+<span class="d">-    if (img.width &lt; 256 || img.height &lt; 256) {</span>
+<span class="d">-      return;</span>
+<span class="d">-    }</span>
+<span class="a">+    const { buff, contentType } = await loadImage(url);</span>
+<span class="a">+    const base64Data = await fitImageToSquareBox(buff, contentType, 256);</span>
+ 
+<span class="d">-    const canvas = fitImageToSquareBox(img, 256);</span>
+<span class="d">-    const base64Data = (await canvasToDataUrl(canvas)).split(&#x27;,&#x27;)[1];</span>
+<span class="d">-    img.src = &#x27;&#x27;; // Clear the image source to free memory</span>
+ 
+     const { embeddings } = await getEmbeddings([{ image: base64Data }], tracker, {
+       dimensions: 512,</pre><h2>Commit #7: <a href="https://github.com/jina-ai/node-deepresearch/commit/6979031eace8f61528fe667af67d9f650c532060">6979031eac</a> (2025-06-13T13:44:59+08:00)</h2><p class="k">improve image dedup function<br>Path after this commit: src/utils/image-tools.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/utils/image-tools.ts b/src/utils/image-tools.ts
+index c0f5e77..b15b76c 100644
+<span class="d">--- a/src/utils/image-tools.ts</span>
+<span class="a">+++ b/src/utils/image-tools.ts</span>
+<span class="h">@@ -134,6 +134,10 @@ export const dedupImagesWithEmbeddings = (</span>
+   similarityThreshold: number = 0.86, // Default similarity threshold
+ ): ImageObject[] =&gt; {
+   try {
+<span class="a">+    if (newImages.length === 0) {</span>
+<span class="a">+      logWarning(&#x27;No new images provided for deduplication&#x27;);</span>
+<span class="a">+      return [];</span>
+<span class="a">+    }</span>
+     // Quick return for single new image with no existing images
+     if (newImages.length === 1 &amp;&amp; existingImages.length === 0) {
+       return newImages;</pre><h2>Commit #8: <a href="https://github.com/jina-ai/node-deepresearch/commit/401eb9a23f8e2e11ccf62579f0ff0ab404659d35">401eb9a23f</a> (2025-06-19T12:55:46+08:00)</h2><p class="k">fix: display top10 images<br>Path after this commit: src/utils/image-tools.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/utils/image-tools.ts b/src/utils/image-tools.ts
+index b15b76c..0b4e763 100644
+<span class="d">--- a/src/utils/image-tools.ts</span>
+<span class="a">+++ b/src/utils/image-tools.ts</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+ import { getEmbeddings } from &#x27;../tools/embeddings&#x27;;
+ import { TokenTracker } from &#x27;./token-tracker&#x27;;
+<span class="d">-import { ImageObject } from &#x27;../types&#x27;;</span>
+<span class="a">+import { ImageObject, ImageReference } from &#x27;../types&#x27;;</span>
+ import { cosineSimilarity } from &#x27;../tools/cosine&#x27;;
+ import { logInfo, logError, logDebug, logWarning } from &#x27;../logging&#x27;;
+ import sharp from &#x27;sharp&#x27;;
+<span class="h">@@ -190,4 +190,28 @@ export const dedupImagesWithEmbeddings = (</span>
+     // Return all new images if there is an error
+     return newImages;
+   }
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+export const filterImages = (imageReferences: ImageReference[], dedupedImages: ImageObject[]): ImageReference[] =&gt; {</span>
+<span class="a">+  if (!imageReferences || imageReferences.length === 0) {</span>
+<span class="a">+    logInfo(&#x27;No image references provided for filtering&#x27;);</span>
+<span class="a">+    return [];</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+<span class="a">+  if (!dedupedImages || dedupedImages.length === 0) {</span>
+<span class="a">+    logInfo(&#x27;No deduplicated images provided for filtering&#x27;);</span>
+<span class="a">+    return imageReferences;</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+<span class="a">+  const urlMap = new Map();</span>
+<span class="a">+  for (const img of imageReferences) {</span>
+<span class="a">+    if (img?.url &amp;&amp; !urlMap.has(img.url)) {</span>
+<span class="a">+      urlMap.set(img.url, img);</span>
+<span class="a">+    }</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+<span class="a">+  const filteredReferences = dedupedImages.map(img =&gt; urlMap.get(img.url))</span>
+<span class="a">+  .filter(Boolean);</span>
+<span class="a">+</span>
+<span class="a">+  return filteredReferences;</span>
+ }
+\ No newline at end of file</pre></body></html>

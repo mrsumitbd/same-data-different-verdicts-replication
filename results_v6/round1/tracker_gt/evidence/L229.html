@@ -1,0 +1,69 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L229</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L229</h1><p><b>Repository:</b> <a href="https://github.com/amantus-ai/vibetunnel">amantus-ai/vibetunnel</a><br><b>File at merge:</b> benchmark/cmd/root.go, line 3<br><b>Merge commit (birth):</b> <a href="https://github.com/amantus-ai/vibetunnel/commit/3c94e494fc13a81aa034e250bd4e0fbb142999ab">3c94e494fc</a> (2025-06-18T21:38:11)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/amantus-ai/vibetunnel/tree/82c1ccb54281544cdfc8809dfe604031d7b31486">82c1ccb542</a>)</p><p><b>The line:</b></p><pre><span class="t">import (</span></pre><h2>File at the merge commit, lines 1 to 11</h2><pre>    1 | package cmd
+    2 | 
+<span class="t">    3 | import (</span>
+    4 | 	&quot;fmt&quot;
+    5 | 	&quot;os&quot;
+    6 | 
+    7 | 	&quot;github.com/spf13/cobra&quot;
+    8 | )
+    9 | 
+   10 | var (
+   11 | 	hostname string</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/amantus-ai/vibetunnel/commit/766147073b35222f7090d2ba0887e9dacf85f502">766147073b</a> (2025-06-20T12:53:31+02:00)</h2><p class="k">fix: update Go CI workflow and fix formatting issues (#35)<br>Path after this commit: benchmark/cmd/root.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/benchmark/cmd/root.go b/benchmark/cmd/root.go
+index da0317a5..e78fc09c 100644
+<span class="d">--- a/benchmark/cmd/root.go</span>
+<span class="a">+++ b/benchmark/cmd/root.go</span>
+<span class="h">@@ -36,4 +36,4 @@ func Execute() {</span>
+ 		fmt.Fprintf(os.Stderr, &quot;Error: %v\n&quot;, err)
+ 		os.Exit(1)
+ 	}
+<span class="d">-}</span>
+\ No newline at end of file
+<span class="a">+}</span></pre><h2>Commit #2: <a href="https://github.com/amantus-ai/vibetunnel/commit/a5b0354139586dc751f8f83b9de5f8a3c5bb1a6b">a5b0354139</a> (2025-06-21T14:39:44+02:00)</h2><p class="k">Burn everything with fire that is not node or swift.<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/benchmark/cmd/root.go b/benchmark/cmd/root.go
+deleted file mode 100644
+index e78fc09c..00000000
+<span class="d">--- a/benchmark/cmd/root.go</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,39 +0,0 @@</span>
+<span class="d">-package cmd</span>
+<span class="d">-</span>
+<span class="d m">-import (</span>
+<span class="d">-	&quot;fmt&quot;</span>
+<span class="d">-	&quot;os&quot;</span>
+<span class="d">-</span>
+<span class="d">-	&quot;github.com/spf13/cobra&quot;</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-var (</span>
+<span class="d">-	hostname string</span>
+<span class="d">-	port     int</span>
+<span class="d">-	verbose  bool</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-var rootCmd = &amp;cobra.Command{</span>
+<span class="d">-	Use:   &quot;vibetunnel-bench&quot;,</span>
+<span class="d">-	Short: &quot;VibeTunnel Protocol Performance Benchmark Tool&quot;,</span>
+<span class="d">-	Long: `A comprehensive benchmarking tool for VibeTunnel server-client protocol.</span>
+<span class="d">-Tests session management, SSE streaming, and concurrent user performance.</span>
+<span class="d">-</span>
+<span class="d">-Examples:</span>
+<span class="d">-  vibetunnel-bench session --host localhost --port 4026</span>
+<span class="d">-  vibetunnel-bench stream --host localhost --port 4026 --sessions 5</span>
+<span class="d">-  vibetunnel-bench load --host localhost --port 4026 --concurrent 50`,</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func init() {</span>
+<span class="d">-	rootCmd.PersistentFlags().StringVar(&amp;hostname, &quot;host&quot;, &quot;localhost&quot;, &quot;VibeTunnel server hostname&quot;)</span>
+<span class="d">-	rootCmd.PersistentFlags().IntVar(&amp;port, &quot;port&quot;, 4026, &quot;VibeTunnel server port&quot;)</span>
+<span class="d">-	rootCmd.PersistentFlags().BoolVarP(&amp;verbose, &quot;verbose&quot;, &quot;v&quot;, false, &quot;Enable verbose output&quot;)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func Execute() {</span>
+<span class="d">-	if err := rootCmd.Execute(); err != nil {</span>
+<span class="d">-		fmt.Fprintf(os.Stderr, &quot;Error: %v\n&quot;, err)</span>
+<span class="d">-		os.Exit(1)</span>
+<span class="d">-	}</span>
+<span class="d">-}</span></pre></body></html>

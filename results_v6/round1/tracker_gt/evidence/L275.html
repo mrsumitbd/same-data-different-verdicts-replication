@@ -1,0 +1,64 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L275</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L275</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/perfview">microsoft/perfview</a><br><b>File at merge:</b> src/PerfView.Tests/StackViewer/StackWindowTests.cs, line 314<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/perfview/commit/646d07a1c69cdb054f6697a6ab2723f00d88e58b">646d07a1c6</a> (2025-05-23T01:31:54)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/perfview/tree/de20568b9616c4f9a0bcae0d8682077e0fb9680b">de20568b96</a>)</p><p><b>The line:</b></p><pre><span class="t">                // Set focus to this node</span></pre><h2>File at the merge commit, lines 306 to 322</h2><pre>  306 |                 // First, navigate to the call tree tab
+  307 |                 stackWindow.CallTreeTab.IsSelected = true;
+  308 |                 await WaitForUIAsync(stackWindow.Dispatcher, CancellationToken.None);
+  309 | 
+  310 |                 // Find a node in the call tree that is not the root node.
+  311 |                 var callTreeNode = stackWindow.m_callTreeView.Root.Callees[0];
+  312 |                 Assert.NotNull(callTreeNode);
+  313 | 
+<span class="t">  314 |                 // Set focus to this node</span>
+  315 |                 stackWindow.SetFocus(callTreeNode.Name);
+  316 | 
+  317 |                 // Use &quot;Goto Items in Callees&quot; command (Shift+F10)
+  318 |                 stackWindow.CalleesTab.IsSelected = true;
+  319 |                 await WaitForUIAsync(stackWindow.Dispatcher, CancellationToken.None);
+  320 | 
+  321 |                 // Remember current focus after going to callees
+  322 |                 string calleeFocusName = stackWindow.FocusName;</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/perfview/commit/699501e6c09c5ba2aa74e7e1f4c3665d5f6a2da1">699501e6c0</a> (2025-11-21T08:43:05-08:00)</h2><p class="k">Fix unhandled ArgumentOutOfRangeException when exporting FlameGraph with unrendered canvas (#2339)<br>Path after this commit: src/PerfView.Tests/StackViewer/StackWindowTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/PerfView.Tests/StackViewer/StackWindowTests.cs b/src/PerfView.Tests/StackViewer/StackWindowTests.cs
+index 4ba2ea81..4cfd0821 100644
+<span class="d">--- a/src/PerfView.Tests/StackViewer/StackWindowTests.cs</span>
+<span class="a">+++ b/src/PerfView.Tests/StackViewer/StackWindowTests.cs</span>
+<span class="h">@@ -859,5 +859,39 @@ namespace PerfViewTests.StackViewer</span>
+                 return frameIndex.ToString();
+             }
+         }
+<span class="a">+</span>
+<span class="a">+        [WpfFact]</span>
+<span class="a">+        [WorkItem(2308, &quot;https://github.com/Microsoft/perfview/issues/2308&quot;)]</span>
+<span class="a">+        public void TestExportFlameGraphWithInvalidCanvasSize()</span>
+<span class="a">+        {</span>
+<span class="a">+            // Create a canvas with zero size (simulating an unrendered or collapsed canvas)</span>
+<span class="a">+            var canvas = new Canvas();</span>
+<span class="a">+            canvas.Width = 0;</span>
+<span class="a">+            canvas.Height = 0;</span>
+<span class="a">+            canvas.Measure(new Size(0, 0));</span>
+<span class="a">+            canvas.Arrange(new Rect(0, 0, 0, 0));</span>
+<span class="a">+</span>
+<span class="a">+            var tempFile = Path.GetTempFileName();</span>
+<span class="a">+            try</span>
+<span class="a">+            {</span>
+<span class="a">+                // Attempt to export should throw ArgumentOutOfRangeException with a meaningful message</span>
+<span class="a">+                var exception = Assert.Throws&lt;ArgumentOutOfRangeException&gt;(() =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    FlameGraph.Export(canvas, tempFile);</span>
+<span class="a">+                });</span>
+<span class="a">+</span>
+<span class="a">+                // Verify the exception message is helpful</span>
+<span class="a">+                Assert.Contains(&quot;Canvas has an invalid size&quot;, exception.Message);</span>
+<span class="a">+                Assert.Contains(&quot;width=0&quot;, exception.Message);</span>
+<span class="a">+                Assert.Contains(&quot;height=0&quot;, exception.Message);</span>
+<span class="a">+            }</span>
+<span class="a">+            finally</span>
+<span class="a">+            {</span>
+<span class="a">+                if (File.Exists(tempFile))</span>
+<span class="a">+                {</span>
+<span class="a">+                    File.Delete(tempFile);</span>
+<span class="a">+                }</span>
+<span class="a">+            }</span>
+<span class="a">+        }</span>
+     }
+ }</pre></body></html>

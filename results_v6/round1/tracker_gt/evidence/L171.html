@@ -1,0 +1,181 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L171</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L171</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>File at merge:</b> apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx, line 5<br><b>Merge commit (birth):</b> <a href="https://github.com/onlook-dev/onlook/commit/6f65bfc8fbbf0c32e051d3163f50f08385e5b8a2">6f65bfc8fb</a> (2025-06-25T22:39:09)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">import { Button } from &#x27;@onlook/ui/button&#x27;;</span></pre><h2>File at the merge commit, lines 1 to 13</h2><pre>    1 | import { useUserManager } from &#x27;@/components/store/user&#x27;;
+    2 | import type { Language } from &#x27;@onlook/constants&#x27;;
+    3 | import { LANGUAGE_DISPLAY_NAMES } from &#x27;@onlook/constants&#x27;;
+    4 | import { SystemTheme } from &#x27;@onlook/models&#x27;;
+<span class="t">    5 | import { Button } from &#x27;@onlook/ui/button&#x27;;</span>
+    6 | import {
+    7 |     DropdownMenu,
+    8 |     DropdownMenuContent,
+    9 |     DropdownMenuItem,
+   10 |     DropdownMenuTrigger,
+   11 | } from &#x27;@onlook/ui/dropdown-menu&#x27;;
+   12 | import { Icons } from &#x27;@onlook/ui/icons&#x27;;
+   13 | import { observer } from &#x27;mobx-react-lite&#x27;;</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/ebb8ed45ac6c08c56dd95c901271d6263db062d0">ebb8ed45ac</a> (2025-06-28T19:28:36-07:00)</h2><p class="k">fix: remove managers in favor of queries (#2302)<br>Path after this commit: apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx b/apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx
+index 165a81c0..23d77d5f 100644
+<span class="d">--- a/apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx</span>
+<span class="a">+++ b/apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx</span>
+<span class="h">@@ -1,7 +1,4 @@</span>
+<span class="d">-import { useUserManager } from &#x27;@/components/store/user&#x27;;</span>
+<span class="d">-import type { Language } from &#x27;@onlook/constants&#x27;;</span>
+<span class="d">-import { LANGUAGE_DISPLAY_NAMES } from &#x27;@onlook/constants&#x27;;</span>
+<span class="d">-import { SystemTheme } from &#x27;@onlook/models&#x27;;</span>
+<span class="a">+import { api } from &#x27;@/trpc/react&#x27;;</span>
+<span class=" m"> import { Button } from &#x27;@onlook/ui/button&#x27;;</span>
+ import {
+     DropdownMenu,
+<span class="h">@@ -11,18 +8,14 @@ import {</span>
+ } from &#x27;@onlook/ui/dropdown-menu&#x27;;
+ import { Icons } from &#x27;@onlook/ui/icons&#x27;;
+ import { observer } from &#x27;mobx-react-lite&#x27;;
+<span class="d">-import { useLocale } from &#x27;next-intl&#x27;;</span>
+<span class="d">-import { useTheme } from &#x27;next-themes&#x27;;</span>
+ 
+ export const PreferencesTab = observer(() =&gt; {
+<span class="d">-    const userManager = useUserManager();</span>
+<span class="d">-    const { theme, setTheme } = useTheme();</span>
+<span class="d">-    const locale = useLocale();</span>
+<span class="d">-</span>
+<span class="d">-    const shouldWarnDelete = userManager.settings.settings?.editor?.shouldWarnDelete ?? true;</span>
+<span class="a">+    const { data: settings } = api.user.settings.get.useQuery();</span>
+<span class="a">+    const { mutate: updateSettings } = api.user.settings.upsert.useMutation();</span>
+<span class="a">+    const shouldWarnDelete = settings?.editor?.shouldWarnDelete ?? true;</span>
+ 
+     async function updateDeleteWarning(enabled: boolean) {
+<span class="d">-        await userManager.settings.updateEditor({ shouldWarnDelete: enabled });</span>
+<span class="a">+        await updateSettings({ shouldWarnDelete: enabled });</span>
+     }
+ 
+     return (</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/1743e63e34cf94ac67caa27379297a5383c40b51">1743e63e34</a> (2025-09-22T21:27:35-07:00)</h2><p class="k">feat: add subscription management to settings panel (#2868)<br>Path after this commit: apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: apps/web/client/src/components/ui/settings-modal/subscription-cancel-modal.tsx, apps/web/client/src/components/ui/settings-modal/subscription-tab.tsx, apps/web/client/src/components/ui/settings-modal/user-delete-section.tsx.</p><pre>diff --git a/apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx b/apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx
+index 23d77d5f..e91bcafc 100644
+<span class="d">--- a/apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx</span>
+<span class="a">+++ b/apps/web/client/src/components/ui/settings-modal/preferences-tab.tsx</span>
+<span class="h">@@ -1,122 +1,10 @@</span>
+<span class="d">-import { api } from &#x27;@/trpc/react&#x27;;</span>
+<span class="d m">-import { Button } from &#x27;@onlook/ui/button&#x27;;</span>
+<span class="d">-import {</span>
+<span class="d">-    DropdownMenu,</span>
+<span class="d">-    DropdownMenuContent,</span>
+<span class="d">-    DropdownMenuItem,</span>
+<span class="d">-    DropdownMenuTrigger,</span>
+<span class="d">-} from &#x27;@onlook/ui/dropdown-menu&#x27;;</span>
+<span class="d">-import { Icons } from &#x27;@onlook/ui/icons&#x27;;</span>
+ import { observer } from &#x27;mobx-react-lite&#x27;;
+<span class="a">+import { UserDeleteSection } from &#x27;./user-delete-section&#x27;;</span>
+ 
+ export const PreferencesTab = observer(() =&gt; {
+<span class="d">-    const { data: settings } = api.user.settings.get.useQuery();</span>
+<span class="d">-    const { mutate: updateSettings } = api.user.settings.upsert.useMutation();</span>
+<span class="d">-    const shouldWarnDelete = settings?.editor?.shouldWarnDelete ?? true;</span>
+<span class="d">-</span>
+<span class="d">-    async function updateDeleteWarning(enabled: boolean) {</span>
+<span class="d">-        await updateSettings({ shouldWarnDelete: enabled });</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     return (
+         &lt;div className=&quot;flex flex-col gap-8 p-6&quot;&gt;
+<span class="d">-            {/* &lt;div className=&quot;flex justify-between items-center&quot;&gt;</span>
+<span class="d">-                &lt;div className=&quot;flex flex-col gap-2&quot;&gt;</span>
+<span class="d">-                    &lt;p className=&quot;text-largePlus&quot;&gt;Language&lt;/p&gt;</span>
+<span class="d">-                    &lt;p className=&quot;text-foreground-onlook text-small&quot;&gt;</span>
+<span class="d">-                        Choose your preferred language</span>
+<span class="d">-                    &lt;/p&gt;</span>
+<span class="d">-                &lt;/div&gt;</span>
+<span class="d">-                &lt;DropdownMenu&gt;</span>
+<span class="d">-                    &lt;DropdownMenuTrigger asChild&gt;</span>
+<span class="d">-                        &lt;Button variant=&quot;outline&quot; className=&quot;text-smallPlus min-w-[150px]&quot;&gt;</span>
+<span class="d">-                            {LANGUAGE_DISPLAY_NAMES[</span>
+<span class="d">-                                locale as keyof typeof LANGUAGE_DISPLAY_NAMES</span>
+<span class="d">-                            ] ?? &#x27;English&#x27;}</span>
+<span class="d">-                            &lt;Icons.ChevronDown className=&quot;ml-auto&quot; /&gt;</span>
+<span class="d">-                        &lt;/Button&gt;</span>
+<span class="d">-                    &lt;/DropdownMenuTrigger&gt;</span>
+<span class="d">-                    &lt;DropdownMenuContent className=&quot;min-w-[150px]&quot;&gt;</span>
+<span class="d">-                        {Object.entries(LANGUAGE_DISPLAY_NAMES).map(([code, name]) =&gt; (</span>
+<span class="d">-                            &lt;DropdownMenuItem</span>
+<span class="d">-                                key={code}</span>
+<span class="d">-                                onClick={() =&gt; userManager.language.update(code as Language)}</span>
+<span class="d">-                            &gt;</span>
+<span class="d">-                                &lt;span&gt;{name}&lt;/span&gt;</span>
+<span class="d">-                                {locale === code &amp;&amp; &lt;Icons.CheckCircled className=&quot;ml-auto&quot; /&gt;}</span>
+<span class="d">-                            &lt;/DropdownMenuItem&gt;</span>
+<span class="d">-                        ))}</span>
+<span class="d">-                    &lt;/DropdownMenuContent&gt;</span>
+<span class="d">-                &lt;/DropdownMenu&gt;</span>
+<span class="d">-            &lt;/div&gt;</span>
+<span class="d">-            &lt;div className=&quot;flex justify-between items-center&quot;&gt;</span>
+<span class="d">-                &lt;div className=&quot;flex flex-col gap-2&quot;&gt;</span>
+<span class="d">-                    &lt;p className=&quot;text-largePlus&quot;&gt;Theme&lt;/p&gt;</span>
+<span class="d">-                    &lt;p className=&quot;text-foreground-onlook text-small&quot;&gt;</span>
+<span class="d">-                        Choose your preferred appearance</span>
+<span class="d">-                    &lt;/p&gt;</span>
+<span class="d">-                &lt;/div&gt;</span>
+<span class="d">-                &lt;DropdownMenu&gt;</span>
+<span class="d">-                    &lt;DropdownMenuTrigger asChild&gt;</span>
+<span class="d">-                        &lt;Button variant=&quot;outline&quot; className=&quot;text-smallPlus min-w-[150px]&quot;&gt;</span>
+<span class="d">-                            {theme === SystemTheme.DARK &amp;&amp; &lt;Icons.Moon className=&quot;mr-2 h-4 w-4&quot; /&gt;}</span>
+<span class="d">-                            {theme === SystemTheme.LIGHT &amp;&amp; &lt;Icons.Sun className=&quot;mr-2 h-4 w-4&quot; /&gt;}</span>
+<span class="d">-                            {theme === SystemTheme.SYSTEM &amp;&amp; (</span>
+<span class="d">-                                &lt;Icons.Laptop className=&quot;mr-2 h-4 w-4&quot; /&gt;</span>
+<span class="d">-                            )}</span>
+<span class="d">-                            &lt;span className=&quot;capitalize&quot;&gt;{theme}&lt;/span&gt;</span>
+<span class="d">-                            &lt;Icons.ChevronDown className=&quot;ml-auto&quot; /&gt;</span>
+<span class="d">-                        &lt;/Button&gt;</span>
+<span class="d">-                    &lt;/DropdownMenuTrigger&gt;</span>
+<span class="d">-                    &lt;DropdownMenuContent className=&quot;min-w-[150px]&quot;&gt;</span>
+<span class="d">-                        &lt;DropdownMenuItem onClick={() =&gt; setTheme(SystemTheme.LIGHT)}&gt;</span>
+<span class="d">-                            &lt;Icons.Sun className=&quot;mr-2 h-4 w-4&quot; /&gt;</span>
+<span class="d">-                            &lt;span&gt;Light&lt;/span&gt;</span>
+<span class="d">-                            {theme === SystemTheme.LIGHT &amp;&amp; (</span>
+<span class="d">-                                &lt;Icons.CheckCircled className=&quot;ml-auto&quot; /&gt;</span>
+<span class="d">-                            )}</span>
+<span class="d">-                        &lt;/DropdownMenuItem&gt;</span>
+<span class="d">-                        &lt;DropdownMenuItem onClick={() =&gt; setTheme(SystemTheme.DARK)}&gt;</span>
+<span class="d">-                            &lt;Icons.Moon className=&quot;mr-2 h-4 w-4&quot; /&gt;</span>
+<span class="d">-                            &lt;span&gt;Dark&lt;/span&gt;</span>
+<span class="d">-                            {theme === SystemTheme.DARK &amp;&amp; (</span>
+<span class="d">-                                &lt;Icons.CheckCircled className=&quot;ml-auto&quot; /&gt;</span>
+<span class="d">-                            )}</span>
+<span class="d">-                        &lt;/DropdownMenuItem&gt;</span>
+<span class="d">-                        &lt;DropdownMenuItem onClick={() =&gt; setTheme(SystemTheme.SYSTEM)}&gt;</span>
+<span class="d">-                            &lt;Icons.Laptop className=&quot;mr-2 h-4 w-4&quot; /&gt;</span>
+<span class="d">-                            &lt;span&gt;System&lt;/span&gt;</span>
+<span class="d">-                            {theme === SystemTheme.SYSTEM &amp;&amp; (</span>
+<span class="d">-                                &lt;Icons.CheckCircled className=&quot;ml-auto&quot; /&gt;</span>
+<span class="d">-                            )}</span>
+<span class="d">-                        &lt;/DropdownMenuItem&gt;</span>
+<span class="d">-                    &lt;/DropdownMenuContent&gt;</span>
+<span class="d">-                &lt;/DropdownMenu&gt;</span>
+<span class="d">-            &lt;/div&gt; */}</span>
+<span class="d">-            &lt;div className=&quot; flex justify-between items-center gap-4&quot;&gt;</span>
+<span class="d">-                &lt;div className=&quot; flex flex-col gap-2&quot;&gt;</span>
+<span class="d">-                    &lt;p className=&quot;text-largePlus&quot;&gt;{&#x27;Warn before delete&#x27;}&lt;/p&gt;</span>
+<span class="d">-                    &lt;p className=&quot;text-foreground-onlook text-small&quot;&gt;</span>
+<span class="d">-                        {&#x27;This adds a warning before deleting elements in the editor&#x27;}</span>
+<span class="d">-                    &lt;/p&gt;</span>
+<span class="d">-                &lt;/div&gt;</span>
+<span class="d">-                &lt;DropdownMenu&gt;</span>
+<span class="d">-                    &lt;DropdownMenuTrigger asChild&gt;</span>
+<span class="d">-                        &lt;Button variant=&quot;outline&quot; className=&quot;text-smallPlus min-w-[150px]&quot;&gt;</span>
+<span class="d">-                            {shouldWarnDelete ? &#x27;On&#x27; : &#x27;Off&#x27;}</span>
+<span class="d">-                            &lt;Icons.ChevronDown className=&quot;ml-auto&quot; /&gt;</span>
+<span class="d">-                        &lt;/Button&gt;</span>
+<span class="d">-                    &lt;/DropdownMenuTrigger&gt;</span>
+<span class="d">-                    &lt;DropdownMenuContent className=&quot;text-smallPlus min-w-[150px]&quot;&gt;</span>
+<span class="d">-                        &lt;DropdownMenuItem onClick={() =&gt; updateDeleteWarning(true)}&gt;</span>
+<span class="d">-                            {&#x27;Warning On&#x27;}</span>
+<span class="d">-                        &lt;/DropdownMenuItem&gt;</span>
+<span class="d">-                        &lt;DropdownMenuItem onClick={() =&gt; updateDeleteWarning(false)}&gt;</span>
+<span class="d">-                            {&#x27;Warning Off&#x27;}</span>
+<span class="d">-                        &lt;/DropdownMenuItem&gt;</span>
+<span class="d">-                    &lt;/DropdownMenuContent&gt;</span>
+<span class="d">-                &lt;/DropdownMenu&gt;</span>
+<span class="d">-            &lt;/div&gt;</span>
+<span class="a">+            &lt;UserDeleteSection /&gt;</span>
+         &lt;/div&gt;
+     );
+ });
+\ No newline at end of file</pre></body></html>

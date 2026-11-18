@@ -1,0 +1,20 @@
+==============================================================================
+C8. Covariate-adjusted within-repository Cox (repository strata, 500-resample cluster bootstrap)
+covariates: log_file_age, log_commits_90d, created_by_pr, test_file; lines without covariates (dropped): 0
+==============================================================================
+
+Covariate means by group:
+                  file_age_days  commits_90d  created_by_pr  test_file
+two_tier                                                              
+fully_autonomous         80.427        1.713          0.712      0.297
+human                   217.795        2.033          0.595      0.211
+human_supervised        334.446        2.105          0.566      0.432
+
+human_supervised  def1_syntactic   adjusted HR 0.839 boot95 [0.581, 1.099] boot97.5 [0.537, 1.154]
+    covariate HRs (point, analytic p): log_file_age 0.929 (p=3.1e-164); log_commits_90d 1.031 (p=8e-10); created_by_pr 0.572 (p=0); test_file 0.593 (p=0)
+human_supervised  def2_structural  adjusted HR 0.742 boot95 [0.487, 0.967] boot97.5 [0.441, 0.996]
+    covariate HRs (point, analytic p): log_file_age 0.912 (p=8.6e-199); log_commits_90d 1.050 (p=1.3e-17); created_by_pr 0.631 (p=2.8e-183); test_file 0.642 (p=0)
+fully_autonomous  def1_syntactic   adjusted HR 1.053 boot95 [0.506, 1.887] boot97.5 [0.411, 1.969]
+    covariate HRs (point, analytic p): log_file_age 0.942 (p=7.7e-97); log_commits_90d 1.037 (p=4.4e-12); created_by_pr 0.487 (p=0); test_file 0.653 (p=0)
+fully_autonomous  def2_structural  adjusted HR 1.141 boot95 [0.552, 1.898] boot97.5 [0.471, 2.124]
+    covariate HRs (point, analytic p): log_file_age 0.918 (p=7.6e-150); log_commits_90d 1.055 (p=1.6e-18); created_by_pr 0.525 (p=0); test_file 0.793 (p=8.4e-105)

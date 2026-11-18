@@ -1,0 +1,79 @@
+======================================================================
+AST validation: human labels vs the Definition 2 rule
+======================================================================
+labelled: main 383, top-up 100; human labels main {'structural': 343, 'leaf-only': 40}, top-up {'leaf-only': 65, 'structural': 35}
+re-labels: 12 rows re-labelled on corrected context (9 labels changed)
+
+A. Main sample (proportional; population estimate)
+  n = 383 (unclear excluded: 0)
+  accuracy 93.7% [91.4, 96.1]
+  Cohen kappa 0.604 [0.449, 0.741]  (bootstrap, 2000 resamples, seed 42)
+  confusion (rows rule, columns human):
+    human_label  leaf-only  structural
+    rule_label                        
+    leaf-only           21           5
+    structural          19         338
+  human_supervised  n=100 accuracy  93.0%
+  fully_autonomous  n= 63 accuracy  88.9%
+  human             n=220 accuracy  95.5%
+
+B. Precision of the rule labels (Wilson 95% CI)
+  rule leaf-only  human_supervised   27/ 32 =  84.4% [68.2, 93.1]  (main + top-up)
+  rule leaf-only  fully_autonomous   30/ 32 =  93.8% [79.9, 98.3]  (main + top-up)
+  rule leaf-only  human              26/ 32 =  81.2% [64.7, 91.1]  (main + top-up)
+  rule leaf-only  all, unweighted    83/ 96 =  86.5% [78.2, 91.9]
+  rule leaf-only  all, pop.-weighted  86.7%
+  rule structural human_supervised   87/ 92 =  94.6% [87.9, 97.7]  (main only)
+  rule structural fully_autonomous   47/ 54 =  87.0% [75.6, 93.6]  (main only)
+  rule structural human             204/211 =  96.7% [93.3, 98.4]  (main only)
+  rule structural all, unweighted   338/357 =  94.7% [91.8, 96.6]
+  rule structural all, pop.-weighted  94.7%
+
+C. Leaf-only share of modified lines with an AST status, rule vs corrected
+  human_supervised  rule   7.5%  corrected  11.4%
+  fully_autonomous  rule  14.8%  corrected  24.9%
+  human             rule   4.1%  corrected   6.5%
+
+D. Main sample accuracy by kind of enclosing unit
+  anonymous function               n= 37 accuracy  73.0%
+  file deleted                     n=126 accuracy 100.0%
+  module-level statement           n= 12 accuracy  58.3%
+  named function, method or class  n=208 accuracy  95.7%
+  excluding deleted files: n=257 accuracy 90.7% kappa 0.586 [0.430, 0.730]
+
+E. Disagreements (35 rows; main 24, top-up 11)
+  A161 human             rule leaf-only  human structural pdfme/pdfme: Test steps replaced with generateAndComparePDF call
+  A165 human_supervised  rule leaf-only  human structural willccbb/verifiers: State assertions replaced (assert state == {} -> responses/answer/task checks)
+  A241 human             rule leaf-only  human structural jina-ai/node-deepresearch: usedImages/usedAnswerChunks filter block added; code reindented
+  A242 human_supervised  rule leaf-only  human structural afadil/wealthfolio: Unit renamed: set_api_key -> set_secret (param renamed too)
+  A246 human             rule leaf-only  human structural openpipe/art: 'calculate_mask' removed from function-level import in unit; rest is black formatting
+  T007 human_supervised  rule leaf-only  human structural awslabs/mcp: dependency-check logic and check_destructive_deployment_change removed; unit body gutted
+  T013 human             rule leaf-only  human structural jina-ai/node-deepresearch: relevance logging logic removed; embedding call restructured with new options; loop rewritten
+  T024 fully_autonomous  rule leaf-only  human structural crewaiinc/crewai: @pytest.mark.telemetry decorator added to enclosing test function (decorator change)
+  T033 human             rule leaf-only  human structural pdfme/pdfme: e2e test flow rewritten: template steps replaced with new combined it() block
+  T047 human             rule leaf-only  human structural dkrivoruchko/screenstream: require condition changed; available-check statements and isEmpty branches added in codec-change handlers
+  T053 human_supervised  rule leaf-only  human structural afadil/wealthfolio: closure restructured: typed TimeSeriesDaily parsing replaced raw json handling; ModelQuote construction rewritten
+  T059 fully_autonomous  rule leaf-only  human structural jina-ai/node-deepresearch: module-level app.listen statement replaced with startServer function and conditional invocation
+  T085 human_supervised  rule leaf-only  human structural afadil/wealthfolio: enclosing unit renamed get_api_key to get_secret and method/param renames (api_key to secret)|borderline rename refactor
+  A025 fully_autonomous  rule structural human leaf-only  jina-ai/node-deepresearch: module-level: const renamed MODEL_NAME->DEFAULT_MODEL, export dropped; value literal unchanged; modelConfigs added as separate module-level statements
+  A050 fully_autonomous  rule structural human leaf-only  pdfme/pdfme: Unit drawRectangle: only line-wrapping/whitespace/semicolon formatter changes
+  A087 human_supervised  rule structural human leaf-only  afadil/wealthfolio: onSuccess handler: prettier quote style change success/destructive single to double quotes only; rest of file is prettier line-join reformatting in other units
+  A101 human             rule structural human leaf-only  glaredb/glaredb: module-level: names in use list sorted (rustfmt-style order-only change); borderline
+  A135 fully_autonomous  rule structural human leaf-only  pdfme/pdfme: Signature collapsed to one line within splitOutLines (formatting only)
+  A176 human             rule structural human leaf-only  langchain-ai/langgraph: Docstring text rewrite only; function body unchanged (verified via commit)
+  A184 human             rule structural human leaf-only  glaredb/glaredb: module-level: names in use list reordered (rustfmt-style sort); borderline
+  A205 human_supervised  rule structural human leaf-only  jmberesford/retrom: module-level: import source path string changed; imported name unchanged
+  A239 fully_autonomous  rule structural human leaf-only  pdfme/pdfme: Prettier line-joins of arrow signatures; scalar body unchanged
+  A244 human             rule structural human leaf-only  afadil/wealthfolio: Match-arm block braces removed (flattened); statements identical; borderline formatting
+  A258 human             rule structural human leaf-only  dkrivoruchko/screenstream: Constant value change only (SERVER_ADDRESS literal); object-level
+  A265 human_supervised  rule structural human leaf-only  afadil/wealthfolio: Quote style change only ('single' -> "double") within unit
+  A281 fully_autonomous  rule structural human leaf-only  pdfme/pdfme: Array literal re-wrapped only (12->15 values/line); values identical (prettier)
+  A290 human_supervised  rule structural human leaf-only  onlook-dev/onlook: Constant value change only (LOCALES_DIR path string); module-level
+  A297 fully_autonomous  rule structural human leaf-only  lingodotdev/lingo.dev: Prettier: key quotes removed, commas, call wrapping, whitespace
+  A299 fully_autonomous  rule structural human leaf-only  pdfme/pdfme: Semicolons added and array re-wrapped (prettier); logic unchanged
+  A321 human             rule structural human leaf-only  crewaiinc/crewai: _chunk_doc: type annotation unquoted DoclingDocument string to name, same type, enabled by from __future__ import annotations added at module level; borderline since annotation expression kind changes
+  A345 human             rule structural human leaf-only  crewaiinc/crewai: assert statement reformatted (line-join); condition and message unchanged
+  A382 human_supervised  rule structural human leaf-only  celestiaorg/celestia-core: cs.X -> cs.rs.X attribute renames throughout unit; comments updated|borderline
+  T034 human_supervised  rule structural human leaf-only  afadil/wealthfolio: rustfmt formatting (collect chain indent, trailing space on brace, eof newline); no logic change
+  T062 human             rule structural human leaf-only  onlook-dev/onlook: attribute renamed session.session to session.provider; error message literal changed; statements unchanged
+  T080 fully_autonomous  rule structural human leaf-only  pdfme/pdfme: prettier line-wrap of deepMerge calls; statements unchanged

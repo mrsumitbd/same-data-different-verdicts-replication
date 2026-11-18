@@ -1,0 +1,171 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L261</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L261</h1><p><b>Repository:</b> <a href="https://github.com/ohif/viewers">ohif/viewers</a><br><b>File at merge:</b> extensions/default/src/customizations/studyBrowserCustomization.ts, line 48<br><b>Merge commit (birth):</b> <a href="https://github.com/ohif/viewers/commit/01c3726ced9afaa75b7c78fd22b380b42151c671">01c3726ced</a> (2025-03-20T16:06:26)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/ohif/viewers/tree/50f6b52bbde6576cfb5bade27ca7a6e9d7a15570">50f6b52bbd</a>)</p><p><b>The line:</b></p><pre><span class="t">    callbacks: [</span></pre><h2>File at the merge commit, lines 40 to 56</h2><pre>   40 |     {
+   41 |       id: &#x27;thumbnails&#x27;,
+   42 |       iconName: &#x27;ThumbnailView&#x27;,
+   43 |       selected: true,
+   44 |     },
+   45 |   ],
+   46 |   &#x27;studyBrowser.studyMode&#x27;: &#x27;all&#x27;,
+   47 |   &#x27;studyBrowser.thumbnailDoubleClickCallback&#x27;: {
+<span class="t">   48 |     callbacks: [</span>
+   49 |       ({ activeViewportId, servicesManager, isHangingProtocolLayout }) =&gt;
+   50 |         async displaySetInstanceUID =&gt; {
+   51 |           const { hangingProtocolService, viewportGridService, uiNotificationService } =
+   52 |             servicesManager.services;
+   53 |           let updatedViewports = [];
+   54 |           const viewportId = activeViewportId;
+   55 | 
+   56 |           try {</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/ohif/viewers/commit/746f2524eb5e3ec1d36fbb35dc2cc5b55c7ba99f">746f2524eb</a> (2025-04-04T13:33:36-04:00)</h2><p class="k">fix(cine): Resolve Cine Player Faults on DisplaySet Update (#4909)<br>Path after this commit: extensions/default/src/customizations/studyBrowserCustomization.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/extensions/default/src/customizations/studyBrowserCustomization.ts b/extensions/default/src/customizations/studyBrowserCustomization.ts
+index d171b79adc..000fdb9c50 100644
+<span class="d">--- a/extensions/default/src/customizations/studyBrowserCustomization.ts</span>
+<span class="a">+++ b/extensions/default/src/customizations/studyBrowserCustomization.ts</span>
+<span class="h">@@ -46,10 +46,9 @@ export default {</span>
+   &#x27;studyBrowser.studyMode&#x27;: &#x27;all&#x27;,
+   &#x27;studyBrowser.thumbnailDoubleClickCallback&#x27;: {
+<span class=" m">     callbacks: [</span>
+<span class="d">-      ({ activeViewportId, servicesManager, isHangingProtocolLayout }) =&gt;</span>
+<span class="a">+      ({ activeViewportId, servicesManager, commandsManager, isHangingProtocolLayout }) =&gt;</span>
+         async displaySetInstanceUID =&gt; {
+<span class="d">-          const { hangingProtocolService, viewportGridService, uiNotificationService } =</span>
+<span class="d">-            servicesManager.services;</span>
+<span class="a">+          const { hangingProtocolService, uiNotificationService } = servicesManager.services;</span>
+           let updatedViewports = [];
+           const viewportId = activeViewportId;
+ 
+<span class="h">@@ -69,7 +68,9 @@ export default {</span>
+             });
+           }
+ 
+<span class="d">-          viewportGridService.setDisplaySetsForViewports(updatedViewports);</span>
+<span class="a">+          commandsManager.run(&#x27;setDisplaySetsForViewports&#x27;, {</span>
+<span class="a">+            viewportsToUpdate: updatedViewports,</span>
+<span class="a">+          });</span>
+         },
+     ],
+   },</pre><h2>Commit #2: <a href="https://github.com/ohif/viewers/commit/cd4e6408bc2964e5ee27427cdc328751eaf4d088">cd4e6408bc</a> (2025-05-05T16:35:05-04:00)</h2><p class="k">feat(data overlay): add foreground background control plus orientation change in the UI and add RTDOSE support (#5007)<br>Path after this commit: extensions/default/src/customizations/studyBrowserCustomization.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/extensions/default/src/customizations/studyBrowserCustomization.ts b/extensions/default/src/customizations/studyBrowserCustomization.ts
+index 000fdb9c50..7bc01ba329 100644
+<span class="d">--- a/extensions/default/src/customizations/studyBrowserCustomization.ts</span>
+<span class="a">+++ b/extensions/default/src/customizations/studyBrowserCustomization.ts</span>
+<span class="h">@@ -14,6 +14,26 @@ export default {</span>
+         });
+       },
+     },
+<span class="a">+    {</span>
+<span class="a">+      id: &#x27;addAsLayer&#x27;,</span>
+<span class="a">+      label: &#x27;Add as Layer&#x27;,</span>
+<span class="a">+      iconName: &#x27;ViewportViews&#x27;,</span>
+<span class="a">+      onClick: ({ commandsManager, displaySetInstanceUID, servicesManager }: withAppTypes) =&gt; {</span>
+<span class="a">+        const { viewportGridService } = servicesManager.services;</span>
+<span class="a">+</span>
+<span class="a">+        // Get the active viewport</span>
+<span class="a">+        const { activeViewportId } = viewportGridService.getState();</span>
+<span class="a">+        if (!activeViewportId) {</span>
+<span class="a">+          return;</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        // Use the new command to add the display set as a layer</span>
+<span class="a">+        commandsManager.runCommand(&#x27;addDisplaySetAsLayer&#x27;, {</span>
+<span class="a">+          viewportId: activeViewportId,</span>
+<span class="a">+          displaySetInstanceUID,</span>
+<span class="a">+        });</span>
+<span class="a">+      },</span>
+<span class="a">+    },</span>
+   ],
+   &#x27;studyBrowser.sortFunctions&#x27;: [
+     {</pre><h2>Commit #3: <a href="https://github.com/ohif/viewers/commit/7783d0f558bbb7016c29513b6fe76ed069dbd75c">7783d0f558</a> (2025-09-25T10:22:02-04:00)</h2><p class="k">fix(i18n): Add and update i18n Translation for Toolbar Tool Names (#5392)<br>Path after this commit: extensions/default/src/customizations/studyBrowserCustomization.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/extensions/default/src/customizations/studyBrowserCustomization.ts b/extensions/default/src/customizations/studyBrowserCustomization.ts
+index 7bc01ba329..a2ea9a83bf 100644
+<span class="d">--- a/extensions/default/src/customizations/studyBrowserCustomization.ts</span>
+<span class="a">+++ b/extensions/default/src/customizations/studyBrowserCustomization.ts</span>
+<span class="h">@@ -1,4 +1,5 @@</span>
+ import { utils } from &#x27;@ohif/core&#x27;;
+<span class="a">+import i18n from &#x27;@ohif/i18n&#x27;;</span>
+ const { formatDate } = utils;
+ 
+ export default {
+<span class="h">@@ -6,7 +7,7 @@ export default {</span>
+   &#x27;studyBrowser.thumbnailMenuItems&#x27;: [
+     {
+       id: &#x27;tagBrowser&#x27;,
+<span class="d">-      label: &#x27;Tag Browser&#x27;,</span>
+<span class="a">+      label: i18n.t(&#x27;StudyBrowser:Tag Browser&#x27;),</span>
+       iconName: &#x27;DicomTagBrowser&#x27;,
+       onClick: ({ commandsManager, displaySetInstanceUID }: withAppTypes) =&gt; {
+         commandsManager.runCommand(&#x27;openDICOMTagViewer&#x27;, {
+<span class="h">@@ -16,7 +17,7 @@ export default {</span>
+     },
+     {
+       id: &#x27;addAsLayer&#x27;,
+<span class="d">-      label: &#x27;Add as Layer&#x27;,</span>
+<span class="a">+      label: i18n.t(&#x27;StudyBrowser:Add as Layer&#x27;),</span>
+       iconName: &#x27;ViewportViews&#x27;,
+       onClick: ({ commandsManager, displaySetInstanceUID, servicesManager }: withAppTypes) =&gt; {
+         const { viewportGridService } = servicesManager.services;
+<span class="h">@@ -37,13 +38,13 @@ export default {</span>
+   ],
+   &#x27;studyBrowser.sortFunctions&#x27;: [
+     {
+<span class="d">-      label: &#x27;Series Number&#x27;,</span>
+<span class="a">+      label: i18n.t(&#x27;StudyBrowser:Series Number&#x27;),</span>
+       sortFunction: (a, b) =&gt; {
+         return a?.SeriesNumber - b?.SeriesNumber;
+       },
+     },
+     {
+<span class="d">-      label: &#x27;Series Date&#x27;,</span>
+<span class="a">+      label: i18n.t(&#x27;StudyBrowser:Series Date&#x27;),</span>
+       sortFunction: (a, b) =&gt; {
+         const dateA = new Date(formatDate(a?.SeriesDate));
+         const dateB = new Date(formatDate(b?.SeriesDate));
+<span class="h">@@ -81,8 +82,10 @@ export default {</span>
+           } catch (error) {
+             console.warn(error);
+             uiNotificationService.show({
+<span class="d">-              title: &#x27;Thumbnail Double Click&#x27;,</span>
+<span class="d">-              message: &#x27;The selected display sets could not be added to the viewport.&#x27;,</span>
+<span class="a">+              title: i18n.t(&#x27;StudyBrowser:Thumbnail Double Click&#x27;),</span>
+<span class="a">+              message: i18n.t(</span>
+<span class="a">+                &#x27;StudyBrowser:The selected display sets could not be added to the viewport.&#x27;</span>
+<span class="a">+              ),</span>
+               type: &#x27;error&#x27;,
+               duration: 3000,
+             });</pre><h2>Commit #4: <a href="https://github.com/ohif/viewers/commit/2f28a0deab5e43f432bbd9b5989928c9b0450278">2f28a0deab</a> (2025-10-02T17:05:45-04:00)</h2><p class="k">fix(studyBrowserCustomization): fix thumbnail menu item actions in study browser (#5283)<br>Path after this commit: extensions/default/src/customizations/studyBrowserCustomization.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/extensions/default/src/customizations/studyBrowserCustomization.ts b/extensions/default/src/customizations/studyBrowserCustomization.ts
+index a2ea9a83bf..286832a800 100644
+<span class="d">--- a/extensions/default/src/customizations/studyBrowserCustomization.ts</span>
+<span class="a">+++ b/extensions/default/src/customizations/studyBrowserCustomization.ts</span>
+<span class="h">@@ -9,31 +9,13 @@ export default {</span>
+       id: &#x27;tagBrowser&#x27;,
+       label: i18n.t(&#x27;StudyBrowser:Tag Browser&#x27;),
+       iconName: &#x27;DicomTagBrowser&#x27;,
+<span class="d">-      onClick: ({ commandsManager, displaySetInstanceUID }: withAppTypes) =&gt; {</span>
+<span class="d">-        commandsManager.runCommand(&#x27;openDICOMTagViewer&#x27;, {</span>
+<span class="d">-          displaySetInstanceUID,</span>
+<span class="d">-        });</span>
+<span class="d">-      },</span>
+<span class="a">+      commands: &#x27;openDICOMTagViewer&#x27;,</span>
+     },
+     {
+       id: &#x27;addAsLayer&#x27;,
+       label: i18n.t(&#x27;StudyBrowser:Add as Layer&#x27;),
+       iconName: &#x27;ViewportViews&#x27;,
+<span class="d">-      onClick: ({ commandsManager, displaySetInstanceUID, servicesManager }: withAppTypes) =&gt; {</span>
+<span class="d">-        const { viewportGridService } = servicesManager.services;</span>
+<span class="d">-</span>
+<span class="d">-        // Get the active viewport</span>
+<span class="d">-        const { activeViewportId } = viewportGridService.getState();</span>
+<span class="d">-        if (!activeViewportId) {</span>
+<span class="d">-          return;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        // Use the new command to add the display set as a layer</span>
+<span class="d">-        commandsManager.runCommand(&#x27;addDisplaySetAsLayer&#x27;, {</span>
+<span class="d">-          viewportId: activeViewportId,</span>
+<span class="d">-          displaySetInstanceUID,</span>
+<span class="d">-        });</span>
+<span class="d">-      },</span>
+<span class="a">+      commands: &#x27;addDisplaySetAsLayer&#x27;,</span>
+     },
+   ],
+   &#x27;studyBrowser.sortFunctions&#x27;: [</pre></body></html>

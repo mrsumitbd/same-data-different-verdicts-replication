@@ -1,0 +1,34 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L088</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L088</h1><p><b>Repository:</b> <a href="https://github.com/katspaugh/wavesurfer.js">katspaugh/wavesurfer.js</a><br><b>File at merge:</b> src/__tests__/draggable.test.ts, line 48<br><b>Merge commit (birth):</b> <a href="https://github.com/katspaugh/wavesurfer.js/commit/4759a3d343850510d6899bdc97d433537a54c148">4759a3d343</a> (2025-05-28T20:13:56)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/katspaugh/wavesurfer.js/tree/bf2f42fac8c4596bb0cb4fda462b3388b1cf4e50">bf2f42fac8</a>)</p><p><b>The line:</b></p><pre><span class="t">    expect(onStart).toHaveBeenCalled()</span></pre><h2>File at the merge commit, lines 40 to 54</h2><pre>   40 |     const onStart = jest.fn()
+   41 |     const onEnd = jest.fn()
+   42 |     const unsubscribe = makeDraggable(el, onDrag, onStart, onEnd, 0)
+   43 | 
+   44 |     el.dispatchEvent(new PointerEvent(&#x27;pointerdown&#x27;, { clientX: 10, clientY: 10 }))
+   45 |     document.dispatchEvent(new PointerEvent(&#x27;pointermove&#x27;, { clientX: 20, clientY: 20 }))
+   46 |     document.dispatchEvent(new PointerEvent(&#x27;pointerup&#x27;, { clientX: 20, clientY: 20 }))
+   47 | 
+<span class="t">   48 |     expect(onStart).toHaveBeenCalled()</span>
+   49 |     expect(onDrag).toHaveBeenCalled()
+   50 |     expect(onEnd).toHaveBeenCalled()
+   51 | 
+   52 |     unsubscribe()
+   53 |   })
+   54 | })</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/katspaugh/wavesurfer.js/commit/c359efcd576e800132fae69d6eb6a947aaf37835">c359efcd57</a> (2025-06-25T09:09:50+02:00)</h2><p class="k">chore(eslint): migrate to flat config (#4124)<br>Path after this commit: src/__tests__/draggable.test.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/__tests__/draggable.test.ts b/src/__tests__/draggable.test.ts
+index dfe803c..35bfb06 100644
+<span class="d">--- a/src/__tests__/draggable.test.ts</span>
+<span class="a">+++ b/src/__tests__/draggable.test.ts</span>
+<span class="h">@@ -16,9 +16,9 @@ describe(&#x27;makeDraggable&#x27;, () =&gt; {</span>
+           super(type, props)
+         }
+       }
+<span class="d">-      // @ts-ignore</span>
+<span class="a">+      // @ts-expect-error</span>
+       window.PointerEvent = FakePointerEvent
+<span class="d">-      // @ts-ignore</span>
+<span class="a">+      // @ts-expect-error</span>
+       global.PointerEvent = FakePointerEvent
+     }
+   })</pre></body></html>

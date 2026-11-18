@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L296</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L296</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspnetcore">dotnet/aspnetcore</a><br><b>File at merge:</b> src/Components/Server/src/Circuits/RemoteComponentState.cs, line 13<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspnetcore/commit/ef0da55f8881c41d9828c857a592551d58cbf785">ef0da55f88</a> (2025-06-18T14:16:59)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspnetcore/tree/9cb6424153e9f9d1350a2f4e84b437007369e227">9cb6424153</a>)</p><p><b>The line:</b></p><pre><span class="t">    private readonly RemoteRenderer _renderer;</span></pre><h2>File at the merge commit, lines 5 to 21</h2><pre>    5 | 
+    6 | namespace Microsoft.AspNetCore.Components.Server.Circuits;
+    7 | 
+    8 | /// &lt;summary&gt;
+    9 | /// Specialized ComponentState for Server/Remote rendering that supports ComponentMarkerKey for state persistence.
+   10 | /// &lt;/summary&gt;
+   11 | internal sealed class RemoteComponentState : ComponentState
+   12 | {
+<span class="t">   13 |     private readonly RemoteRenderer _renderer;</span>
+   14 | 
+   15 |     public RemoteComponentState(
+   16 |         RemoteRenderer renderer,
+   17 |         int componentId,
+   18 |         IComponent component,
+   19 |         ComponentState? parentComponentState)
+   20 |         : base(renderer, componentId, component, parentComponentState)
+   21 |     {</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspnetcore/commit/52ea66758edf951e2dfd7f103d6868b8d8a0b73c">52ea66758e</a> (2025-08-04T15:50:09+02:00)</h2><p class="k">[Blazor] Support persisting component state on enhanced navigation (#62824)<br>Path after this commit: src/Components/Server/src/Circuits/RemoteComponentState.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Components/Server/src/Circuits/RemoteComponentState.cs b/src/Components/Server/src/Circuits/RemoteComponentState.cs
+index 9ad13cdd40..002834e122 100644
+<span class="d">--- a/src/Components/Server/src/Circuits/RemoteComponentState.cs</span>
+<span class="a">+++ b/src/Components/Server/src/Circuits/RemoteComponentState.cs</span>
+<span class="h">@@ -10,8 +10,6 @@ namespace Microsoft.AspNetCore.Components.Server.Circuits;</span>
+ /// &lt;/summary&gt;
+ internal sealed class RemoteComponentState : ComponentState
+ {
+<span class="d m">-    private readonly RemoteRenderer _renderer;</span>
+<span class="d">-</span>
+     public RemoteComponentState(
+         RemoteRenderer renderer,
+         int componentId,
+<span class="h">@@ -19,12 +17,11 @@ internal sealed class RemoteComponentState : ComponentState</span>
+         ComponentState? parentComponentState)
+         : base(renderer, componentId, component, parentComponentState)
+     {
+<span class="d">-        _renderer = renderer;</span>
+     }
+ 
+     protected override object? GetComponentKey()
+     {
+<span class="d">-        var markerKey = _renderer.GetMarkerKey(this);</span>
+<span class="a">+        var markerKey = ((RemoteRenderer)Renderer).GetMarkerKey(this);</span>
+ 
+         // If we have a ComponentMarkerKey, return it for state persistence consistency
+         if (markerKey != default)</pre></body></html>

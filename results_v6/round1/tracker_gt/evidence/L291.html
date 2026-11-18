@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L291</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L291</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/sqlclient">dotnet/sqlclient</a><br><b>File at merge:</b> src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs, line 187<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/sqlclient/commit/cc23e04bebde34b6d1f20fd973a897107fb4c8ba">cc23e04beb</a> (2025-06-03T16:06:26)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/sqlclient/tree/3895d6986626bdc84f42c0f9105c22806ead039d">3895d69866</a>)</p><p><b>The line:</b></p><pre><span class="t">                SqlClientEventSource.Log.TrySNITraceEvent(nameof(SniMarsHandle), EventType.INFO, &quot;MARS Session Id {0}, _sequenceNumber {1}, _sendHighwater {2}, SMUX Packet is going to be sent.&quot;, args0: ConnectionId, args1: _sequenceNumber, args2: _sendHighwater);</span></pre><h2>File at the merge commit, lines 179 to 195</h2><pre>  179 |                     }
+  180 |                 }
+  181 | 
+  182 |                 SniPacket muxedPacket = null;
+  183 |                 lock (this)
+  184 |                 {
+  185 |                     muxedPacket = SetPacketSMUXHeader(packet);
+  186 |                 }
+<span class="t">  187 |                 SqlClientEventSource.Log.TrySNITraceEvent(nameof(SniMarsHandle), EventType.INFO, &quot;MARS Session Id {0}, _sequenceNumber {1}, _sendHighwater {2}, SMUX Packet is going to be sent.&quot;, args0: ConnectionId, args1: _sequenceNumber, args2: _sendHighwater);</span>
+  188 |                 return _connection.Send(muxedPacket);
+  189 |             }
+  190 |         }
+  191 | 
+  192 |         /// &lt;summary&gt;
+  193 |         /// Send packet asynchronously
+  194 |         /// &lt;/summary&gt;
+  195 |         /// &lt;param name=&quot;packet&quot;&gt;SNI packet&lt;/param&gt;</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/sqlclient/commit/f4c856123e6c36d980b9bab9b6f3693d67fe524f">f4c856123e</a> (2025-08-07T07:44:07-03:00)</h2><p class="k">Merge | Remove OS-specific TdsParser files (#3469)<br>Path after this commit: src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs b/src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs
+index ed69c242b..11e9abf9b 100644
+<span class="d">--- a/src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs</span>
+<span class="a">+++ b/src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs</span>
+<span class="h">@@ -7,6 +7,7 @@</span>
+ using System;
+ using System.Collections.Generic;
+ using System.Diagnostics;
+<span class="a">+using System.Security.Authentication;</span>
+ using System.Threading;
+ 
+ namespace Microsoft.Data.SqlClient.ManagedSni
+<span class="h">@@ -49,7 +50,7 @@ namespace Microsoft.Data.SqlClient.ManagedSni</span>
+ 
+         public override int ReserveHeaderSize =&gt; SniSmuxHeader.HEADER_LENGTH;
+ 
+<span class="d">-        public override int ProtocolVersion =&gt; _connection.ProtocolVersion;</span>
+<span class="a">+        public override SslProtocols ProtocolVersion =&gt; _connection.ProtocolVersion;</span>
+ 
+         /// &lt;summary&gt;
+         /// Dispose object</pre><h2>Commit #2: <a href="https://github.com/dotnet/sqlclient/commit/995df253eaef028326039f367a607def08a3be85">995df253ea</a> (2025-11-19T13:41:15-04:00)</h2><p class="k">Cleanup | Convert SniLoadHandle to static class (#3768)<br>Path after this commit: src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs b/src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs
+index 11e9abf9b..de5e8fac7 100644
+<span class="d">--- a/src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs</span>
+<span class="a">+++ b/src/Microsoft.Data.SqlClient/src/Microsoft/Data/SqlClient/ManagedSni/SniMarsHandle.netcore.cs</span>
+<span class="h">@@ -346,7 +346,7 @@ namespace Microsoft.Data.SqlClient.ManagedSni</span>
+ 
+                 lock (_receivedPacketQueue)
+                 {
+<span class="d">-                    _connectionError = SniLoadHandle.SingletonInstance.LastError;</span>
+<span class="a">+                    _connectionError = SniLoadHandle.LastError;</span>
+                     SqlClientEventSource.Log.TrySNITraceEvent(nameof(SniMarsHandle), EventType.ERR, &quot;MARS Session Id {0}, _connectionError to be handled: {1}&quot;, args0: ConnectionId, args1: _connectionError);
+                     _packetEvent.Set();
+                 }
+<span class="h">@@ -520,7 +520,7 @@ namespace Microsoft.Data.SqlClient.ManagedSni</span>
+                     SqlClientEventSource.Log.TrySNITraceEvent(nameof(SniMarsHandle), EventType.INFO, &quot;MARS Session Id {0}, _sequenceNumber {1}, _sendHighwater {2}, Waiting for packet event.&quot;, args0: ConnectionId, args1: _sequenceNumber, args2: _sendHighwater);
+                     if (!_packetEvent.Wait(timeoutInMilliseconds))
+                     {
+<span class="d">-                        SniLoadHandle.SingletonInstance.LastError = new SniError(SniProviders.SMUX_PROV, 0, SniCommon.ConnTimeoutError, Strings.SNI_ERROR_11);</span>
+<span class="a">+                        SniLoadHandle.LastError = new SniError(SniProviders.SMUX_PROV, 0, SniCommon.ConnTimeoutError, Strings.SNI_ERROR_11);</span>
+                         SqlClientEventSource.Log.TrySNITraceEvent(nameof(SniMarsHandle), EventType.INFO, &quot;MARS Session Id {0}, _sequenceNumber {1}, _sendHighwater {2}, _packetEvent wait timed out.&quot;, args0: ConnectionId, args1: _sequenceNumber, args2: _sendHighwater);
+                         return TdsEnums.SNI_WAIT_TIMEOUT;
+                     }</pre></body></html>

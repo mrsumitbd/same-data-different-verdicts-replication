@@ -1,0 +1,46 @@
+Full 2x2 specification grid: {Def 1, Def 2} x {Unadjusted, Stratified}
+======================================================================
+
+======================================================================
+TIER: human_supervised
+======================================================================
+
+[Def 1 x Unadjusted] (n_agent=177,787, n_human=378,756)
+  mod_rate: agent=20.1%, human=25.0%
+  HR=0.8884 [0.8775, 0.8994], p=2.06e-79, logrank_p=5.61e-80
+
+[Def 2 x Unadjusted] (n_agent=177,787, n_human=378,756)
+  mod_rate: agent=15.7%, human=18.9%
+  HR=0.9188 [0.906, 0.9317], p=1.60e-32, logrank_p=5.39e-33
+
+[Def 1 x Stratified + Bootstrap] (contributing_strata=128/215)
+  HR_analytic=0.8066, p=1.55e-01
+  Bootstrap median HR=0.7946, 95% CI=[0.544, 1.0324], n_valid=500
+
+[Def 2 x Stratified + Bootstrap] *** THE JOINT CORRECTION ***
+  (contributing_strata=128/215)
+  HR_analytic=0.7173, p=4.18e-02
+  Bootstrap median HR=0.7173, 95% CI=[0.4766, 0.921], n_valid=500
+  Bootstrap CI interpretation: SIGNIFICANT (CI excludes 1.0: [0.4766, 0.921])
+
+======================================================================
+TIER: fully_autonomous
+======================================================================
+
+[Def 1 x Unadjusted] (n_agent=87,634, n_human=378,756)
+  mod_rate: agent=21.5%, human=25.0%
+  HR=0.896 [0.8821, 0.9102], p=5.98e-43, logrank_p=1.33e-42
+
+[Def 2 x Unadjusted] (n_agent=87,634, n_human=378,756)
+  mod_rate: agent=15.3%, human=18.9%
+  HR=0.8469 [0.8314, 0.8627], p=1.19e-69, logrank_p=1.77e-69
+
+[Def 1 x Stratified + Bootstrap] (contributing_strata=31/193)
+  HR_analytic=1.0588, p=8.80e-01
+  Bootstrap median HR=1.1162, 95% CI=[0.4089, 2.0759], n_valid=500
+
+[Def 2 x Stratified + Bootstrap] *** THE JOINT CORRECTION ***
+  (contributing_strata=31/193)
+  HR_analytic=1.1551, p=6.48e-01
+  Bootstrap median HR=1.1921, 95% CI=[0.5186, 2.1764], n_valid=500
+  Bootstrap CI interpretation: NS (CI includes 1.0: [0.5186, 2.1764])

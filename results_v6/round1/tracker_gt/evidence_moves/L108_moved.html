@@ -1,0 +1,120 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L108 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L108: after the move</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>Original file:</b> crates/glaredb_core/src/runtime/filesystem/glob.rs (see L108.html)<br><b>Move commit:</b> <a href="https://github.com/glaredb/glaredb/commit/0802fbe008429359ed33917ec8b7698e473b1d5c">0802fbe008</a> (commit #2 on L108.html)<br><b>Destination file (your label):</b> crates/glaredb_rt_native/src/filesystem.rs<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">        // Find the root dir to use.</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 119).</p><h2>Destination file at the move commit, lines 111 to 127</h2><pre>  111 |         // &quot;2025-*&quot;, &quot;file-*.parquet&quot;]
+  112 |         //
+  113 |         // TODO: &#x27;\&#x27; on windows?
+  114 |         let mut segments: Vec&lt;_&gt; = glob.split(&#x27;/&#x27;).filter(|s| !s.is_empty()).collect();
+  115 |         if segments.is_empty() {
+  116 |             return Err(DbError::new(&quot;Missing segments for glob&quot;));
+  117 |         }
+  118 | 
+<span class="t">  119 |         // Find the root dir to use.</span>
+  120 |         let mut root_dir = Vec::new();
+  121 |         while !segments.is_empty() &amp;&amp; !is_glob(segments[0]) {
+  122 |             root_dir.push(segments.remove(0));
+  123 |         }
+  124 | 
+  125 |         // TODO: Windows?
+  126 |         let mut root_dir = root_dir.join(&quot;/&quot;);
+  127 |         let segments = segments.into_iter().map(|s| s.to_string()).collect();</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/6e85bab3e252ccc06a32ea30ac9d52909dbefc9c">6e85bab3e2</a> (2025-05-14T14:33:52-04:00)</h2><p class="k">feat: Initial S3 globbing (#3802)<br>Path after this commit: crates/glaredb_rt_native/src/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_rt_native/src/filesystem.rs b/crates/glaredb_rt_native/src/filesystem.rs
+index de7038d8..d92e01a8 100644
+<span class="d">--- a/crates/glaredb_rt_native/src/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_rt_native/src/filesystem.rs</span>
+<span class="h">@@ -57,6 +57,8 @@ impl FileHandle for LocalFileHandle {</span>
+ pub struct LocalFileSystem {}
+ 
+ impl FileSystem for LocalFileSystem {
+<span class="a">+    const NAME: &amp;str = &quot;Local&quot;;</span>
+<span class="a">+</span>
+     type FileHandle = LocalFileHandle;
+     type ReadDirHandle = LocalDirHandle;
+     type State = ();
+<span class="h">@@ -99,11 +101,11 @@ impl FileSystem for LocalFileSystem {</span>
+         Ok(Some(FileStat { file_type }))
+     }
+ 
+<span class="d">-    fn read_dir(&amp;self, dir: &amp;str, _state: &amp;Self::State) -&gt; Self::ReadDirHandle {</span>
+<span class="d">-        LocalDirHandle {</span>
+<span class="a">+    fn read_dir(&amp;self, dir: &amp;str, _state: &amp;Self::State) -&gt; Result&lt;Self::ReadDirHandle&gt; {</span>
+<span class="a">+        Ok(LocalDirHandle {</span>
+             path: dir.into(),
+             exhausted: false,
+<span class="d">-        }</span>
+<span class="a">+        })</span>
+     }
+ 
+     fn glob_segments(glob: &amp;str) -&gt; Result&lt;GlobSegments&gt; {
+<span class="h">@@ -163,15 +165,9 @@ impl LocalDirHandle {</span>
+             let entry = entry.context(&quot;Failed to get entry&quot;)?;
+             let path = entry.path();
+             if path.is_dir() {
+<span class="d">-                ents.push(DirEntry {</span>
+<span class="d">-                    path: path.to_string_lossy().to_string(),</span>
+<span class="d">-                    file_type: FileType::Directory,</span>
+<span class="d">-                })</span>
+<span class="a">+                ents.push(DirEntry::new_dir(path.to_string_lossy().to_string()))</span>
+             } else {
+<span class="d">-                ents.push(DirEntry {</span>
+<span class="d">-                    path: path.to_string_lossy().to_string(),</span>
+<span class="d">-                    file_type: FileType::File,</span>
+<span class="d">-                })</span>
+<span class="a">+                ents.push(DirEntry::new_file(path.to_string_lossy().to_string()))</span>
+             }
+         }
+ </pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/201701d14876832a4d6c78cb76916f288ea9bcfd">201701d148</a> (2025-05-15T14:23:37+00:00)</h2><p class="k">chore: Make fs state loading async (#3805)<br>Path after this commit: crates/glaredb_rt_native/src/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_rt_native/src/filesystem.rs b/crates/glaredb_rt_native/src/filesystem.rs
+index d92e01a8..134b0068 100644
+<span class="d">--- a/crates/glaredb_rt_native/src/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_rt_native/src/filesystem.rs</span>
+<span class="h">@@ -63,7 +63,7 @@ impl FileSystem for LocalFileSystem {</span>
+     type ReadDirHandle = LocalDirHandle;
+     type State = ();
+ 
+<span class="d">-    fn state_from_context(&amp;self, _context: FileOpenContext) -&gt; Result&lt;Self::State&gt; {</span>
+<span class="a">+    async fn load_state(&amp;self, _context: FileOpenContext&lt;&#x27;_&gt;) -&gt; Result&lt;Self::State&gt; {</span>
+         Ok(())
+     }
+ </pre><h2>Commit #3: <a href="https://github.com/glaredb/glaredb/commit/f4d1acf466f046cfa2281372659fa823cb160ece">f4d1acf466</a> (2025-05-26T10:55:15-04:00)</h2><p class="k">fix: Use u64 for file lengths (#3849)<br>Path after this commit: crates/glaredb_rt_native/src/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_rt_native/src/filesystem.rs b/crates/glaredb_rt_native/src/filesystem.rs
+index 134b0068..54bded19 100644
+<span class="d">--- a/crates/glaredb_rt_native/src/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_rt_native/src/filesystem.rs</span>
+<span class="h">@@ -18,7 +18,7 @@ use glaredb_error::{DbError, Result, ResultExt};</span>
+ #[derive(Debug)]
+ pub struct LocalFileHandle {
+     path: String,
+<span class="d">-    len: usize,</span>
+<span class="a">+    len: u64,</span>
+     file: StdFile,
+ }
+ 
+<span class="h">@@ -27,7 +27,7 @@ impl FileHandle for LocalFileHandle {</span>
+         &amp;self.path
+     }
+ 
+<span class="d">-    fn size(&amp;self) -&gt; usize {</span>
+<span class="a">+    fn size(&amp;self) -&gt; u64 {</span>
+         self.len
+     }
+ 
+<span class="h">@@ -78,7 +78,7 @@ impl FileSystem for LocalFileSystem {</span>
+ 
+         Ok(LocalFileHandle {
+             path: path.to_string(),
+<span class="d">-            len: metadata.len() as usize,</span>
+<span class="a">+            len: metadata.len(),</span>
+             file,
+         })
+     }</pre><h2>Commit #4: <a href="https://github.com/glaredb/glaredb/commit/327c8d1e16d49e3b65f4e9ef85a65e60f16ecafa">327c8d1e16</a> (2025-06-06T16:07:46-04:00)</h2><p class="k">chore: Detect if S3 bucket is in different region (#3917)<br>Path after this commit: crates/glaredb_rt_native/src/filesystem.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_rt_native/src/filesystem.rs b/crates/glaredb_rt_native/src/filesystem.rs
+index 54bded19..53207702 100644
+<span class="d">--- a/crates/glaredb_rt_native/src/filesystem.rs</span>
+<span class="a">+++ b/crates/glaredb_rt_native/src/filesystem.rs</span>
+<span class="h">@@ -101,7 +101,7 @@ impl FileSystem for LocalFileSystem {</span>
+         Ok(Some(FileStat { file_type }))
+     }
+ 
+<span class="d">-    fn read_dir(&amp;self, dir: &amp;str, _state: &amp;Self::State) -&gt; Result&lt;Self::ReadDirHandle&gt; {</span>
+<span class="a">+    async fn read_dir(&amp;self, dir: &amp;str, _state: &amp;Self::State) -&gt; Result&lt;Self::ReadDirHandle&gt; {</span>
+         Ok(LocalDirHandle {
+             path: dir.into(),
+             exhausted: false,</pre></body></html>

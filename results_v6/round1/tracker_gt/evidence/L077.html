@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L077</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L077</h1><p><b>Repository:</b> <a href="https://github.com/elsa-workflows/elsa-core">elsa-workflows/elsa-core</a><br><b>File at merge:</b> test/unit/Elsa.Http.UnitTests/ContentWriters/RawStringContentTests.cs, line 38<br><b>Merge commit (birth):</b> <a href="https://github.com/elsa-workflows/elsa-core/commit/144edc3a85bfa5af45c7ec82e94bc75140ee62ab">144edc3a85</a> (2025-05-24T19:39:31)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/elsa-workflows/elsa-core/tree/2c4aadff8b0345cb30e822c4986882b80ca335b8">2c4aadff8b</a>)</p><p><b>The line:</b></p><pre><span class="t">        const string contentType = &quot;application/json; custom-param=value&quot;;</span></pre><h2>File at the merge commit, lines 30 to 46</h2><pre>   30 |     
+   31 |     /// &lt;summary&gt;
+   32 |     /// Tests that the content type with parameters is preserved exactly as provided.
+   33 |     /// &lt;/summary&gt;
+   34 |     [Fact]
+   35 |     public void ContentType_WithParameters_ShouldPreserveParameters()
+   36 |     {
+   37 |         // Arrange
+<span class="t">   38 |         const string contentType = &quot;application/json; custom-param=value&quot;;</span>
+   39 |         var expectedMediaType = new MediaTypeHeaderValue(contentType);
+   40 |         const string content = &quot;{\&quot;test\&quot;: \&quot;value\&quot;}&quot;;
+   41 |         
+   42 |         // Act
+   43 |         var rawContent = new RawStringContent(content, Encoding.UTF8, contentType);
+   44 |         
+   45 |         // Assert
+   46 |         Assert.Equal(expectedMediaType.MediaType, rawContent.Headers.ContentType?.MediaType);</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/elsa-workflows/elsa-core/commit/59bfcf0ba51b8ab9268514f52bf08702c5ae8f9b">59bfcf0ba5</a> (2025-06-03T09:58:20+02:00)</h2><p class="k">Add distributed workflow runtime implementation.<br>Path after this commit: test/unit/Elsa.Http.UnitTests/ContentWriters/RawStringContentTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/unit/Elsa.Http.UnitTests/ContentWriters/RawStringContentTests.cs b/test/unit/Elsa.Http.UnitTests/ContentWriters/RawStringContentTests.cs
+index 308f22c37..da7c75768 100644
+<span class="d">--- a/test/unit/Elsa.Http.UnitTests/ContentWriters/RawStringContentTests.cs</span>
+<span class="a">+++ b/test/unit/Elsa.Http.UnitTests/ContentWriters/RawStringContentTests.cs</span>
+<span class="h">@@ -27,29 +27,4 @@ public class RawStringContentTests</span>
+         Assert.Equal(contentType, rawContent.Headers.ContentType?.MediaType);
+         Assert.Null(rawContent.Headers.ContentType?.CharSet);
+     }
+<span class="d">-    </span>
+<span class="d">-    /// &lt;summary&gt;</span>
+<span class="d">-    /// Tests that the content type with parameters is preserved exactly as provided.</span>
+<span class="d">-    /// &lt;/summary&gt;</span>
+<span class="d">-    [Fact]</span>
+<span class="d">-    public void ContentType_WithParameters_ShouldPreserveParameters()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Arrange</span>
+<span class="d m">-        const string contentType = &quot;application/json; custom-param=value&quot;;</span>
+<span class="d">-        var expectedMediaType = new MediaTypeHeaderValue(contentType);</span>
+<span class="d">-        const string content = &quot;{\&quot;test\&quot;: \&quot;value\&quot;}&quot;;</span>
+<span class="d">-        </span>
+<span class="d">-        // Act</span>
+<span class="d">-        var rawContent = new RawStringContent(content, Encoding.UTF8, contentType);</span>
+<span class="d">-        </span>
+<span class="d">-        // Assert</span>
+<span class="d">-        Assert.Equal(expectedMediaType.MediaType, rawContent.Headers.ContentType?.MediaType);</span>
+<span class="d">-        Assert.Equal(expectedMediaType.Parameters.Count(), rawContent.Headers.ContentType?.Parameters.Count());</span>
+<span class="d">-        </span>
+<span class="d">-        var expectedParam = expectedMediaType.Parameters.First();</span>
+<span class="d">-        var actualParam = rawContent.Headers.ContentType?.Parameters.First();</span>
+<span class="d">-        </span>
+<span class="d">-        Assert.Equal(expectedParam.Name, actualParam?.Name);</span>
+<span class="d">-        Assert.Equal(expectedParam.Value, actualParam?.Value);</span>
+<span class="d">-    }</span>
+ }
+\ No newline at end of file</pre></body></html>

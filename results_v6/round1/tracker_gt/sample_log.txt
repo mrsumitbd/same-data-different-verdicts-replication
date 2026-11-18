@@ -1,0 +1,29 @@
+Observation window (identity (tracker GT)): 276,360 units before
+  dropped, born >= 2025-08-01: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  censored, modified after 2025-12-31: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  already-censored units re-timed to the cutoff: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  276,360 units after
+population after content filter: {'000': 76667, '001': 61538, '010': 844, '011': 5671, '100': 1, '101': 15, '110': 6550, '111': 51098}
+cell 100: want 37, sampled 0 of 1 tried
+cell 101: want 42, sampled 2 of 14 tried
+cell 010: want 50, sampled 50 of 108 tried
+cell 011: want 50, sampled 50 of 145 tried
+cell 110: want 49, sampled 49 of 91 tried
+checkpoint (draw) 111 33
+Observation window (identity (tracker GT)): 276,360 units before
+  dropped, born >= 2025-08-01: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  censored, modified after 2025-12-31: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  already-censored units re-timed to the cutoff: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  276,360 units after
+population after content filter: {'000': 76667, '001': 61538, '010': 844, '011': 5671, '100': 1, '101': 15, '110': 6550, '111': 51098}
+cell 111: want 49, sampled 49 of 118 tried
+cell 001: want 50, sampled 50 of 80 tried
+cell 000: want 50, sampled 50 of 54 tried
+checkpoint (evidence) 272
+Observation window (identity (tracker GT)): 276,360 units before
+  dropped, born >= 2025-08-01: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  censored, modified after 2025-12-31: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  already-censored units re-timed to the cutoff: 0 (human_supervised=0, fully_autonomous=0, human=0)
+  276,360 units after
+population after content filter: {'000': 76667, '001': 61538, '010': 844, '011': 5671, '100': 1, '101': 15, '110': 6550, '111': 51098}
+wrote 300 lines; DONE

@@ -1,0 +1,75 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L054</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L054</h1><p><b>Repository:</b> <a href="https://github.com/fluent/fluent-bit">fluent/fluent-bit</a><br><b>File at merge:</b> src/flb_log.c, line 514<br><b>Merge commit (birth):</b> <a href="https://github.com/fluent/fluent-bit/commit/40f0901ef5b90cbc824b57c90b73e5ed8ddf3483">40f0901ef5</a> (2025-05-28T23:32:55)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/fluent/fluent-bit/tree/7b0c1aebb69f64d8cd554921ad7c5fa73986b23c">7b0c1aebb6</a>)</p><p><b>The line:</b></p><pre><span class="t">        return NULL;</span></pre><h2>File at the merge commit, lines 506 to 522</h2><pre>  506 |     if (metrics == NULL) {
+  507 |         flb_errno();
+  508 |         return NULL;
+  509 |     }
+  510 | 
+  511 |     metrics-&gt;cmt = cmt_create();
+  512 |     if (metrics-&gt;cmt == NULL) {
+  513 |         flb_log_metrics_destroy(metrics);
+<span class="t">  514 |         return NULL;</span>
+  515 |     }
+  516 | 
+  517 |     metrics-&gt;logs_total_counter = cmt_counter_create(metrics-&gt;cmt,
+  518 |                                                      &quot;fluentbit&quot;,
+  519 |                                                      &quot;logger&quot;,
+  520 |                                                      &quot;logs_total&quot;,
+  521 |                                                      &quot;Total number of logs&quot;,
+  522 |                                                      1, (char *[]) {&quot;message_type&quot;});</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/fluent/fluent-bit/commit/b04d5012e47489524c6be1db7e60ed25e363ec44">b04d5012e4</a> (2025-08-06T16:10:34-06:00)</h2><p class="k">log: increase precision in log&#x27;s timestamp to nanoseconds<br>Path after this commit: src/flb_log.c. Lines with exactly this text in the file after the commit: 14.</p><pre>diff --git a/src/flb_log.c b/src/flb_log.c
+index b0e4e2868..11aa0445a 100644
+<span class="d">--- a/src/flb_log.c</span>
+<span class="a">+++ b/src/flb_log.c</span>
+<span class="h">@@ -32,6 +32,7 @@</span>
+ #include &lt;fluent-bit/flb_config.h&gt;
+ #include &lt;fluent-bit/flb_worker.h&gt;
+ #include &lt;fluent-bit/flb_mem.h&gt;
+<span class="a">+#include &lt;fluent-bit/flb_time.h&gt;</span>
+ #include &lt;cmetrics/cmetrics.h&gt;
+ #include &lt;cmetrics/cmt_counter.h&gt;
+ 
+<span class="h">@@ -673,13 +674,13 @@ int flb_log_construct(struct log_message *msg, int *ret_len,</span>
+     int ret;
+     int len;
+     int total;
+<span class="d">-    time_t now;</span>
+     const char *header_color = NULL;
+     const char *header_title;
+     const char *bold_color = ANSI_BOLD;
+     const char *reset_color = ANSI_RESET;
+     struct tm result;
+     struct tm *current;
+<span class="a">+    struct flb_time now;</span>
+ 
+     switch (type) {
+     case FLB_LOG_HELP:
+<span class="h">@@ -718,8 +719,8 @@ int flb_log_construct(struct log_message *msg, int *ret_len,</span>
+     }
+     #endif // FLB_LOG_NO_CONTROL_CHARS
+ 
+<span class="d">-    now = time(NULL);</span>
+<span class="d">-    current = localtime_r(&amp;now, &amp;result);</span>
+<span class="a">+    flb_time_get(&amp;now);</span>
+<span class="a">+    current = localtime_r(&amp;now.tm.tv_sec, &amp;result);</span>
+ 
+     if (current == NULL) {
+         return -1;
+<span class="h">@@ -727,7 +728,7 @@ int flb_log_construct(struct log_message *msg, int *ret_len,</span>
+ 
+     header_title = flb_log_message_type_str(type);
+     len = snprintf(msg-&gt;msg, sizeof(msg-&gt;msg) - 1,
+<span class="d">-                   &quot;%s[%s%i/%02i/%02i %02i:%02i:%02i%s]%s [%s%5s%s] &quot;,</span>
+<span class="a">+                   &quot;%s[%s%i/%02i/%02i %02i:%02i:%02i.%03ld%s]%s [%s%5s%s] &quot;,</span>
+                    /*      time     */                    /* type */
+ 
+                    /* time variables */
+<span class="h">@@ -738,6 +739,7 @@ int flb_log_construct(struct log_message *msg, int *ret_len,</span>
+                    current-&gt;tm_hour,
+                    current-&gt;tm_min,
+                    current-&gt;tm_sec,
+<span class="a">+                   now.tm.tv_nsec,</span>
+                    bold_color, reset_color,
+ 
+                    /* type format */</pre></body></html>

@@ -1,0 +1,285 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L293</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L293</h1><p><b>Repository:</b> <a href="https://github.com/openpipe/art">openpipe/art</a><br><b>File at merge:</b> src/art/torchtune/service.py, line 75<br><b>Merge commit (birth):</b> <a href="https://github.com/openpipe/art/commit/68bcdab8b0b82605d0c50642bb132d7c67d91aad">68bcdab8b0</a> (2025-06-26T17:02:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/openpipe/art/tree/3b4a9427374c36e16e54bd69394e35ceddde7d1b">3b4a942737</a>)</p><p><b>The line:</b></p><pre><span class="t">            await asyncio.sleep(0.25)</span></pre><h2>File at the merge commit, lines 67 to 83</h2><pre>   67 |                 profile=verbose,
+   68 |             )
+   69 |         )
+   70 |         # wait for the workers to write their pids twice, indicating that they are asleep
+   71 |         while True:
+   72 |             pids = Counter(open(pids_path).read().splitlines())
+   73 |             if set(pids.values()) == {2}:
+   74 |                 break
+<span class="t">   75 |             await asyncio.sleep(0.25)</span>
+   76 |         # acquire the train process and queue
+   77 |         train_process = await self.train_process
+   78 |         train_queue = await self.train_queue
+   79 |         # write the batch to communicate with the train process
+   80 |         with open(f&quot;{self.output_dir}/batches.jsonl&quot;, &quot;a&quot;) as f:
+   81 |             f.write(
+   82 |                 Batch(
+   83 |                     disk_packed_tensors=disk_packed_tensors,</pre><p class="k">Below are all 11 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/openpipe/art/commit/009bb1eb0d137c096179b1add9b24d27a5872784">009bb1eb0d</a> (2025-06-27T06:31:24-06:00)</h2><p class="k">fix: Always offload kv cache for now<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index 98ef1bac..36ea3bbf 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -61,7 +61,8 @@ class TorchtuneService:</span>
+             run_on_workers(
+                 llm,
+                 sleep,
+<span class="d">-                level=1 if llm.output_processor.has_unfinished_requests() else 2,</span>
+<span class="a">+                # level=1 if llm.output_processor.has_unfinished_requests() else 2,</span>
+<span class="a">+                level=1,</span>
+                 pids_path=pids_path,
+                 weights_path=None if async_weight_syncing else weights_path,
+                 profile=verbose,</pre><h2>Commit #2: <a href="https://github.com/openpipe/art/commit/3a31c0f1d10459823aba4040804ae69a6434e309">3a31c0f1d1</a> (2025-06-30T09:05:54-06:00)</h2><p class="k">feat: Add torchtune support for activation offloading<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index 36ea3bbf..5d4f44d7 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -183,6 +183,7 @@ class TorchtuneService:</span>
+             f&quot;output_dir={self.output_dir}&quot;,
+             &quot;metric_logger._component_=torchtune.training.metric_logging.StdoutLogger&quot;,
+             &quot;metric_logger.log_dir=null&quot;,
+<span class="a">+            f&quot;enable_activation_offloading={torchtune_args.get(&#x27;enable_activation_offloading&#x27;, False)}&quot;,</span>
+         ]
+         return await asyncio.subprocess.create_subprocess_exec(
+             *program_and_args,</pre><h2>Commit #3: <a href="https://github.com/openpipe/art/commit/b85897ff07cd6077ff5aeed22153b9f78dded603">b85897ff07</a> (2025-07-01T13:45:26-06:00)</h2><p class="k">chore: SWE-Bench related changes<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index 5d4f44d7..566fab09 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -181,6 +181,7 @@ class TorchtuneService:</span>
+             f&quot;tensor_parallel_dim={torchtune_args.get(&#x27;tensor_parallel_dim&#x27;, 1)}&quot;,
+             f&quot;context_parallel_dim={torchtune_args.get(&#x27;context_parallel_dim&#x27;, 1)}&quot;,
+             f&quot;output_dir={self.output_dir}&quot;,
+<span class="a">+            &quot;clip_grad_norm=0.1&quot;,</span>
+             &quot;metric_logger._component_=torchtune.training.metric_logging.StdoutLogger&quot;,
+             &quot;metric_logger.log_dir=null&quot;,
+             f&quot;enable_activation_offloading={torchtune_args.get(&#x27;enable_activation_offloading&#x27;, False)}&quot;,</pre><h2>Commit #4: <a href="https://github.com/openpipe/art/commit/da679c7b9bf72d70b5564ca10974cd78f3b7e519">da679c7b9b</a> (2025-07-02T21:59:16-07:00)</h2><p class="k">Merge pull request #198 from OpenPipe/checkpoint-location<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index 566fab09..4908d417 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -156,6 +156,10 @@ class TorchtuneService:</span>
+         return asyncio.create_task(self.get_train_process())
+ 
+     async def get_train_process(self) -&gt; asyncio.subprocess.Process:
+<span class="a">+        # Migrate existing checkpoints to new structure if needed</span>
+<span class="a">+        from ..local.checkpoints import migrate_checkpoints_to_new_structure</span>
+<span class="a">+        migrate_checkpoints_to_new_structure(self.output_dir)</span>
+<span class="a">+        </span>
+         Path(f&quot;{self.output_dir}/batches.jsonl&quot;).unlink(missing_ok=True)
+         checkpoint_dir = await self.get_checkpoint_dir()
+         torchtune_args = self.torchtune_args
+<span class="h">@@ -240,8 +244,8 @@ class TorchtuneService:</span>
+         return stdout.decode(&quot;utf-8&quot;).splitlines()[-1].strip()
+ 
+     def get_last_checkpoint_dir(self) -&gt; str | None:
+<span class="d">-        dir = f&quot;{self.output_dir}/{get_step_from_dir(self.output_dir):04d}&quot;</span>
+<span class="d">-        return dir if os.path.isdir(dir) else None</span>
+<span class="a">+        from ..local.checkpoints import get_last_checkpoint_dir</span>
+<span class="a">+        return get_last_checkpoint_dir(self.output_dir)</span>
+ 
+ 
+ def sleep(</pre><h2>Commit #5: <a href="https://github.com/openpipe/art/commit/962608512d088f8ffcb56d24845b2c0d800e9fab">962608512d</a> (2025-07-03T14:17:50+00:00)</h2><p class="k">fix: Get torchtune model directories correctly<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index 4908d417..f3044645 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -158,8 +158,9 @@ class TorchtuneService:</span>
+     async def get_train_process(self) -&gt; asyncio.subprocess.Process:
+         # Migrate existing checkpoints to new structure if needed
+         from ..local.checkpoints import migrate_checkpoints_to_new_structure
+<span class="a">+</span>
+         migrate_checkpoints_to_new_structure(self.output_dir)
+<span class="d">-        </span>
+<span class="a">+</span>
+         Path(f&quot;{self.output_dir}/batches.jsonl&quot;).unlink(missing_ok=True)
+         checkpoint_dir = await self.get_checkpoint_dir()
+         torchtune_args = self.torchtune_args
+<span class="h">@@ -169,6 +170,18 @@ class TorchtuneService:</span>
+         checkpoint_files = [os.path.basename(f) for f in safetensor_files]
+         checkpoint_files_str = &quot;[&quot; + &quot;, &quot;.join(f&#x27;&quot;{f}&quot;&#x27; for f in checkpoint_files) + &quot;]&quot;
+ 
+<span class="a">+        def model_dir(model: str) -&gt; str:</span>
+<span class="a">+            for prefix in [</span>
+<span class="a">+                &quot;llama3_1&quot;,</span>
+<span class="a">+                &quot;llama3_2_vision&quot;,</span>
+<span class="a">+                &quot;llama3_2&quot;,</span>
+<span class="a">+                &quot;llama3_3&quot;,</span>
+<span class="a">+                &quot;qwen2_5&quot;,</span>
+<span class="a">+            ]:</span>
+<span class="a">+                if model.startswith(prefix):</span>
+<span class="a">+                    return prefix</span>
+<span class="a">+            return model.split(&quot;_&quot;)[0]</span>
+<span class="a">+</span>
+         program_and_args = [
+             &quot;python&quot;,  # Use Python interpreter
+             f&quot;{os.path.dirname(torchtune.__file__)}/_cli/tune.py&quot;,
+<span class="h">@@ -178,7 +191,7 @@ class TorchtuneService:</span>
+             &quot;art.torchtune.recipe.FullFinetuneRecipeDistributed&quot;,
+             &quot;--config&quot;,
+             f&quot;{os.path.dirname(__file__)}/config.yaml&quot;,
+<span class="d">-            f&quot;model._component_=torchtune.models.{torchtune_args[&#x27;model&#x27;].split(&#x27;_&#x27;)[0]}.{torchtune_args[&#x27;model&#x27;]}&quot;,</span>
+<span class="a">+            f&quot;model._component_=torchtune.models.{model_dir(torchtune_args[&#x27;model&#x27;])}.{torchtune_args[&#x27;model&#x27;]}&quot;,</span>
+             f&quot;checkpointer.checkpoint_dir={checkpoint_dir}&quot;,
+             f&quot;checkpointer.checkpoint_files={checkpoint_files_str}&quot;,
+             f&quot;checkpointer.model_type={torchtune_args[&#x27;model_type&#x27;]}&quot;,
+<span class="h">@@ -245,6 +258,7 @@ class TorchtuneService:</span>
+ 
+     def get_last_checkpoint_dir(self) -&gt; str | None:
+         from ..local.checkpoints import get_last_checkpoint_dir
+<span class="a">+</span>
+         return get_last_checkpoint_dir(self.output_dir)
+ 
+ </pre><h2>Commit #6: <a href="https://github.com/openpipe/art/commit/ed8caf5f4dc22c77b0d664cbe96aa9aade29b31d">ed8caf5f4d</a> (2025-07-03T16:54:14+00:00)</h2><p class="k">chore: tau-bench related updates<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index f3044645..1b6d69b1 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -91,7 +91,10 @@ class TorchtuneService:</span>
+         num_gradient_steps = -1
+         while num_gradient_steps != 0:
+             done, _ = await asyncio.wait(
+<span class="d">-                [train_queue.get(), train_process.wait()],</span>
+<span class="a">+                [</span>
+<span class="a">+                    asyncio.create_task(train_queue.get()),</span>
+<span class="a">+                    asyncio.create_task(train_process.wait()),</span>
+<span class="a">+                ],</span>
+                 return_when=asyncio.FIRST_COMPLETED,
+             )
+             for task in done:</pre><h2>Commit #7: <a href="https://github.com/openpipe/art/commit/290f2abaa94153f4b33d5a50c0cf9c12181a96fc">290f2abaa9</a> (2025-07-03T13:30:24-06:00)</h2><p class="k">feat: Add ruff formatting checks to CI<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index 1b6d69b1..26085f78 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -18,7 +18,6 @@ from .batch import Batch</span>
+ from .. import dev
+ from ..local.pack import DiskPackedTensors
+ from .. import types
+<span class="d">-from ..utils.get_model_step import get_step_from_dir</span>
+ from ..vllm import get_llm, get_worker, openai_server_task, run_on_workers
+ 
+ 
+<span class="h">@@ -139,9 +138,9 @@ class TorchtuneService:</span>
+     @property
+     def torchtune_args(self) -&gt; dev.TorchtuneArgs:
+         torchtune_args = self.config.get(&quot;torchtune_args&quot;)
+<span class="d">-        assert (</span>
+<span class="d">-            torchtune_args is not None</span>
+<span class="d">-        ), &#x27;TorchtuneService created without config[&quot;torchtune_args&quot;]&#x27;</span>
+<span class="a">+        assert torchtune_args is not None, (</span>
+<span class="a">+            &#x27;TorchtuneService created without config[&quot;torchtune_args&quot;]&#x27;</span>
+<span class="a">+        )</span>
+         return torchtune_args
+ 
+     @cached_property</pre><h2>Commit #8: <a href="https://github.com/openpipe/art/commit/b16f2ad5e2e81870d3b0b51f85be70980fe31988">b16f2ad5e2</a> (2025-08-07T21:08:22-06:00)</h2><p class="k">feat: Sort imports<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index 26085f78..4abbd0d2 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -1,24 +1,24 @@</span>
+ import asyncio
+<span class="d">-from collections import Counter</span>
+<span class="d">-from dataclasses import dataclass</span>
+<span class="d">-from functools import cached_property</span>
+ import glob
+ import logging
+ import os
+<span class="d">-from pathlib import Path</span>
+<span class="d">-from safetensors.torch import load_file</span>
+ import time
+<span class="a">+from collections import Counter</span>
+<span class="a">+from dataclasses import dataclass</span>
+<span class="a">+from functools import cached_property</span>
+<span class="a">+from pathlib import Path</span>
+<span class="a">+from typing import AsyncIterator</span>
+<span class="a">+</span>
+ import torch
+ import torchtune
+<span class="d">-from typing import AsyncIterator</span>
+<span class="a">+from safetensors.torch import load_file</span>
+ from vllm import AsyncEngineArgs
+ from vllm.v1.engine.async_llm import AsyncLLM
+ 
+<span class="d">-from .batch import Batch</span>
+<span class="d">-from .. import dev</span>
+<span class="a">+from .. import dev, types</span>
+ from ..local.pack import DiskPackedTensors
+<span class="d">-from .. import types</span>
+ from ..vllm import get_llm, get_worker, openai_server_task, run_on_workers
+<span class="a">+from .batch import Batch</span>
+ 
+ 
+ @dataclass</pre><h2>Commit #9: <a href="https://github.com/openpipe/art/commit/234cad94e6c93f4ac368a81d4d2b299ecce33895">234cad94e6</a> (2025-08-15T17:28:13-06:00)</h2><p class="k">feat: Add preliminary unit testing support<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index 4abbd0d2..a22f954a 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -16,7 +16,7 @@ from vllm import AsyncEngineArgs</span>
+ from vllm.v1.engine.async_llm import AsyncLLM
+ 
+ from .. import dev, types
+<span class="d">-from ..local.pack import DiskPackedTensors</span>
+<span class="a">+from ..preprocessing.pack import DiskPackedTensors</span>
+ from ..vllm import get_llm, get_worker, openai_server_task, run_on_workers
+ from .batch import Batch
+ </pre><h2>Commit #10: <a href="https://github.com/openpipe/art/commit/d85f49b968fce50aaf411e559a8eb817538db703">d85f49b968</a> (2025-08-20T00:46:27+00:00)</h2><p class="k">fix: Add OpenAI-compatible server monitoring with automatic process destruction after failed health check<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index a22f954a..cd93152e 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -27,6 +27,7 @@ class TorchtuneService:</span>
+     base_model: str
+     config: dev.InternalModelConfig
+     output_dir: str
+<span class="a">+    _is_sleeping: bool = False</span>
+ 
+     async def start_openai_server(self, config: dev.OpenAIServerConfig | None) -&gt; None:
+         await openai_server_task(
+<span class="h">@@ -39,6 +40,9 @@ class TorchtuneService:</span>
+             ),
+         )
+ 
+<span class="a">+    async def vllm_engine_is_sleeping(self) -&gt; bool:</span>
+<span class="a">+        return self._is_sleeping</span>
+<span class="a">+</span>
+     async def train(
+         self,
+         disk_packed_tensors: DiskPackedTensors,
+<span class="h">@@ -73,6 +77,7 @@ class TorchtuneService:</span>
+             if set(pids.values()) == {2}:
+                 break
+<span class=" m">             await asyncio.sleep(0.25)</span>
+<span class="a">+        self._is_sleeping = True</span>
+         # acquire the train process and queue
+         train_process = await self.train_process
+         train_queue = await self.train_queue
+<span class="h">@@ -110,6 +115,7 @@ class TorchtuneService:</span>
+             num_gradient_steps -= 1
+         # wait for the workers to wake up
+         await sleep_task
+<span class="a">+        self._is_sleeping = False</span>
+         # update the weights after wake up if async_weight_syncing is enabled
+         if async_weight_syncing:
+             asyncio.create_task(self.update_worker_weights(llm, weights_path, verbose))
+<span class="h">@@ -138,9 +144,9 @@ class TorchtuneService:</span>
+     @property
+     def torchtune_args(self) -&gt; dev.TorchtuneArgs:
+         torchtune_args = self.config.get(&quot;torchtune_args&quot;)
+<span class="d">-        assert torchtune_args is not None, (</span>
+<span class="d">-            &#x27;TorchtuneService created without config[&quot;torchtune_args&quot;]&#x27;</span>
+<span class="d">-        )</span>
+<span class="a">+        assert (</span>
+<span class="a">+            torchtune_args is not None</span>
+<span class="a">+        ), &#x27;TorchtuneService created without config[&quot;torchtune_args&quot;]&#x27;</span>
+         return torchtune_args
+ 
+     @cached_property</pre><h2>Commit #11: <a href="https://github.com/openpipe/art/commit/86d7fdcf4a818b1b8cf264b247350af45aa4a643">86d7fdcf4a</a> (2025-08-20T00:58:14+00:00)</h2><p class="k">refactor: Improve assertion formatting for clarity in backend and service classes<br>Path after this commit: src/art/torchtune/service.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/art/torchtune/service.py b/src/art/torchtune/service.py
+index cd93152e..1c000516 100644
+<span class="d">--- a/src/art/torchtune/service.py</span>
+<span class="a">+++ b/src/art/torchtune/service.py</span>
+<span class="h">@@ -144,9 +144,9 @@ class TorchtuneService:</span>
+     @property
+     def torchtune_args(self) -&gt; dev.TorchtuneArgs:
+         torchtune_args = self.config.get(&quot;torchtune_args&quot;)
+<span class="d">-        assert (</span>
+<span class="d">-            torchtune_args is not None</span>
+<span class="d">-        ), &#x27;TorchtuneService created without config[&quot;torchtune_args&quot;]&#x27;</span>
+<span class="a">+        assert torchtune_args is not None, (</span>
+<span class="a">+            &#x27;TorchtuneService created without config[&quot;torchtune_args&quot;]&#x27;</span>
+<span class="a">+        )</span>
+         return torchtune_args
+ 
+     @cached_property</pre></body></html>

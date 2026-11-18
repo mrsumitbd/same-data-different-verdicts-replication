@@ -1,0 +1,103 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L062</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L062</h1><p><b>Repository:</b> <a href="https://github.com/mlflow/mlflow">mlflow/mlflow</a><br><b>File at merge:</b> dev/update_changelog.py, line 156<br><b>Merge commit (birth):</b> <a href="https://github.com/mlflow/mlflow/commit/c5641eb0a1ea23333ee6a3c6edb5b131c52c86b2">c5641eb0a1</a> (2025-06-03T14:41:54)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/mlflow/mlflow/tree/2d9aa6f84737e25967ac6a78ecb4100ff69b0fc4">2d9aa6f847</a>)</p><p><b>The line:</b></p><pre><span class="t">    prs = []</span></pre><h2>File at the merge commit, lines 148 to 164</h2><pre>  148 |     )
+  149 |     resp.raise_for_status()
+  150 |     data = resp.json()
+  151 |     if &quot;errors&quot; in data:
+  152 |         raise Exception(f&quot;GraphQL errors: {data[&#x27;errors&#x27;]}&quot;)
+  153 | 
+  154 |     # Extract PR data from response and create PullRequest objects
+  155 |     repository_data = data[&quot;data&quot;][&quot;repository&quot;]
+<span class="t">  156 |     prs = []</span>
+  157 |     for i, pr_num in enumerate(pr_numbers):
+  158 |         pr_info = repository_data.get(f&quot;pr{i}&quot;)
+  159 |         if pr_info and pr_info.get(&quot;author&quot;):
+  160 |             prs.append(
+  161 |                 PullRequest(
+  162 |                     title=pr_info[&quot;title&quot;],
+  163 |                     number=pr_info[&quot;number&quot;],
+  164 |                     author=pr_info[&quot;author&quot;][&quot;login&quot;],</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/mlflow/mlflow/commit/24f7fd1f0395a8c5be8a9541bff33e07e37b2afd">24f7fd1f03</a> (2025-08-14T10:51:57+09:00)</h2><p class="k">Update `dev/update_changelog.py` to create a major new features section (#17216)<br>Path after this commit: dev/update_changelog.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dev/update_changelog.py b/dev/update_changelog.py
+index 97bfb64c6..92f74de4f 100644
+<span class="d">--- a/dev/update_changelog.py</span>
+<span class="a">+++ b/dev/update_changelog.py</span>
+<span class="h">@@ -232,6 +232,7 @@ def main(prev_version, release_version, remote):</span>
+     )
+ 
+     unknown_labels = set(label_to_prs.keys()) - {
+<span class="a">+        &quot;rn/highlight&quot;,</span>
+         &quot;rn/feature&quot;,
+         &quot;rn/breaking-change&quot;,
+         &quot;rn/bug-fix&quot;,
+<span class="h">@@ -241,6 +242,7 @@ def main(prev_version, release_version, remote):</span>
+     assert len(unknown_labels) == 0, f&quot;Unknown labels: {unknown_labels}&quot;
+ 
+     breaking_changes = Section(&quot;Breaking changes:&quot;, label_to_prs.get(&quot;rn/breaking-change&quot;, []))
+<span class="a">+    highlights = Section(&quot;Major new features:&quot;, label_to_prs.get(&quot;rn/highlight&quot;, []))</span>
+     features = Section(&quot;Features:&quot;, label_to_prs.get(&quot;rn/feature&quot;, []))
+     bug_fixes = Section(&quot;Bug fixes:&quot;, label_to_prs.get(&quot;rn/bug-fix&quot;, []))
+     doc_updates = Section(&quot;Documentation updates:&quot;, label_to_prs.get(&quot;rn/documentation&quot;, []))
+<span class="h">@@ -257,6 +259,7 @@ def main(prev_version, release_version, remote):</span>
+                 get_header_for_version(release_version),
+                 f&quot;MLflow {release_version} includes several major features and improvements&quot;,
+                 breaking_changes,
+<span class="a">+                highlights,</span>
+                 features,
+                 bug_fixes,
+                 doc_updates,</pre><h2>Commit #2: <a href="https://github.com/mlflow/mlflow/commit/cce0c6d67b63bb11ca4ea4a4a305cd2fbdade969">cce0c6d67b</a> (2025-10-09T17:09:57+09:00)</h2><p class="k">Replace click with argparse in dev/ directory Python scripts (#18213)<br>Path after this commit: dev/update_changelog.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dev/update_changelog.py b/dev/update_changelog.py
+index 92f74de4f..92ae2e7c3 100644
+<span class="d">--- a/dev/update_changelog.py</span>
+<span class="a">+++ b/dev/update_changelog.py</span>
+<span class="h">@@ -1,3 +1,4 @@</span>
+<span class="a">+import argparse</span>
+ import os
+ import re
+ import subprocess
+<span class="h">@@ -6,7 +7,6 @@ from datetime import datetime</span>
+ from pathlib import Path
+ from typing import Any, NamedTuple
+ 
+<span class="d">-import click</span>
+ import requests
+ from packaging.version import Version
+ 
+<span class="h">@@ -171,12 +171,6 @@ def _fetch_pr_chunk_graphql(pr_numbers: list[int]) -&gt; list[PullRequest]:</span>
+     return prs
+ 
+ 
+<span class="d">-@click.command(help=&quot;Update CHANGELOG.md&quot;)</span>
+<span class="d">-@click.option(&quot;--prev-version&quot;, required=True, help=&quot;Previous version&quot;)</span>
+<span class="d">-@click.option(&quot;--release-version&quot;, required=True, help=&quot;MLflow version to release.&quot;)</span>
+<span class="d">-@click.option(</span>
+<span class="d">-    &quot;--remote&quot;, required=False, default=&quot;origin&quot;, help=&quot;Git remote to use (default: origin). &quot;</span>
+<span class="d">-)</span>
+ def main(prev_version, release_version, remote):
+     if is_shallow():
+         print(&quot;Unshallowing repository to ensure `git log` works correctly&quot;)
+<span class="h">@@ -282,4 +276,9 @@ def main(prev_version, release_version, remote):</span>
+ 
+ 
+ if __name__ == &quot;__main__&quot;:
+<span class="d">-    main()</span>
+<span class="a">+    parser = argparse.ArgumentParser(description=&quot;Update CHANGELOG.md&quot;)</span>
+<span class="a">+    parser.add_argument(&quot;--prev-version&quot;, required=True, help=&quot;Previous version&quot;)</span>
+<span class="a">+    parser.add_argument(&quot;--release-version&quot;, required=True, help=&quot;MLflow version to release&quot;)</span>
+<span class="a">+    parser.add_argument(&quot;--remote&quot;, default=&quot;origin&quot;, help=&quot;Git remote to use (default: origin)&quot;)</span>
+<span class="a">+    args = parser.parse_args()</span>
+<span class="a">+    main(args.prev_version, args.release_version, args.remote)</span></pre><h2>Commit #3: <a href="https://github.com/mlflow/mlflow/commit/87591ae965f45db07556420cd66a16685e1f82e5">87591ae965</a> (2025-11-27T18:16:30+09:00)</h2><p class="k">Add PERF401 rule to enforce list comprehensions over manual append loops (#19078)<br>Path after this commit: dev/update_changelog.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dev/update_changelog.py b/dev/update_changelog.py
+index 92ae2e7c3..93313f141 100644
+<span class="d">--- a/dev/update_changelog.py</span>
+<span class="a">+++ b/dev/update_changelog.py</span>
+<span class="h">@@ -199,10 +199,7 @@ def main(prev_version, release_version, remote):</span>
+     logs = [l[2:] for l in git_log_output.splitlines() if l.startswith(&quot;&gt; &quot;)]
+ 
+     # Extract all PR numbers first
+<span class="d">-    pr_numbers = []</span>
+<span class="d">-    for log in logs:</span>
+<span class="d">-        if pr_num := extract_pr_num_from_git_log_entry(log):</span>
+<span class="d">-            pr_numbers.append(pr_num)</span>
+<span class="a">+    pr_numbers = [pr_num for log in logs if (pr_num := extract_pr_num_from_git_log_entry(log))]</span>
+ 
+     prs = batch_fetch_prs_graphql(pr_numbers)
+     label_to_prs = defaultdict(list)</pre></body></html>

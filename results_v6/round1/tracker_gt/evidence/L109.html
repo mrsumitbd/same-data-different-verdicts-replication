@@ -1,0 +1,184 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L109</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L109</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>File at merge:</b> packages/grida-canvas-transparency-grid/transparency-grid.ts, line 33<br><b>Merge commit (birth):</b> <a href="https://github.com/gridaco/grida/commit/35fcd9bcfe5def250064cfabb1f29a7a98ccdaa9">35fcd9bcfe</a> (2025-02-10T11:09:23)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t"> *     1 0 1 0 1</span></pre><h2>File at the merge commit, lines 25 to 41</h2><pre>   25 | }
+   26 | 
+   27 | /**
+   28 |  * The TransparencyGridCanvas class renders a checkered transparency grid on an HTML canvas.
+   29 |  *
+   30 |  * Visual Behaviour:
+   31 |  * - Renders a chessboard-like pattern where filled cells alternate with empty cells.
+   32 |  *   For example:
+<span class="t">   33 |  *     1 0 1 0 1</span>
+   34 |  *     0 1 0 1 0
+   35 |  *     1 0 1 0 1
+   36 |  *
+   37 |  * - The grid is used to indicate transparency in graphics editors.
+   38 |  * - Each cell&#x27;s visual size is maintained at roughly 20px regardless of zoom, achieved by
+   39 |  *   quantizing the cell size based on the current scaling factors and device pixel ratio.
+   40 |  * - A transformation matrix (scale and translation) is applied so that as the user pans or zooms,
+   41 |  *   the grid adapts its position and cell size to remain visually consistent.</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gridaco/grida/commit/ccb06d4fae4a34dcb6b239a40e7ff2ad6709904c">ccb06d4fae</a> (2025-04-30T10:03:49+00:00)</h2><p class="k">Merge pull request #315 from gridaco/canvas/transparency-grid<br>Path after this commit: packages/grida-canvas-transparency-grid/transparency-grid.ts. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: packages/grida-canvas-transparency-grid/transparency-grid-2d.ts, packages/grida-canvas-transparency-grid/transparency-grid-wgpu.ts.</p><pre>diff --git a/packages/grida-canvas-transparency-grid/transparency-grid.ts b/packages/grida-canvas-transparency-grid/transparency-grid.ts
+index 2ebea46bf..8da40a3b7 100644
+<span class="d">--- a/packages/grida-canvas-transparency-grid/transparency-grid.ts</span>
+<span class="a">+++ b/packages/grida-canvas-transparency-grid/transparency-grid.ts</span>
+<span class="h">@@ -1,122 +1,55 @@</span>
+<span class="d">-export interface TransparencyGridOptions {</span>
+<span class="d">-  transform: [[number, number, number], [number, number, number]]; // [[sx, 0, tx],[0, sy, ty]]</span>
+<span class="d">-</span>
+<span class="d">-  /**</span>
+<span class="d">-   * @default &quot;rgba(0, 0, 0, 0.25)&quot;</span>
+<span class="d">-   */</span>
+<span class="d">-  color?: string;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-type Transform = [[number, number, number], [number, number, number]];</span>
+<span class="d">-function quantize(value: number): number {</span>
+<span class="d">-  const exponent = Math.floor(Math.log10(value));</span>
+<span class="d">-  const fraction = value / Math.pow(10, exponent);</span>
+<span class="d">-  let niceFraction: number;</span>
+<span class="d">-  if (fraction &lt; 1.5) {</span>
+<span class="d">-    niceFraction = 1;</span>
+<span class="d">-  } else if (fraction &lt; 3) {</span>
+<span class="d">-    niceFraction = 2;</span>
+<span class="d">-  } else if (fraction &lt; 7) {</span>
+<span class="d">-    niceFraction = 5;</span>
+<span class="d">-  } else {</span>
+<span class="d">-    niceFraction = 10;</span>
+<span class="d">-  }</span>
+<span class="d">-  return niceFraction * Math.pow(10, exponent);</span>
+<span class="d">-}</span>
+<span class="a">+import type { Transform2D, TransparencyGridOptions } from &quot;./types&quot;;</span>
+<span class="a">+import { TransparencyGrid_2D } from &quot;./transparency-grid-2d&quot;;</span>
+<span class="a">+import { TransparencyGrid_WGPU } from &quot;./transparency-grid-wgpu&quot;;</span>
+ 
+ /**
+<span class="d">- * The TransparencyGridCanvas class renders a checkered transparency grid on an HTML canvas.</span>
+<span class="d">- *</span>
+<span class="d">- * Visual Behaviour:</span>
+<span class="d">- * - Renders a chessboard-like pattern where filled cells alternate with empty cells.</span>
+<span class="d">- *   For example:</span>
+<span class="d m">- *     1 0 1 0 1</span>
+<span class="d">- *     0 1 0 1 0</span>
+<span class="d m">- *     1 0 1 0 1</span>
+<span class="d">- *</span>
+<span class="d">- * - The grid is used to indicate transparency in graphics editors.</span>
+<span class="d">- * - Each cell&#x27;s visual size is maintained at roughly 20px regardless of zoom, achieved by</span>
+<span class="d">- *   quantizing the cell size based on the current scaling factors and device pixel ratio.</span>
+<span class="d">- * - A transformation matrix (scale and translation) is applied so that as the user pans or zooms,</span>
+<span class="d">- *   the grid adapts its position and cell size to remain visually consistent.</span>
+<span class="d">- * - The checkered pattern is produced by iterating over grid indices and filling cells</span>
+<span class="d">- *   where the sum of the indices is even.</span>
+<span class="a">+ * TransparencyGridCanvas is a wrapper that selects the best implementation</span>
+<span class="a">+ * for rendering a transparency grid, using WebGPU if available, otherwise falling back to 2D Canvas.</span>
+  *
+  * Usage:
+<span class="d">- * - Instantiate with a canvas element and options containing a transformation matrix and an optional color.</span>
+<span class="d">- * - Use setSize to set the canvas dimensions.</span>
+<span class="d">- * - Update the transformation with updateTransform as needed.</span>
+<span class="d">- * - Call draw to render the grid.</span>
+<span class="a">+ *   const grid = new TransparencyGridCanvas(canvas, options);</span>
+<span class="a">+ *   grid.setSize(w, h);</span>
+<span class="a">+ *   grid.updateTransform(transform);</span>
+<span class="a">+ *   grid.draw();</span>
+  */
+ export class TransparencyGridCanvas {
+<span class="d">-  private ctx: CanvasRenderingContext2D;</span>
+<span class="d">-  private dpr: number;</span>
+<span class="d">-  private transform: Transform;</span>
+<span class="d">-  private color: string;</span>
+<span class="d">-  width = 0;</span>
+<span class="d">-  height = 0;</span>
+<span class="a">+  readonly backend: &quot;2d&quot; | &quot;webgpu&quot;;</span>
+<span class="a">+  private impl: TransparencyGrid_2D | TransparencyGrid_WGPU;</span>
+ 
+   constructor(
+<span class="d">-    private canvas: HTMLCanvasElement,</span>
+<span class="d">-    { transform, color = &quot;rgba(150, 150, 150, 0.15)&quot; }: TransparencyGridOptions</span>
+<span class="a">+    canvas: HTMLCanvasElement,</span>
+<span class="a">+    options: TransparencyGridOptions,</span>
+<span class="a">+    backend?: &quot;2d&quot; | &quot;webgpu&quot;</span>
+   ) {
+<span class="d">-    this.ctx = canvas.getContext(&quot;2d&quot;)!;</span>
+<span class="d">-    this.dpr = window.devicePixelRatio || 1;</span>
+<span class="d">-    this.transform = transform;</span>
+<span class="d">-    this.color = color;</span>
+<span class="a">+    switch (backend) {</span>
+<span class="a">+      case &quot;2d&quot;:</span>
+<span class="a">+        this.impl = new TransparencyGrid_2D(canvas, options);</span>
+<span class="a">+        this.backend = &quot;2d&quot;;</span>
+<span class="a">+        break;</span>
+<span class="a">+      case &quot;webgpu&quot;:</span>
+<span class="a">+        this.impl = new TransparencyGrid_WGPU(canvas, options);</span>
+<span class="a">+        this.backend = &quot;webgpu&quot;;</span>
+<span class="a">+        break;</span>
+<span class="a">+      default:</span>
+<span class="a">+        const supports_wgpu =</span>
+<span class="a">+          typeof navigator !== &quot;undefined&quot; &amp;&amp; &quot;gpu&quot; in navigator;</span>
+<span class="a">+        this.backend = supports_wgpu ? &quot;webgpu&quot; : &quot;2d&quot;;</span>
+<span class="a">+        this.impl = supports_wgpu</span>
+<span class="a">+          ? new TransparencyGrid_WGPU(canvas, options)</span>
+<span class="a">+          : new TransparencyGrid_2D(canvas, options);</span>
+<span class="a">+        break;</span>
+<span class="a">+    }</span>
+   }
+ 
+<span class="d">-  setSize(w: number, h: number) {</span>
+<span class="d">-    this.width = w;</span>
+<span class="d">-    this.height = h;</span>
+<span class="d">-    this.canvas.width = w * this.dpr;</span>
+<span class="d">-    this.canvas.height = h * this.dpr;</span>
+<span class="d">-    this.canvas.style.width = `${w}px`;</span>
+<span class="d">-    this.canvas.style.height = `${h}px`;</span>
+<span class="d">-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);</span>
+<span class="a">+  setSize(width: number, height: number) {</span>
+<span class="a">+    this.impl.setSize(width, height);</span>
+   }
+ 
+<span class="d">-  updateTransform(transform: Transform) {</span>
+<span class="d">-    this.transform = transform;</span>
+<span class="a">+  updateTransform(transform: Transform2D) {</span>
+<span class="a">+    this.impl.updateTransform(transform);</span>
+   }
+ 
+   draw() {
+<span class="d">-    const ctx = this.ctx;</span>
+<span class="d">-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);</span>
+<span class="d">-    ctx.save();</span>
+<span class="d">-</span>
+<span class="d">-    const [[sx, , tx], [, sy, ty]] = this.transform;</span>
+<span class="d">-    ctx.setTransform(</span>
+<span class="d">-      sx * this.dpr,</span>
+<span class="d">-      0,</span>
+<span class="d">-      0,</span>
+<span class="d">-      sy * this.dpr,</span>
+<span class="d">-      tx * this.dpr,</span>
+<span class="d">-      ty * this.dpr</span>
+<span class="d">-    );</span>
+<span class="d">-    ctx.fillStyle = this.color;</span>
+<span class="d">-</span>
+<span class="d">-    const targetVisualSize = 20;</span>
+<span class="d">-    const stepX = quantize(targetVisualSize / (sx * this.dpr));</span>
+<span class="d">-    const stepY = quantize(targetVisualSize / (sy * this.dpr));</span>
+<span class="d">-</span>
+<span class="d">-    const minUserX = (0 - tx * this.dpr) / (sx * this.dpr);</span>
+<span class="d">-    const maxUserX = (this.width * this.dpr - tx * this.dpr) / (sx * this.dpr);</span>
+<span class="d">-    const minUserY = (0 - ty * this.dpr) / (sy * this.dpr);</span>
+<span class="d">-    const maxUserY = (this.height * this.dpr - ty * this.dpr) / (sy * this.dpr);</span>
+<span class="d">-</span>
+<span class="d">-    const ixStart = Math.floor(minUserX / stepX) - 2;</span>
+<span class="d">-    const ixEnd = Math.ceil(maxUserX / stepX) + 2;</span>
+<span class="d">-    const iyStart = Math.floor(minUserY / stepY) - 2;</span>
+<span class="d">-    const iyEnd = Math.ceil(maxUserY / stepY) + 2;</span>
+<span class="d">-</span>
+<span class="d">-    for (let i = ixStart; i &lt;= ixEnd; i++) {</span>
+<span class="d">-      for (let j = iyStart; j &lt;= iyEnd; j++) {</span>
+<span class="d">-        if ((i + j) % 2 === 0) {</span>
+<span class="d">-          ctx.fillRect(i * stepX, j * stepY, stepX, stepY);</span>
+<span class="d">-        }</span>
+<span class="d">-      }</span>
+<span class="d">-    }</span>
+<span class="d">-    ctx.restore();</span>
+<span class="a">+    return this.impl.draw();</span>
+   }
+ }</pre></body></html>

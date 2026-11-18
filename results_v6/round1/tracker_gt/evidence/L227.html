@@ -1,0 +1,77 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L227</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L227</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs, line 20<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/9626c43dae4defa5109505e1b4ddd6443c734298">9626c43dae</a> (2025-03-30T13:43:01)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">    doc: Some(&amp;Documentation {</span></pre><h2>File at the merge commit, lines 12 to 28</h2><pre>   12 | use crate::functions::aggregate::simple::{SimpleUnaryAggregate, UnaryAggregate};
+   13 | use crate::functions::bind_state::BindState;
+   14 | use crate::functions::documentation::{Category, Documentation};
+   15 | use crate::functions::function_set::AggregateFunctionSet;
+   16 | 
+   17 | pub const FUNCTION_SET_BOOL_OR: AggregateFunctionSet = AggregateFunctionSet {
+   18 |     name: &quot;bool_or&quot;,
+   19 |     aliases: &amp;[],
+<span class="t">   20 |     doc: Some(&amp;Documentation {</span>
+   21 |         category: Category::Aggregate,
+   22 |         description: &quot;Returns true if any non-NULL input is true, otherwise false.&quot;,
+   23 |         arguments: &amp;[&quot;input&quot;],
+   24 |         example: None,
+   25 |     }),
+   26 |     functions: &amp;[RawAggregateFunction::new(
+   27 |         &amp;Signature::new(&amp;[DataTypeId::Boolean], DataTypeId::Boolean),
+   28 |         &amp;SimpleUnaryAggregate::new(&amp;BoolOr),</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/82e8946d042f0aee82f0215fca6c7e152443327a">82e8946d04</a> (2025-03-30T15:24:10+00:00)</h2><p class="k">chore: Move aggregate function slts to more logical spot (#3539)<br>Path after this commit: crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs b/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs
+index 60646b9a..936b7673 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs</span>
+<span class="h">@@ -54,8 +54,8 @@ impl UnaryAggregate for BoolOr {</span>
+ 
+ #[derive(Debug, Default)]
+ pub struct BoolOrState {
+<span class="d">-    result: bool, // Default is false, which is correct for OR operations</span>
+<span class="d">-    valid: bool,  // Default is false</span>
+<span class="a">+    result: bool,</span>
+<span class="a">+    valid: bool,</span>
+ }
+ 
+ impl AggregateState&lt;&amp;bool, bool&gt; for BoolOrState {</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/120556a337cf72121f025ee408fa788aa3066aa6">120556a337</a> (2025-03-30T19:34:21+00:00)</h2><p class="k">Change doc field on FunctionSet to be a slice instead of an Option (#3547)<br>Path after this commit: crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs b/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs
+index 936b7673..ec26998e 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs</span>
+<span class="h">@@ -17,12 +17,12 @@ use crate::functions::function_set::AggregateFunctionSet;</span>
+ pub const FUNCTION_SET_BOOL_OR: AggregateFunctionSet = AggregateFunctionSet {
+     name: &quot;bool_or&quot;,
+     aliases: &amp;[],
+<span class="d m">-    doc: Some(&amp;Documentation {</span>
+<span class="a">+    doc: &amp;[&amp;Documentation {</span>
+         category: Category::Aggregate,
+         description: &quot;Returns true if any non-NULL input is true, otherwise false.&quot;,
+         arguments: &amp;[&quot;input&quot;],
+         example: None,
+<span class="d">-    }),</span>
+<span class="a">+    }],</span>
+     functions: &amp;[RawAggregateFunction::new(
+         &amp;Signature::new(&amp;[DataTypeId::Boolean], DataTypeId::Boolean),
+         &amp;SimpleUnaryAggregate::new(&amp;BoolOr),</pre><h2>Commit #3: <a href="https://github.com/glaredb/glaredb/commit/a16d42451749180f30a91623be0e35247371c081">a16d424517</a> (2025-05-06T09:44:07-04:00)</h2><p class="k">chore: Refactor DataType (#3776)<br>Path after this commit: crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs b/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs
+index ec26998e..c019efe1 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs</span>
+<span class="h">@@ -42,7 +42,7 @@ impl UnaryAggregate for BoolOr {</span>
+     fn bind(&amp;self, inputs: Vec&lt;Expression&gt;) -&gt; Result&lt;BindState&lt;Self::BindState&gt;&gt; {
+         Ok(BindState {
+             state: (),
+<span class="d">-            return_type: DataType::Boolean,</span>
+<span class="a">+            return_type: DataType::boolean(),</span>
+             inputs,
+         })
+     }</pre><h2>Commit #4: <a href="https://github.com/glaredb/glaredb/commit/eb4ed4b694c96c906d66a66345c0553ba6701d23">eb4ed4b694</a> (2025-05-19T13:08:53-04:00)</h2><p class="k">chore: Second-level categories for aggregate and operator functions (#3826)<br>Path after this commit: crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs b/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs
+index c019efe1..16249459 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/aggregate/builtin/bool_or.rs</span>
+<span class="h">@@ -18,7 +18,7 @@ pub const FUNCTION_SET_BOOL_OR: AggregateFunctionSet = AggregateFunctionSet {</span>
+     name: &quot;bool_or&quot;,
+     aliases: &amp;[],
+     doc: &amp;[&amp;Documentation {
+<span class="d">-        category: Category::Aggregate,</span>
+<span class="a">+        category: Category::GENERAL_PURPOSE_AGGREGATE,</span>
+         description: &quot;Returns true if any non-NULL input is true, otherwise false.&quot;,
+         arguments: &amp;[&quot;input&quot;],
+         example: None,</pre></body></html>

@@ -1,0 +1,515 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L128</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L128</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> tests/Aspire.Hosting.Tests/AddParameterTests.cs, line 378<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/19bfc3312c603c003b46c86397d0dc34aec85adb">19bfc3312c</a> (2025-07-11T19:33:20)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">        var connectionStringResource = Assert.Single(appModel.Resources.OfType&lt;ConnectionStringResource&gt;());</span></pre><h2>File at the merge commit, lines 370 to 386</h2><pre>  370 |         var key = appBuilder.AddParameter(&quot;key&quot;, &quot;secretKey&quot;, secret: true);
+  371 | 
+  372 |         appBuilder.AddConnectionString(&quot;testcs&quot;, ReferenceExpression.Create($&quot;Endpoint={endpoint};Key={key}&quot;));
+  373 | 
+  374 |         using var app = appBuilder.Build();
+  375 | 
+  376 |         var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();
+  377 | 
+<span class="t">  378 |         var connectionStringResource = Assert.Single(appModel.Resources.OfType&lt;ConnectionStringResource&gt;());</span>
+  379 |         var annotation = connectionStringResource.Annotations.OfType&lt;ResourceSnapshotAnnotation&gt;().SingleOrDefault();
+  380 | 
+  381 |         Assert.NotNull(annotation);
+  382 | 
+  383 |         var state = annotation.InitialSnapshot;
+  384 | 
+  385 |         Assert.False(state.IsHidden);
+  386 |         Assert.Equal(KnownResourceTypes.ConnectionString, state.ResourceType);</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/7c8b37c473b5a6aa1c0403e8580546793535bb51">7c8b37c473</a> (2025-07-14T16:42:47+00:00)</h2><p class="k">Add xmldocs to generated metadata projects (#9868)<br>Path after this commit: tests/Aspire.Hosting.Tests/AddParameterTests.cs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/AddParameterTests.cs b/tests/Aspire.Hosting.Tests/AddParameterTests.cs
+index 9d41478fbb..529232ba18 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="h">@@ -7,7 +7,6 @@ using Aspire.Hosting.Utils;</span>
+ using Microsoft.AspNetCore.InternalTesting;
+ using Microsoft.Extensions.Configuration;
+ using Microsoft.Extensions.DependencyInjection;
+<span class="d">-using Xunit;</span>
+ 
+ namespace Aspire.Hosting.Tests;
+ </pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/b96c2893cf81a4bc20b5ff4134653307a8ec4b94">b96c2893cf</a> (2025-07-15T21:38:47-07:00)</h2><p class="k">Add support for parameter description &amp; custom input rendering (#10440)<br>Path after this commit: tests/Aspire.Hosting.Tests/AddParameterTests.cs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/AddParameterTests.cs b/tests/Aspire.Hosting.Tests/AddParameterTests.cs
+index 529232ba18..9e567dc48e 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="h">@@ -385,4 +385,165 @@ public class AddParameterTests</span>
+         Assert.Equal(KnownResourceTypes.ConnectionString, state.ResourceType);
+         Assert.Equal(KnownResourceStates.Waiting, state.State?.Text);
+     }
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ParameterWithDescription_SetsDescriptionProperty()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var parameter = appBuilder.AddParameter(&quot;test&quot;)</span>
+<span class="a">+            .WithDescription(&quot;This is a test parameter&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(&quot;This is a test parameter&quot;, parameter.Resource.Description);</span>
+<span class="a">+        Assert.False(parameter.Resource.EnableDescriptionMarkdown);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ParameterWithMarkdownDescription_SetsDescriptionAndMarkupProperties()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var parameter = appBuilder.AddParameter(&quot;test&quot;)</span>
+<span class="a">+            .WithDescription(&quot;This is a **markdown** description&quot;, enableMarkdown: true);</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(&quot;This is a **markdown** description&quot;, parameter.Resource.Description);</span>
+<span class="a">+        Assert.True(parameter.Resource.EnableDescriptionMarkdown);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+#pragma warning disable ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ParameterWithDescriptionAndCustomInput_AddsInputGeneratorAnnotation()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var parameter = appBuilder.AddParameter(&quot;test&quot;)</span>
+<span class="a">+            .WithDescription(&quot;Custom input parameter&quot;)</span>
+<span class="a">+            .WithCustomInput(p =&gt; new InteractionInput</span>
+<span class="a">+            {</span>
+<span class="a">+                InputType = InputType.Number,</span>
+<span class="a">+                Label = &quot;Custom Label&quot;,</span>
+<span class="a">+                Description = p.Description,</span>
+<span class="a">+                EnableDescriptionMarkdown = p.EnableDescriptionMarkdown</span>
+<span class="a">+            });</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(&quot;Custom input parameter&quot;, parameter.Resource.Description);</span>
+<span class="a">+        Assert.True(parameter.Resource.Annotations.OfType&lt;InputGeneratorAnnotation&gt;().Any());</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ParameterCreateInput_WithoutCustomGenerator_ReturnsDefaultInput()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+        var parameter = appBuilder.AddParameter(&quot;test&quot;)</span>
+<span class="a">+            .WithDescription(&quot;Test description&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var input = parameter.Resource.CreateInput();</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(InputType.Text, input.InputType);</span>
+<span class="a">+        Assert.Equal(&quot;test&quot;, input.Label);</span>
+<span class="a">+        Assert.Equal(&quot;Test description&quot;, input.Description);</span>
+<span class="a">+        Assert.Equal(&quot;Enter value for test&quot;, input.Placeholder);</span>
+<span class="a">+        Assert.False(input.EnableDescriptionMarkdown);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ParameterCreateInput_ForSecretParameter_ReturnsSecretTextInput()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+        var parameter = appBuilder.AddParameter(&quot;secret&quot;, secret: true)</span>
+<span class="a">+            .WithDescription(&quot;Secret description&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var input = parameter.Resource.CreateInput();</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(InputType.SecretText, input.InputType);</span>
+<span class="a">+        Assert.Equal(&quot;secret&quot;, input.Label);</span>
+<span class="a">+        Assert.Equal(&quot;Secret description&quot;, input.Description);</span>
+<span class="a">+        Assert.Equal(&quot;Enter value for secret&quot;, input.Placeholder);</span>
+<span class="a">+        Assert.False(input.EnableDescriptionMarkdown);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ParameterCreateInput_WithCustomGenerator_UsesGenerator()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+        var parameter = appBuilder.AddParameter(&quot;test&quot;)</span>
+<span class="a">+            .WithDescription(&quot;Custom description&quot;)</span>
+<span class="a">+            .WithCustomInput(p =&gt; new InteractionInput</span>
+<span class="a">+            {</span>
+<span class="a">+                InputType = InputType.Number,</span>
+<span class="a">+                Label = &quot;Custom Label&quot;,</span>
+<span class="a">+                Description = &quot;Custom: &quot; + p.Description,</span>
+<span class="a">+                EnableDescriptionMarkdown = true,</span>
+<span class="a">+                Placeholder = &quot;Enter number&quot;</span>
+<span class="a">+            });</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var input = parameter.Resource.CreateInput();</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(InputType.Number, input.InputType);</span>
+<span class="a">+        Assert.Equal(&quot;Custom Label&quot;, input.Label);</span>
+<span class="a">+        Assert.Equal(&quot;Custom: Custom description&quot;, input.Description);</span>
+<span class="a">+        Assert.Equal(&quot;Enter number&quot;, input.Placeholder);</span>
+<span class="a">+        Assert.True(input.EnableDescriptionMarkdown);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ParameterCreateInput_WithMarkdownDescription_SetsMarkupFlag()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+        var parameter = appBuilder.AddParameter(&quot;test&quot;)</span>
+<span class="a">+            .WithDescription(&quot;**Bold** description&quot;, enableMarkdown: true);</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var input = parameter.Resource.CreateInput();</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.Equal(&quot;**Bold** description&quot;, input.Description);</span>
+<span class="a">+        Assert.True(input.EnableDescriptionMarkdown);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ParameterWithCustomInput_AddsInputGeneratorAnnotation()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        var parameter = appBuilder.AddParameter(&quot;test&quot;)</span>
+<span class="a">+            .WithCustomInput(p =&gt; new InteractionInput</span>
+<span class="a">+            {</span>
+<span class="a">+                InputType = InputType.Number,</span>
+<span class="a">+                Label = &quot;Custom Label&quot;,</span>
+<span class="a">+                Description = &quot;Custom description&quot;,</span>
+<span class="a">+                EnableDescriptionMarkdown = false</span>
+<span class="a">+            });</span>
+<span class="a">+</span>
+<span class="a">+        // Assert</span>
+<span class="a">+        Assert.True(parameter.Resource.Annotations.OfType&lt;InputGeneratorAnnotation&gt;().Any());</span>
+<span class="a">+</span>
+<span class="a">+        var input = parameter.Resource.CreateInput();</span>
+<span class="a">+        Assert.Equal(InputType.Number, input.InputType);</span>
+<span class="a">+        Assert.Equal(&quot;Custom Label&quot;, input.Label);</span>
+<span class="a">+        Assert.Equal(&quot;Custom description&quot;, input.Description);</span>
+<span class="a">+        Assert.False(input.EnableDescriptionMarkdown);</span>
+<span class="a">+    }</span>
+<span class="a">+#pragma warning restore ASPIREINTERACTION001</span>
+ }</pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/02a4d7d789cb3b67735e8bb557661f683441259d">02a4d7d789</a> (2025-07-29T08:39:09+10:00)</h2><p class="k">Mark ParameterResource.Value as obsolete in favor of GetValueAsync and direct usage (#10363)<br>Path after this commit: tests/Aspire.Hosting.Tests/AddParameterTests.cs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/AddParameterTests.cs b/tests/Aspire.Hosting.Tests/AddParameterTests.cs
+index 9e567dc48e..a1e12299ad 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="h">@@ -62,7 +62,9 @@ public class AddParameterTests</span>
+         var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();
+ 
+         var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;());
+<span class="a">+#pragma warning disable CS0618 // Type or member is obsolete</span>
+         Assert.Equal(&quot;ValueFromConfiguration&quot;, parameterResource.Value);
+<span class="a">+#pragma warning restore CS0618 // Type or member is obsolete</span>
+     }
+ 
+     [Theory]
+<span class="h">@@ -97,7 +99,9 @@ public class AddParameterTests</span>
+ 
+         // Make sure the code value is used, ignoring any config value
+         var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;(), r =&gt; r.Name == &quot;pass&quot;);
+<span class="a">+#pragma warning disable CS0618 // Type or member is obsolete</span>
+         Assert.Equal($&quot;DefaultValue&quot;, parameterResource.Value);
+<span class="a">+#pragma warning restore CS0618 // Type or member is obsolete</span>
+ 
+         // The manifest should not include anything about the default value
+         var paramManifest = await ManifestUtils.GetManifest(appModel.Resources.OfType&lt;ParameterResource&gt;().Single(r =&gt; r.Name == &quot;pass&quot;)).DefaultTimeout();
+<span class="h">@@ -147,7 +151,9 @@ public class AddParameterTests</span>
+ 
+         // Make sure the code value is used, ignoring any config value
+         var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;(), r =&gt; r.Name == &quot;pass&quot;);
+<span class="a">+#pragma warning disable CS0618 // Type or member is obsolete</span>
+         Assert.Equal($&quot;DefaultValue&quot;, parameterResource.Value);
+<span class="a">+#pragma warning restore CS0618 // Type or member is obsolete</span>
+ 
+         // The manifest should include the default value, since we passed publishValueAsDefault: true
+         var paramManifest = await ManifestUtils.GetManifest(appModel.Resources.OfType&lt;ParameterResource&gt;().Single(r =&gt; r.Name == &quot;pass&quot;)).DefaultTimeout();
+<span class="h">@@ -206,13 +212,17 @@ public class AddParameterTests</span>
+         var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;(), r =&gt; r.Name == &quot;pass&quot;);
+         if (hasConfig)
+         {
+<span class="a">+#pragma warning disable CS0618 // Type or member is obsolete</span>
+             Assert.Equal(&quot;ValueFromConfiguration&quot;, parameterResource.Value);
+<span class="a">+#pragma warning restore CS0618 // Type or member is obsolete</span>
+         }
+         else
+         {
+<span class="a">+#pragma warning disable CS0618 // Type or member is obsolete</span>
+             Assert.NotEqual(&quot;ValueFromConfiguration&quot;, parameterResource.Value);
+             // We can&#x27;t test the exact value since it&#x27;s random, but we can test the length
+             Assert.Equal(10, parameterResource.Value.Length);
+<span class="a">+#pragma warning restore CS0618 // Type or member is obsolete</span>
+         }
+ 
+         // The manifest should always include the fields for the generated default value
+<span class="h">@@ -268,7 +278,9 @@ public class AddParameterTests</span>
+         var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();
+ 
+         var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;(), r =&gt; r.Name == &quot;val&quot;);
+<span class="a">+#pragma warning disable CS0618 // Type or member is obsolete</span>
+         Assert.Equal($&quot;MyAccessToken&quot;, parameterResource.Value);
+<span class="a">+#pragma warning restore CS0618 // Type or member is obsolete</span>
+ 
+         // The manifest is not affected by the custom configuration key
+         var paramManifest = await ManifestUtils.GetManifest(appModel.Resources.OfType&lt;ParameterResource&gt;().Single(r =&gt; r.Name == &quot;val&quot;)).DefaultTimeout();</pre><h2>Commit #4: <a href="https://github.com/dotnet/aspire/commit/58ac64c5dd4f2c162a8fb55916001e406cb188ab">58ac64c5dd</a> (2025-08-18T16:28:47-04:00)</h2><p class="k">Fix parameter tests with localized values (#10959)<br>Path after this commit: tests/Aspire.Hosting.Tests/AddParameterTests.cs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/AddParameterTests.cs b/tests/Aspire.Hosting.Tests/AddParameterTests.cs
+index a1e12299ad..6978a2ea95 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="h">@@ -3,6 +3,7 @@</span>
+ 
+ using Aspire.Dashboard.Model;
+ using Aspire.Hosting.Publishing;
+<span class="a">+using Aspire.Hosting.Resources;</span>
+ using Aspire.Hosting.Utils;
+ using Microsoft.AspNetCore.InternalTesting;
+ using Microsoft.Extensions.Configuration;
+<span class="h">@@ -466,7 +467,7 @@ public class AddParameterTests</span>
+         Assert.Equal(InputType.Text, input.InputType);
+         Assert.Equal(&quot;test&quot;, input.Label);
+         Assert.Equal(&quot;Test description&quot;, input.Description);
+<span class="d">-        Assert.Equal(&quot;Enter value for test&quot;, input.Placeholder);</span>
+<span class="a">+        Assert.Equal(string.Format(InteractionStrings.ParametersInputsParameterPlaceholder, &quot;test&quot;), input.Placeholder);</span>
+         Assert.False(input.EnableDescriptionMarkdown);
+     }
+ 
+<span class="h">@@ -485,7 +486,7 @@ public class AddParameterTests</span>
+         Assert.Equal(InputType.SecretText, input.InputType);
+         Assert.Equal(&quot;secret&quot;, input.Label);
+         Assert.Equal(&quot;Secret description&quot;, input.Description);
+<span class="d">-        Assert.Equal(&quot;Enter value for secret&quot;, input.Placeholder);</span>
+<span class="a">+        Assert.Equal(string.Format(InteractionStrings.ParametersInputsParameterPlaceholder, &quot;secret&quot;), input.Placeholder);</span>
+         Assert.False(input.EnableDescriptionMarkdown);
+     }
+ </pre><h2>Commit #5: <a href="https://github.com/dotnet/aspire/commit/c96a2d9507da99ba59389ae8e40a106779a51da0">c96a2d9507</a> (2025-08-19T05:00:06+00:00)</h2><p class="k">Make InteractionInput.Name required and Label optional (#10835)<br>Path after this commit: tests/Aspire.Hosting.Tests/AddParameterTests.cs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/AddParameterTests.cs b/tests/Aspire.Hosting.Tests/AddParameterTests.cs
+index 6978a2ea95..8588277f97 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="h">@@ -441,6 +441,7 @@ public class AddParameterTests</span>
+             .WithDescription(&quot;Custom input parameter&quot;)
+             .WithCustomInput(p =&gt; new InteractionInput
+             {
+<span class="a">+                Name = &quot;CustomInput&quot;,</span>
+                 InputType = InputType.Number,
+                 Label = &quot;Custom Label&quot;,
+                 Description = p.Description,
+<span class="h">@@ -499,6 +500,7 @@ public class AddParameterTests</span>
+             .WithDescription(&quot;Custom description&quot;)
+             .WithCustomInput(p =&gt; new InteractionInput
+             {
+<span class="a">+                Name = &quot;TestParameter&quot;,</span>
+                 InputType = InputType.Number,
+                 Label = &quot;Custom Label&quot;,
+                 Description = &quot;Custom: &quot; + p.Description,
+<span class="h">@@ -543,6 +545,7 @@ public class AddParameterTests</span>
+         var parameter = appBuilder.AddParameter(&quot;test&quot;)
+             .WithCustomInput(p =&gt; new InteractionInput
+             {
+<span class="a">+                Name = &quot;TestParam&quot;,</span>
+                 InputType = InputType.Number,
+                 Label = &quot;Custom Label&quot;,
+                 Description = &quot;Custom description&quot;,</pre><h2>Commit #6: <a href="https://github.com/dotnet/aspire/commit/a32c0b12f3e3a6d72780755358e6c23df8a18c5c">a32c0b12f3</a> (2025-08-20T09:01:50-07:00)</h2><p class="k">Remove IResourceWithoutLifetime on everything (#10851)<br>Path after this commit: tests/Aspire.Hosting.Tests/AddParameterTests.cs. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: tests/Aspire.Hosting.Tests/AddConnectionStringTests.cs.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/AddParameterTests.cs b/tests/Aspire.Hosting.Tests/AddParameterTests.cs
+index 8588277f97..214489cb6b 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="h">@@ -1,7 +1,6 @@</span>
+ // Licensed to the .NET Foundation under one or more agreements.
+ // The .NET Foundation licenses this file to you under the MIT license.
+ 
+<span class="d">-using Aspire.Dashboard.Model;</span>
+ using Aspire.Hosting.Publishing;
+ using Aspire.Hosting.Resources;
+ using Aspire.Hosting.Utils;
+<span class="h">@@ -34,11 +33,6 @@ public class AddParameterTests</span>
+ 
+         Assert.False(state.IsHidden);
+         Assert.Collection(state.Properties,
+<span class="d">-            prop =&gt;</span>
+<span class="d">-            {</span>
+<span class="d">-                Assert.Equal(&quot;parameter.secret&quot;, prop.Name);</span>
+<span class="d">-                Assert.Equal(&quot;True&quot;, prop.Value);</span>
+<span class="d">-            },</span>
+             prop =&gt;
+             {
+                 Assert.Equal(CustomResourceKnownProperties.Source, prop.Name);
+<span class="h">@@ -333,37 +327,6 @@ public class AddParameterTests</span>
+         Assert.Equal(expectedManifest, s);
+     }
+ 
+<span class="d">-    [Fact]</span>
+<span class="d">-    public async Task AddConnectionStringExpressionIsAValueInTheManifest()</span>
+<span class="d">-    {</span>
+<span class="d">-        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="d">-</span>
+<span class="d">-        var endpoint = appBuilder.AddParameter(&quot;endpoint&quot;, &quot;http://localhost:3452&quot;);</span>
+<span class="d">-        var key = appBuilder.AddParameter(&quot;key&quot;, &quot;secretKey&quot;, secret: true);</span>
+<span class="d">-</span>
+<span class="d">-        // Get the service provider.</span>
+<span class="d">-        appBuilder.AddConnectionString(&quot;mycs&quot;, ReferenceExpression.Create($&quot;Endpoint={endpoint};Key={key}&quot;));</span>
+<span class="d">-</span>
+<span class="d">-        using var app = appBuilder.Build();</span>
+<span class="d">-</span>
+<span class="d">-        var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();</span>
+<span class="d m">-        var connectionStringResource = Assert.Single(appModel.Resources.OfType&lt;ConnectionStringResource&gt;());</span>
+<span class="d">-</span>
+<span class="d">-        Assert.Equal(&quot;mycs&quot;, connectionStringResource.Name);</span>
+<span class="d">-        var connectionStringManifest = await ManifestUtils.GetManifest(connectionStringResource).DefaultTimeout();</span>
+<span class="d">-</span>
+<span class="d">-        var expectedManifest = $$&quot;&quot;&quot;</span>
+<span class="d">-            {</span>
+<span class="d">-              &quot;type&quot;: &quot;value.v0&quot;,</span>
+<span class="d">-              &quot;connectionString&quot;: &quot;Endpoint={endpoint.value};Key={key.value}&quot;</span>
+<span class="d">-            }</span>
+<span class="d">-            &quot;&quot;&quot;;</span>
+<span class="d">-</span>
+<span class="d">-        var s = connectionStringManifest.ToString();</span>
+<span class="d">-</span>
+<span class="d">-        Assert.Equal(expectedManifest, s);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     private sealed class TestParameterDefault(string defaultValue) : ParameterDefault
+     {
+         public override string GetDefaultValue() =&gt; defaultValue;
+<span class="h">@@ -374,31 +337,6 @@ public class AddParameterTests</span>
+         }
+     }
+ 
+<span class="d">-    [Fact]</span>
+<span class="d">-    public void ConnectionStringsAreVisibleByDefault()</span>
+<span class="d">-    {</span>
+<span class="d">-        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="d">-        var endpoint = appBuilder.AddParameter(&quot;endpoint&quot;, &quot;http://localhost:3452&quot;);</span>
+<span class="d">-        var key = appBuilder.AddParameter(&quot;key&quot;, &quot;secretKey&quot;, secret: true);</span>
+<span class="d">-</span>
+<span class="d">-        appBuilder.AddConnectionString(&quot;testcs&quot;, ReferenceExpression.Create($&quot;Endpoint={endpoint};Key={key}&quot;));</span>
+<span class="d">-</span>
+<span class="d">-        using var app = appBuilder.Build();</span>
+<span class="d">-</span>
+<span class="d">-        var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();</span>
+<span class="d">-</span>
+<span class="d m">-        var connectionStringResource = Assert.Single(appModel.Resources.OfType&lt;ConnectionStringResource&gt;());</span>
+<span class="d">-        var annotation = connectionStringResource.Annotations.OfType&lt;ResourceSnapshotAnnotation&gt;().SingleOrDefault();</span>
+<span class="d">-</span>
+<span class="d">-        Assert.NotNull(annotation);</span>
+<span class="d">-</span>
+<span class="d">-        var state = annotation.InitialSnapshot;</span>
+<span class="d">-</span>
+<span class="d">-        Assert.False(state.IsHidden);</span>
+<span class="d">-        Assert.Equal(KnownResourceTypes.ConnectionString, state.ResourceType);</span>
+<span class="d">-        Assert.Equal(KnownResourceStates.Waiting, state.State?.Text);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     [Fact]
+     public void ParameterWithDescription_SetsDescriptionProperty()
+     {</pre><h2>Commit #7: <a href="https://github.com/dotnet/aspire/commit/4f49f9d9582a702f23fc137de9fb1d4477609d31">4f49f9d958</a> (2025-10-02T17:43:09+00:00)</h2><p class="k">Support parameter names with dashes resolved from underscore configuration (#11785)<br>Path after this commit: tests/Aspire.Hosting.Tests/AddParameterTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/AddParameterTests.cs b/tests/Aspire.Hosting.Tests/AddParameterTests.cs
+index 214489cb6b..8aab668c3f 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/AddParameterTests.cs</span>
+<span class="h">@@ -500,4 +500,100 @@ public class AddParameterTests</span>
+         Assert.False(input.EnableDescriptionMarkdown);
+     }
+ #pragma warning restore ASPIREINTERACTION001
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ParameterWithDashInName_CanBeResolvedWithUnderscoreInConfiguration()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+        </span>
+<span class="a">+        // Configuration using underscore instead of dash (as would come from environment variables or command line)</span>
+<span class="a">+        appBuilder.Configuration.AddInMemoryCollection(new Dictionary&lt;string, string?&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            [&quot;Parameters:storage_account_name&quot;] = &quot;test-storage-account&quot;</span>
+<span class="a">+        });</span>
+<span class="a">+</span>
+<span class="a">+        // Act - parameter defined with dash</span>
+<span class="a">+        appBuilder.AddParameter(&quot;storage-account-name&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        using var app = appBuilder.Build();</span>
+<span class="a">+        var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();</span>
+<span class="a">+        var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;());</span>
+<span class="a">+</span>
+<span class="a">+        // Assert - should resolve to the value set with underscore</span>
+<span class="a">+        Assert.Equal(&quot;test-storage-account&quot;, await parameterResource.GetValueAsync(default));</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ParameterWithDashInName_PrefersDashConfigurationOverUnderscore()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+        </span>
+<span class="a">+        // Set both versions, dash version should take precedence</span>
+<span class="a">+        appBuilder.Configuration.AddInMemoryCollection(new Dictionary&lt;string, string?&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            [&quot;Parameters:storage-account-name&quot;] = &quot;dash-value&quot;,</span>
+<span class="a">+            [&quot;Parameters:storage_account_name&quot;] = &quot;underscore-value&quot;</span>
+<span class="a">+        });</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        appBuilder.AddParameter(&quot;storage-account-name&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        using var app = appBuilder.Build();</span>
+<span class="a">+        var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();</span>
+<span class="a">+        var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;());</span>
+<span class="a">+</span>
+<span class="a">+        // Assert - should prefer the exact match (with dash)</span>
+<span class="a">+        Assert.Equal(&quot;dash-value&quot;, await parameterResource.GetValueAsync(default));</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ParameterWithoutDash_DoesNotFallbackToUnderscore()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+        </span>
+<span class="a">+        // Set only underscore version for a parameter without dash</span>
+<span class="a">+        appBuilder.Configuration.AddInMemoryCollection(new Dictionary&lt;string, string?&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            [&quot;Parameters:storage_name&quot;] = &quot;underscore-value&quot;</span>
+<span class="a">+        });</span>
+<span class="a">+</span>
+<span class="a">+        // Act</span>
+<span class="a">+        appBuilder.AddParameter(&quot;storagename&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        using var app = appBuilder.Build();</span>
+<span class="a">+        var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();</span>
+<span class="a">+        var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;());</span>
+<span class="a">+</span>
+<span class="a">+        // Assert - should not find the value because names don&#x27;t match</span>
+<span class="a">+        await Assert.ThrowsAsync&lt;MissingParameterValueException&gt;(async () =&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            _ = await parameterResource.GetValueAsync(default);</span>
+<span class="a">+        });</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ParameterWithCustomConfigurationKey_UsesFallback()</span>
+<span class="a">+    {</span>
+<span class="a">+        // Arrange</span>
+<span class="a">+        var appBuilder = DistributedApplication.CreateBuilder();</span>
+<span class="a">+        </span>
+<span class="a">+        // Set configuration with custom key that has underscore</span>
+<span class="a">+        appBuilder.Configuration.AddInMemoryCollection(new Dictionary&lt;string, string?&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            [&quot;CustomSection:my_key&quot;] = &quot;custom-value&quot;</span>
+<span class="a">+        });</span>
+<span class="a">+</span>
+<span class="a">+        // Act - use custom configuration key with dash</span>
+<span class="a">+        appBuilder.AddParameterFromConfiguration(&quot;my-param&quot;, &quot;CustomSection:my-key&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        using var app = appBuilder.Build();</span>
+<span class="a">+        var appModel = app.Services.GetRequiredService&lt;DistributedApplicationModel&gt;();</span>
+<span class="a">+        var parameterResource = Assert.Single(appModel.Resources.OfType&lt;ParameterResource&gt;());</span>
+<span class="a">+</span>
+<span class="a">+        // Assert - should find the value using the normalized key (dash -&gt; underscore)</span>
+<span class="a">+        Assert.Equal(&quot;custom-value&quot;, await parameterResource.GetValueAsync(default));</span>
+<span class="a">+    }</span>
+ }</pre></body></html>

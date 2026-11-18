@@ -1,0 +1,379 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L170</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L170</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/vscode">microsoft/vscode</a><br><b>File at merge:</b> src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts, line 103<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/vscode/commit/a1bbb37b0b97c815ac631e634696ed70d6a5455e">a1bbb37b0b</a> (2025-03-12T19:22:48)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/vscode/tree/99d8a2706e687a31c8d147586668454d399bb208">99d8a2706e</a>)</p><p><b>The line:</b></p><pre><span class="t">				delete this.current;</span></pre><h2>File at the merge commit, lines 95 to 111</h2><pre>   95 | 		// if the stream has ended and there is a current incomplete parser
+   96 | 		// object present, handle the remaining parser object
+   97 | 		if (this.current) {
+   98 | 			// if a `markdown comment` does not have an end marker `--&gt;`
+   99 | 			// it is still a comment that extends to the end of the file
+  100 | 			// so re-emit the current parser as a comment token
+  101 | 			if (this.current instanceof MarkdownCommentStart) {
+  102 | 				this._onData.fire(this.current.asMarkdownComment());
+<span class="t">  103 | 				delete this.current;</span>
+  104 | 				return this.onStreamEnd();
+  105 | 			}
+  106 | 
+  107 | 			// in all other cases, re-emit existing parser tokens
+  108 | 			const { tokens } = this.current;
+  109 | 			delete this.current;
+  110 | 
+  111 | 			for (const token of [...tokens]) {</pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/vscode/commit/8caab471dfd36f18f3a9f057df1e0a533f51e28e">8caab471df</a> (2025-03-12T12:48:22-07:00)</h2><p class="k">* II of `markdown image`<br>Path after this commit: src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts
+index 61fc3c6e301..9da1394cf82 100644
+<span class="d">--- a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="h">@@ -12,6 +12,8 @@ import { BaseDecoder } from &#x27;../../../../base/common/codecs/baseDecoder.js&#x27;;</span>
+ import { SimpleDecoder, TSimpleToken } from &#x27;../simpleCodec/simpleDecoder.js&#x27;;
+ import { MarkdownCommentStart, PartialMarkdownCommentStart } from &#x27;./parsers/markdownComment.js&#x27;;
+ import { MarkdownLinkCaption, PartialMarkdownLink, PartialMarkdownLinkCaption } from &#x27;./parsers/markdownLink.js&#x27;;
+<span class="a">+import { ExclamationMark } from &#x27;../simpleCodec/tokens/exclamationMark.js&#x27;;</span>
+<span class="a">+import { PartialMarkdownImage } from &#x27;./parsers/markdownImage.js&#x27;;</span>
+ 
+ /**
+  * Tokens handled by this decoder.
+<span class="h">@@ -28,7 +30,8 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleToken&gt; {</span>
+ 	 */
+ 	private current?:
+ 		PartialMarkdownLinkCaption | MarkdownLinkCaption | PartialMarkdownLink |
+<span class="d">-		PartialMarkdownCommentStart | MarkdownCommentStart;</span>
+<span class="a">+		PartialMarkdownCommentStart | MarkdownCommentStart |</span>
+<span class="a">+		PartialMarkdownImage;</span>
+ 
+ 	constructor(
+ 		stream: ReadableStream&lt;VSBuffer&gt;,
+<span class="h">@@ -37,7 +40,7 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleToken&gt; {</span>
+ 	}
+ 
+ 	protected override onStreamData(token: TSimpleToken): void {
+<span class="d">-		// markdown links start with `[` character, so here we can</span>
+<span class="a">+		// `markdown links` start with `[` character, so here we can</span>
+ 		// initiate the process of parsing a markdown link
+ 		if (token instanceof LeftBracket &amp;&amp; !this.current) {
+ 			this.current = new PartialMarkdownLinkCaption(token);
+<span class="h">@@ -45,12 +48,22 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleToken&gt; {</span>
+ 			return;
+ 		}
+ 
+<span class="a">+		// `markdown comments` start with `&lt;` character, so here we can</span>
+<span class="a">+		// initiate the process of parsing a markdown comment</span>
+ 		if (token instanceof LeftAngleBracket &amp;&amp; !this.current) {
+ 			this.current = new PartialMarkdownCommentStart(token);
+ 
+ 			return;
+ 		}
+ 
+<span class="a">+		// `markdown image links` start with `!` character, so here we can</span>
+<span class="a">+		// initiate the process of parsing a markdown image</span>
+<span class="a">+		if (token instanceof ExclamationMark &amp;&amp; !this.current) {</span>
+<span class="a">+			this.current = new PartialMarkdownImage(token);</span>
+<span class="a">+</span>
+<span class="a">+			return;</span>
+<span class="a">+		}</span>
+<span class="a">+</span>
+ 		// if current parser was not initiated before, - we are not inside a sequence
+ 		// of tokens we care about, therefore re-emit the token immediately and continue
+ 		if (!this.current) {</pre><h2>Commit #2: <a href="https://github.com/microsoft/vscode/commit/89f495e958a3a344d8c2393b92c8b92e067651ee">89f495e958</a> (2025-03-19T14:25:25-07:00)</h2><p class="k">treat `copilot-instructions.md` file as a reusable (.prompt.md) file<br>Path after this commit: src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts
+index 9da1394cf82..bec961719c9 100644
+<span class="d">--- a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="h">@@ -6,14 +6,14 @@</span>
+ import { MarkdownToken } from &#x27;./tokens/markdownToken.js&#x27;;
+ import { VSBuffer } from &#x27;../../../../base/common/buffer.js&#x27;;
+ import { LeftBracket } from &#x27;../simpleCodec/tokens/brackets.js&#x27;;
+<span class="a">+import { PartialMarkdownImage } from &#x27;./parsers/markdownImage.js&#x27;;</span>
+ import { ReadableStream } from &#x27;../../../../base/common/stream.js&#x27;;
+ import { LeftAngleBracket } from &#x27;../simpleCodec/tokens/angleBrackets.js&#x27;;
+<span class="a">+import { ExclamationMark } from &#x27;../simpleCodec/tokens/exclamationMark.js&#x27;;</span>
+ import { BaseDecoder } from &#x27;../../../../base/common/codecs/baseDecoder.js&#x27;;
+ import { SimpleDecoder, TSimpleToken } from &#x27;../simpleCodec/simpleDecoder.js&#x27;;
+ import { MarkdownCommentStart, PartialMarkdownCommentStart } from &#x27;./parsers/markdownComment.js&#x27;;
+ import { MarkdownLinkCaption, PartialMarkdownLink, PartialMarkdownLinkCaption } from &#x27;./parsers/markdownLink.js&#x27;;
+<span class="d">-import { ExclamationMark } from &#x27;../simpleCodec/tokens/exclamationMark.js&#x27;;</span>
+<span class="d">-import { PartialMarkdownImage } from &#x27;./parsers/markdownImage.js&#x27;;</span>
+ 
+ /**
+  * Tokens handled by this decoder.</pre><h2>Commit #3: <a href="https://github.com/microsoft/vscode/commit/820a674ed1d0d6962219b2656711f115b0766800">820a674ed1</a> (2025-04-07T21:21:08-07:00)</h2><p class="k">refactor to simple token base class, add more unit tests<br>Path after this commit: src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts
+index bec961719c9..1349e5cb66e 100644
+<span class="d">--- a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="h">@@ -11,19 +11,19 @@ import { ReadableStream } from &#x27;../../../../base/common/stream.js&#x27;;</span>
+ import { LeftAngleBracket } from &#x27;../simpleCodec/tokens/angleBrackets.js&#x27;;
+ import { ExclamationMark } from &#x27;../simpleCodec/tokens/exclamationMark.js&#x27;;
+ import { BaseDecoder } from &#x27;../../../../base/common/codecs/baseDecoder.js&#x27;;
+<span class="d">-import { SimpleDecoder, TSimpleToken } from &#x27;../simpleCodec/simpleDecoder.js&#x27;;</span>
+<span class="a">+import { SimpleDecoder, TSimpleDecoderToken } from &#x27;../simpleCodec/simpleDecoder.js&#x27;;</span>
+ import { MarkdownCommentStart, PartialMarkdownCommentStart } from &#x27;./parsers/markdownComment.js&#x27;;
+ import { MarkdownLinkCaption, PartialMarkdownLink, PartialMarkdownLinkCaption } from &#x27;./parsers/markdownLink.js&#x27;;
+ 
+ /**
+  * Tokens handled by this decoder.
+  */
+<span class="d">-export type TMarkdownToken = MarkdownToken | TSimpleToken;</span>
+<span class="a">+export type TMarkdownToken = MarkdownToken | TSimpleDecoderToken;</span>
+ 
+ /**
+  * Decoder capable of parsing markdown entities (e.g., links) from a sequence of simple tokens.
+  */
+<span class="d">-export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleToken&gt; {</span>
+<span class="a">+export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleDecoderToken&gt; {</span>
+ 	/**
+ 	 * Current parser object that is responsible for parsing a sequence of tokens into
+ 	 * some markdown entity. Set to `undefined` when no parsing is in progress at the moment.
+<span class="h">@@ -39,7 +39,7 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleToken&gt; {</span>
+ 		super(new SimpleDecoder(stream));
+ 	}
+ 
+<span class="d">-	protected override onStreamData(token: TSimpleToken): void {</span>
+<span class="a">+	protected override onStreamData(token: TSimpleDecoderToken): void {</span>
+ 		// `markdown links` start with `[` character, so here we can
+ 		// initiate the process of parsing a markdown link
+ 		if (token instanceof LeftBracket &amp;&amp; !this.current) {</pre><h2>Commit #4: <a href="https://github.com/microsoft/vscode/commit/34d2b4bae5294f30490e57e6c7bbb45489336e70">34d2b4bae5</a> (2025-04-08T08:02:19-07:00)</h2><p class="k">make use of the new markdown extensions decoder<br>Path after this commit: src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts
+index 1349e5cb66e..8d9cb54500d 100644
+<span class="d">--- a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="h">@@ -8,15 +8,16 @@ import { VSBuffer } from &#x27;../../../../base/common/buffer.js&#x27;;</span>
+ import { LeftBracket } from &#x27;../simpleCodec/tokens/brackets.js&#x27;;
+ import { PartialMarkdownImage } from &#x27;./parsers/markdownImage.js&#x27;;
+ import { ReadableStream } from &#x27;../../../../base/common/stream.js&#x27;;
+<span class="a">+import { TSimpleDecoderToken } from &#x27;../simpleCodec/simpleDecoder.js&#x27;;</span>
+ import { LeftAngleBracket } from &#x27;../simpleCodec/tokens/angleBrackets.js&#x27;;
+ import { ExclamationMark } from &#x27;../simpleCodec/tokens/exclamationMark.js&#x27;;
+ import { BaseDecoder } from &#x27;../../../../base/common/codecs/baseDecoder.js&#x27;;
+<span class="d">-import { SimpleDecoder, TSimpleDecoderToken } from &#x27;../simpleCodec/simpleDecoder.js&#x27;;</span>
+ import { MarkdownCommentStart, PartialMarkdownCommentStart } from &#x27;./parsers/markdownComment.js&#x27;;
+<span class="a">+import { MarkdownExtensionsDecoder } from &#x27;../markdownExtensionsCodec/markdownExtensionsDecoder.js&#x27;;</span>
+ import { MarkdownLinkCaption, PartialMarkdownLink, PartialMarkdownLinkCaption } from &#x27;./parsers/markdownLink.js&#x27;;
+ 
+ /**
+<span class="d">- * Tokens handled by this decoder.</span>
+<span class="a">+ * Tokens produced by this decoder.</span>
+  */
+ export type TMarkdownToken = MarkdownToken | TSimpleDecoderToken;
+ 
+<span class="h">@@ -36,7 +37,7 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleDecoderT</span>
+ 	constructor(
+ 		stream: ReadableStream&lt;VSBuffer&gt;,
+ 	) {
+<span class="d">-		super(new SimpleDecoder(stream));</span>
+<span class="a">+		super(new MarkdownExtensionsDecoder(stream));</span>
+ 	}
+ 
+ 	protected override onStreamData(token: TSimpleDecoderToken): void {</pre><h2>Commit #5: <a href="https://github.com/microsoft/vscode/commit/681fba07f955885d43ebb2fffa1c59dcd224ad68">681fba07f9</a> (2025-04-08T08:02:19-07:00)</h2><p class="k">make chat prompt decoder to re-emit all token types<br>Path after this commit: src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts. Lines with exactly this text in the file after the commit: 2. Identical text added in other files in this commit: src/vs/editor/common/codecs/markdownExtensionsCodec/markdownExtensionsDecoder.ts, src/vs/workbench/contrib/chat/common/promptSyntax/codecs/chatPromptDecoder.ts.</p><pre>diff --git a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts
+index 8d9cb54500d..7825ab6ac88 100644
+<span class="d">--- a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="h">@@ -93,8 +93,9 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleDecoderT</span>
+ 			// then reset the current parser object
+ 			for (const token of this.current.tokens) {
+ 				this._onData.fire(token);
+<span class="d m">-				delete this.current;</span>
+ 			}
+<span class="a">+</span>
+<span class="a m">+			delete this.current;</span>
+ 		}
+ 
+ 		// if token was not consumed by the parser, call `onStreamData` again
+<span class="h">@@ -120,11 +121,12 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleDecoderT</span>
+ 
+ 			// in all other cases, re-emit existing parser tokens
+ 			const { tokens } = this.current;
+<span class="d m">-			delete this.current;</span>
+ 
+ 			for (const token of [...tokens]) {
+ 				this._onData.fire(token);
+ 			}
+<span class="a">+</span>
+<span class="a m">+			delete this.current;</span>
+ 		}
+ 
+ 		super.onStreamEnd();</pre><h2>Commit #6: <a href="https://github.com/microsoft/vscode/commit/6d49a47a77dc34298dd6596a47ec3ab0fb5c7037">6d49a47a77</a> (2025-05-06T16:04:42-07:00)</h2><p class="k">Merge pull request #248233 from microsoft/legomushroom/prompts/linter<br>Path after this commit: src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts
+index 7825ab6ac88..bf98444794d 100644
+<span class="d">--- a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="h">@@ -91,8 +91,8 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleDecoderT</span>
+ 			// if failed to parse a sequence of a tokens as a single markdown
+ 			// entity (e.g., a link), re-emit the tokens accumulated so far
+ 			// then reset the current parser object
+<span class="d">-			for (const token of this.current.tokens) {</span>
+<span class="d">-				this._onData.fire(token);</span>
+<span class="a">+			for (const currentToken of this.current.tokens) {</span>
+<span class="a">+				this._onData.fire(currentToken);</span>
+ 			}
+ 
+<span class=" m"> 			delete this.current;</span>
+<span class="h">@@ -116,7 +116,9 @@ export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleDecoderT</span>
+ 			if (this.current instanceof MarkdownCommentStart) {
+ 				this._onData.fire(this.current.asMarkdownComment());
+<span class=" m"> 				delete this.current;</span>
+<span class="d">-				return this.onStreamEnd();</span>
+<span class="a">+				this.onStreamEnd();</span>
+<span class="a">+</span>
+<span class="a">+				return;</span>
+ 			}
+ 
+ 			// in all other cases, re-emit existing parser tokens</pre><h2>Commit #7: <a href="https://github.com/microsoft/vscode/commit/af623e09a15b4c51f65de708835410053e693cc1">af623e09a1</a> (2025-06-06T06:32:24-07:00)</h2><p class="k">move prompt codecs and utils to workbench/contrib/chat/common/promptSyntax (#250847)<br>Path after this commit: src/vs/workbench/contrib/chat/common/promptSyntax/codecs/base/markdownCodec/markdownDecoder.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts b/src/vs/workbench/contrib/chat/common/promptSyntax/codecs/base/markdownCodec/markdownDecoder.ts
+similarity index 95%
+rename from src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts
+rename to src/vs/workbench/contrib/chat/common/promptSyntax/codecs/base/markdownCodec/markdownDecoder.ts
+index bf98444794d..67bbda1f2ec 100644
+<span class="d">--- a/src/vs/editor/common/codecs/markdownCodec/markdownDecoder.ts</span>
+<span class="a">+++ b/src/vs/workbench/contrib/chat/common/promptSyntax/codecs/base/markdownCodec/markdownDecoder.ts</span>
+<span class="h">@@ -4,14 +4,14 @@</span>
+  *--------------------------------------------------------------------------------------------*/
+ 
+ import { MarkdownToken } from &#x27;./tokens/markdownToken.js&#x27;;
+<span class="d">-import { VSBuffer } from &#x27;../../../../base/common/buffer.js&#x27;;</span>
+<span class="a">+import { VSBuffer } from &#x27;../../../../../../../../base/common/buffer.js&#x27;;</span>
+ import { LeftBracket } from &#x27;../simpleCodec/tokens/brackets.js&#x27;;
+ import { PartialMarkdownImage } from &#x27;./parsers/markdownImage.js&#x27;;
+<span class="d">-import { ReadableStream } from &#x27;../../../../base/common/stream.js&#x27;;</span>
+<span class="a">+import { ReadableStream } from &#x27;../../../../../../../../base/common/stream.js&#x27;;</span>
+ import { TSimpleDecoderToken } from &#x27;../simpleCodec/simpleDecoder.js&#x27;;
+ import { LeftAngleBracket } from &#x27;../simpleCodec/tokens/angleBrackets.js&#x27;;
+ import { ExclamationMark } from &#x27;../simpleCodec/tokens/exclamationMark.js&#x27;;
+<span class="d">-import { BaseDecoder } from &#x27;../../../../base/common/codecs/baseDecoder.js&#x27;;</span>
+<span class="a">+import { BaseDecoder } from &#x27;../baseDecoder.js&#x27;;</span>
+ import { MarkdownCommentStart, PartialMarkdownCommentStart } from &#x27;./parsers/markdownComment.js&#x27;;
+ import { MarkdownExtensionsDecoder } from &#x27;../markdownExtensionsCodec/markdownExtensionsDecoder.js&#x27;;
+ import { MarkdownLinkCaption, PartialMarkdownLink, PartialMarkdownLinkCaption } from &#x27;./parsers/markdownLink.js&#x27;;</pre><h2>Commit #8: <a href="https://github.com/microsoft/vscode/commit/b5c6cba28238b0d4ea91dbf773369f2be13a4a92">b5c6cba282</a> (2025-09-15T13:09:47-07:00)</h2><p class="k">Merge pull request #266953 from microsoft/aeschli/annoyed-chickadee-149<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/vs/workbench/contrib/chat/common/promptSyntax/codecs/base/markdownCodec/markdownDecoder.ts b/src/vs/workbench/contrib/chat/common/promptSyntax/codecs/base/markdownCodec/markdownDecoder.ts
+deleted file mode 100644
+index 67bbda1f2ec..00000000000
+<span class="d">--- a/src/vs/workbench/contrib/chat/common/promptSyntax/codecs/base/markdownCodec/markdownDecoder.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,136 +0,0 @@</span>
+<span class="d">-/*---------------------------------------------------------------------------------------------</span>
+<span class="d">- *  Copyright (c) Microsoft Corporation. All rights reserved.</span>
+<span class="d">- *  Licensed under the MIT License. See License.txt in the project root for license information.</span>
+<span class="d">- *--------------------------------------------------------------------------------------------*/</span>
+<span class="d">-</span>
+<span class="d">-import { MarkdownToken } from &#x27;./tokens/markdownToken.js&#x27;;</span>
+<span class="d">-import { VSBuffer } from &#x27;../../../../../../../../base/common/buffer.js&#x27;;</span>
+<span class="d">-import { LeftBracket } from &#x27;../simpleCodec/tokens/brackets.js&#x27;;</span>
+<span class="d">-import { PartialMarkdownImage } from &#x27;./parsers/markdownImage.js&#x27;;</span>
+<span class="d">-import { ReadableStream } from &#x27;../../../../../../../../base/common/stream.js&#x27;;</span>
+<span class="d">-import { TSimpleDecoderToken } from &#x27;../simpleCodec/simpleDecoder.js&#x27;;</span>
+<span class="d">-import { LeftAngleBracket } from &#x27;../simpleCodec/tokens/angleBrackets.js&#x27;;</span>
+<span class="d">-import { ExclamationMark } from &#x27;../simpleCodec/tokens/exclamationMark.js&#x27;;</span>
+<span class="d">-import { BaseDecoder } from &#x27;../baseDecoder.js&#x27;;</span>
+<span class="d">-import { MarkdownCommentStart, PartialMarkdownCommentStart } from &#x27;./parsers/markdownComment.js&#x27;;</span>
+<span class="d">-import { MarkdownExtensionsDecoder } from &#x27;../markdownExtensionsCodec/markdownExtensionsDecoder.js&#x27;;</span>
+<span class="d">-import { MarkdownLinkCaption, PartialMarkdownLink, PartialMarkdownLinkCaption } from &#x27;./parsers/markdownLink.js&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * Tokens produced by this decoder.</span>
+<span class="d">- */</span>
+<span class="d">-export type TMarkdownToken = MarkdownToken | TSimpleDecoderToken;</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * Decoder capable of parsing markdown entities (e.g., links) from a sequence of simple tokens.</span>
+<span class="d">- */</span>
+<span class="d">-export class MarkdownDecoder extends BaseDecoder&lt;TMarkdownToken, TSimpleDecoderToken&gt; {</span>
+<span class="d">-	/**</span>
+<span class="d">-	 * Current parser object that is responsible for parsing a sequence of tokens into</span>
+<span class="d">-	 * some markdown entity. Set to `undefined` when no parsing is in progress at the moment.</span>
+<span class="d">-	 */</span>
+<span class="d">-	private current?:</span>
+<span class="d">-		PartialMarkdownLinkCaption | MarkdownLinkCaption | PartialMarkdownLink |</span>
+<span class="d">-		PartialMarkdownCommentStart | MarkdownCommentStart |</span>
+<span class="d">-		PartialMarkdownImage;</span>
+<span class="d">-</span>
+<span class="d">-	constructor(</span>
+<span class="d">-		stream: ReadableStream&lt;VSBuffer&gt;,</span>
+<span class="d">-	) {</span>
+<span class="d">-		super(new MarkdownExtensionsDecoder(stream));</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	protected override onStreamData(token: TSimpleDecoderToken): void {</span>
+<span class="d">-		// `markdown links` start with `[` character, so here we can</span>
+<span class="d">-		// initiate the process of parsing a markdown link</span>
+<span class="d">-		if (token instanceof LeftBracket &amp;&amp; !this.current) {</span>
+<span class="d">-			this.current = new PartialMarkdownLinkCaption(token);</span>
+<span class="d">-</span>
+<span class="d">-			return;</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// `markdown comments` start with `&lt;` character, so here we can</span>
+<span class="d">-		// initiate the process of parsing a markdown comment</span>
+<span class="d">-		if (token instanceof LeftAngleBracket &amp;&amp; !this.current) {</span>
+<span class="d">-			this.current = new PartialMarkdownCommentStart(token);</span>
+<span class="d">-</span>
+<span class="d">-			return;</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// `markdown image links` start with `!` character, so here we can</span>
+<span class="d">-		// initiate the process of parsing a markdown image</span>
+<span class="d">-		if (token instanceof ExclamationMark &amp;&amp; !this.current) {</span>
+<span class="d">-			this.current = new PartialMarkdownImage(token);</span>
+<span class="d">-</span>
+<span class="d">-			return;</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// if current parser was not initiated before, - we are not inside a sequence</span>
+<span class="d">-		// of tokens we care about, therefore re-emit the token immediately and continue</span>
+<span class="d">-		if (!this.current) {</span>
+<span class="d">-			this._onData.fire(token);</span>
+<span class="d">-			return;</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// if there is a current parser object, submit the token to it</span>
+<span class="d">-		// so it can progress with parsing the tokens sequence</span>
+<span class="d">-		const parseResult = this.current.accept(token);</span>
+<span class="d">-		if (parseResult.result === &#x27;success&#x27;) {</span>
+<span class="d">-			const { nextParser } = parseResult;</span>
+<span class="d">-</span>
+<span class="d">-			// if got a fully parsed out token back, emit it and reset</span>
+<span class="d">-			// the current parser object so a new parsing process can start</span>
+<span class="d">-			if (nextParser instanceof MarkdownToken) {</span>
+<span class="d">-				this._onData.fire(nextParser);</span>
+<span class="d m">-				delete this.current;</span>
+<span class="d">-			} else {</span>
+<span class="d">-				// otherwise, update the current parser object</span>
+<span class="d">-				this.current = nextParser;</span>
+<span class="d">-			}</span>
+<span class="d">-		} else {</span>
+<span class="d">-			// if failed to parse a sequence of a tokens as a single markdown</span>
+<span class="d">-			// entity (e.g., a link), re-emit the tokens accumulated so far</span>
+<span class="d">-			// then reset the current parser object</span>
+<span class="d">-			for (const currentToken of this.current.tokens) {</span>
+<span class="d">-				this._onData.fire(currentToken);</span>
+<span class="d">-			}</span>
+<span class="d">-</span>
+<span class="d m">-			delete this.current;</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// if token was not consumed by the parser, call `onStreamData` again</span>
+<span class="d">-		// so the token is properly handled by the decoder in the case when a</span>
+<span class="d">-		// new sequence starts with this token</span>
+<span class="d">-		if (!parseResult.wasTokenConsumed) {</span>
+<span class="d">-			this.onStreamData(token);</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	protected override onStreamEnd(): void {</span>
+<span class="d">-		// if the stream has ended and there is a current incomplete parser</span>
+<span class="d">-		// object present, handle the remaining parser object</span>
+<span class="d">-		if (this.current) {</span>
+<span class="d">-			// if a `markdown comment` does not have an end marker `--&gt;`</span>
+<span class="d">-			// it is still a comment that extends to the end of the file</span>
+<span class="d">-			// so re-emit the current parser as a comment token</span>
+<span class="d">-			if (this.current instanceof MarkdownCommentStart) {</span>
+<span class="d">-				this._onData.fire(this.current.asMarkdownComment());</span>
+<span class="d m">-				delete this.current;</span>
+<span class="d">-				this.onStreamEnd();</span>
+<span class="d">-</span>
+<span class="d">-				return;</span>
+<span class="d">-			}</span>
+<span class="d">-</span>
+<span class="d">-			// in all other cases, re-emit existing parser tokens</span>
+<span class="d">-			const { tokens } = this.current;</span>
+<span class="d">-</span>
+<span class="d">-			for (const token of [...tokens]) {</span>
+<span class="d">-				this._onData.fire(token);</span>
+<span class="d">-			}</span>
+<span class="d">-</span>
+<span class="d m">-			delete this.current;</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		super.onStreamEnd();</span>
+<span class="d">-	}</span>
+<span class="d">-}</span></pre></body></html>

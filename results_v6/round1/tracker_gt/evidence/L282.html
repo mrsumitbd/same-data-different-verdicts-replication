@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L282</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L282</h1><p><b>Repository:</b> <a href="https://github.com/awslabs/mcp">awslabs/mcp</a><br><b>File at merge:</b> src/ecs-mcp-server/tests/unit/test_infrastructure.py, line 771<br><b>Merge commit (birth):</b> <a href="https://github.com/awslabs/mcp/commit/34a8000adb67c0f0ccc9471960db03d998d3a483">34a8000adb</a> (2025-06-16T20:34:32)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/awslabs/mcp/tree/e3ad693e04f85e98b95a41650c381561cbb753ea">e3ad693e04</a>)</p><p><b>The line:</b></p><pre><span class="t">        assert result[&quot;resources&quot;][&quot;ecr_repository&quot;] == &quot;test-app-repo&quot;</span></pre><h2>File at the merge commit, lines 763 to 779</h2><pre>  763 |             repository_uri=&quot;123456789012.dkr.ecr.us-west-2.amazonaws.com/test-app-repo&quot;,
+  764 |             role_arn=&quot;arn:aws:iam::123456789012:role/test-app-ecr-pushpull-role&quot;,
+  765 |         )
+  766 | 
+  767 |         # Verify the result
+  768 |         assert result[&quot;step&quot;] == 2
+  769 |         assert result[&quot;operation&quot;] == &quot;build_and_push&quot;
+  770 |         assert &quot;resources&quot; in result
+<span class="t">  771 |         assert result[&quot;resources&quot;][&quot;ecr_repository&quot;] == &quot;test-app-repo&quot;</span>
+  772 |         assert result[&quot;resources&quot;][&quot;image_tag&quot;] == &quot;20230101&quot;
+  773 |         assert result[&quot;next_step&quot;] == 3
+  774 | 
+  775 | 
+  776 | @pytest.mark.anyio
+  777 | @patch(&quot;awslabs.ecs_mcp_server.api.infrastructure.validate_app_name&quot;)
+  778 | @patch(&quot;awslabs.ecs_mcp_server.api.infrastructure.prepare_template_files&quot;)
+  779 | @patch(&quot;awslabs.ecs_mcp_server.api.infrastructure.get_aws_client&quot;, new_callable=AsyncMock)</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

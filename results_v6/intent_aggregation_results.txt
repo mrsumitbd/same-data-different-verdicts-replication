@@ -1,0 +1,61 @@
+======================================================================
+SECTION A: Agreement with human labels (n=385; 42 flagged in notes)
+======================================================================
+condition         kappa [95% CI]           excl.notes     HS     FA  human  coverage
+keyword           0.457 [0.392, 0.519]        0.498  0.426  0.477  0.474     93.8%
+deepseek          0.725 [0.673, 0.780]        0.782  0.781  0.681  0.653    100.0%
+gpt_oss           0.673 [0.610, 0.731]        0.720  0.711  0.591  0.666    100.0%
+minimax           0.733 [0.679, 0.785]        0.790  0.797  0.678  0.651    100.0%
+mv3_undecided     0.717 [0.658, 0.774]        0.769  0.766  0.695  0.636     99.5%  (2 undecided)
+mv3_tiebest       0.717 [0.657, 0.773]        0.768  0.765  0.695  0.636    100.0%
+wv3_cv            0.717 [0.657, 0.773]        0.768  0.765  0.695  0.636    100.0%
+wv3_insample      0.721 [0.664, 0.778]        0.773  0.773  0.695  0.636    100.0%
+ds3               0.724 [0.667, 0.779]        0.777  0.780  0.695  0.636    100.0%
+ds3kw             0.733 [0.676, 0.789]        0.786  0.781  0.713  0.651    100.0%
+  *_insample: weights fitted on the same labels they are scored on (optimistic).
+
+======================================================================
+SECTION B: RQ2 conclusion per condition (same 385 commits)
+======================================================================
+Shares (%) corrective/perfective/adaptive/preventive[/unknown] per tier; chi-square vs human-authored baseline
+
+gold               HS 29/22/39/11  FA 16/21/52/11  Hu 23/26/40/11  | HS p=0.720 V=0.07  FA p=0.357 V=0.13
+keyword            HS 44/15/29/6/7u  FA 23/20/40/17/1u  Hu 31/22/30/8/9u  | HS p=0.235 V=0.14  FA p=0.021 V=0.25  | levels DIFF, direction 8/8, signif DIFF
+deepseek           HS 27/21/47/5  FA 18/28/49/5  Hu 24/25/48/3  | HS p=0.768 V=0.06  FA p=0.666 V=0.09  | levels DIFF, direction 6/8, signif ok
+gpt_oss            HS 27/20/49/4  FA 14/29/53/4  Hu 21/29/49/1  | HS p=0.208 V=0.13  FA p=0.338 V=0.13  | levels DIFF, direction 6/8, signif ok
+minimax            HS 29/20/46/5  FA 20/24/51/5  Hu 24/26/49/1  | HS p=0.205 V=0.13  FA p=0.371 V=0.13  | levels DIFF, direction 7/8, signif ok
+mv3_undecided      HS 27/19/48/5  FA 18/28/50/4  Hu 23/27/49/1  | HS p=0.198 V=0.13  FA p=0.484 V=0.11  | levels DIFF, direction 6/8, signif ok
+mv3_tiebest        HS 28/20/48/5  FA 18/28/50/4  Hu 23/27/49/1  | HS p=0.207 V=0.13  FA p=0.484 V=0.11  | levels DIFF, direction 6/8, signif ok
+wv3_cv             HS 28/20/48/5  FA 18/28/50/4  Hu 23/27/49/1  | HS p=0.207 V=0.13  FA p=0.484 V=0.11  | levels DIFF, direction 6/8, signif ok
+wv3_insample       HS 28/19/48/5  FA 18/28/50/4  Hu 23/27/49/1  | HS p=0.153 V=0.13  FA p=0.484 V=0.11  | levels DIFF, direction 6/8, signif ok
+ds3                HS 27/19/48/5  FA 18/28/50/4  Hu 23/27/49/1  | HS p=0.162 V=0.13  FA p=0.484 V=0.11  | levels DIFF, direction 6/8, signif ok
+ds3kw              HS 27/20/48/5  FA 18/28/49/5  Hu 22/28/49/1  | HS p=0.157 V=0.13  FA p=0.377 V=0.13  | levels DIFF, direction 5/8, signif ok
+  levels ok = every per-tier share within 5 pp of the human labels; direction = sign of (tier - human) per intent, 8 comparisons; signif = same p<0.05 verdict for HS and FA.
+
+======================================================================
+SECTION C: Misclassification-corrected tier shares (bootstrap 95% CI)
+Confusion matrix estimated on the same 385 commits: corrected shares are close
+to the human shares by construction here; the correction is meant for the full corpus.
+======================================================================
+
+  keyword  [clipped in point estimate]  [756/1000 bootstrap draws clipped]
+    human_supervised  corr  39.4 [ 29.6,  47.4]  perf  19.3 [  8.2,  30.0]  adap  41.3 [ 30.2,  51.3]  prev   0.0 [  0.0,  10.1]
+    fully_autonomous  corr   2.5 [  0.0,  16.0]  perf  15.6 [  0.0,  33.8]  adap  46.5 [ 17.8,  65.7]  prev  35.4 [ 14.1,  68.3]
+    human             corr  17.9 [  4.0,  32.6]  perf  35.4 [ 16.0,  53.4]  adap  40.8 [ 23.3,  57.2]  prev   5.9 [  0.0,  24.7]
+
+  deepseek  [100/1000 bootstrap draws clipped]
+    human_supervised  corr  28.0 [ 20.8,  34.8]  perf  18.8 [ 11.0,  26.5]  adap  42.1 [ 33.5,  51.1]  prev  11.2 [  3.6,  18.7]
+    fully_autonomous  corr  16.2 [  7.9,  25.0]  perf  28.7 [ 16.7,  42.3]  adap  42.7 [ 29.2,  55.5]  prev  12.4 [  0.8,  25.2]
+    human             corr  23.9 [ 14.8,  33.8]  perf  25.5 [ 13.2,  37.0]  adap  44.3 [ 31.0,  56.7]  prev   6.2 [  0.0,  16.7]
+
+  gpt_oss  [467/1000 bootstrap draws clipped]
+    human_supervised  corr  29.8 [ 23.0,  36.7]  perf  16.2 [  7.2,  24.5]  adap  42.0 [ 32.6,  52.2]  prev  12.1 [  3.0,  20.1]
+    fully_autonomous  corr  13.8 [  5.6,  21.8]  perf  28.4 [ 14.5,  42.4]  adap  44.2 [ 27.9,  60.2]  prev  13.7 [  1.2,  29.5]
+    human             corr  22.1 [ 13.1,  31.5]  perf  31.4 [ 17.3,  43.8]  adap  45.6 [ 31.6,  58.7]  prev   0.9 [  0.0,   9.7]
+
+  minimax  [362/1000 bootstrap draws clipped]
+    human_supervised  corr  28.2 [ 20.5,  35.2]  perf  19.3 [ 11.7,  27.0]  adap  39.2 [ 30.8,  47.7]  prev  13.3 [  6.1,  20.4]
+    fully_autonomous  corr  17.4 [  8.8,  26.7]  perf  23.9 [ 13.0,  35.1]  adap  45.4 [ 31.8,  59.0]  prev  13.3 [  2.6,  25.2]
+    human             corr  22.3 [ 12.7,  32.4]  perf  28.5 [ 15.6,  39.7]  adap  47.6 [ 35.6,  59.7]  prev   1.6 [  0.0,   7.9]
+
+  human labels      human_supervised: 28.6/21.9/38.5/10.9  fully_autonomous: 15.6/20.8/52.1/11.5  human: 22.7/25.8/40.2/11.3

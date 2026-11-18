@@ -1,0 +1,246 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L190</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L190</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/botframework-webchat">microsoft/botframework-webchat</a><br><b>File at merge:</b> packages/component/src/ActivityFeedback/private/FeedbackForm.tsx, line 29<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/botframework-webchat/commit/5e127987c6ae2a5e8a1c6dd9eace8bffc74a600e">5e127987c6</a> (2025-05-05T16:51:59)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/botframework-webchat/tree/587b91b125a3710ad2764d9e49de1914e74ce3b5">587b91b125</a>)</p><p><b>The line:</b></p><pre><span class="t">  const selectedActionRef = useRefFrom(selectedAction);</span></pre><h2>File at the merge commit, lines 21 to 37</h2><pre>   21 |   const [hasFocus, setHasFocus] = useState(false);
+   22 |   const [selectedAction, setSelectedAction] = useSelectedAction();
+   23 |   const [userFeedback, setUserFeedback, userFeedbackRef] = useStateWithRef(&#x27;&#x27;);
+   24 |   const feedbackTextAreaRef = useRef&lt;HTMLTextAreaElement&gt;(null);
+   25 |   const localize = useLocalizer();
+   26 |   const submit = useSubmitCallback();
+   27 | 
+   28 |   const disclaimer = getDisclaimer(activity);
+<span class="t">   29 |   const selectedActionRef = useRefFrom(selectedAction);</span>
+   30 | 
+   31 |   const handleCancelButtonClick = useCallback(() =&gt; {
+   32 |     setSelectedAction(undefined);
+   33 |   }, [setSelectedAction]);
+   34 | 
+   35 |   const handleMessageChange: FormEventHandler&lt;HTMLTextAreaElement&gt; = useCallback(
+   36 |     ({ currentTarget: { value } }) =&gt; setUserFeedback(value),
+   37 |     [setUserFeedback]</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/botframework-webchat/commit/d1cd51af0195cad1035ea1d502697b19744c94d2">d1cd51af01</a> (2025-05-19T15:49:06-07:00)</h2><p class="k">Feedback buttons should not squash other buttons (#5480)<br>Path after this commit: packages/component/src/ActivityFeedback/private/FeedbackForm.tsx. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: packages/component/src/ActivityFeedback/ActivityFeedback.tsx.</p><pre>diff --git a/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx b/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx
+index ad027dd28..58ae712d5 100644
+<span class="d">--- a/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx</span>
+<span class="a">+++ b/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx</span>
+<span class="h">@@ -1,51 +1,30 @@</span>
+ import { hooks } from &#x27;botframework-webchat-api&#x27;;
+<span class="d">-import classNames from &#x27;classnames&#x27;;</span>
+ import React, { memo, useCallback, useEffect, useRef, useState, type FormEventHandler } from &#x27;react&#x27;;
+<span class="d">-import { useRefFrom } from &#x27;use-ref-from&#x27;;</span>
+<span class="d">-import { useStateWithRef } from &#x27;use-state-with-ref&#x27;;</span>
+ 
+ import Markdownable from &#x27;../../Attachment/Text/private/Markdownable&#x27;;
+<span class="d">-import useStyleSet from &#x27;../../hooks/useStyleSet&#x27;;</span>
+ import testIds from &#x27;../../testIds&#x27;;
+<span class="d">-import useActivity from &#x27;../providers/useActivity&#x27;;</span>
+<span class="d">-import useSelectedAction from &#x27;../providers/useSelectedAction&#x27;;</span>
+<span class="d">-import useSubmitCallback from &#x27;../providers/useSubmitCallback&#x27;;</span>
+<span class="a">+import useActivityFeedbackHooks from &#x27;../providers/useActivityFeedbackHooks&#x27;;</span>
+ import FeedbackTextArea from &#x27;./FeedbackTextArea&#x27;;
+<span class="d">-import getDisclaimer from &#x27;./getDisclaimer&#x27;;</span>
+<span class="a">+import getDisclaimerFromReviewAction from &#x27;./getDisclaimerFromReviewAction&#x27;;</span>
+ 
+ const { useLocalizer } = hooks;
+ 
+ function FeedbackForm() {
+<span class="d">-  const [{ feedbackForm }] = useStyleSet();</span>
+<span class="d">-  const [activity] = useActivity();</span>
+<span class="a">+  const { useFeedbackText, useSelectedAction } = useActivityFeedbackHooks();</span>
+<span class="a">+</span>
+<span class="a">+  const [selectedAction] = useSelectedAction();</span>
+   const [hasFocus, setHasFocus] = useState(false);
+<span class="d">-  const [selectedAction, setSelectedAction] = useSelectedAction();</span>
+<span class="d">-  const [userFeedback, setUserFeedback, userFeedbackRef] = useStateWithRef(&#x27;&#x27;);</span>
+<span class="a">+  const [userFeedback, setUserFeedback] = useFeedbackText();</span>
+   const feedbackTextAreaRef = useRef&lt;HTMLTextAreaElement&gt;(null);
+   const localize = useLocalizer();
+<span class="d">-  const submit = useSubmitCallback();</span>
+<span class="d">-</span>
+<span class="d">-  const disclaimer = getDisclaimer(activity);</span>
+<span class="d m">-  const selectedActionRef = useRefFrom(selectedAction);</span>
+ 
+<span class="d">-  const handleCancelButtonClick = useCallback(() =&gt; {</span>
+<span class="d">-    setSelectedAction(undefined);</span>
+<span class="d">-  }, [setSelectedAction]);</span>
+<span class="a">+  const disclaimer = getDisclaimerFromReviewAction(selectedAction);</span>
+ 
+   const handleMessageChange: FormEventHandler&lt;HTMLTextAreaElement&gt; = useCallback(
+     ({ currentTarget: { value } }) =&gt; setUserFeedback(value),
+     [setUserFeedback]
+   );
+ 
+<span class="d">-  const handleSubmit = useCallback&lt;FormEventHandler&lt;HTMLFormElement&gt;&gt;(</span>
+<span class="d">-    event =&gt; {</span>
+<span class="d">-      event.preventDefault();</span>
+<span class="d">-</span>
+<span class="d">-      submit(selectedActionRef.current, userFeedbackRef.current);</span>
+<span class="d">-    },</span>
+<span class="d">-    [selectedActionRef, submit, userFeedbackRef]</span>
+<span class="d">-  );</span>
+<span class="d">-</span>
+   useEffect(() =&gt; {
+     // Will focus on the text area when:
+     // 1. The component is mounted initially, or
+<span class="h">@@ -58,8 +37,8 @@ function FeedbackForm() {</span>
+   }, [feedbackTextAreaRef, hasFocus, setHasFocus]);
+ 
+   return (
+<span class="d">-    &lt;form className={classNames(&#x27;webchat__feedback-form&#x27;, feedbackForm + &#x27;&#x27;)} onSubmit={handleSubmit}&gt;</span>
+<span class="d">-      &lt;span className={classNames(&#x27;webchat__feedback-form__body&#x27;)}&gt;{localize(&#x27;FEEDBACK_FORM_TITLE&#x27;)}&lt;/span&gt;</span>
+<span class="a">+    &lt;div className=&quot;webchat__feedback-form__form&quot;&gt;</span>
+<span class="a">+      &lt;span className=&quot;webchat__feedback-form__form-header&quot;&gt;{localize(&#x27;FEEDBACK_FORM_TITLE&#x27;)}&lt;/span&gt;</span>
+       &lt;FeedbackTextArea
+         data-testid={testIds.feedbackSendBox}
+         onInput={handleMessageChange}
+<span class="h">@@ -68,20 +47,16 @@ function FeedbackForm() {</span>
+         startRows={3}
+         value={userFeedback}
+       /&gt;
+<span class="d">-      {disclaimer &amp;&amp; &lt;Markdownable className={classNames(&#x27;webchat__feedback-form__caption&#x27;)} text={disclaimer} /&gt;}</span>
+<span class="d">-      &lt;div className={classNames(&#x27;webchat__feedback-form__container&#x27;)}&gt;</span>
+<span class="d">-        &lt;button className={classNames(&#x27;webchat__feedback-form__submit-button&#x27;)} type=&quot;submit&quot;&gt;</span>
+<span class="a">+      {disclaimer &amp;&amp; &lt;Markdownable className=&quot;webchat__feedback-form__form-footer&quot; text={disclaimer} /&gt;}</span>
+<span class="a">+      &lt;div className=&quot;webchat__feedback-form__submission-button-bar&quot;&gt;</span>
+<span class="a">+        &lt;button className=&quot;webchat__feedback-form__submit-button&quot; type=&quot;submit&quot;&gt;</span>
+           {localize(&#x27;FEEDBACK_FORM_SUBMIT_BUTTON_LABEL&#x27;)}
+         &lt;/button&gt;
+<span class="d">-        &lt;button</span>
+<span class="d">-          className={classNames(&#x27;webchat__feedback-form__cancel-button&#x27;)}</span>
+<span class="d">-          onClick={handleCancelButtonClick}</span>
+<span class="d">-          type=&quot;button&quot;</span>
+<span class="d">-        &gt;</span>
+<span class="a">+        &lt;button className=&quot;webchat__feedback-form__cancel-button&quot; type=&quot;reset&quot;&gt;</span>
+           {localize(&#x27;FEEDBACK_FORM_CANCEL_BUTTON_LABEL&#x27;)}
+         &lt;/button&gt;
+       &lt;/div&gt;
+<span class="d">-    &lt;/form&gt;</span>
+<span class="a">+    &lt;/div&gt;</span>
+   );
+ }
+ </pre><h2>Commit #2: <a href="https://github.com/microsoft/botframework-webchat/commit/44688ae0b7b45e0c28d1ebb49b7762216755e478">44688ae0b7</a> (2025-06-17T22:36:05+00:00)</h2><p class="k">Refactor text area and feedback loop (#5501)<br>Path after this commit: packages/component/src/ActivityFeedback/private/FeedbackForm.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx b/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx
+index 58ae712d5..518d247b2 100644
+<span class="d">--- a/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx</span>
+<span class="a">+++ b/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx</span>
+<span class="h">@@ -1,15 +1,19 @@</span>
+ import { hooks } from &#x27;botframework-webchat-api&#x27;;
+<span class="a">+import { useStyles } from &#x27;botframework-webchat-styles/react&#x27;;</span>
+ import React, { memo, useCallback, useEffect, useRef, useState, type FormEventHandler } from &#x27;react&#x27;;
+ 
+ import Markdownable from &#x27;../../Attachment/Text/private/Markdownable&#x27;;
+ import testIds from &#x27;../../testIds&#x27;;
+<span class="a">+import { TextArea } from &#x27;../../TextArea&#x27;;</span>
+ import useActivityFeedbackHooks from &#x27;../providers/useActivityFeedbackHooks&#x27;;
+<span class="d">-import FeedbackTextArea from &#x27;./FeedbackTextArea&#x27;;</span>
+ import getDisclaimerFromReviewAction from &#x27;./getDisclaimerFromReviewAction&#x27;;
+ 
+<span class="a">+import styles from &#x27;./FeedbackForm.module.css&#x27;;</span>
+<span class="a">+</span>
+ const { useLocalizer } = hooks;
+ 
+ function FeedbackForm() {
+<span class="a">+  const classNames = useStyles(styles);</span>
+   const { useFeedbackText, useSelectedAction } = useActivityFeedbackHooks();
+ 
+   const [selectedAction] = useSelectedAction();
+<span class="h">@@ -37,22 +41,25 @@ function FeedbackForm() {</span>
+   }, [feedbackTextAreaRef, hasFocus, setHasFocus]);
+ 
+   return (
+<span class="d">-    &lt;div className=&quot;webchat__feedback-form__form&quot;&gt;</span>
+<span class="d">-      &lt;span className=&quot;webchat__feedback-form__form-header&quot;&gt;{localize(&#x27;FEEDBACK_FORM_TITLE&#x27;)}&lt;/span&gt;</span>
+<span class="d">-      &lt;FeedbackTextArea</span>
+<span class="d">-        data-testid={testIds.feedbackSendBox}</span>
+<span class="d">-        onInput={handleMessageChange}</span>
+<span class="d">-        placeholder={localize(&#x27;FEEDBACK_FORM_PLACEHOLDER&#x27;)}</span>
+<span class="d">-        ref={feedbackTextAreaRef}</span>
+<span class="d">-        startRows={3}</span>
+<span class="d">-        value={userFeedback}</span>
+<span class="d">-      /&gt;</span>
+<span class="d">-      {disclaimer &amp;&amp; &lt;Markdownable className=&quot;webchat__feedback-form__form-footer&quot; text={disclaimer} /&gt;}</span>
+<span class="d">-      &lt;div className=&quot;webchat__feedback-form__submission-button-bar&quot;&gt;</span>
+<span class="d">-        &lt;button className=&quot;webchat__feedback-form__submit-button&quot; type=&quot;submit&quot;&gt;</span>
+<span class="a">+    &lt;div className={classNames[&#x27;feedback-form__form&#x27;]}&gt;</span>
+<span class="a">+      &lt;span className={classNames[&#x27;feedback-form__form-header&#x27;]}&gt;{localize(&#x27;FEEDBACK_FORM_TITLE&#x27;)}&lt;/span&gt;</span>
+<span class="a">+      &lt;div className={classNames[&#x27;feedback-form__text-box&#x27;]}&gt;</span>
+<span class="a">+        &lt;TextArea</span>
+<span class="a">+          className={classNames[&#x27;feedback-form__text-area&#x27;]}</span>
+<span class="a">+          data-testid={testIds.feedbackSendBox}</span>
+<span class="a">+          onInput={handleMessageChange}</span>
+<span class="a">+          placeholder={localize(&#x27;FEEDBACK_FORM_PLACEHOLDER&#x27;)}</span>
+<span class="a">+          ref={feedbackTextAreaRef}</span>
+<span class="a">+          startRows={3}</span>
+<span class="a">+          value={userFeedback}</span>
+<span class="a">+        /&gt;</span>
+<span class="a">+      &lt;/div&gt;</span>
+<span class="a">+      {disclaimer &amp;&amp; &lt;Markdownable className={classNames[&#x27;feedback-form__form-footer&#x27;]} text={disclaimer} /&gt;}</span>
+<span class="a">+      &lt;div className={classNames[&#x27;feedback-form__submission-button-bar&#x27;]}&gt;</span>
+<span class="a">+        &lt;button className={classNames[&#x27;feedback-form__submit-button&#x27;]} type=&quot;submit&quot;&gt;</span>
+           {localize(&#x27;FEEDBACK_FORM_SUBMIT_BUTTON_LABEL&#x27;)}
+         &lt;/button&gt;
+<span class="d">-        &lt;button className=&quot;webchat__feedback-form__cancel-button&quot; type=&quot;reset&quot;&gt;</span>
+<span class="a">+        &lt;button className={classNames[&#x27;feedback-form__cancel-button&#x27;]} type=&quot;reset&quot;&gt;</span>
+           {localize(&#x27;FEEDBACK_FORM_CANCEL_BUTTON_LABEL&#x27;)}
+         &lt;/button&gt;
+       &lt;/div&gt;</pre><h2>Commit #3: <a href="https://github.com/microsoft/botframework-webchat/commit/6044b59ef09e8a5756704437301c01e21203e024">6044b59ef0</a> (2025-08-02T17:24:26-07:00)</h2><p class="k">Move internal packages to @msinternal/* (#5531)<br>Path after this commit: packages/component/src/ActivityFeedback/private/FeedbackForm.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx b/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx
+index 518d247b2..02234e71c 100644
+<span class="d">--- a/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx</span>
+<span class="a">+++ b/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import { hooks } from &#x27;botframework-webchat-api&#x27;;
+<span class="d">-import { useStyles } from &#x27;botframework-webchat-styles/react&#x27;;</span>
+<span class="a">+import { useStyles } from &#x27;@msinternal/botframework-webchat-styles/react&#x27;;</span>
+ import React, { memo, useCallback, useEffect, useRef, useState, type FormEventHandler } from &#x27;react&#x27;;
+ 
+ import Markdownable from &#x27;../../Attachment/Text/private/Markdownable&#x27;;</pre><h2>Commit #4: <a href="https://github.com/microsoft/botframework-webchat/commit/5d2e95f5e7738869eb467e2496254fd710054ecf">5d2e95f5e7</a> (2025-09-12T15:56:21+00:00)</h2><p class="k">Feedback form aria-label computed value does not match on screen text (#5567)<br>Path after this commit: packages/component/src/ActivityFeedback/private/FeedbackForm.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx b/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx
+index 02234e71c..c391ce973 100644
+<span class="d">--- a/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx</span>
+<span class="a">+++ b/packages/component/src/ActivityFeedback/private/FeedbackForm.tsx</span>
+<span class="h">@@ -1,7 +1,7 @@</span>
+ import { hooks } from &#x27;botframework-webchat-api&#x27;;
+ import { useStyles } from &#x27;@msinternal/botframework-webchat-styles/react&#x27;;
+ import React, { memo, useCallback, useEffect, useRef, useState, type FormEventHandler } from &#x27;react&#x27;;
+<span class="d">-</span>
+<span class="a">+import useUniqueId from &#x27;../../hooks/internal/useUniqueId&#x27;;</span>
+ import Markdownable from &#x27;../../Attachment/Text/private/Markdownable&#x27;;
+ import testIds from &#x27;../../testIds&#x27;;
+ import { TextArea } from &#x27;../../TextArea&#x27;;
+<span class="h">@@ -15,6 +15,8 @@ const { useLocalizer } = hooks;</span>
+ function FeedbackForm() {
+   const classNames = useStyles(styles);
+   const { useFeedbackText, useSelectedAction } = useActivityFeedbackHooks();
+<span class="a">+  const feedbackFormHeaderId = useUniqueId(&#x27;feedback-form__form-header__id&#x27;);</span>
+<span class="a">+  const disclaimerId = useUniqueId(&#x27;feedback-form__form-footer__id&#x27;);</span>
+ 
+   const [selectedAction] = useSelectedAction();
+   const [hasFocus, setHasFocus] = useState(false);
+<span class="h">@@ -42,9 +44,18 @@ function FeedbackForm() {</span>
+ 
+   return (
+     &lt;div className={classNames[&#x27;feedback-form__form&#x27;]}&gt;
+<span class="d">-      &lt;span className={classNames[&#x27;feedback-form__form-header&#x27;]}&gt;{localize(&#x27;FEEDBACK_FORM_TITLE&#x27;)}&lt;/span&gt;</span>
+<span class="a">+      &lt;span</span>
+<span class="a">+        className={classNames[&#x27;feedback-form__form-header&#x27;]}</span>
+<span class="a">+        // &quot;id&quot; is required for &quot;aria-labelledby&quot;</span>
+<span class="a">+        // eslint-disable-next-line react/forbid-dom-props</span>
+<span class="a">+        id={feedbackFormHeaderId}</span>
+<span class="a">+      &gt;</span>
+<span class="a">+        {localize(&#x27;FEEDBACK_FORM_TITLE&#x27;)}</span>
+<span class="a">+      &lt;/span&gt;</span>
+       &lt;div className={classNames[&#x27;feedback-form__text-box&#x27;]}&gt;
+         &lt;TextArea
+<span class="a">+          aria-describedby={disclaimer ? disclaimerId : undefined}</span>
+<span class="a">+          aria-labelledby={feedbackFormHeaderId}</span>
+           className={classNames[&#x27;feedback-form__text-area&#x27;]}
+           data-testid={testIds.feedbackSendBox}
+           onInput={handleMessageChange}
+<span class="h">@@ -54,7 +65,9 @@ function FeedbackForm() {</span>
+           value={userFeedback}
+         /&gt;
+       &lt;/div&gt;
+<span class="d">-      {disclaimer &amp;&amp; &lt;Markdownable className={classNames[&#x27;feedback-form__form-footer&#x27;]} text={disclaimer} /&gt;}</span>
+<span class="a">+      {disclaimer &amp;&amp; (</span>
+<span class="a">+        &lt;Markdownable className={classNames[&#x27;feedback-form__form-footer&#x27;]} id={disclaimerId} text={disclaimer} /&gt;</span>
+<span class="a">+      )}</span>
+       &lt;div className={classNames[&#x27;feedback-form__submission-button-bar&#x27;]}&gt;
+         &lt;button className={classNames[&#x27;feedback-form__submit-button&#x27;]} type=&quot;submit&quot;&gt;
+           {localize(&#x27;FEEDBACK_FORM_SUBMIT_BUTTON_LABEL&#x27;)}</pre></body></html>

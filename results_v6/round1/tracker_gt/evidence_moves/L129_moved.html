@@ -1,0 +1,54 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L129 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L129: after the move</h1><p><b>Repository:</b> <a href="https://github.com/appsmithorg/appsmith">appsmithorg/appsmith</a><br><b>Original file:</b> app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/PingScheduledTaskCEImpl.java (see L129.html)<br><b>Move commit:</b> <a href="https://github.com/appsmithorg/appsmith/commit/f020be7c96f545db26c02990a4a26c6059ed0988">f020be7c96</a> (commit #1 on L129.html)<br><b>Destination file (your label):</b> app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/appsmithorg/appsmith/tree/8f2592704d8b6627387c1608a0545812bcbf95b5">8f2592704d</a>)</p><p><b>The line:</b></p><pre><span class="t">                            entry(&quot;numActions&quot;, statsData.getT4().getT4()),</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 200).</p><h2>Destination file at the move commit, lines 192 to 208</h2><pre>  192 |                 })
+  193 |                 .flatMap(statsData -&gt; {
+  194 |                     Map&lt;String, Object&gt; propertiesMap = new java.util.HashMap&lt;&gt;(Map.ofEntries(
+  195 |                             entry(&quot;instanceId&quot;, statsData.getT1()),
+  196 |                             entry(&quot;organizationId&quot;, statsData.getT2()),
+  197 |                             entry(&quot;numOrgs&quot;, statsData.getT4().getT1()),
+  198 |                             entry(&quot;numApps&quot;, statsData.getT4().getT2()),
+  199 |                             entry(&quot;numPages&quot;, statsData.getT4().getT3()),
+<span class="t">  200 |                             entry(&quot;numActions&quot;, statsData.getT4().getT4()),</span>
+  201 |                             entry(&quot;numDatasources&quot;, statsData.getT4().getT5()),
+  202 |                             entry(&quot;numUsers&quot;, statsData.getT4().getT6()),
+  203 |                             entry(&quot;numPublicApps&quot;, statsData.getT5()),
+  204 |                             entry(&quot;version&quot;, projectProperties.getVersion()),
+  205 |                             entry(&quot;edition&quot;, deploymentProperties.getEdition()),
+  206 |                             entry(&quot;cloudProvider&quot;, defaultIfEmpty(deploymentProperties.getCloudProvider(), &quot;&quot;)),
+  207 |                             entry(&quot;efs&quot;, defaultIfEmpty(deploymentProperties.getEfs(), &quot;&quot;)),
+  208 |                             entry(&quot;tool&quot;, defaultIfEmpty(deploymentProperties.getTool(), &quot;&quot;)),</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/appsmithorg/appsmith/commit/39636498cee0b1dbf5416841186c1d06bc297542">39636498ce</a> (2025-05-30T07:28:44+00:00)</h2><p class="k">fix: Handle burst traffic for fetching feature flags during cron job (#40808)<br>Path after this commit: app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java b/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java
+index 6cdab9350c..675b83b67b 100644
+<span class="d">--- a/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java</span>
+<span class="a">+++ b/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java</span>
+<span class="h">@@ -7,7 +7,6 @@ import com.appsmith.server.configurations.DeploymentProperties;</span>
+ import com.appsmith.server.configurations.ProjectProperties;
+ import com.appsmith.server.configurations.SegmentConfig;
+ import com.appsmith.server.domains.Organization;
+<span class="d">-import com.appsmith.server.helpers.LoadShifter;</span>
+ import com.appsmith.server.helpers.NetworkUtils;
+ import com.appsmith.server.repositories.ApplicationRepository;
+ import com.appsmith.server.repositories.DatasourceRepository;
+<span class="h">@@ -258,10 +257,10 @@ public class ScheduledTaskCEImpl implements ScheduledTaskCE {</span>
+                         UserTrackingType.MAU.name(), tuple.getT3()));
+     }
+ 
+<span class="d">-    @Scheduled(initialDelay = 10 * 1000 /* ten seconds */, fixedRate = 30 * 60 * 1000 /* thirty minutes */)</span>
+<span class="a">+    @Scheduled(initialDelay = 10 * 1000 /* ten seconds */, fixedRate = 1 * 60 * 60 * 1000 /* one hour */)</span>
+     @DistributedLock(
+             key = &quot;fetchFeatures&quot;,
+<span class="d">-            ttl = 20 * 60, // 20 minutes</span>
+<span class="a">+            ttl = 45 * 60, // 45 minutes</span>
+             shouldReleaseLock = false) // Ensure only one pod executes this
+     @Observed(name = &quot;fetchFeatures&quot;)
+     public void fetchFeatures() {
+<span class="h">@@ -277,7 +276,7 @@ public class ScheduledTaskCEImpl implements ScheduledTaskCE {</span>
+                             return Mono.empty();
+                         })
+                         .contextWrite(Context.of(ORGANIZATION_ID, organization.getId())))
+<span class="d">-                .subscribeOn(LoadShifter.elasticScheduler)</span>
+<span class="a">+                .subscribeOn(Schedulers.single())</span>
+                 .subscribe();
+     }
+ }</pre></body></html>

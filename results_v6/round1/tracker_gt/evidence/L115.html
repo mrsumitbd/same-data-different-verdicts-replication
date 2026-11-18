@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L115</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L115</h1><p><b>Repository:</b> <a href="https://github.com/marimo-team/marimo">marimo-team/marimo</a><br><b>File at merge:</b> tests/_server/session/test_serialize_session_missing_type.py, line 3<br><b>Merge commit (birth):</b> <a href="https://github.com/marimo-team/marimo/commit/612aa111777bbaab615b881788411464354e9495">612aa11177</a> (2025-03-05T01:49:28)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/marimo-team/marimo/tree/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a>)</p><p><b>The line:</b></p><pre><span class="t">from marimo._server.session.serialize import serialize_session_view</span></pre><h2>File at the merge commit, lines 1 to 11</h2><pre>    1 | from marimo._messaging.cell_output import CellChannel, CellOutput
+    2 | from marimo._messaging.ops import CellOp
+<span class="t">    3 | from marimo._server.session.serialize import serialize_session_view</span>
+    4 | from marimo._server.session.session_view import SessionView
+    5 | 
+    6 | 
+    7 | def test_serialize_session_with_dict_error_missing_type():
+    8 |     &quot;&quot;&quot;Test serialization of a session with a dictionary error missing the type key&quot;&quot;&quot;
+    9 |     view = SessionView()
+   10 |     view.cell_operations[&quot;cell1&quot;] = CellOp(
+   11 |         cell_id=&quot;cell1&quot;,</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/marimo-team/marimo/commit/2422d9b162c4a9e3e1834af165b5881f0b23c77b">2422d9b162</a> (2025-05-30T17:05:45-04:00)</h2><p class="k">improvement: notebook schema serialization (#5131)<br>Path after this commit: tests/_server/session/test_serialize_session_missing_type.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/_server/session/test_serialize_session_missing_type.py b/tests/_server/session/test_serialize_session_missing_type.py
+index 164b25376..9bc72f41f 100644
+<span class="d">--- a/tests/_server/session/test_serialize_session_missing_type.py</span>
+<span class="a">+++ b/tests/_server/session/test_serialize_session_missing_type.py</span>
+<span class="h">@@ -28,5 +28,5 @@ def test_serialize_session_with_dict_error_missing_type():</span>
+     assert len(result[&quot;cells&quot;]) == 1
+     assert len(result[&quot;cells&quot;][0][&quot;outputs&quot;]) == 1
+     assert result[&quot;cells&quot;][0][&quot;outputs&quot;][0][&quot;type&quot;] == &quot;error&quot;
+<span class="d">-    assert result[&quot;cells&quot;][0][&quot;outputs&quot;][0][&quot;ename&quot;] == &quot;Unknown&quot;</span>
+<span class="a">+    assert result[&quot;cells&quot;][0][&quot;outputs&quot;][0][&quot;ename&quot;] == &quot;UnknownError&quot;</span>
+     assert result[&quot;cells&quot;][0][&quot;outputs&quot;][0][&quot;evalue&quot;] == &quot;Something went wrong&quot;</pre><h2>Commit #2: <a href="https://github.com/marimo-team/marimo/commit/10633697a72ee14cc4c837e0a5d960d3cc42dfe7">10633697a7</a> (2025-12-22T18:33:47-05:00)</h2><p class="k">refactor: Rename Op to Notification (#7590)<br>Path after this commit: tests/_server/session/test_serialize_session_missing_type.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/_server/session/test_serialize_session_missing_type.py b/tests/_server/session/test_serialize_session_missing_type.py
+index 9bc72f41f..b61f10706 100644
+<span class="d">--- a/tests/_server/session/test_serialize_session_missing_type.py</span>
+<span class="a">+++ b/tests/_server/session/test_serialize_session_missing_type.py</span>
+<span class="h">@@ -1,5 +1,7 @@</span>
+<span class="a">+from __future__ import annotations</span>
+<span class="a">+</span>
+ from marimo._messaging.cell_output import CellChannel, CellOutput
+<span class="d">-from marimo._messaging.ops import CellOp</span>
+<span class="a">+from marimo._messaging.notification import CellNotification</span>
+<span class=" m"> from marimo._server.session.serialize import serialize_session_view</span>
+ from marimo._server.session.session_view import SessionView
+ 
+<span class="h">@@ -7,7 +9,7 @@ from marimo._server.session.session_view import SessionView</span>
+ def test_serialize_session_with_dict_error_missing_type():
+     &quot;&quot;&quot;Test serialization of a session with a dictionary error missing the type key&quot;&quot;&quot;
+     view = SessionView()
+<span class="d">-    view.cell_operations[&quot;cell1&quot;] = CellOp(</span>
+<span class="a">+    view.cell_notifications[&quot;cell1&quot;] = CellNotification(</span>
+         cell_id=&quot;cell1&quot;,
+         status=&quot;idle&quot;,
+         output=CellOutput(</pre><h2>Commit #3: <a href="https://github.com/marimo-team/marimo/commit/a254045abb68c0e78cc06617c39d5857c62ea8e6">a254045abb</a> (2025-12-29T13:33:50-05:00)</h2><p class="k">refactor: move session files (#7626)<br>Path after this commit: tests/_session/state/test_serialize_session_missing_type.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/_server/session/test_serialize_session_missing_type.py b/tests/_session/state/test_serialize_session_missing_type.py
+similarity index 90%
+rename from tests/_server/session/test_serialize_session_missing_type.py
+rename to tests/_session/state/test_serialize_session_missing_type.py
+index b61f10706..a1238ba46 100644
+<span class="d">--- a/tests/_server/session/test_serialize_session_missing_type.py</span>
+<span class="a">+++ b/tests/_session/state/test_serialize_session_missing_type.py</span>
+<span class="h">@@ -2,8 +2,8 @@ from __future__ import annotations</span>
+ 
+ from marimo._messaging.cell_output import CellChannel, CellOutput
+ from marimo._messaging.notification import CellNotification
+<span class="d m">-from marimo._server.session.serialize import serialize_session_view</span>
+<span class="d">-from marimo._server.session.session_view import SessionView</span>
+<span class="a">+from marimo._session.state.serialize import serialize_session_view</span>
+<span class="a">+from marimo._session.state.session_view import SessionView</span>
+ 
+ 
+ def test_serialize_session_with_dict_error_missing_type():</pre></body></html>

@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L048</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L048</h1><p><b>Repository:</b> <a href="https://github.com/jina-ai/node-deepresearch">jina-ai/node-deepresearch</a><br><b>File at merge:</b> src/tools/__tests__/read.test.ts, line 7<br><b>Merge commit (birth):</b> <a href="https://github.com/jina-ai/node-deepresearch/commit/76f8cd242a1329c54f109a045280679f063ef72f">76f8cd242a</a> (2025-02-03T10:01:59)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/jina-ai/node-deepresearch/tree/d44cec6524d927d2bd1687e0f4b16847a16685bf">d44cec6524</a>)</p><p><b>The line:</b></p><pre><span class="t">    const { response } = await readUrl(&#x27;https://www.typescriptlang.org&#x27;, process.env.JINA_API_KEY!, tokenTracker);</span></pre><h2>File at the merge commit, lines 1 to 15</h2><pre>    1 | import { readUrl } from &#x27;../read&#x27;;
+    2 | import { TokenTracker } from &#x27;../../utils/token-tracker&#x27;;
+    3 | 
+    4 | describe(&#x27;readUrl&#x27;, () =&gt; {
+    5 |   it.skip(&#x27;should read and parse URL content (skipped due to insufficient balance)&#x27;, async () =&gt; {
+    6 |     const tokenTracker = new TokenTracker();
+<span class="t">    7 |     const { response } = await readUrl(&#x27;https://www.typescriptlang.org&#x27;, process.env.JINA_API_KEY!, tokenTracker);</span>
+    8 |     expect(response).toHaveProperty(&#x27;code&#x27;);
+    9 |     expect(response).toHaveProperty(&#x27;status&#x27;);
+   10 |     expect(response.data).toHaveProperty(&#x27;content&#x27;);
+   11 |     expect(response.data).toHaveProperty(&#x27;title&#x27;);
+   12 |   }, 15000);
+   13 | 
+   14 |   it.skip(&#x27;should handle invalid URLs (skipped due to insufficient balance)&#x27;, async () =&gt; {
+   15 |     await expect(readUrl(&#x27;invalid-url&#x27;, process.env.JINA_API_KEY!)).rejects.toThrow();</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/jina-ai/node-deepresearch/commit/a9dfec9a41a2be9cc2b40db72b531fa3a18d5355">a9dfec9a41</a> (2025-02-05T15:15:17+08:00)</h2><p class="k">feat: use s.jina.ai for search<br>Path after this commit: src/tools/__tests__/read.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/tools/__tests__/read.test.ts b/src/tools/__tests__/read.test.ts
+index 51656e6..b2dbdcd 100644
+<span class="d">--- a/src/tools/__tests__/read.test.ts</span>
+<span class="a">+++ b/src/tools/__tests__/read.test.ts</span>
+<span class="h">@@ -4,7 +4,7 @@ import { TokenTracker } from &#x27;../../utils/token-tracker&#x27;;</span>
+ describe(&#x27;readUrl&#x27;, () =&gt; {
+   it.skip(&#x27;should read and parse URL content (skipped due to insufficient balance)&#x27;, async () =&gt; {
+     const tokenTracker = new TokenTracker();
+<span class="d m">-    const { response } = await readUrl(&#x27;https://www.typescriptlang.org&#x27;, process.env.JINA_API_KEY!, tokenTracker);</span>
+<span class="a">+    const { response } = await readUrl(&#x27;https://www.typescriptlang.org&#x27;, tokenTracker);</span>
+     expect(response).toHaveProperty(&#x27;code&#x27;);
+     expect(response).toHaveProperty(&#x27;status&#x27;);
+     expect(response.data).toHaveProperty(&#x27;content&#x27;);
+<span class="h">@@ -12,7 +12,7 @@ describe(&#x27;readUrl&#x27;, () =&gt; {</span>
+   }, 15000);
+ 
+   it.skip(&#x27;should handle invalid URLs (skipped due to insufficient balance)&#x27;, async () =&gt; {
+<span class="d">-    await expect(readUrl(&#x27;invalid-url&#x27;, process.env.JINA_API_KEY!)).rejects.toThrow();</span>
+<span class="a">+    await expect(readUrl(&#x27;invalid-url&#x27;)).rejects.toThrow();</span>
+   }, 15000);
+ 
+   beforeEach(() =&gt; {</pre></body></html>

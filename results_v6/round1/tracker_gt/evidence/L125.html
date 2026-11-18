@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L125</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L125</h1><p><b>Repository:</b> <a href="https://github.com/sylius/sylius">sylius/sylius</a><br><b>File at merge:</b> src/Sylius/Behat/tests/Service/SecurityServiceTest.php, line 81<br><b>Merge commit (birth):</b> <a href="https://github.com/sylius/sylius/commit/4b7dafe91dbbdd873bd46e4e18258454ad374630">4b7dafe91d</a> (2025-05-26T12:59:09)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/sylius/sylius/tree/1b49612af2ed43c6803a4c5558c5b6739e98be4f">1b49612af2</a>)</p><p><b>The line:</b></p><pre><span class="t">    public function testLogsUserIn(): void</span></pre><h2>File at the merge commit, lines 73 to 89</h2><pre>   73 |         $this-&gt;session-&gt;expects($this-&gt;once())-&gt;method(&#x27;getName&#x27;)-&gt;willReturn(&#x27;MOCKEDSID&#x27;);
+   74 |         $this-&gt;session-&gt;expects($this-&gt;once())-&gt;method(&#x27;getId&#x27;)-&gt;willReturn(&#x27;xyzc123&#x27;);
+   75 | 
+   76 |         $this-&gt;cookieSetter-&gt;expects($this-&gt;once())-&gt;method(&#x27;setCookie&#x27;)-&gt;with(&#x27;MOCKEDSID&#x27;, &#x27;xyzc123&#x27;);
+   77 | 
+   78 |         $this-&gt;securityService-&gt;logIn($shopUser);
+   79 |     }
+   80 | 
+<span class="t">   81 |     public function testLogsUserIn(): void</span>
+   82 |     {
+   83 |         /** @var ShopUserInterface&amp;MockObject $shopUser */
+   84 |         $shopUser = $this-&gt;createMock(ShopUserInterface::class);
+   85 | 
+   86 |         $this-&gt;sessionFactory-&gt;expects($this-&gt;once())-&gt;method(&#x27;createSession&#x27;)-&gt;willReturn($this-&gt;session);
+   87 | 
+   88 |         $shopUser-&gt;expects($this-&gt;once())-&gt;method(&#x27;getRoles&#x27;)-&gt;willReturn([&#x27;ROLE_USER&#x27;]);
+   89 |         $shopUser-&gt;expects($this-&gt;once())-&gt;method(&#x27;__serialize&#x27;)-&gt;willReturn([&#x27;serialized_user&#x27;]);</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

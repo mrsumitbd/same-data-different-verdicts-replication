@@ -1,0 +1,132 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L139</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L139</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>File at merge:</b> apps/studio/src/routes/editor/TopBar/Profile/PricingCard.tsx, line 5<br><b>Merge commit (birth):</b> <a href="https://github.com/onlook-dev/onlook/commit/0e43ffd5575ddc8aa9f58c624237d6a6c45d1b60">0e43ffd557</a> (2025-02-04T08:59:35)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">import { useTranslation } from &#x27;react-i18next&#x27;;</span></pre><h2>File at the merge commit, lines 1 to 13</h2><pre>    1 | import { Button } from &#x27;@onlook/ui/button&#x27;;
+    2 | import { Icons } from &#x27;@onlook/ui/icons&#x27;;
+    3 | import { MotionCard } from &#x27;@onlook/ui/motion-card&#x27;;
+    4 | import { motion } from &#x27;framer-motion&#x27;;
+<span class="t">    5 | import { useTranslation } from &#x27;react-i18next&#x27;;</span>
+    6 | 
+    7 | export const PricingCard = ({
+    8 |     plan,
+    9 |     price,
+   10 |     description,
+   11 |     features,
+   12 |     buttonText,
+   13 |     buttonProps,</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/c22fda315f370b2c94cbf0c8708a9489984e5cea">c22fda315f</a> (2025-02-16T19:32:29-05:00)</h2><p class="k">Refactor user manager and subscriptions (#1400)<br>Path after this commit: apps/studio/src/routes/editor/TopBar/Subscription/PricingCard.tsx. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: apps/studio/src/routes/editor/TopBar/Subscription/PricingPage.tsx.</p><pre>diff --git a/apps/studio/src/routes/editor/TopBar/Profile/PricingCard.tsx b/apps/studio/src/routes/editor/TopBar/Subscription/PricingCard.tsx
+similarity index 100%
+rename from apps/studio/src/routes/editor/TopBar/Profile/PricingCard.tsx
+rename to apps/studio/src/routes/editor/TopBar/Subscription/PricingCard.tsx</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/663f12ddbf79dd628f7af3c7f6a04aae458d3c0a">663f12ddbf</a> (2025-03-19T18:03:24-04:00)</h2><p class="k">Improve settings modal and build with script (#1645)<br>Path after this commit: apps/studio/src/components/Modals/Subscription/PricingCard.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/studio/src/routes/editor/TopBar/Subscription/PricingCard.tsx b/apps/studio/src/components/Modals/Subscription/PricingCard.tsx
+similarity index 100%
+rename from apps/studio/src/routes/editor/TopBar/Subscription/PricingCard.tsx
+rename to apps/studio/src/components/Modals/Subscription/PricingCard.tsx</pre><h2>Commit #3: <a href="https://github.com/onlook-dev/onlook/commit/f7a8060cc456b1968464e5bde9d8fca16648eb1e">f7a8060cc4</a> (2025-05-14T19:16:52-04:00)</h2><p class="k">Migrate to web version (#1837)<br>Path after this commit: apps/web/client/src/components/ui/modal/subscription/pricing-card.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/studio/src/components/Modals/Subscription/PricingCard.tsx b/apps/web/client/src/components/ui/modal/subscription/pricing-card.tsx
+similarity index 94%
+rename from apps/studio/src/components/Modals/Subscription/PricingCard.tsx
+rename to apps/web/client/src/components/ui/modal/subscription/pricing-card.tsx
+index ae8801bf..2ad15a21 100644
+<span class="d">--- a/apps/studio/src/components/Modals/Subscription/PricingCard.tsx</span>
+<span class="a">+++ b/apps/web/client/src/components/ui/modal/subscription/pricing-card.tsx</span>
+<span class="h">@@ -2,7 +2,7 @@ import { Button } from &#x27;@onlook/ui/button&#x27;;</span>
+ import { Icons } from &#x27;@onlook/ui/icons&#x27;;
+ import { MotionCard } from &#x27;@onlook/ui/motion-card&#x27;;
+ import { motion } from &#x27;framer-motion&#x27;;
+<span class="d m">-import { useTranslation } from &#x27;react-i18next&#x27;;</span>
+<span class="a">+import { useTranslations } from &#x27;next-intl&#x27;;</span>
+ 
+ export const PricingCard = ({
+     plan,
+<span class="h">@@ -23,7 +23,7 @@ export const PricingCard = ({</span>
+     delay: number;
+     isLoading?: boolean;
+ }) =&gt; {
+<span class="d">-    const { t } = useTranslation();</span>
+<span class="a">+    const t = useTranslations();</span>
+ 
+     return (
+         &lt;MotionCard
+<span class="h">@@ -54,7 +54,7 @@ export const PricingCard = ({</span>
+                 &lt;Button
+                     className=&quot;mt-auto w-full&quot;
+                     {...buttonProps}
+<span class="d">-                    disabled={isLoading || buttonProps.disabled}</span>
+<span class="a">+                    disabled={isLoading ?? buttonProps.disabled}</span>
+                 &gt;
+                     {isLoading ? (
+                         &lt;div className=&quot;flex items-center gap-2&quot;&gt;</pre><h2>Commit #4: <a href="https://github.com/onlook-dev/onlook/commit/bef5aaacdfbec9ba4bea315aff377906aecfc2c5">bef5aaacdf</a> (2025-05-28T19:38:30-04:00)</h2><p class="k">Clean up chat state (#1948)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/web/client/src/components/ui/modal/subscription/pricing-card.tsx b/apps/web/client/src/components/ui/modal/subscription/pricing-card.tsx
+deleted file mode 100644
+index 2ad15a21..00000000
+<span class="d">--- a/apps/web/client/src/components/ui/modal/subscription/pricing-card.tsx</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,71 +0,0 @@</span>
+<span class="d">-import { Button } from &#x27;@onlook/ui/button&#x27;;</span>
+<span class="d">-import { Icons } from &#x27;@onlook/ui/icons&#x27;;</span>
+<span class="d">-import { MotionCard } from &#x27;@onlook/ui/motion-card&#x27;;</span>
+<span class="d">-import { motion } from &#x27;framer-motion&#x27;;</span>
+<span class="d">-import { useTranslations } from &#x27;next-intl&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-export const PricingCard = ({</span>
+<span class="d">-    plan,</span>
+<span class="d">-    price,</span>
+<span class="d">-    description,</span>
+<span class="d">-    features,</span>
+<span class="d">-    buttonText,</span>
+<span class="d">-    buttonProps,</span>
+<span class="d">-    delay,</span>
+<span class="d">-    isLoading,</span>
+<span class="d">-}: {</span>
+<span class="d">-    plan: string;</span>
+<span class="d">-    price: string;</span>
+<span class="d">-    description: string;</span>
+<span class="d">-    features: string[];</span>
+<span class="d">-    buttonText: string;</span>
+<span class="d">-    buttonProps: React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt;;</span>
+<span class="d">-    delay: number;</span>
+<span class="d">-    isLoading?: boolean;</span>
+<span class="d">-}) =&gt; {</span>
+<span class="d">-    const t = useTranslations();</span>
+<span class="d">-</span>
+<span class="d">-    return (</span>
+<span class="d">-        &lt;MotionCard</span>
+<span class="d">-            className=&quot;w-[360px]&quot;</span>
+<span class="d">-            initial={{ opacity: 0, y: 40 }}</span>
+<span class="d">-            animate={{ opacity: 1, y: 0 }}</span>
+<span class="d">-            transition={{ delay }}</span>
+<span class="d">-        &gt;</span>
+<span class="d">-            &lt;motion.div className=&quot;p-6 flex flex-col h-full&quot;&gt;</span>
+<span class="d">-                &lt;div className=&quot;space-y-1&quot;&gt;</span>
+<span class="d">-                    &lt;h2 className=&quot;text-title2&quot;&gt;{plan}&lt;/h2&gt;</span>
+<span class="d">-                    &lt;p className=&quot;text-foreground-onlook text-largePlus&quot;&gt;{price}&lt;/p&gt;</span>
+<span class="d">-                &lt;/div&gt;</span>
+<span class="d">-                &lt;div className=&quot;border-[0.5px] border-border-primary -mx-6 my-6&quot; /&gt;</span>
+<span class="d">-                &lt;p className=&quot;text-foreground-primary text-title3 text-balance&quot;&gt;{description}&lt;/p&gt;</span>
+<span class="d">-                &lt;div className=&quot;border-[0.5px] border-border-primary -mx-6 my-6&quot; /&gt;</span>
+<span class="d">-                &lt;div className=&quot;space-y-4 mb-6&quot;&gt;</span>
+<span class="d">-                    {features.map((feature, i) =&gt; (</span>
+<span class="d">-                        &lt;div</span>
+<span class="d">-                            key={feature}</span>
+<span class="d">-                            className=&quot;flex items-center gap-3 text-sm text-foreground-secondary/80&quot;</span>
+<span class="d">-                        &gt;</span>
+<span class="d">-                            &lt;Icons.Check className=&quot;w-5 h-5 text-foreground-secondary/80&quot; /&gt;</span>
+<span class="d">-                            &lt;span&gt;{feature}&lt;/span&gt;</span>
+<span class="d">-                        &lt;/div&gt;</span>
+<span class="d">-                    ))}</span>
+<span class="d">-                &lt;/div&gt;</span>
+<span class="d">-                &lt;Button</span>
+<span class="d">-                    className=&quot;mt-auto w-full&quot;</span>
+<span class="d">-                    {...buttonProps}</span>
+<span class="d">-                    disabled={isLoading ?? buttonProps.disabled}</span>
+<span class="d">-                &gt;</span>
+<span class="d">-                    {isLoading ? (</span>
+<span class="d">-                        &lt;div className=&quot;flex items-center gap-2&quot;&gt;</span>
+<span class="d">-                            &lt;Icons.Shadow className=&quot;w-4 h-4 animate-spin&quot; /&gt;</span>
+<span class="d">-                            &lt;span&gt;{t(&#x27;pricing.loading.checkingPayment&#x27;)}&lt;/span&gt;</span>
+<span class="d">-                        &lt;/div&gt;</span>
+<span class="d">-                    ) : (</span>
+<span class="d">-                        buttonText</span>
+<span class="d">-                    )}</span>
+<span class="d">-                &lt;/Button&gt;</span>
+<span class="d">-            &lt;/motion.div&gt;</span>
+<span class="d">-        &lt;/MotionCard&gt;</span>
+<span class="d">-    );</span>
+<span class="d">-};</span></pre></body></html>

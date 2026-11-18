@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L095 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L095: after the move</h1><p><b>Repository:</b> <a href="https://github.com/antiwork/gumroad">antiwork/gumroad</a><br><b>Original file:</b> app/controllers/admin/sales_reports_controller.rb (see L095.html)<br><b>Move commit:</b> <a href="https://github.com/antiwork/gumroad/commit/2ca8583cd61a4cfd7e3a96628e425249097d91cf">2ca8583cd6</a> (commit #1 on L095.html)<br><b>Destination file (your label):</b> app/models/admin/sales_report.rb<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/antiwork/gumroad/tree/841de7d7b8f8d4c47f52dce8d9320d49edb249ca">841de7d7b8</a>)</p><p><b>The line:</b></p><pre><span class="t">      $redis.lpush(RedisKey.sales_report_jobs, job_details.to_json)</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 80).</p><h2>Destination file at the move commit, lines 72 to 83</h2><pre>   72 |         job_id:,
+   73 |         country_code:,
+   74 |         start_date: start_date.to_s,
+   75 |         end_date: end_date.to_s,
+   76 |         enqueued_at: Time.current.to_s,
+   77 |         status: &quot;processing&quot;
+   78 |       }
+   79 | 
+<span class="t">   80 |       $redis.lpush(RedisKey.sales_report_jobs, job_details.to_json)</span>
+   81 |       $redis.ltrim(RedisKey.sales_report_jobs, 0, 19)
+   82 |     end
+   83 | end</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/antiwork/gumroad/commit/01dd467c3d180bb501dfb525d954e06774ea508c">01dd467c3d</a> (2025-12-11T18:36:15+05:30)</h2><p class="k">Support generating discover sales reports from admin and add example scripts to accounting docs (#1716)<br>Path after this commit: app/models/admin/sales_report.rb. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/app/models/admin/sales_report.rb b/app/models/admin/sales_report.rb
+index a652ed5e1..b3b10024f 100644
+<span class="d">--- a/app/models/admin/sales_report.rb</span>
+<span class="a">+++ b/app/models/admin/sales_report.rb</span>
+<span class="h">@@ -6,7 +6,7 @@ class Admin::SalesReport</span>
+   YYYY_MM_DD_FORMAT = /\A\d{4}-\d{2}-\d{2}\z/
+   INVALID_DATE_FORMAT_MESSAGE = &quot;Invalid date format. Please use YYYY-MM-DD format&quot;
+ 
+<span class="d">-  ACCESSORS = %i[country_code start_date end_date].freeze</span>
+<span class="a">+  ACCESSORS = %i[country_code start_date end_date sales_type].freeze</span>
+   attr_accessor(*ACCESSORS)
+   ACCESSORS.each do |accessor|
+     define_method(&quot;#{accessor}?&quot;) do
+<span class="h">@@ -19,6 +19,7 @@ class Admin::SalesReport</span>
+   validates :end_date, presence: { message: INVALID_DATE_FORMAT_MESSAGE }
+   validates :start_date, comparison: { less_than: :end_date, message: &quot;must be before end date&quot;, if: %i[start_date? end_date?] }
+   validates :start_date, comparison: { less_than_or_equal_to: -&gt; { Date.current }, message: &quot;cannot be in the future&quot;, if: :start_date? }
+<span class="a">+  validates_inclusion_of :sales_type, in: GenerateSalesReportJob::SALES_TYPES, message: &quot;Invalid sales type, should be #{GenerateSalesReportJob::SALES_TYPES.join(&quot; or &quot;)}.&quot;</span>
+ 
+   class &lt;&lt; self
+     def fetch_job_history
+<span class="h">@@ -34,6 +35,7 @@ class Admin::SalesReport</span>
+       country_code,
+       start_date.to_s,
+       end_date.to_s,
+<span class="a">+      sales_type,</span>
+       true,
+       nil
+     )
+<span class="h">@@ -73,6 +75,7 @@ class Admin::SalesReport</span>
+         country_code:,
+         start_date: start_date.to_s,
+         end_date: end_date.to_s,
+<span class="a">+        sales_type:,</span>
+         enqueued_at: Time.current.to_s,
+         status: &quot;processing&quot;
+       }</pre></body></html>

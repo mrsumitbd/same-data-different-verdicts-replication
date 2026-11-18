@@ -1,0 +1,71 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L245</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L245</h1><p><b>Repository:</b> <a href="https://github.com/f/mcptools">f/mcptools</a><br><b>File at merge:</b> cmd/mcptools/commands/get_prompt.go, line 68<br><b>Merge commit (birth):</b> <a href="https://github.com/f/mcptools/commit/a906e6a55610fb8b8ddc287a71e6411946434def">a906e6a556</a> (2025-04-05T13:28:25)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/f/mcptools/tree/e7bd7246118384095ba22fd219ff38a1bf1cb792">e7bd724611</a>)</p><p><b>The line:</b></p><pre><span class="t">			if ParamsString != &quot;&quot; {</span></pre><h2>File at the merge commit, lines 60 to 76</h2><pre>   60 | 				fmt.Fprintln(
+   61 | 					os.Stderr,
+   62 | 					&quot;Example: mcp get-prompt read_file npx -y @modelcontextprotocol/server-filesystem ~&quot;,
+   63 | 				)
+   64 | 				os.Exit(1)
+   65 | 			}
+   66 | 
+   67 | 			var params map[string]any
+<span class="t">   68 | 			if ParamsString != &quot;&quot; {</span>
+   69 | 				if jsonErr := json.Unmarshal([]byte(ParamsString), &amp;params); jsonErr != nil {
+   70 | 					fmt.Fprintf(os.Stderr, &quot;Error: invalid JSON for params: %v\n&quot;, jsonErr)
+   71 | 					os.Exit(1)
+   72 | 				}
+   73 | 			}
+   74 | 
+   75 | 			mcpClient, clientErr := CreateClientFunc(parsedArgs)
+   76 | 			if clientErr != nil {</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/f/mcptools/commit/5910f3008d5c16784b5fb3a8fdc5cfa06cccc4fe">5910f3008d</a> (2025-04-12T20:42:48+03:00)</h2><p class="k">Merge pull request #40 from ayakut16/fix/show-logs<br>Path after this commit: cmd/mcptools/commands/get_prompt.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/cmd/mcptools/commands/get_prompt.go b/cmd/mcptools/commands/get_prompt.go
+index a39ed95..16d9c50 100644
+<span class="d">--- a/cmd/mcptools/commands/get_prompt.go</span>
+<span class="a">+++ b/cmd/mcptools/commands/get_prompt.go</span>
+<span class="h">@@ -45,6 +45,9 @@ func GetPromptCmd() *cobra.Command {</span>
+ 				case (cmdArgs[i] == FlagParams || cmdArgs[i] == FlagParamsShort) &amp;&amp; i+1 &lt; len(cmdArgs):
+ 					ParamsString = cmdArgs[i+1]
+ 					i += 2
+<span class="a">+				case cmdArgs[i] == FlagServerLogs:</span>
+<span class="a">+					ShowServerLogs = true</span>
+<span class="a">+					i++</span>
+ 				case !promptExtracted:
+ 					promptName = cmdArgs[i]
+ 					promptExtracted = true</pre><h2>Commit #2: <a href="https://github.com/f/mcptools/commit/f6d5ce5aa9247158dd2ef1440d1d9a34b61cd9e9">f6d5ce5aa9</a> (2025-05-02T18:50:06+03:00)</h2><p class="k">Merge pull request #49 from ayakut16/migration/client<br>Path after this commit: cmd/mcptools/commands/get_prompt.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/cmd/mcptools/commands/get_prompt.go b/cmd/mcptools/commands/get_prompt.go
+index 16d9c50..30ff06a 100644
+<span class="d">--- a/cmd/mcptools/commands/get_prompt.go</span>
+<span class="a">+++ b/cmd/mcptools/commands/get_prompt.go</span>
+<span class="h">@@ -1,10 +1,12 @@</span>
+ package commands
+ 
+ import (
+<span class="a">+	&quot;context&quot;</span>
+ 	&quot;encoding/json&quot;
+ 	&quot;fmt&quot;
+ 	&quot;os&quot;
+ 
+<span class="a">+	&quot;github.com/mark3labs/mcp-go/mcp&quot;</span>
+ 	&quot;github.com/spf13/cobra&quot;
+ )
+ 
+<span class="h">@@ -81,8 +83,18 @@ func GetPromptCmd() *cobra.Command {</span>
+ 				os.Exit(1)
+ 			}
+ 
+<span class="d">-			resp, execErr := mcpClient.GetPrompt(promptName)</span>
+<span class="d">-			if formatErr := FormatAndPrintResponse(thisCmd, resp, execErr); formatErr != nil {</span>
+<span class="a">+			request := mcp.GetPromptRequest{}</span>
+<span class="a">+			request.Params.Name = promptName</span>
+<span class="a">+			resp, execErr := mcpClient.GetPrompt(context.Background(), request)</span>
+<span class="a">+</span>
+<span class="a">+			var responseMap map[string]any</span>
+<span class="a">+			if execErr == nil &amp;&amp; resp != nil {</span>
+<span class="a">+				responseMap = ConvertJSONToMap(resp)</span>
+<span class="a">+			} else {</span>
+<span class="a">+				responseMap = map[string]any{}</span>
+<span class="a">+			}</span>
+<span class="a">+</span>
+<span class="a">+			if formatErr := FormatAndPrintResponse(thisCmd, responseMap, execErr); formatErr != nil {</span>
+ 				fmt.Fprintf(os.Stderr, &quot;%v\n&quot;, formatErr)
+ 				os.Exit(1)
+ 			}</pre></body></html>

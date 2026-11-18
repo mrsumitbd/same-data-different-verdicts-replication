@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L172 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L172: after the move</h1><p><b>Repository:</b> <a href="https://github.com/gitbookio/gitbook">gitbookio/gitbook</a><br><b>Original file:</b> packages/gitbook/src/routes/markdownPage.ts (see L172.html)<br><b>Move commit:</b> <a href="https://github.com/gitbookio/gitbook/commit/0003030bf5bdd10498599f6b27c5b5a1f797867a">0003030bf5</a> (commit #2 on L172.html)<br><b>Destination file (your label):</b> packages/gitbook/src/lib/markdownPage.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gitbookio/gitbook/tree/b9ad997fcbb117f4e61dd2d47401cf33798767af">b9ad997fcb</a>)</p><p><b>The line:</b></p><pre><span class="t">        .replace(/^---\n[\s\S]*?\n---\n?/g, &#x27;&#x27;)</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 83).</p><h2>Destination file at the move commit, lines 75 to 91</h2><pre>   75 | /**
+   76 |  * Determine if a page is empty.
+   77 |  * A page is empty if it has no content or only a title.
+   78 |  */
+   79 | function isEmptyMarkdownPage(markdown: string): boolean {
+   80 |     // Remove frontmatter
+   81 |     const stripped = markdown
+   82 |         .trim()
+<span class="t">   83 |         .replace(/^---\n[\s\S]*?\n---\n?/g, &#x27;&#x27;)</span>
+   84 |         .trim();
+   85 | 
+   86 |     // Fast path: try to quickly detect obvious matches
+   87 |     if (/^[ \t]*# .+$/m.test(stripped)) {
+   88 |         // If there&#x27;s a single heading line or empty lines, and no other content
+   89 |         return (
+   90 |             /^#{1,6} .+\s*$/.test(stripped) &amp;&amp;
+   91 |             !/\n\S+/g.test(stripped.split(&#x27;\n&#x27;).slice(1).join(&#x27;\n&#x27;))</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gitbookio/gitbook/commit/10ded437f07889ddb7722f9a2eafcdcab7d9b6c8">10ded437f0</a> (2025-08-26T19:25:54+03:00)</h2><p class="k">Turn on the &quot;noUncheckedIndexedAccess&quot; flag in all TS config files (#3587)<br>Path after this commit: packages/gitbook/src/lib/markdownPage.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/gitbook/src/lib/markdownPage.ts b/packages/gitbook/src/lib/markdownPage.ts
+index d3cccb27..a16bd01c 100644
+<span class="d">--- a/packages/gitbook/src/lib/markdownPage.ts</span>
+<span class="a">+++ b/packages/gitbook/src/lib/markdownPage.ts</span>
+<span class="h">@@ -110,7 +110,7 @@ function isEmptyMarkdownPage(markdown: string): boolean {</span>
+         if (
+             node.type === &#x27;paragraph&#x27; &amp;&amp;
+             node.children.length === 1 &amp;&amp;
+<span class="d">-            node.children[0].type === &#x27;text&#x27; &amp;&amp;</span>
+<span class="a">+            node.children[0]!.type === &#x27;text&#x27; &amp;&amp;</span>
+             !node.children[0].value.trim()
+         ) {
+             continue;</pre></body></html>

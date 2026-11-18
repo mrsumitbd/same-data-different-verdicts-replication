@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L218</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L218</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/graphrag">microsoft/graphrag</a><br><b>File at merge:</b> graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py, line 76<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/graphrag/commit/ad4cdd685f4457acf06126e37594835f6d098b6b">ad4cdd685f</a> (2025-04-22T21:15:26)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/graphrag/tree/fdb7e3835badc483f50605db476d8636aeea7156">fdb7e3835b</a>)</p><p><b>The line:</b></p><pre><span class="t">            if num_tokens(new_context_string) &gt; max_context_tokens:</span></pre><h2>File at the merge commit, lines 68 to 84</h2><pre>   68 |     current_text_units = []
+   69 |     context_string = &quot;&quot;
+   70 |     for record in sorted_text_units:
+   71 |         current_text_units.append(record)
+   72 |         if max_context_tokens:
+   73 |             new_context_string = get_context_string(
+   74 |                 current_text_units, sub_community_reports
+   75 |             )
+<span class="t">   76 |             if num_tokens(new_context_string) &gt; max_context_tokens:</span>
+   77 |                 break
+   78 | 
+   79 |             context_string = new_context_string
+   80 | 
+   81 |     if context_string == &quot;&quot;:
+   82 |         return get_context_string(sorted_text_units, sub_community_reports)
+   83 | 
+   84 |     return context_string</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/graphrag/commit/e84df28e6429e338595e1b7730be2a89153b6c18">e84df28e64</a> (2025-07-09T18:29:03-06:00)</h2><p class="k">Improve internal logging functionality by using Python&#x27;s standard logging module (#1956)<br>Path after this commit: graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py b/graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py
+index 2435dfbd..53639f1f 100644
+<span class="d">--- a/graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py</span>
+<span class="a">+++ b/graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py</span>
+<span class="h">@@ -10,7 +10,7 @@ import pandas as pd</span>
+ import graphrag.data_model.schemas as schemas
+ from graphrag.query.llm.text_utils import num_tokens
+ 
+<span class="d">-log = logging.getLogger(__name__)</span>
+<span class="a">+logger = logging.getLogger(__name__)</span>
+ 
+ 
+ def get_context_string(</pre><h2>Commit #2: <a href="https://github.com/microsoft/graphrag/commit/ac8a7f5eefd5b1c94bc51876d3772ad7466438c8">ac8a7f5eef</a> (2025-10-07T16:21:24-07:00)</h2><p class="k">Housekeeping (#2086)<br>Path after this commit: graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py b/graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py
+index 53639f1f..7bad931b 100644
+<span class="d">--- a/graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py</span>
+<span class="a">+++ b/graphrag/index/operations/summarize_communities/text_unit_context/sort_context.py</span>
+<span class="h">@@ -8,7 +8,7 @@ import logging</span>
+ import pandas as pd
+ 
+ import graphrag.data_model.schemas as schemas
+<span class="d">-from graphrag.query.llm.text_utils import num_tokens</span>
+<span class="a">+from graphrag.tokenizer.tokenizer import Tokenizer</span>
+ 
+ logger = logging.getLogger(__name__)
+ 
+<span class="h">@@ -57,6 +57,7 @@ def get_context_string(</span>
+ 
+ def sort_context(
+     local_context: list[dict],
+<span class="a">+    tokenizer: Tokenizer,</span>
+     sub_community_reports: list[dict] | None = None,
+     max_context_tokens: int | None = None,
+ ) -&gt; str:
+<span class="h">@@ -73,7 +74,7 @@ def sort_context(</span>
+             new_context_string = get_context_string(
+                 current_text_units, sub_community_reports
+             )
+<span class="d m">-            if num_tokens(new_context_string) &gt; max_context_tokens:</span>
+<span class="a">+            if tokenizer.num_tokens(new_context_string) &gt; max_context_tokens:</span>
+                 break
+ 
+             context_string = new_context_string</pre></body></html>

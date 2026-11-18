@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L127</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L127</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/testfx">microsoft/testfx</a><br><b>File at merge:</b> test/UnitTests/MSTest.Analyzers.UnitTests/PreferTestMethodOverDataTestMethodAnalyzerTests.cs, line 133<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/testfx/commit/2d00b0c323717270c29764e4b40707c32e47d625">2d00b0c323</a> (2025-06-12T08:38:57)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/testfx/tree/4e84b8461ead6927f6323338a9f13bb4c09aabc4">4e84b8461e</a>)</p><p><b>The line:</b></p><pre><span class="t">            using Microsoft.VisualStudio.TestTools.UnitTesting;</span></pre><h2>File at the merge commit, lines 125 to 141</h2><pre>  125 |         await VerifyCS.VerifyCodeFixAsync(code, fixedCode);
+  126 |     }
+  127 | 
+  128 |     [TestMethod]
+  129 |     public async Task WhenInheritingDataTestMethod_Diagnostic()
+  130 |     {
+  131 |         // TODO: Codefix doesn&#x27;t handle this yet. So no codefix is offered.
+  132 |         string code = &quot;&quot;&quot;
+<span class="t">  133 |             using Microsoft.VisualStudio.TestTools.UnitTesting;</span>
+  134 | 
+  135 |             internal sealed class [|MyDataTestMethodAttribute|] : DataTestMethodAttribute
+  136 |             {
+  137 |             }
+  138 |             &quot;&quot;&quot;;
+  139 | 
+  140 |         await VerifyCS.VerifyCodeFixAsync(code, code);
+  141 |     }</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

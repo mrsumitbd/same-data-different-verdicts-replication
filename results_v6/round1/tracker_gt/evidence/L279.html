@@ -1,0 +1,431 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L279</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L279</h1><p><b>Repository:</b> <a href="https://github.com/gofiber/fiber">gofiber/fiber</a><br><b>File at merge:</b> hooks_test.go, line 383<br><b>Merge commit (birth):</b> <a href="https://github.com/gofiber/fiber/commit/a68b0e0883791ca0ab955d77f998079a9ab0dc6f">a68b0e0883</a> (2025-06-18T12:56:31)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gofiber/fiber/tree/e75e57107f980f3ddf7db14dca94a051f9dc5174">e75e57107f</a>)</p><p><b>The line:</b></p><pre><span class="t">	app := New()</span></pre><h2>File at the merge commit, lines 375 to 391</h2><pre>  375 | 
+  376 | 	err := app.hooks.executeOnNameHooks(Route{Path: &quot;/bar&quot;, path: &quot;/bar&quot;})
+  377 | 	require.Equal(t, testMountPath+&quot;/bar&quot;, received)
+  378 | 	require.EqualError(t, err, &quot;name error&quot;)
+  379 | }
+  380 | 
+  381 | func Test_executeOnGroupHooks_ErrorWithMount(t *testing.T) {
+  382 | 	t.Parallel()
+<span class="t">  383 | 	app := New()</span>
+  384 | 	app.mountFields.mountPath = testMountPath
+  385 | 
+  386 | 	var prefix string
+  387 | 	app.Hooks().OnGroup(func(g Group) error {
+  388 | 		prefix = g.Prefix
+  389 | 		return errors.New(&quot;group error&quot;)
+  390 | 	})
+  391 | </pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gofiber/fiber/commit/7c10ce1d8bb3b484ca8136b53b233e811b2ba245">7c10ce1d8b</a> (2025-08-14T23:21:06+02:00)</h2><p class="k">Use ephemeral ports in unit tests (#3686)<br>Path after this commit: hooks_test.go. Lines with exactly this text in the file after the commit: 21.</p><pre>diff --git a/hooks_test.go b/hooks_test.go
+index f1638b5e..ea02d773 100644
+<span class="d">--- a/hooks_test.go</span>
+<span class="a">+++ b/hooks_test.go</span>
+<span class="h">@@ -281,7 +281,7 @@ func Test_Hook_OnListen(t *testing.T) {</span>
+ 		time.Sleep(1000 * time.Millisecond)
+ 		assert.NoError(t, app.Shutdown())
+ 	}()
+<span class="d">-	require.NoError(t, app.Listen(&quot;:9000&quot;))</span>
+<span class="a">+	require.NoError(t, app.Listen(&quot;:0&quot;))</span>
+ 
+ 	require.Equal(t, &quot;ready&quot;, buf.String())
+ }
+<span class="h">@@ -305,7 +305,7 @@ func Test_Hook_OnListenPrefork(t *testing.T) {</span>
+ 		assert.NoError(t, app.Shutdown())
+ 	}()
+ 
+<span class="d">-	require.NoError(t, app.Listen(&quot;:9000&quot;, ListenConfig{DisableStartupMessage: true, EnablePrefork: true}))</span>
+<span class="a">+	require.NoError(t, app.Listen(&quot;:0&quot;, ListenConfig{DisableStartupMessage: true, EnablePrefork: true}))</span>
+ 	require.Equal(t, &quot;ready&quot;, buf.String())
+ }
+ 
+<span class="h">@@ -326,7 +326,7 @@ func Test_Hook_OnHook(t *testing.T) {</span>
+ 		return nil
+ 	})
+ 
+<span class="d">-	require.NoError(t, app.prefork(&quot;:3000&quot;, nil, ListenConfig{DisableStartupMessage: true, EnablePrefork: true}))</span>
+<span class="a">+	require.NoError(t, app.prefork(&quot;:0&quot;, nil, ListenConfig{DisableStartupMessage: true, EnablePrefork: true}))</span>
+ }
+ 
+ func Test_Hook_OnMount(t *testing.T) {</pre><h2>Commit #2: <a href="https://github.com/gofiber/fiber/commit/8f90f979735f7ec55897a1969e2a0094859c1c56">8f90f97973</a> (2025-08-14T23:05:39-04:00)</h2><p class="k">Merge pull request #3683 from gofiber/codex/2025-08-13-15-47-17<br>Path after this commit: hooks_test.go. Lines with exactly this text in the file after the commit: 21.</p><pre>diff --git a/hooks_test.go b/hooks_test.go
+index ea02d773..901ead9f 100644
+<span class="d">--- a/hooks_test.go</span>
+<span class="a">+++ b/hooks_test.go</span>
+<span class="h">@@ -6,10 +6,11 @@ import (</span>
+ 	&quot;testing&quot;
+ 	&quot;time&quot;
+ 
+<span class="d">-	&quot;github.com/gofiber/fiber/v3/log&quot;</span>
+ 	&quot;github.com/stretchr/testify/assert&quot;
+ 	&quot;github.com/stretchr/testify/require&quot;
+ 	&quot;github.com/valyala/bytebufferpool&quot;
+<span class="a">+</span>
+<span class="a">+	&quot;github.com/gofiber/fiber/v3/log&quot;</span>
+ )
+ 
+ const testMountPath = &quot;/api&quot;
+<span class="h">@@ -418,7 +419,7 @@ func Test_executeOnListenHooks_Error(t *testing.T) {</span>
+ 		return errors.New(&quot;listen error&quot;)
+ 	})
+ 
+<span class="d">-	err := app.hooks.executeOnListenHooks(ListenData{Host: &quot;127.0.0.1&quot;, Port: &quot;80&quot;})</span>
+<span class="a">+	err := app.hooks.executeOnListenHooks(ListenData{Host: &quot;127.0.0.1&quot;, Port: &quot;0&quot;})</span>
+ 	require.EqualError(t, err, &quot;listen error&quot;)
+ }
+ </pre><h2>Commit #3: <a href="https://github.com/gofiber/fiber/commit/25543af22e366dc59845b130a43dc2d4da77c890">25543af22e</a> (2025-10-20T09:16:58+02:00)</h2><p class="k">🩹 Fix: golangci-lint issue for go1.25.0 (#3775)<br>Path after this commit: hooks_test.go. Lines with exactly this text in the file after the commit: 21.</p><pre>diff --git a/hooks_test.go b/hooks_test.go
+index 901ead9f..32e5b874 100644
+<span class="d">--- a/hooks_test.go</span>
+<span class="a">+++ b/hooks_test.go</span>
+<span class="h">@@ -24,7 +24,7 @@ func Test_Hook_OnRoute(t *testing.T) {</span>
+<span class=" m"> 	app := New()</span>
+ 
+ 	app.Hooks().OnRoute(func(r Route) error {
+<span class="d">-		require.Equal(t, &quot;&quot;, r.Name)</span>
+<span class="a">+		require.Empty(t, r.Name)</span>
+ 
+ 		return nil
+ 	})</pre><h2>Commit #4: <a href="https://github.com/gofiber/fiber/commit/534aa882e1957b86d757877458028b21dff20edd">534aa882e1</a> (2025-10-22T15:47:12+02:00)</h2><p class="k">🧹 chore: Fix spelling issues (#3813)<br>Path after this commit: hooks_test.go. Lines with exactly this text in the file after the commit: 21.</p><pre>diff --git a/hooks_test.go b/hooks_test.go
+index 32e5b874..0edb3b3e 100644
+<span class="d">--- a/hooks_test.go</span>
+<span class="a">+++ b/hooks_test.go</span>
+<span class="h">@@ -178,7 +178,7 @@ func Test_Hook_OnGroupName_Error(t *testing.T) {</span>
+ 	})
+ }
+ 
+<span class="d">-func Test_Hook_OnPrehutdown(t *testing.T) {</span>
+<span class="a">+func Test_Hook_OnPreShutdown(t *testing.T) {</span>
+ 	t.Parallel()
+<span class=" m"> 	app := New()</span>
+ 
+<span class="h">@@ -186,14 +186,14 @@ func Test_Hook_OnPrehutdown(t *testing.T) {</span>
+ 	defer bytebufferpool.Put(buf)
+ 
+ 	app.Hooks().OnPreShutdown(func() error {
+<span class="d">-		_, err := buf.WriteString(&quot;pre-shutdowning&quot;)</span>
+<span class="a">+		_, err := buf.WriteString(&quot;pre-shutdown&quot;)</span>
+ 		require.NoError(t, err)
+ 
+ 		return nil
+ 	})
+ 
+ 	require.NoError(t, app.Shutdown())
+<span class="d">-	require.Equal(t, &quot;pre-shutdowning&quot;, buf.String())</span>
+<span class="a">+	require.Equal(t, &quot;pre-shutdown&quot;, buf.String())</span>
+ }
+ 
+ func Test_Hook_OnPostShutdown(t *testing.T) {</pre><h2>Commit #5: <a href="https://github.com/gofiber/fiber/commit/80f560b65155bf9278787a1194922676d89957b1">80f560b651</a> (2025-11-12T21:02:04+01:00)</h2><p class="k">🐛 bug: fix gocritic httpNoBody and hugeParam issues (#3855)<br>Path after this commit: hooks_test.go. Lines with exactly this text in the file after the commit: 21.</p><pre>diff --git a/hooks_test.go b/hooks_test.go
+index 0edb3b3e..307050cb 100644
+<span class="d">--- a/hooks_test.go</span>
+<span class="a">+++ b/hooks_test.go</span>
+<span class="h">@@ -327,7 +327,7 @@ func Test_Hook_OnHook(t *testing.T) {</span>
+ 		return nil
+ 	})
+ 
+<span class="d">-	require.NoError(t, app.prefork(&quot;:0&quot;, nil, ListenConfig{DisableStartupMessage: true, EnablePrefork: true}))</span>
+<span class="a">+	require.NoError(t, app.prefork(&quot;:0&quot;, nil, &amp;ListenConfig{DisableStartupMessage: true, EnablePrefork: true}))</span>
+ }
+ 
+ func Test_Hook_OnMount(t *testing.T) {
+<span class="h">@@ -358,7 +358,7 @@ func Test_executeOnRouteHooks_ErrorWithMount(t *testing.T) {</span>
+ 		return errors.New(&quot;hook error&quot;)
+ 	})
+ 
+<span class="d">-	err := app.hooks.executeOnRouteHooks(Route{Path: &quot;/foo&quot;, path: &quot;/foo&quot;})</span>
+<span class="a">+	err := app.hooks.executeOnRouteHooks(&amp;Route{Path: &quot;/foo&quot;, path: &quot;/foo&quot;})</span>
+ 	require.Equal(t, testMountPath+&quot;/foo&quot;, received)
+ 	require.EqualError(t, err, &quot;hook error&quot;)
+ }
+<span class="h">@@ -374,7 +374,7 @@ func Test_executeOnNameHooks_ErrorWithMount(t *testing.T) {</span>
+ 		return errors.New(&quot;name error&quot;)
+ 	})
+ 
+<span class="d">-	err := app.hooks.executeOnNameHooks(Route{Path: &quot;/bar&quot;, path: &quot;/bar&quot;})</span>
+<span class="a">+	err := app.hooks.executeOnNameHooks(&amp;Route{Path: &quot;/bar&quot;, path: &quot;/bar&quot;})</span>
+ 	require.Equal(t, testMountPath+&quot;/bar&quot;, received)
+ 	require.EqualError(t, err, &quot;name error&quot;)
+ }</pre><h2>Commit #6: <a href="https://github.com/gofiber/fiber/commit/e686668d1c3a2cfad5ee98d4f2434f2409106ef0">e686668d1c</a> (2025-11-19T12:04:20+01:00)</h2><p class="k">feat: expose startup message customization hooks (#3824)<br>Path after this commit: hooks_test.go. Lines with exactly this text in the file after the commit: 23. Identical text added in other files in this commit: listen_test.go, prefork_test.go.</p><pre>diff --git a/hooks_test.go b/hooks_test.go
+index 307050cb..8eb209bf 100644
+<span class="d">--- a/hooks_test.go</span>
+<span class="a">+++ b/hooks_test.go</span>
+<span class="h">@@ -3,6 +3,8 @@ package fiber</span>
+ import (
+ 	&quot;bytes&quot;
+ 	&quot;errors&quot;
+<span class="a">+	&quot;os&quot;</span>
+<span class="a">+	&quot;runtime&quot;</span>
+ 	&quot;testing&quot;
+ 	&quot;time&quot;
+ 
+<span class="h">@@ -287,6 +289,235 @@ func Test_Hook_OnListen(t *testing.T) {</span>
+ 	require.Equal(t, &quot;ready&quot;, buf.String())
+ }
+ 
+<span class="a">+func Test_ListenDataMetadata(t *testing.T) {</span>
+<span class="a">+	t.Parallel()</span>
+<span class="a">+</span>
+<span class="a">+	app := New(Config{AppName: &quot;meta&quot;})</span>
+<span class="a">+	app.handlersCount = 42</span>
+<span class="a">+</span>
+<span class="a">+	cfg := ListenConfig{EnablePrefork: true}</span>
+<span class="a">+	childPIDs := []int{11, 22}</span>
+<span class="a">+	listenData := app.prepareListenData(&quot;:3030&quot;, true, &amp;cfg, childPIDs)</span>
+<span class="a">+</span>
+<span class="a">+	app.Hooks().OnListen(func(data ListenData) error {</span>
+<span class="a">+		require.Equal(t, globalIpv4Addr, data.Host)</span>
+<span class="a">+		require.Equal(t, &quot;3030&quot;, data.Port)</span>
+<span class="a">+		require.True(t, data.TLS)</span>
+<span class="a">+		require.Equal(t, Version, data.Version)</span>
+<span class="a">+		require.Equal(t, &quot;meta&quot;, data.AppName)</span>
+<span class="a">+		require.Equal(t, 42, data.HandlerCount)</span>
+<span class="a">+		require.Equal(t, runtime.GOMAXPROCS(0), data.ProcessCount)</span>
+<span class="a">+		require.Equal(t, os.Getpid(), data.PID)</span>
+<span class="a">+		require.True(t, data.Prefork)</span>
+<span class="a">+		require.Equal(t, childPIDs, data.ChildPIDs)</span>
+<span class="a">+		require.Equal(t, app.config.ColorScheme, data.ColorScheme)</span>
+<span class="a">+</span>
+<span class="a">+		return nil</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	app.runOnListenHooks(listenData)</span>
+<span class="a">+</span>
+<span class="a">+	app.Hooks().OnPreStartupMessage(func(data *PreStartupMessageData) error {</span>
+<span class="a">+		require.Equal(t, globalIpv4Addr, data.Host)</span>
+<span class="a">+		require.Equal(t, &quot;3030&quot;, data.Port)</span>
+<span class="a">+		require.True(t, data.TLS)</span>
+<span class="a">+		require.Equal(t, Version, data.Version)</span>
+<span class="a">+		require.Equal(t, &quot;meta&quot;, data.AppName)</span>
+<span class="a">+		require.Equal(t, 42, data.HandlerCount)</span>
+<span class="a">+		require.Equal(t, runtime.GOMAXPROCS(0), data.ProcessCount)</span>
+<span class="a">+		require.Equal(t, os.Getpid(), data.PID)</span>
+<span class="a">+		require.True(t, data.Prefork)</span>
+<span class="a">+		require.Equal(t, childPIDs, data.ChildPIDs)</span>
+<span class="a">+		require.Equal(t, app.config.ColorScheme, data.ColorScheme)</span>
+<span class="a">+</span>
+<span class="a">+		data.ResetEntries()</span>
+<span class="a">+</span>
+<span class="a">+		data.AddInfo(&quot;custom&quot;, &quot;Custom Info&quot;, &quot;value&quot;, 3)</span>
+<span class="a">+		data.AddInfo(&quot;other&quot;, &quot;Other Info&quot;, &quot;value&quot;, 2)</span>
+<span class="a">+</span>
+<span class="a">+		return nil</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	pre := newPreStartupMessageData(listenData)</span>
+<span class="a">+	require.NoError(t, app.hooks.executeOnPreStartupMessageHooks(pre))</span>
+<span class="a">+</span>
+<span class="a">+	require.Equal(t, &quot;value&quot;, pre.entries[0].value)</span>
+<span class="a">+	require.Equal(t, &quot;Custom Info&quot;, pre.entries[0].title)</span>
+<span class="a">+	require.Equal(t, 3, pre.entries[0].priority)</span>
+<span class="a">+</span>
+<span class="a">+	require.Equal(t, &quot;value&quot;, pre.entries[1].value)</span>
+<span class="a">+	require.Equal(t, &quot;Other Info&quot;, pre.entries[1].title)</span>
+<span class="a">+	require.Equal(t, 2, pre.entries[1].priority)</span>
+<span class="a">+	require.False(t, pre.PreventDefault)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+func Test_ListenData_Hook_HelperFunctions(t *testing.T) {</span>
+<span class="a">+	t.Parallel()</span>
+<span class="a">+</span>
+<span class="a">+	t.Run(&quot;EntryKeys&quot;, func(t *testing.T) {</span>
+<span class="a">+		t.Parallel()</span>
+<span class="a">+</span>
+<span class="a m">+		app := New()</span>
+<span class="a">+</span>
+<span class="a">+		app.Hooks().OnPreStartupMessage(func(data *PreStartupMessageData) error {</span>
+<span class="a">+			data.ResetEntries()</span>
+<span class="a">+</span>
+<span class="a">+			data.AddInfo(&quot;key1&quot;, &quot;Title 1&quot;, &quot;Value 1&quot;, 1)</span>
+<span class="a">+			data.AddInfo(&quot;key2&quot;, &quot;Title 2&quot;, &quot;Value 2&quot;, 2)</span>
+<span class="a">+</span>
+<span class="a">+			keys := data.EntryKeys()</span>
+<span class="a">+			require.Len(t, keys, 2)</span>
+<span class="a">+			require.Equal(t, &quot;key1&quot;, keys[0])</span>
+<span class="a">+			require.Equal(t, &quot;key2&quot;, keys[1])</span>
+<span class="a">+</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+</span>
+<span class="a">+		pre := newPreStartupMessageData(&amp;ListenData{})</span>
+<span class="a">+		require.NoError(t, app.hooks.executeOnPreStartupMessageHooks(pre))</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	t.Run(&quot;ResetEntries&quot;, func(t *testing.T) {</span>
+<span class="a">+		t.Parallel()</span>
+<span class="a">+</span>
+<span class="a m">+		app := New()</span>
+<span class="a">+</span>
+<span class="a">+		app.Hooks().OnPreStartupMessage(func(data *PreStartupMessageData) error {</span>
+<span class="a">+			data.ResetEntries()</span>
+<span class="a">+</span>
+<span class="a">+			data.AddInfo(&quot;key1&quot;, &quot;Title 1&quot;, &quot;Value 1&quot;, 1)</span>
+<span class="a">+			data.AddInfo(&quot;key2&quot;, &quot;Title 2&quot;, &quot;Value 2&quot;, 2)</span>
+<span class="a">+</span>
+<span class="a">+			require.Len(t, data.entries, 2)</span>
+<span class="a">+</span>
+<span class="a">+			data.ResetEntries()</span>
+<span class="a">+			require.Empty(t, data.entries)</span>
+<span class="a">+</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+</span>
+<span class="a">+		pre := newPreStartupMessageData(&amp;ListenData{})</span>
+<span class="a">+		require.NoError(t, app.hooks.executeOnPreStartupMessageHooks(pre))</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	t.Run(&quot;AddInfo&quot;, func(t *testing.T) {</span>
+<span class="a">+		t.Parallel()</span>
+<span class="a">+</span>
+<span class="a m">+		app := New()</span>
+<span class="a">+</span>
+<span class="a">+		app.Hooks().OnPreStartupMessage(func(data *PreStartupMessageData) error {</span>
+<span class="a">+			data.ResetEntries()</span>
+<span class="a">+</span>
+<span class="a">+			data.AddInfo(&quot;key1&quot;, &quot;Title 1&quot;, &quot;Value 1&quot;, 1)</span>
+<span class="a">+			require.Len(t, data.entries, 1)</span>
+<span class="a">+			require.Equal(t, &quot;key1&quot;, data.entries[0].key)</span>
+<span class="a">+			require.Equal(t, &quot;Title 1&quot;, data.entries[0].title)</span>
+<span class="a">+			require.Equal(t, &quot;Value 1&quot;, data.entries[0].value)</span>
+<span class="a">+			require.Equal(t, 1, data.entries[0].priority)</span>
+<span class="a">+</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+</span>
+<span class="a">+		pre := newPreStartupMessageData(&amp;ListenData{})</span>
+<span class="a">+		require.NoError(t, app.hooks.executeOnPreStartupMessageHooks(pre))</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	t.Run(&quot;AddWarning&quot;, func(t *testing.T) {</span>
+<span class="a">+		t.Parallel()</span>
+<span class="a">+</span>
+<span class="a m">+		app := New()</span>
+<span class="a">+</span>
+<span class="a">+		app.Hooks().OnPreStartupMessage(func(data *PreStartupMessageData) error {</span>
+<span class="a">+			data.ResetEntries()</span>
+<span class="a">+</span>
+<span class="a">+			data.AddWarning(&quot;key1&quot;, &quot;Title 1&quot;, &quot;Value 1&quot;, 1)</span>
+<span class="a">+			require.Len(t, data.entries, 1)</span>
+<span class="a">+			require.Equal(t, &quot;key1&quot;, data.entries[0].key)</span>
+<span class="a">+			require.Equal(t, &quot;Title 1&quot;, data.entries[0].title)</span>
+<span class="a">+			require.Equal(t, &quot;Value 1&quot;, data.entries[0].value)</span>
+<span class="a">+			require.Equal(t, 1, data.entries[0].priority)</span>
+<span class="a">+</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+</span>
+<span class="a">+		pre := newPreStartupMessageData(&amp;ListenData{})</span>
+<span class="a">+		require.NoError(t, app.hooks.executeOnPreStartupMessageHooks(pre))</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	t.Run(&quot;AddError&quot;, func(t *testing.T) {</span>
+<span class="a">+		t.Parallel()</span>
+<span class="a">+</span>
+<span class="a m">+		app := New()</span>
+<span class="a">+</span>
+<span class="a">+		app.Hooks().OnPreStartupMessage(func(data *PreStartupMessageData) error {</span>
+<span class="a">+			data.ResetEntries()</span>
+<span class="a">+</span>
+<span class="a">+			data.AddError(&quot;key1&quot;, &quot;Title 1&quot;, &quot;Value 1&quot;, 1)</span>
+<span class="a">+			require.Len(t, data.entries, 1)</span>
+<span class="a">+			require.Equal(t, &quot;key1&quot;, data.entries[0].key)</span>
+<span class="a">+			require.Equal(t, &quot;Title 1&quot;, data.entries[0].title)</span>
+<span class="a">+			require.Equal(t, &quot;Value 1&quot;, data.entries[0].value)</span>
+<span class="a">+			require.Equal(t, 1, data.entries[0].priority)</span>
+<span class="a">+</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+</span>
+<span class="a">+		pre := newPreStartupMessageData(&amp;ListenData{})</span>
+<span class="a">+		require.NoError(t, app.hooks.executeOnPreStartupMessageHooks(pre))</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	t.Run(&quot;AddInfo-UpdateExisting&quot;, func(t *testing.T) {</span>
+<span class="a">+		t.Parallel()</span>
+<span class="a">+</span>
+<span class="a m">+		app := New()</span>
+<span class="a">+</span>
+<span class="a">+		app.Hooks().OnPreStartupMessage(func(data *PreStartupMessageData) error {</span>
+<span class="a">+			data.ResetEntries()</span>
+<span class="a">+</span>
+<span class="a">+			data.AddInfo(&quot;key1&quot;, &quot;Title 1&quot;, &quot;Value 1&quot;, 1)</span>
+<span class="a">+			data.AddInfo(&quot;key1&quot;, &quot;Updated Title&quot;, &quot;Updated Value&quot;, 2)</span>
+<span class="a">+</span>
+<span class="a">+			require.Len(t, data.entries, 1)</span>
+<span class="a">+			require.Equal(t, &quot;key1&quot;, data.entries[0].key)</span>
+<span class="a">+			require.Equal(t, &quot;Updated Title&quot;, data.entries[0].title)</span>
+<span class="a">+			require.Equal(t, &quot;Updated Value&quot;, data.entries[0].value)</span>
+<span class="a">+			require.Equal(t, 2, data.entries[0].priority)</span>
+<span class="a">+</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+</span>
+<span class="a">+		pre := newPreStartupMessageData(&amp;ListenData{})</span>
+<span class="a">+		require.NoError(t, app.hooks.executeOnPreStartupMessageHooks(pre))</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	t.Run(&quot;DeleteEntry&quot;, func(t *testing.T) {</span>
+<span class="a">+		t.Parallel()</span>
+<span class="a">+</span>
+<span class="a m">+		app := New()</span>
+<span class="a">+</span>
+<span class="a">+		app.Hooks().OnPreStartupMessage(func(data *PreStartupMessageData) error {</span>
+<span class="a">+			data.ResetEntries()</span>
+<span class="a">+</span>
+<span class="a">+			data.AddInfo(&quot;key1&quot;, &quot;Title 1&quot;, &quot;Value 1&quot;, 1)</span>
+<span class="a">+			data.AddInfo(&quot;key2&quot;, &quot;Title 2&quot;, &quot;Value 2&quot;, 2)</span>
+<span class="a">+</span>
+<span class="a">+			require.Len(t, data.entries, 2)</span>
+<span class="a">+</span>
+<span class="a">+			data.DeleteEntry(&quot;key1&quot;)</span>
+<span class="a">+			require.Len(t, data.entries, 1)</span>
+<span class="a">+			require.Equal(t, &quot;key2&quot;, data.entries[0].key)</span>
+<span class="a">+</span>
+<span class="a">+			data.DeleteEntry(&quot;key-not-exist&quot;) // should not panic</span>
+<span class="a">+			require.Len(t, data.entries, 1)</span>
+<span class="a">+</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+</span>
+<span class="a">+		pre := newPreStartupMessageData(&amp;ListenData{})</span>
+<span class="a">+		require.NoError(t, app.hooks.executeOnPreStartupMessageHooks(pre))</span>
+<span class="a">+	})</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func Test_Hook_OnListenPrefork(t *testing.T) {
+ 	t.Parallel()
+<span class=" m"> 	app := New()</span>
+<span class="h">@@ -419,10 +650,34 @@ func Test_executeOnListenHooks_Error(t *testing.T) {</span>
+ 		return errors.New(&quot;listen error&quot;)
+ 	})
+ 
+<span class="d">-	err := app.hooks.executeOnListenHooks(ListenData{Host: &quot;127.0.0.1&quot;, Port: &quot;0&quot;})</span>
+<span class="a">+	err := app.hooks.executeOnListenHooks(&amp;ListenData{Host: &quot;127.0.0.1&quot;, Port: &quot;0&quot;})</span>
+ 	require.EqualError(t, err, &quot;listen error&quot;)
+ }
+ 
+<span class="a">+func Test_executeOnPreStartupMessageHooks_Error(t *testing.T) {</span>
+<span class="a">+	t.Parallel()</span>
+<span class="a m">+	app := New()</span>
+<span class="a">+</span>
+<span class="a">+	app.Hooks().OnPreStartupMessage(func(_ *PreStartupMessageData) error {</span>
+<span class="a">+		return errors.New(&quot;pre startup message error&quot;)</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	err := app.hooks.executeOnPreStartupMessageHooks(newPreStartupMessageData(&amp;ListenData{}))</span>
+<span class="a">+	require.EqualError(t, err, &quot;pre startup message error&quot;)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+func Test_executeOnPostStartupMessageHooks_Error(t *testing.T) {</span>
+<span class="a">+	t.Parallel()</span>
+<span class="a m">+	app := New()</span>
+<span class="a">+</span>
+<span class="a">+	app.Hooks().OnPostStartupMessage(func(_ *PostStartupMessageData) error {</span>
+<span class="a">+		return errors.New(&quot;post startup message error&quot;)</span>
+<span class="a">+	})</span>
+<span class="a">+</span>
+<span class="a">+	err := app.hooks.executeOnPostStartupMessageHooks(newPostStartupMessageData(&amp;ListenData{}, false, false, false))</span>
+<span class="a">+	require.EqualError(t, err, &quot;post startup message error&quot;)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func Test_executeOnPreShutdownHooks_Error(t *testing.T) {
+ 	t.Parallel()
+<span class=" m"> 	app := New()</span></pre></body></html>

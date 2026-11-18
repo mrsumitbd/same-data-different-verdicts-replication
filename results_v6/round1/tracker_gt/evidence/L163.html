@@ -1,0 +1,134 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L163</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L163</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>File at merge:</b> apps/studio/electron/main/payment/index.ts, line 19<br><b>Merge commit (birth):</b> <a href="https://github.com/onlook-dev/onlook/commit/7db05f0136164ca314f4ec89f1bddd5e6e293f56">7db05f0136</a> (2025-01-23T19:42:43)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">const createCheckoutSession = async () =&gt; {</span></pre><h2>File at the merge commit, lines 11 to 27</h2><pre>   11 |         const checkoutUrl = await createCheckoutSession();
+   12 |         shell.openExternal(checkoutUrl);
+   13 |         return { success: true };
+   14 |     } catch (error) {
+   15 |         return { success: false, error: (error as Error).message };
+   16 |     }
+   17 | };
+   18 | 
+<span class="t">   19 | const createCheckoutSession = async () =&gt; {</span>
+   20 |     const authTokens: AuthTokens = await getRefreshedAuthTokens();
+   21 |     if (!authTokens) {
+   22 |         throw new Error(&#x27;No auth tokens found&#x27;);
+   23 |     }
+   24 | 
+   25 |     const response: Response = await fetch(
+   26 |         `${import.meta.env.VITE_SUPABASE_API_URL}${FUNCTIONS_ROUTE}${BASE_API_ROUTE}${ApiRoutes.CREATE_CHECKOUT}`,
+   27 |         {</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/f7a8060cc456b1968464e5bde9d8fca16648eb1e">f7a8060cc4</a> (2025-05-14T19:16:52-04:00)</h2><p class="k">Migrate to web version (#1837)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/studio/electron/main/payment/index.ts b/apps/studio/electron/main/payment/index.ts
+deleted file mode 100644
+index d6016ab1..00000000
+<span class="d">--- a/apps/studio/electron/main/payment/index.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,108 +0,0 @@</span>
+<span class="d">-import { ApiRoutes, BASE_API_ROUTE, FUNCTIONS_ROUTE } from &#x27;@onlook/models/constants&#x27;;</span>
+<span class="d">-import type { AuthTokens } from &#x27;@onlook/models/settings&#x27;;</span>
+<span class="d">-import { shell } from &#x27;electron&#x27;;</span>
+<span class="d">-import { getRefreshedAuthTokens } from &#x27;../auth&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-export const checkoutWithStripe = async (): Promise&lt;{</span>
+<span class="d">-    success: boolean;</span>
+<span class="d">-    error?: string;</span>
+<span class="d">-}&gt; =&gt; {</span>
+<span class="d">-    try {</span>
+<span class="d">-        const checkoutUrl = await createCheckoutSession();</span>
+<span class="d">-        shell.openExternal(checkoutUrl);</span>
+<span class="d">-        return { success: true };</span>
+<span class="d">-    } catch (error) {</span>
+<span class="d">-        return { success: false, error: (error as Error).message };</span>
+<span class="d">-    }</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+<span class="d m">-const createCheckoutSession = async () =&gt; {</span>
+<span class="d">-    const authTokens: AuthTokens = await getRefreshedAuthTokens();</span>
+<span class="d">-    if (!authTokens) {</span>
+<span class="d">-        throw new Error(&#x27;No auth tokens found&#x27;);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    const response: Response = await fetch(</span>
+<span class="d">-        `${import.meta.env.VITE_SUPABASE_API_URL}${FUNCTIONS_ROUTE}${BASE_API_ROUTE}${ApiRoutes.CREATE_CHECKOUT}`,</span>
+<span class="d">-        {</span>
+<span class="d">-            method: &#x27;POST&#x27;,</span>
+<span class="d">-            headers: {</span>
+<span class="d">-                &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span>
+<span class="d">-                Authorization: `Bearer ${authTokens.accessToken}`,</span>
+<span class="d">-            },</span>
+<span class="d">-        },</span>
+<span class="d">-    );</span>
+<span class="d">-</span>
+<span class="d">-    const { url } = await response.json();</span>
+<span class="d">-    if (!url) {</span>
+<span class="d">-        throw new Error(&#x27;No checkout URL received&#x27;);</span>
+<span class="d">-    }</span>
+<span class="d">-    return url;</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+<span class="d">-export const checkSubscription = async (): Promise&lt;{</span>
+<span class="d">-    success: boolean;</span>
+<span class="d">-    data?: any;</span>
+<span class="d">-    error?: string;</span>
+<span class="d">-}&gt; =&gt; {</span>
+<span class="d">-    try {</span>
+<span class="d">-        const authTokens: AuthTokens = await getRefreshedAuthTokens();</span>
+<span class="d">-        if (!authTokens) {</span>
+<span class="d">-            throw new Error(&#x27;No auth tokens found&#x27;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        const response: Response = await fetch(</span>
+<span class="d">-            `${import.meta.env.VITE_SUPABASE_API_URL}${FUNCTIONS_ROUTE}${BASE_API_ROUTE}${ApiRoutes.CHECK_SUBSCRIPTION}`,</span>
+<span class="d">-            {</span>
+<span class="d">-                method: &#x27;POST&#x27;,</span>
+<span class="d">-                headers: {</span>
+<span class="d">-                    &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span>
+<span class="d">-                    Authorization: `Bearer ${authTokens.accessToken}`,</span>
+<span class="d">-                },</span>
+<span class="d">-            },</span>
+<span class="d">-        );</span>
+<span class="d">-        const { data, error } = await response.json();</span>
+<span class="d">-        if (error || !data) {</span>
+<span class="d">-            throw new Error(error);</span>
+<span class="d">-        }</span>
+<span class="d">-        return { success: true, data };</span>
+<span class="d">-    } catch (error) {</span>
+<span class="d">-        return { success: false, error: (error as Error).message };</span>
+<span class="d">-    }</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+<span class="d">-export const manageSubscription = async (): Promise&lt;{</span>
+<span class="d">-    success: boolean;</span>
+<span class="d">-    error?: string;</span>
+<span class="d">-}&gt; =&gt; {</span>
+<span class="d">-    try {</span>
+<span class="d">-        const subscriptionUrl = await createCustomerPortalSession();</span>
+<span class="d">-        shell.openExternal(subscriptionUrl);</span>
+<span class="d">-        return { success: true };</span>
+<span class="d">-    } catch (error) {</span>
+<span class="d">-        return { success: false, error: (error as Error).message };</span>
+<span class="d">-    }</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+<span class="d">-const createCustomerPortalSession = async () =&gt; {</span>
+<span class="d">-    const authTokens: AuthTokens = await getRefreshedAuthTokens();</span>
+<span class="d">-    if (!authTokens) {</span>
+<span class="d">-        throw new Error(&#x27;No auth tokens found&#x27;);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    const response: Response = await fetch(</span>
+<span class="d">-        `${import.meta.env.VITE_SUPABASE_API_URL}${FUNCTIONS_ROUTE}${BASE_API_ROUTE}${ApiRoutes.CREATE_CUSTOMER_PORTAL_SESSION}`,</span>
+<span class="d">-        {</span>
+<span class="d">-            method: &#x27;POST&#x27;,</span>
+<span class="d">-            headers: {</span>
+<span class="d">-                &#x27;Content-Type&#x27;: &#x27;application/json&#x27;,</span>
+<span class="d">-                Authorization: `Bearer ${authTokens.accessToken}`,</span>
+<span class="d">-            },</span>
+<span class="d">-        },</span>
+<span class="d">-    );</span>
+<span class="d">-    const { url } = await response.json();</span>
+<span class="d">-    if (!url) {</span>
+<span class="d">-        throw new Error(&#x27;No subscription URL received&#x27;);</span>
+<span class="d">-    }</span>
+<span class="d">-    return url;</span>
+<span class="d">-};</span></pre></body></html>

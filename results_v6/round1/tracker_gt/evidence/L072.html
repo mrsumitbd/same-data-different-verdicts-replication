@@ -1,0 +1,566 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L072</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L072</h1><p><b>Repository:</b> <a href="https://github.com/antiwork/gumroad">antiwork/gumroad</a><br><b>File at merge:</b> app/javascript/components/server-components/GumroadBlog/IndexPage.tsx, line 46<br><b>Merge commit (birth):</b> <a href="https://github.com/antiwork/gumroad/commit/c26d6ba529e9f734277c981585c6de83da1be4d0">c26d6ba529</a> (2025-05-29T18:20:27)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/antiwork/gumroad/tree/841de7d7b8f8d4c47f52dce8d9320d49edb249ca">841de7d7b8</a>)</p><p><b>The line:</b></p><pre><span class="t">          &lt;img src={postPlaceholder} alt={post.subject} className=&quot;h-full w-full object-cover&quot; loading=&quot;lazy&quot; /&gt;</span></pre><h2>File at the merge commit, lines 38 to 54</h2><pre>   38 |       )}
+   39 |     &gt;
+   40 |       {post.featured_image_url ? (
+   41 |         &lt;figure className=&quot;aspect-[1800/1080] overflow-hidden border-b border-black&quot;&gt;
+   42 |           &lt;img src={post.featured_image_url} alt={post.subject} className=&quot;h-full w-full object-cover&quot; loading=&quot;lazy&quot; /&gt;
+   43 |         &lt;/figure&gt;
+   44 |       ) : usePlaceholder ? (
+   45 |         &lt;figure className=&quot;aspect-[1800/1080] overflow-hidden border-b border-black&quot;&gt;
+<span class="t">   46 |           &lt;img src={postPlaceholder} alt={post.subject} className=&quot;h-full w-full object-cover&quot; loading=&quot;lazy&quot; /&gt;</span>
+   47 |         &lt;/figure&gt;
+   48 |       ) : null}
+   49 |       &lt;header className=&quot;flex h-full flex-grow flex-col justify-between p-6&quot;&gt;
+   50 |         &lt;div&gt;
+   51 |           &lt;h3 className={cx(&quot;mb-1 leading-tight&quot;, title_size_class)}&gt;{post.subject}&lt;/h3&gt;
+   52 |           {!!(!post.featured_image_url &amp;&amp; !usePlaceholder &amp;&amp; post.message_snippet) &amp;&amp; (
+   53 |             &lt;p className=&quot;text-md text-gray-600 mt-2 whitespace-pre-line opacity-80&quot;&gt;{post.message_snippet}&lt;/p&gt;
+   54 |           )}</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/antiwork/gumroad/commit/44ea1a849e83d14ecad3d109a329572397aab04f">44ea1a849e</a> (2025-05-29T18:39:30-04:00)</h2><p class="k">Blog design follow-ups to #279 (#280)<br>Path after this commit: app/javascript/components/server-components/GumroadBlog/IndexPage.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx
+index c7235df46..d21fd7c67 100644
+<span class="d">--- a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="a">+++ b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="h">@@ -1,25 +1,52 @@</span>
+ import cx from &quot;classnames&quot;;
+ import * as React from &quot;react&quot;;
+<span class="a">+import { useEffect, useRef, useState } from &quot;react&quot;;</span>
+ import { createCast } from &quot;ts-safe-cast&quot;;
+ 
+ import { register } from &quot;$app/utils/serverComponentUtil&quot;;
+ 
+ import { formatPostDate } from &quot;$app/components/server-components/Profile/PostPage&quot;;
+ 
+<span class="d">-import postPlaceholder from &quot;../../../../assets/images/blog/post-placeholder.jpg&quot;;</span>
+<span class="a">+import placeholderFeatureImage from &quot;../../../../assets/images/blog/post-placeholder.jpg&quot;;</span>
+ 
+ interface Post {
+   url: string;
+   subject: string;
+   published_at: string;
+   featured_image_url: string | null;
+<span class="d">-  message_snippet: string | null;</span>
+<span class="a">+  message_snippet: string;</span>
+ }
+ 
+ interface IndexPageProps {
+   posts: Post[];
+ }
+ 
+<span class="a">+const useDynamicClamp = (containerRef: React.RefObject&lt;HTMLElement&gt;, textRef: React.RefObject&lt;HTMLElement&gt;) =&gt; {</span>
+<span class="a">+  const [clamp, setClamp] = useState&lt;number | undefined&gt;(undefined);</span>
+<span class="a">+  const lineHeightRef = useRef&lt;number | undefined&gt;(undefined);</span>
+<span class="a">+</span>
+<span class="a">+  useEffect(() =&gt; {</span>
+<span class="a">+    if (!lineHeightRef.current &amp;&amp; textRef.current) {</span>
+<span class="a">+      lineHeightRef.current = parseFloat(getComputedStyle(textRef.current).lineHeight);</span>
+<span class="a">+    }</span>
+<span class="a">+  }, []);</span>
+<span class="a">+</span>
+<span class="a">+  useEffect(() =&gt; {</span>
+<span class="a">+    const container = containerRef.current;</span>
+<span class="a">+    const lineHeight = lineHeightRef.current;</span>
+<span class="a">+    if (clamp !== undefined || !container || !lineHeight) return;</span>
+<span class="a">+</span>
+<span class="a">+    const id = requestAnimationFrame(() =&gt; {</span>
+<span class="a">+      const availableHeight = container.getBoundingClientRect().height;</span>
+<span class="a">+      setClamp(Math.floor(availableHeight / lineHeight));</span>
+<span class="a">+    });</span>
+<span class="a">+</span>
+<span class="a">+    return () =&gt; cancelAnimationFrame(id);</span>
+<span class="a">+  }, [clamp]);</span>
+<span class="a">+</span>
+<span class="a">+  return clamp;</span>
+<span class="a">+};</span>
+<span class="a">+</span>
+ const PostCard = ({
+   post,
+   title_size_class = &quot;text-2xl&quot;,
+<span class="h">@@ -28,36 +55,53 @@ const PostCard = ({</span>
+   post: Post;
+   title_size_class?: string;
+   usePlaceholder?: boolean;
+<span class="d">-}) =&gt; (</span>
+<span class="d">-  &lt;article className=&quot;h-full&quot;&gt;</span>
+<span class="d">-    &lt;a</span>
+<span class="d">-      href={post.url}</span>
+<span class="d">-      className={cx(</span>
+<span class="d">-        &quot;override grid h-full overflow-hidden rounded-lg border border-black bg-white text-black no-underline transition-all duration-200 ease-in-out hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#000]&quot;,</span>
+<span class="d">-        (post.featured_image_url || usePlaceholder) &amp;&amp; &quot;grid-rows-[auto_1fr]&quot;,</span>
+<span class="d">-      )}</span>
+<span class="d">-    &gt;</span>
+<span class="d">-      {post.featured_image_url ? (</span>
+<span class="d">-        &lt;figure className=&quot;aspect-[1800/1080] overflow-hidden border-b border-black&quot;&gt;</span>
+<span class="d">-          &lt;img src={post.featured_image_url} alt={post.subject} className=&quot;h-full w-full object-cover&quot; loading=&quot;lazy&quot; /&gt;</span>
+<span class="d">-        &lt;/figure&gt;</span>
+<span class="d">-      ) : usePlaceholder ? (</span>
+<span class="d">-        &lt;figure className=&quot;aspect-[1800/1080] overflow-hidden border-b border-black&quot;&gt;</span>
+<span class="d m">-          &lt;img src={postPlaceholder} alt={post.subject} className=&quot;h-full w-full object-cover&quot; loading=&quot;lazy&quot; /&gt;</span>
+<span class="d">-        &lt;/figure&gt;</span>
+<span class="d">-      ) : null}</span>
+<span class="d">-      &lt;header className=&quot;flex h-full flex-grow flex-col justify-between p-6&quot;&gt;</span>
+<span class="d">-        &lt;div&gt;</span>
+<span class="d">-          &lt;h3 className={cx(&quot;mb-1 leading-tight&quot;, title_size_class)}&gt;{post.subject}&lt;/h3&gt;</span>
+<span class="d">-          {!!(!post.featured_image_url &amp;&amp; !usePlaceholder &amp;&amp; post.message_snippet) &amp;&amp; (</span>
+<span class="d">-            &lt;p className=&quot;text-md text-gray-600 mt-2 whitespace-pre-line opacity-80&quot;&gt;{post.message_snippet}&lt;/p&gt;</span>
+<span class="d">-          )}</span>
+<span class="a">+}) =&gt; {</span>
+<span class="a">+  const snippetContainerRef = useRef&lt;HTMLDivElement&gt;(null);</span>
+<span class="a">+  const snippetRef = useRef&lt;HTMLParagraphElement&gt;(null);</span>
+<span class="a">+  const clamp = useDynamicClamp(snippetContainerRef, snippetRef);</span>
+<span class="a">+</span>
+<span class="a">+  const featureImageUrl = post.featured_image_url || (usePlaceholder ? placeholderFeatureImage : null);</span>
+<span class="a">+  const showSnippet = !featureImageUrl &amp;&amp; post.message_snippet &amp;&amp; (clamp === undefined || clamp &gt; 0);</span>
+<span class="a">+</span>
+<span class="a">+  return (</span>
+<span class="a">+    &lt;article className=&quot;h-full&quot;&gt;</span>
+<span class="a">+      &lt;a</span>
+<span class="a">+        href={post.url}</span>
+<span class="a">+        className={cx(</span>
+<span class="a">+          &quot;override grid h-full overflow-hidden rounded-lg border border-black bg-white text-black no-underline transition-all duration-200 ease-in-out hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#000]&quot;,</span>
+<span class="a">+          { &quot;grid-rows-[auto_1fr]&quot;: !!featureImageUrl },</span>
+<span class="a">+        )}</span>
+<span class="a">+      &gt;</span>
+<span class="a">+        {featureImageUrl ? (</span>
+<span class="a">+          &lt;figure className=&quot;aspect-[1800/1080] overflow-hidden border-b border-black&quot;&gt;</span>
+<span class="a">+            &lt;img src={featureImageUrl} alt={post.subject} className=&quot;h-full w-full object-cover&quot; loading=&quot;lazy&quot; /&gt;</span>
+<span class="a">+          &lt;/figure&gt;</span>
+<span class="a">+        ) : null}</span>
+<span class="a">+</span>
+<span class="a">+        &lt;div className=&quot;flex h-full flex-grow flex-col justify-between p-6&quot;&gt;</span>
+<span class="a">+          &lt;h3 className={cx(&quot;mb-1 flex-none leading-tight&quot;, title_size_class)}&gt;{post.subject}&lt;/h3&gt;</span>
+<span class="a">+          {showSnippet ? (</span>
+<span class="a">+            &lt;div className=&quot;relative flex-1&quot; ref={snippetContainerRef}&gt;</span>
+<span class="a">+              &lt;p</span>
+<span class="a">+                className=&quot;text-md inset-0 mt-2 flex-1 overflow-hidden text-ellipsis text-dark-gray opacity-90&quot;</span>
+<span class="a">+                style={{</span>
+<span class="a">+                  position: clamp === undefined ? &quot;absolute&quot; : &quot;relative&quot;,</span>
+<span class="a">+                  display: &quot;-webkit-box&quot;,</span>
+<span class="a">+                  WebkitBoxOrient: &quot;vertical&quot;,</span>
+<span class="a">+                  WebkitLineClamp: clamp,</span>
+<span class="a">+                }}</span>
+<span class="a">+                ref={snippetRef}</span>
+<span class="a">+              &gt;</span>
+<span class="a">+                {post.message_snippet}</span>
+<span class="a">+              &lt;/p&gt;</span>
+<span class="a">+            &lt;/div&gt;</span>
+<span class="a">+          ) : null}</span>
+<span class="a">+          &lt;p className=&quot;text-md mt-2 flex-none text-dark-gray md:mt-4&quot;&gt;{formatPostDate(post.published_at, &quot;en-US&quot;)}&lt;/p&gt;</span>
+         &lt;/div&gt;
+<span class="d">-        &lt;p className=&quot;text-md text-gray-600 mt-2 md:mt-4&quot;&gt;{formatPostDate(post.published_at, &quot;en-US&quot;)}&lt;/p&gt;</span>
+<span class="d">-      &lt;/header&gt;</span>
+<span class="d">-    &lt;/a&gt;</span>
+<span class="d">-  &lt;/article&gt;</span>
+<span class="d">-);</span>
+<span class="a">+      &lt;/a&gt;</span>
+<span class="a">+    &lt;/article&gt;</span>
+<span class="a">+  );</span>
+<span class="a">+};</span>
+ 
+ const CompactPostItem = ({ post }: { post: Post }) =&gt; (
+   &lt;li className=&quot;border-gray-300 py-4 first:pt-0&quot;&gt;</pre><h2>Commit #2: <a href="https://github.com/antiwork/gumroad/commit/89d8ec2357d978e66d1f68e2ce177f5713481474">89d8ec2357</a> (2025-05-30T17:18:49-04:00)</h2><p class="k">Client-side tag support for Gumroad blog (#284)<br>Path after this commit: app/javascript/components/server-components/GumroadBlog/IndexPage.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx
+index d21fd7c67..a39098b58 100644
+<span class="d">--- a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="a">+++ b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+ import cx from &quot;classnames&quot;;
+ import * as React from &quot;react&quot;;
+<span class="d">-import { useEffect, useRef, useState } from &quot;react&quot;;</span>
+<span class="a">+import { useCallback, useEffect, useMemo, useRef, useState } from &quot;react&quot;;</span>
+ import { createCast } from &quot;ts-safe-cast&quot;;
+ 
+ import { register } from &quot;$app/utils/serverComponentUtil&quot;;
+<span class="h">@@ -9,12 +9,37 @@ import { formatPostDate } from &quot;$app/components/server-components/Profile/PostPa</span>
+ 
+ import placeholderFeatureImage from &quot;../../../../assets/images/blog/post-placeholder.jpg&quot;;
+ 
+<span class="a">+interface TagProps {</span>
+<span class="a">+  name: string;</span>
+<span class="a">+  count?: number;</span>
+<span class="a">+  showCount?: boolean;</span>
+<span class="a">+  active?: boolean;</span>
+<span class="a">+  size?: &quot;sm&quot; | &quot;base&quot;;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+const Tag = ({ name, count, showCount = false, active = false, size = &quot;sm&quot; }: TagProps) =&gt; {</span>
+<span class="a">+  const sizeClasses = {</span>
+<span class="a">+    sm: &quot;text-sm&quot;,</span>
+<span class="a">+    base: &quot;text-base&quot;,</span>
+<span class="a">+  };</span>
+<span class="a">+</span>
+<span class="a">+  const commonClasses = `inline-block rounded px-2 py-2 leading-none mr-2 mb-2`;</span>
+<span class="a">+  const activeStateClass = active ? &quot;bg-black text-white&quot; : &quot;bg-white text-black border border-black&quot;;</span>
+<span class="a">+</span>
+<span class="a">+  return (</span>
+<span class="a">+    &lt;span className={cx(commonClasses, sizeClasses[size], activeStateClass)}&gt;</span>
+<span class="a">+      {showCount &amp;&amp; count ? `${name} (${count})` : name}</span>
+<span class="a">+    &lt;/span&gt;</span>
+<span class="a">+  );</span>
+<span class="a">+};</span>
+<span class="a">+</span>
+ interface Post {
+   url: string;
+   subject: string;
+   published_at: string;
+   featured_image_url: string | null;
+   message_snippet: string;
+<span class="a">+  tags: string[];</span>
+ }
+ 
+ interface IndexPageProps {
+<span class="h">@@ -78,12 +103,12 @@ const PostCard = ({</span>
+           &lt;/figure&gt;
+         ) : null}
+ 
+<span class="d">-        &lt;div className=&quot;flex h-full flex-grow flex-col justify-between p-6&quot;&gt;</span>
+<span class="d">-          &lt;h3 className={cx(&quot;mb-1 flex-none leading-tight&quot;, title_size_class)}&gt;{post.subject}&lt;/h3&gt;</span>
+<span class="a">+        &lt;div className=&quot;flex h-full flex-grow flex-col space-y-2 p-6&quot;&gt;</span>
+<span class="a">+          &lt;h3 className={cx(&quot;flex-none leading-tight&quot;, title_size_class)}&gt;{post.subject}&lt;/h3&gt;</span>
+           {showSnippet ? (
+             &lt;div className=&quot;relative flex-1&quot; ref={snippetContainerRef}&gt;
+               &lt;p
+<span class="d">-                className=&quot;text-md inset-0 mt-2 flex-1 overflow-hidden text-ellipsis text-dark-gray opacity-90&quot;</span>
+<span class="a">+                className=&quot;text-md inset-0 flex-1 overflow-hidden text-ellipsis text-dark-gray opacity-90&quot;</span>
+                 style={{
+                   position: clamp === undefined ? &quot;absolute&quot; : &quot;relative&quot;,
+                   display: &quot;-webkit-box&quot;,
+<span class="h">@@ -95,8 +120,17 @@ const PostCard = ({</span>
+                 {post.message_snippet}
+               &lt;/p&gt;
+             &lt;/div&gt;
+<span class="d">-          ) : null}</span>
+<span class="d">-          &lt;p className=&quot;text-md mt-2 flex-none text-dark-gray md:mt-4&quot;&gt;{formatPostDate(post.published_at, &quot;en-US&quot;)}&lt;/p&gt;</span>
+<span class="a">+          ) : (</span>
+<span class="a">+            &lt;div className=&quot;flex-1&quot; /&gt;</span>
+<span class="a">+          )}</span>
+<span class="a">+          &lt;p className=&quot;text-md flex-none text-dark-gray&quot;&gt;{formatPostDate(post.published_at, &quot;en-US&quot;)}&lt;/p&gt;</span>
+<span class="a">+          {post.tags.length &gt; 0 &amp;&amp; (</span>
+<span class="a">+            &lt;div className=&quot;flex flex-none flex-row flex-wrap&quot;&gt;</span>
+<span class="a">+              {post.tags.map((tag) =&gt; (</span>
+<span class="a">+                &lt;Tag key={tag} name={tag} /&gt;</span>
+<span class="a">+              ))}</span>
+<span class="a">+            &lt;/div&gt;</span>
+<span class="a">+          )}</span>
+         &lt;/div&gt;
+       &lt;/a&gt;
+     &lt;/article&gt;
+<span class="h">@@ -149,10 +183,100 @@ const PostsGrid = ({ posts }: { posts: Post[] }) =&gt; (</span>
+   &lt;/section&gt;
+ );
+ 
+<span class="a">+interface TabButtonProps {</span>
+<span class="a">+  children: React.ReactNode;</span>
+<span class="a">+  isActive: boolean;</span>
+<span class="a">+  onClick: () =&gt; void;</span>
+<span class="a">+  count?: number;</span>
+<span class="a">+  showCount?: boolean;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+const TabButton = ({ children, isActive, onClick, count, showCount = false }: TabButtonProps) =&gt; {</span>
+<span class="a">+  const baseClasses =</span>
+<span class="a">+    &quot;block no-underline px-4 py-2 rounded-full border border-black transition-all duration-200 ease-in-out flex items-center justify-center cursor-pointer&quot;;</span>
+<span class="a">+  const activeClasses = isActive</span>
+<span class="a">+    ? &quot;bg-black text-white&quot;</span>
+<span class="a">+    : &quot;bg-white text-black hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#000]&quot;;</span>
+<span class="a">+</span>
+<span class="a">+  return (</span>
+<span class="a">+    &lt;button role=&quot;tab&quot; aria-selected={isActive} className={cx(baseClasses, activeClasses)} onClick={onClick}&gt;</span>
+<span class="a">+      {children}</span>
+<span class="a">+      {showCount ? &lt;span className=&quot;ml-1.5 text-base opacity-85&quot;&gt;({count})&lt;/span&gt; : null}</span>
+<span class="a">+    &lt;/button&gt;</span>
+<span class="a">+  );</span>
+<span class="a">+};</span>
+<span class="a">+</span>
+<span class="a">+const TagSelector = ({</span>
+<span class="a">+  postsByTags,</span>
+<span class="a">+  allPostsCount,</span>
+<span class="a">+  activeTab,</span>
+<span class="a">+  setActiveTab,</span>
+<span class="a">+}: {</span>
+<span class="a">+  postsByTags: Record&lt;string, Post[]&gt;;</span>
+<span class="a">+  allPostsCount: number;</span>
+<span class="a">+  activeTab: string | null;</span>
+<span class="a">+  setActiveTab: (tag: string | null) =&gt; void;</span>
+<span class="a">+}) =&gt; {</span>
+<span class="a">+  const tags = Object.keys(postsByTags);</span>
+<span class="a">+</span>
+<span class="a">+  if (tags.length === 0) {</span>
+<span class="a">+    return null;</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+<span class="a">+  const isAllPostsActive = activeTab === null;</span>
+<span class="a">+</span>
+<span class="a">+  const selectTag = useCallback((tag: string) =&gt; {</span>
+<span class="a">+    setActiveTab(tag);</span>
+<span class="a">+  }, []);</span>
+<span class="a">+  const selectAll = useCallback(() =&gt; {</span>
+<span class="a">+    setActiveTab(null);</span>
+<span class="a">+  }, []);</span>
+<span class="a">+</span>
+<span class="a">+  return (</span>
+<span class="a">+    &lt;div className=&quot;mb-12&quot; role=&quot;tablist&quot;&gt;</span>
+<span class="a">+      &lt;ul className=&quot;flex flex-wrap gap-x-3 gap-y-3 text-lg&quot;&gt;</span>
+<span class="a">+        &lt;li&gt;</span>
+<span class="a">+          &lt;TabButton isActive={isAllPostsActive} onClick={selectAll} count={allPostsCount} showCount={isAllPostsActive}&gt;</span>
+<span class="a">+            All Posts</span>
+<span class="a">+          &lt;/TabButton&gt;</span>
+<span class="a">+        &lt;/li&gt;</span>
+<span class="a">+        {tags.map((tag) =&gt; {</span>
+<span class="a">+          const isActive = activeTab === tag;</span>
+<span class="a">+          const count = postsByTags[tag]?.length || 0;</span>
+<span class="a">+</span>
+<span class="a">+          return (</span>
+<span class="a">+            &lt;li key={tag}&gt;</span>
+<span class="a">+              &lt;TabButton isActive={isActive} onClick={() =&gt; selectTag(tag)} count={count} showCount={isActive}&gt;</span>
+<span class="a">+                {tag}</span>
+<span class="a">+              &lt;/TabButton&gt;</span>
+<span class="a">+            &lt;/li&gt;</span>
+<span class="a">+          );</span>
+<span class="a">+        })}</span>
+<span class="a">+      &lt;/ul&gt;</span>
+<span class="a">+    &lt;/div&gt;</span>
+<span class="a">+  );</span>
+<span class="a">+};</span>
+<span class="a">+</span>
+ const IndexPage = ({ posts = [] }: IndexPageProps) =&gt; {
+<span class="a">+  const [activeTab, setActiveTab] = useState&lt;string | null&gt;(null);</span>
+<span class="a">+</span>
+   const featured_post = posts[0];
+   const product_updates = posts.slice(1, 4);
+<span class="d">-  const postsForGrid = posts.slice(1);</span>
+<span class="a">+</span>
+<span class="a">+  const postsByTags = useMemo(() =&gt; {</span>
+<span class="a">+    const map: Record&lt;string, Post[]&gt; = {};</span>
+<span class="a">+    posts.forEach((post) =&gt; {</span>
+<span class="a">+      post.tags.forEach((tag) =&gt; {</span>
+<span class="a">+        if (!map[tag]) {</span>
+<span class="a">+          map[tag] = [];</span>
+<span class="a">+        }</span>
+<span class="a">+        map[tag].push(post);</span>
+<span class="a">+      });</span>
+<span class="a">+    });</span>
+<span class="a">+    return map;</span>
+<span class="a">+  }, [posts]);</span>
+<span class="a">+</span>
+<span class="a">+  const postsForGrid = useMemo(() =&gt; (activeTab ? postsByTags[activeTab] : posts.slice(1)), [activeTab, postsByTags]);</span>
+ 
+   return (
+     &lt;div className=&quot;scoped-tailwind-preflight&quot;&gt;
+<span class="h">@@ -160,21 +284,29 @@ const IndexPage = ({ posts = [] }: IndexPageProps) =&gt; {</span>
+         &lt;header className=&quot;mb-8&quot;&gt;
+           &lt;h1 className=&quot;text-6xl text-black&quot;&gt;Blog&lt;/h1&gt;
+         &lt;/header&gt;
+<span class="a">+        &lt;TagSelector</span>
+<span class="a">+          postsByTags={postsByTags}</span>
+<span class="a">+          allPostsCount={posts.length}</span>
+<span class="a">+          activeTab={activeTab}</span>
+<span class="a">+          setActiveTab={setActiveTab}</span>
+<span class="a">+        /&gt;</span>
+ 
+<span class="d">-        &lt;div className=&quot;mb-8 flex flex-row items-start lg:gap-[1.875rem]&quot;&gt;</span>
+<span class="d">-          &lt;section className=&quot;mb-0 w-full lg:mb-0 lg:w-[calc(67%-0.9375rem)]&quot;&gt;</span>
+<span class="d">-            {featured_post ? (</span>
+<span class="d">-              &lt;PostCard post={featured_post} title_size_class=&quot;text-2xl md:text-4xl&quot; usePlaceholder /&gt;</span>
+<span class="d">-            ) : (</span>
+<span class="d">-              &lt;p className=&quot;text-gray-600 border-gray-300 flex min-h-[300px] items-center justify-center rounded border-2 border-dashed p-8 text-center&quot;&gt;</span>
+<span class="d">-                No featured post available.</span>
+<span class="d">-              &lt;/p&gt;</span>
+<span class="d">-            )}</span>
+<span class="d">-          &lt;/section&gt;</span>
+<span class="d">-          &lt;CompactPostSection product_updates={product_updates} /&gt;</span>
+<span class="d">-        &lt;/div&gt;</span>
+<span class="a">+        {activeTab ? null : (</span>
+<span class="a">+          &lt;div className=&quot;mb-8 flex flex-row items-start lg:gap-[1.875rem]&quot;&gt;</span>
+<span class="a">+            &lt;section className=&quot;mb-0 w-full lg:mb-0 lg:w-[calc(67%-0.9375rem)]&quot;&gt;</span>
+<span class="a">+              {featured_post ? (</span>
+<span class="a">+                &lt;PostCard post={featured_post} title_size_class=&quot;text-2xl md:text-4xl&quot; usePlaceholder /&gt;</span>
+<span class="a">+              ) : (</span>
+<span class="a">+                &lt;p className=&quot;text-gray-600 border-gray-300 flex min-h-[300px] items-center justify-center rounded border-2 border-dashed p-8 text-center&quot;&gt;</span>
+<span class="a">+                  No featured post available.</span>
+<span class="a">+                &lt;/p&gt;</span>
+<span class="a">+              )}</span>
+<span class="a">+            &lt;/section&gt;</span>
+<span class="a">+            &lt;CompactPostSection product_updates={product_updates} /&gt;</span>
+<span class="a">+          &lt;/div&gt;</span>
+<span class="a">+        )}</span>
+ 
+<span class="d">-        &lt;PostsGrid posts={postsForGrid} /&gt;</span>
+<span class="a">+        {postsForGrid ? &lt;PostsGrid posts={postsForGrid} /&gt; : null}</span>
+       &lt;/div&gt;
+     &lt;/div&gt;
+   );</pre><h2>Commit #3: <a href="https://github.com/antiwork/gumroad/commit/2851852f31d8ddd17de8a1cf7549a86063b719c5">2851852f31</a> (2025-09-15T22:02:10+01:00)</h2><p class="k">Remove layout CSS (#1046)<br>Path after this commit: app/javascript/components/server-components/GumroadBlog/IndexPage.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx
+index a39098b58..a29697e8a 100644
+<span class="d">--- a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="a">+++ b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="h">@@ -6,6 +6,7 @@ import { createCast } from &quot;ts-safe-cast&quot;;</span>
+ import { register } from &quot;$app/utils/serverComponentUtil&quot;;
+ 
+ import { formatPostDate } from &quot;$app/components/server-components/Profile/PostPage&quot;;
+<span class="a">+import { Tabs, Tab } from &quot;$app/components/ui/Tabs&quot;;</span>
+ 
+ import placeholderFeatureImage from &quot;../../../../assets/images/blog/post-placeholder.jpg&quot;;
+ 
+<span class="h">@@ -183,29 +184,6 @@ const PostsGrid = ({ posts }: { posts: Post[] }) =&gt; (</span>
+   &lt;/section&gt;
+ );
+ 
+<span class="d">-interface TabButtonProps {</span>
+<span class="d">-  children: React.ReactNode;</span>
+<span class="d">-  isActive: boolean;</span>
+<span class="d">-  onClick: () =&gt; void;</span>
+<span class="d">-  count?: number;</span>
+<span class="d">-  showCount?: boolean;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-const TabButton = ({ children, isActive, onClick, count, showCount = false }: TabButtonProps) =&gt; {</span>
+<span class="d">-  const baseClasses =</span>
+<span class="d">-    &quot;block no-underline px-4 py-2 rounded-full border border-black transition-all duration-200 ease-in-out flex items-center justify-center cursor-pointer&quot;;</span>
+<span class="d">-  const activeClasses = isActive</span>
+<span class="d">-    ? &quot;bg-black text-white&quot;</span>
+<span class="d">-    : &quot;bg-white text-black hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#000]&quot;;</span>
+<span class="d">-</span>
+<span class="d">-  return (</span>
+<span class="d">-    &lt;button role=&quot;tab&quot; aria-selected={isActive} className={cx(baseClasses, activeClasses)} onClick={onClick}&gt;</span>
+<span class="d">-      {children}</span>
+<span class="d">-      {showCount ? &lt;span className=&quot;ml-1.5 text-base opacity-85&quot;&gt;({count})&lt;/span&gt; : null}</span>
+<span class="d">-    &lt;/button&gt;</span>
+<span class="d">-  );</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+ const TagSelector = ({
+   postsByTags,
+   allPostsCount,
+<span class="h">@@ -233,26 +211,22 @@ const TagSelector = ({</span>
+   }, []);
+ 
+   return (
+<span class="d">-    &lt;div className=&quot;mb-12&quot; role=&quot;tablist&quot;&gt;</span>
+<span class="d">-      &lt;ul className=&quot;flex flex-wrap gap-x-3 gap-y-3 text-lg&quot;&gt;</span>
+<span class="d">-        &lt;li&gt;</span>
+<span class="d">-          &lt;TabButton isActive={isAllPostsActive} onClick={selectAll} count={allPostsCount} showCount={isAllPostsActive}&gt;</span>
+<span class="d">-            All Posts</span>
+<span class="d">-          &lt;/TabButton&gt;</span>
+<span class="d">-        &lt;/li&gt;</span>
+<span class="a">+    &lt;div className=&quot;mb-12&quot;&gt;</span>
+<span class="a">+      &lt;Tabs&gt;</span>
+<span class="a">+        &lt;Tab isSelected={isAllPostsActive} onClick={selectAll}&gt;</span>
+<span class="a">+          All Posts {isAllPostsActive ? &lt;span className=&quot;ml-1.5 text-base opacity-85&quot;&gt;({allPostsCount})&lt;/span&gt; : null}</span>
+<span class="a">+        &lt;/Tab&gt;</span>
+         {tags.map((tag) =&gt; {
+           const isActive = activeTab === tag;
+           const count = postsByTags[tag]?.length || 0;
+ 
+           return (
+<span class="d">-            &lt;li key={tag}&gt;</span>
+<span class="d">-              &lt;TabButton isActive={isActive} onClick={() =&gt; selectTag(tag)} count={count} showCount={isActive}&gt;</span>
+<span class="d">-                {tag}</span>
+<span class="d">-              &lt;/TabButton&gt;</span>
+<span class="d">-            &lt;/li&gt;</span>
+<span class="a">+            &lt;Tab key={tag} isSelected={isActive} onClick={() =&gt; selectTag(tag)}&gt;</span>
+<span class="a">+              {tag} {isActive ? &lt;span className=&quot;ml-1.5 text-base opacity-85&quot;&gt;({count})&lt;/span&gt; : null}</span>
+<span class="a">+            &lt;/Tab&gt;</span>
+           );
+         })}
+<span class="d">-      &lt;/ul&gt;</span>
+<span class="a">+      &lt;/Tabs&gt;</span>
+     &lt;/div&gt;
+   );
+ };</pre><h2>Commit #4: <a href="https://github.com/antiwork/gumroad/commit/8f4460c8c96a357506f88d22b4ceaf1c48812f9e">8f4460c8c9</a> (2025-10-09T15:23:27+01:00)</h2><p class="k">Upgrade to Tailwind 4 (#1593)<br>Path after this commit: app/javascript/components/server-components/GumroadBlog/IndexPage.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx
+index a29697e8a..cac12e1dd 100644
+<span class="d">--- a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="a">+++ b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="h">@@ -24,7 +24,7 @@ const Tag = ({ name, count, showCount = false, active = false, size = &quot;sm&quot; }: Ta</span>
+     base: &quot;text-base&quot;,
+   };
+ 
+<span class="d">-  const commonClasses = `inline-block rounded px-2 py-2 leading-none mr-2 mb-2`;</span>
+<span class="a">+  const commonClasses = `inline-block rounded-sm px-2 py-2 leading-none mr-2 mb-2`;</span>
+   const activeStateClass = active ? &quot;bg-black text-white&quot; : &quot;bg-white text-black border border-black&quot;;
+ 
+   return (
+<span class="h">@@ -99,12 +99,12 @@ const PostCard = ({</span>
+         )}
+       &gt;
+         {featureImageUrl ? (
+<span class="d">-          &lt;figure className=&quot;aspect-[1800/1080] overflow-hidden border-b border-black&quot;&gt;</span>
+<span class="a">+          &lt;figure className=&quot;aspect-1800/1080 overflow-hidden border-b border-black&quot;&gt;</span>
+             &lt;img src={featureImageUrl} alt={post.subject} className=&quot;h-full w-full object-cover&quot; loading=&quot;lazy&quot; /&gt;
+           &lt;/figure&gt;
+         ) : null}
+ 
+<span class="d">-        &lt;div className=&quot;flex h-full flex-grow flex-col space-y-2 p-6&quot;&gt;</span>
+<span class="a">+        &lt;div className=&quot;flex h-full grow flex-col space-y-2 p-6&quot;&gt;</span>
+           &lt;h3 className={cx(&quot;flex-none leading-tight&quot;, title_size_class)}&gt;{post.subject}&lt;/h3&gt;
+           {showSnippet ? (
+             &lt;div className=&quot;relative flex-1&quot; ref={snippetContainerRef}&gt;
+<span class="h">@@ -140,12 +140,12 @@ const PostCard = ({</span>
+ 
+ const CompactPostItem = ({ post }: { post: Post }) =&gt; (
+   &lt;li className=&quot;border-gray-300 py-4 first:pt-0&quot;&gt;
+<span class="d">-    &lt;a href={post.url} className=&quot;hover:text-pink-600 group flex items-end justify-between text-black no-underline&quot;&gt;</span>
+<span class="a">+    &lt;a href={post.url} className=&quot;group flex items-end justify-between text-black no-underline hover:text-pink-600&quot;&gt;</span>
+       &lt;div className=&quot;override grid grid-cols-1 gap-1&quot;&gt;
+         &lt;h4 className=&quot;mb-0.5 text-2xl font-normal&quot;&gt;{post.subject}&lt;/h4&gt;
+<span class="d">-        &lt;p className=&quot;text-gray-500 pb-0.5 text-base&quot;&gt;{formatPostDate(post.published_at, &quot;en-US&quot;)}&lt;/p&gt;</span>
+<span class="a">+        &lt;p className=&quot;pb-0.5 text-base text-gray-500&quot;&gt;{formatPostDate(post.published_at, &quot;en-US&quot;)}&lt;/p&gt;</span>
+       &lt;/div&gt;
+<span class="d">-      &lt;div className=&quot;border-gray-400 ml-3 mr-1 flex h-10 w-10 flex-shrink-0 items-center justify-center self-end rounded-md border p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#000]&quot;&gt;</span>
+<span class="a">+      &lt;div className=&quot;mr-1 ml-3 flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-md border border-gray-400 p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#000]&quot;&gt;</span>
+         &lt;svg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; strokeWidth=&quot;2&quot;&gt;
+           &lt;path d=&quot;M5 12h14M12 5l7 7-7 7&quot; /&gt;
+         &lt;/svg&gt;
+<span class="h">@@ -158,7 +158,7 @@ const CompactPostSection = ({ product_updates }: { product_updates: Post[] }) =&gt;</span>
+   &lt;div className=&quot;mb-8 hidden w-full lg:mb-0 lg:block lg:w-[calc(33%-0.9375rem)]&quot;&gt;
+     &lt;div className=&quot;flex h-full flex-col&quot;&gt;
+       {product_updates.length &gt; 0 ? (
+<span class="d">-        &lt;ul className=&quot;flex-grow divide-y overflow-y-auto&quot;&gt;</span>
+<span class="a">+        &lt;ul className=&quot;grow divide-y overflow-y-auto&quot;&gt;</span>
+           {product_updates.map((post) =&gt; (
+             &lt;CompactPostItem key={post.url} post={post} /&gt;
+           ))}
+<span class="h">@@ -179,7 +179,7 @@ const PostsGrid = ({ posts }: { posts: Post[] }) =&gt; (</span>
+         ))}
+       &lt;/div&gt;
+     ) : (
+<span class="d">-      &lt;p className=&quot;text-gray-600 col-span-full py-10 text-center&quot;&gt;No posts found.&lt;/p&gt;</span>
+<span class="a">+      &lt;p className=&quot;col-span-full py-10 text-center text-gray-600&quot;&gt;No posts found.&lt;/p&gt;</span>
+     )}
+   &lt;/section&gt;
+ );
+<span class="h">@@ -266,12 +266,12 @@ const IndexPage = ({ posts = [] }: IndexPageProps) =&gt; {</span>
+         /&gt;
+ 
+         {activeTab ? null : (
+<span class="d">-          &lt;div className=&quot;mb-8 flex flex-row items-start lg:gap-[1.875rem]&quot;&gt;</span>
+<span class="a">+          &lt;div className=&quot;mb-8 flex flex-row items-start lg:gap-7.5&quot;&gt;</span>
+             &lt;section className=&quot;mb-0 w-full lg:mb-0 lg:w-[calc(67%-0.9375rem)]&quot;&gt;
+               {featured_post ? (
+                 &lt;PostCard post={featured_post} title_size_class=&quot;text-2xl md:text-4xl&quot; usePlaceholder /&gt;
+               ) : (
+<span class="d">-                &lt;p className=&quot;text-gray-600 border-gray-300 flex min-h-[300px] items-center justify-center rounded border-2 border-dashed p-8 text-center&quot;&gt;</span>
+<span class="a">+                &lt;p className=&quot;flex min-h-[300px] items-center justify-center rounded-sm border-2 border-dashed border-gray-300 p-8 text-center text-gray-600&quot;&gt;</span>
+                   No featured post available.
+                 &lt;/p&gt;
+               )}</pre><h2>Commit #5: <a href="https://github.com/antiwork/gumroad/commit/71edb493f1dacdf1e8e60a251fb08dfd215aa48d">71edb493f1</a> (2025-10-14T03:08:53+01:00)</h2><p class="k">Migrate _grid.scss to Tailwind (#1626)<br>Path after this commit: app/javascript/components/server-components/GumroadBlog/IndexPage.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx
+index cac12e1dd..a411217bc 100644
+<span class="d">--- a/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="a">+++ b/app/javascript/components/server-components/GumroadBlog/IndexPage.tsx</span>
+<span class="h">@@ -141,7 +141,7 @@ const PostCard = ({</span>
+ const CompactPostItem = ({ post }: { post: Post }) =&gt; (
+   &lt;li className=&quot;border-gray-300 py-4 first:pt-0&quot;&gt;
+     &lt;a href={post.url} className=&quot;group flex items-end justify-between text-black no-underline hover:text-pink-600&quot;&gt;
+<span class="d">-      &lt;div className=&quot;override grid grid-cols-1 gap-1&quot;&gt;</span>
+<span class="a">+      &lt;div className=&quot;grid grid-cols-1 gap-1&quot;&gt;</span>
+         &lt;h4 className=&quot;mb-0.5 text-2xl font-normal&quot;&gt;{post.subject}&lt;/h4&gt;
+         &lt;p className=&quot;pb-0.5 text-base text-gray-500&quot;&gt;{formatPostDate(post.published_at, &quot;en-US&quot;)}&lt;/p&gt;
+       &lt;/div&gt;
+<span class="h">@@ -173,7 +173,7 @@ const CompactPostSection = ({ product_updates }: { product_updates: Post[] }) =&gt;</span>
+ const PostsGrid = ({ posts }: { posts: Post[] }) =&gt; (
+   &lt;section className=&quot;mt-8&quot;&gt;
+     {posts.length &gt; 0 ? (
+<span class="d">-      &lt;div className=&quot;override grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-8&quot;&gt;</span>
+<span class="a">+      &lt;div className=&quot;grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-8&quot;&gt;</span>
+         {posts.map((post) =&gt; (
+           &lt;PostCard key={post.url} post={post} /&gt;
+         ))}</pre></body></html>

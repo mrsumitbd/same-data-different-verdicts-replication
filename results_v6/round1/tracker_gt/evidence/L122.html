@@ -1,0 +1,407 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L122</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L122</h1><p><b>Repository:</b> <a href="https://github.com/logancyang/obsidian-copilot">logancyang/obsidian-copilot</a><br><b>File at merge:</b> src/components/modals/project/context-manage-modal.tsx, line 11<br><b>Merge commit (birth):</b> <a href="https://github.com/logancyang/obsidian-copilot/commit/54c30d83de2a68cf097391080154d47ba056fe0b">54c30d83de</a> (2025-06-24T19:58:47)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/logancyang/obsidian-copilot/tree/13523c9fc19a18e5df37369426c47b9a5096c279">13523c9fc1</a>)</p><p><b>The line:</b></p><pre><span class="t">import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from &quot;@/components/ui/tooltip&quot;;</span></pre><h2>File at the merge commit, lines 3 to 19</h2><pre>    3 | import { ProjectFileSelectModal } from &quot;@/components/modals/ProjectFileSelectModal&quot;;
+    4 | import { TagSearchModal } from &quot;@/components/modals/TagSearchModal&quot;;
+    5 | import { TruncatedText } from &quot;@/components/TruncatedText&quot;;
+    6 | import { Button } from &quot;@/components/ui/button&quot;;
+    7 | import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from &quot;@/components/ui/resizable&quot;;
+    8 | import { ScrollArea } from &quot;@/components/ui/scroll-area&quot;;
+    9 | import { SearchBar } from &quot;@/components/ui/SearchBar&quot;;
+   10 | import { Separator } from &quot;@/components/ui/separator&quot;;
+<span class="t">   11 | import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from &quot;@/components/ui/tooltip&quot;;</span>
+   12 | import { cn } from &quot;@/lib/utils&quot;;
+   13 | import {
+   14 |   createPatternSettingsValue,
+   15 |   getFilePattern,
+   16 |   getMatchingPatterns,
+   17 |   getTagPattern,
+   18 |   PatternCategory,
+   19 |   shouldIndexFile,</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/logancyang/obsidian-copilot/commit/bc2d7f660af1ad58af78510d087353e3f2e427df">bc2d7f660a</a> (2025-08-04T09:51:18-07:00)</h2><p class="k">Implement autonomous agent (#1689)<br>Path after this commit: src/components/modals/project/context-manage-modal.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/components/modals/project/context-manage-modal.tsx b/src/components/modals/project/context-manage-modal.tsx
+index a697ea70..6e8250a4 100644
+<span class="d">--- a/src/components/modals/project/context-manage-modal.tsx</span>
+<span class="a">+++ b/src/components/modals/project/context-manage-modal.tsx</span>
+<span class="h">@@ -220,6 +220,56 @@ function ItemCard({ item, viewMode, onDelete }: ItemCardProps) {</span>
+   );
+ }
+ 
+<span class="a">+function CategoryItemCard({</span>
+<span class="a">+  item,</span>
+<span class="a">+  onClick,</span>
+<span class="a">+}: {</span>
+<span class="a">+  item: CategoryItem;</span>
+<span class="a">+  onClick: (item: CategoryItem) =&gt; void;</span>
+<span class="a">+}) {</span>
+<span class="a">+  let IconComponent;</span>
+<span class="a">+  let iconColorClassName;</span>
+<span class="a">+</span>
+<span class="a">+  switch (item.type) {</span>
+<span class="a">+    case &quot;tag&quot;:</span>
+<span class="a">+      IconComponent = TagIcon;</span>
+<span class="a">+      iconColorClassName = &quot;tw-text-context-manager-orange&quot;;</span>
+<span class="a">+      break;</span>
+<span class="a">+    case &quot;folder&quot;:</span>
+<span class="a">+      IconComponent = FolderIcon;</span>
+<span class="a">+      iconColorClassName = &quot;tw-text-context-manager-yellow&quot;;</span>
+<span class="a">+      break;</span>
+<span class="a">+    case &quot;files&quot;:</span>
+<span class="a">+      IconComponent = FileText;</span>
+<span class="a">+      iconColorClassName = &quot;tw-text-context-manager-blue&quot;;</span>
+<span class="a">+      break;</span>
+<span class="a">+    case &quot;ignoreFiles&quot;:</span>
+<span class="a">+      IconComponent = XIcon;</span>
+<span class="a">+      iconColorClassName = &quot;tw-text-context-manager-red&quot;;</span>
+<span class="a">+      break;</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+<span class="a">+  return (</span>
+<span class="a">+    &lt;div</span>
+<span class="a">+      className=&quot;tw-group tw-flex tw-cursor-pointer tw-items-center tw-rounded-lg tw-border tw-border-solid tw-border-border tw-p-2 tw-transition-shadow hover:tw-shadow-md&quot;</span>
+<span class="a">+      onClick={() =&gt; onClick(item)}</span>
+<span class="a">+    &gt;</span>
+<span class="a">+      &lt;div className=&quot;tw-mr-2 tw-shrink-0&quot;&gt;</span>
+<span class="a">+        &lt;IconComponent className={`tw-size-6 ${iconColorClassName}`} /&gt;</span>
+<span class="a">+      &lt;/div&gt;</span>
+<span class="a">+      &lt;div className=&quot;tw-flex tw-min-w-0 tw-flex-1 tw-flex-col&quot;&gt;</span>
+<span class="a">+        &lt;TruncatedText className=&quot;tw-flex-1 tw-text-sm tw-font-medium&quot;&gt;</span>
+<span class="a">+          {item.type === &quot;tag&quot; &amp;&amp; &lt;span className=&quot;tw-mr-2 tw-text-faint&quot;&gt;#&lt;/span&gt;}</span>
+<span class="a">+          {item.name}</span>
+<span class="a">+        &lt;/TruncatedText&gt;</span>
+<span class="a">+        &lt;TruncatedText className=&quot;tw-flex-1 tw-text-xs tw-text-faint&quot;&gt;</span>
+<span class="a">+          {item.count} {item.count === 1 ? &quot;item&quot; : &quot;items&quot;}</span>
+<span class="a">+        &lt;/TruncatedText&gt;</span>
+<span class="a">+      &lt;/div&gt;</span>
+<span class="a">+    &lt;/div&gt;</span>
+<span class="a">+  );</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ interface ContextManageProps {
+   initialProject: ProjectConfig;
+   onSave: (project: ProjectConfig) =&gt; void;
+<span class="h">@@ -244,6 +294,20 @@ interface IgnoreItems {</span>
+   files: Set&lt;TFile&gt;;
+ }
+ 
+<span class="a">+interface CategoryItem {</span>
+<span class="a">+  id: string;</span>
+<span class="a">+  name: string;</span>
+<span class="a">+  type: &quot;tag&quot; | &quot;folder&quot; | &quot;files&quot; | &quot;ignoreFiles&quot;;</span>
+<span class="a">+  originalId?: string;</span>
+<span class="a">+  count: number;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+type DisplayItem = GroupItem | CategoryItem;</span>
+<span class="a">+</span>
+<span class="a">+function isCategoryItem(item: DisplayItem): item is CategoryItem {</span>
+<span class="a">+  return &quot;type&quot; in item;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageProps) {
+   const { inclusions: inclusionPatterns, exclusions: exclusionPatterns } = useMemo(() =&gt; {
+     return getMatchingPatterns({
+<span class="h">@@ -265,7 +329,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+       exclusionPatterns: PatternCategory | null
+     ): GroupListItem =&gt; {
+       const projectAllFiles = appFiles.filter((file) =&gt;
+<span class="d">-        shouldIndexFile(file, inclusionPatterns, exclusionPatterns)</span>
+<span class="a">+        shouldIndexFile(file, inclusionPatterns, exclusionPatterns, true)</span>
+       );
+ 
+       const processPatternGroup = (
+<span class="h">@@ -278,7 +342,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+           patterns.forEach((pattern) =&gt; {
+             const singlePatternConfig = { [patternType]: [pattern] };
+             if (
+<span class="d">-              shouldIndexFile(file, singlePatternConfig, null) &amp;&amp;</span>
+<span class="a">+              shouldIndexFile(file, singlePatternConfig, null, true) &amp;&amp;</span>
+               !targetGroup[pattern].some((item) =&gt; item.id === file.path)
+             ) {
+               targetGroup[pattern].push({
+<span class="h">@@ -325,7 +389,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+         // note/file
+         if (
+           inclusionPatterns?.notePatterns &amp;&amp;
+<span class="d">-          shouldIndexFile(file, { notePatterns: inclusionPatterns.notePatterns }, null) &amp;&amp;</span>
+<span class="a">+          shouldIndexFile(file, { notePatterns: inclusionPatterns.notePatterns }, null, true) &amp;&amp;</span>
+           !notes.some((item) =&gt; item.id === file.path)
+         ) {
+           notes.push({
+<span class="h">@@ -352,7 +416,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+   const [ignoreItems, setIgnoreItems] = useState&lt;IgnoreItems&gt;(() =&gt; {
+     // init exclude files
+     const excludeFiles = appAllFiles.filter(
+<span class="d">-      (file) =&gt; exclusionPatterns &amp;&amp; shouldIndexFile(file, exclusionPatterns, null)</span>
+<span class="a">+      (file) =&gt; exclusionPatterns &amp;&amp; shouldIndexFile(file, exclusionPatterns, null, true)</span>
+     );
+     return {
+       files: new Set&lt;TFile&gt;(excludeFiles),
+<span class="h">@@ -460,7 +524,13 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+     return { tags, titles, extensions };
+   }, []);
+ 
+<span class="d">-  const getDisplayItems = useMemo(() =&gt; {</span>
+<span class="a">+  const sortItems = useCallback((items: DisplayItem[]) =&gt; {</span>
+<span class="a">+    return [...items].sort((a, b) =&gt; {</span>
+<span class="a">+      return a.name.toLowerCase().localeCompare(b.name.toLowerCase());</span>
+<span class="a">+    });</span>
+<span class="a">+  }, []);</span>
+<span class="a">+</span>
+<span class="a">+  const getDisplayItems = useMemo&lt;DisplayItem[]&gt;(() =&gt; {</span>
+     if (searchTerm) {
+       // Custom search
+       const parsedQuery = parseSearchQuery(searchTerm);
+<span class="h">@@ -547,6 +617,55 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+       }));
+     }
+ 
+<span class="a">+    // When no part is selected, return all items</span>
+<span class="a">+    if (!activeSection) {</span>
+<span class="a">+      const tagItems = sortItems(</span>
+<span class="a">+        Object.entries(groupList.tags).map(([tagId, files]) =&gt; ({</span>
+<span class="a">+          id: `tag:${tagId}`,</span>
+<span class="a">+          name: tagId.slice(1),</span>
+<span class="a">+          type: &quot;tag&quot;,</span>
+<span class="a">+          originalId: tagId,</span>
+<span class="a">+          count: files.length,</span>
+<span class="a">+        }))</span>
+<span class="a">+      );</span>
+<span class="a">+</span>
+<span class="a">+      const folderItems = sortItems(</span>
+<span class="a">+        Object.entries(groupList.folders).map(([folderId, files]) =&gt; ({</span>
+<span class="a">+          id: `folder:${folderId}`,</span>
+<span class="a">+          name: folderId,</span>
+<span class="a">+          type: &quot;folder&quot;,</span>
+<span class="a">+          originalId: folderId,</span>
+<span class="a">+          count: files.length,</span>
+<span class="a">+        }))</span>
+<span class="a">+      );</span>
+<span class="a">+</span>
+<span class="a">+      const filesItem =</span>
+<span class="a">+        groupList.notes.length &gt; 0</span>
+<span class="a">+          ? [</span>
+<span class="a">+              {</span>
+<span class="a">+                id: &quot;files:all&quot;,</span>
+<span class="a">+                name: &quot;Files&quot;,</span>
+<span class="a">+                type: &quot;files&quot;,</span>
+<span class="a">+                count: groupList.notes.length,</span>
+<span class="a">+              },</span>
+<span class="a">+            ]</span>
+<span class="a">+          : [];</span>
+<span class="a">+</span>
+<span class="a">+      const ignoreFilesItem =</span>
+<span class="a">+        ignoreItems.files.size &gt; 0</span>
+<span class="a">+          ? [</span>
+<span class="a">+              {</span>
+<span class="a">+                id: &quot;ignoreFiles:all&quot;,</span>
+<span class="a">+                name: &quot;Ignore Files&quot;,</span>
+<span class="a">+                type: &quot;ignoreFiles&quot;,</span>
+<span class="a">+                count: ignoreItems.files.size,</span>
+<span class="a">+              },</span>
+<span class="a">+            ]</span>
+<span class="a">+          : [];</span>
+<span class="a">+</span>
+<span class="a">+      return [...tagItems, ...folderItems, ...filesItem, ...ignoreFilesItem];</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     return [];
+   }, [
+     searchTerm,
+<span class="h">@@ -560,14 +679,9 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+     groupList.notes,
+     groupList.extensions,
+     ignoreItems.files,
+<span class="a">+    sortItems,</span>
+   ]);
+ 
+<span class="d">-  const sortItems = useCallback((items: GroupItem[]) =&gt; {</span>
+<span class="d">-    return [...items].sort((a, b) =&gt; {</span>
+<span class="d">-      return a.name.toLowerCase().localeCompare(b.name.toLowerCase());</span>
+<span class="d">-    });</span>
+<span class="d">-  }, []);</span>
+<span class="d">-</span>
+   const makeSectionItem = useCallback(
+     (
+       groupData: Record&lt;string, Array&lt;GroupItem&gt;&gt;,
+<span class="h">@@ -592,7 +706,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+     ) =&gt; {
+       const getMatchingFilesFromApp = (patterns: PatternCategory): GroupItem[] =&gt; {
+         return appAllFiles
+<span class="d">-          .filter((file) =&gt; shouldIndexFile(file, patterns, null))</span>
+<span class="a">+          .filter((file) =&gt; shouldIndexFile(file, patterns, null, true))</span>
+           .map((file) =&gt; ({
+             id: file.path,
+             name: file.basename,
+<span class="h">@@ -783,6 +897,21 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+     setActiveState,
+   ]);
+ 
+<span class="a">+  const handleCategoryItemClick = useCallback(</span>
+<span class="a">+    (item: CategoryItem) =&gt; {</span>
+<span class="a">+      if (item.type === &quot;tag&quot; &amp;&amp; item.originalId) {</span>
+<span class="a">+        groupHandlers.click.tag(item.originalId);</span>
+<span class="a">+      } else if (item.type === &quot;folder&quot; &amp;&amp; item.originalId) {</span>
+<span class="a">+        groupHandlers.click.folder(item.originalId);</span>
+<span class="a">+      } else if (item.type === &quot;files&quot;) {</span>
+<span class="a">+        groupHandlers.click.files();</span>
+<span class="a">+      } else if (item.type === &quot;ignoreFiles&quot;) {</span>
+<span class="a">+        groupHandlers.click.ignoreFiles();</span>
+<span class="a">+      }</span>
+<span class="a">+    },</span>
+<span class="a">+    [groupHandlers]</span>
+<span class="a">+  );</span>
+<span class="a">+</span>
+   const getDisplayTitle = () =&gt; {
+     if (searchTerm) return `Search Results for: &quot;${searchTerm}&quot;`;
+     if (activeSection === &quot;tags&quot; &amp;&amp; activeItem) {
+<span class="h">@@ -796,7 +925,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+       return `Extension: ${activeItem}`;
+     }
+     if (activeSection === &quot;ignoreFiles&quot;) return &quot;Ignore Files&quot;;
+<span class="d">-    return &quot;Select a category to view items&quot;;</span>
+<span class="a">+    return &quot;All Categories&quot;;</span>
+   };
+ 
+   const handleDeleteItem = (e: React.MouseEvent, item: GroupItem) =&gt; {
+<span class="h">@@ -1003,22 +1132,40 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+                 &lt;div className=&quot;tw-mt-10 tw-text-center tw-text-muted&quot;&gt;
+                   {activeSection
+                     ? &quot;No items found.&quot;
+<span class="d">-                    : &quot;Select a category from the sidebar to view items.&quot;}</span>
+<span class="a">+                    : &quot;No categories found. Add tags, folders, or files using the sidebar.&quot;}</span>
+                 &lt;/div&gt;
+               ) : (
+                 &lt;div className=&quot;tw-space-y-2&quot; style={{ display: &quot;block&quot; }}&gt;
+<span class="d">-                  {sortItems(getDisplayItems).map((item) =&gt; (</span>
+<span class="d">-                    &lt;ItemCard</span>
+<span class="d">-                      key={item.id}</span>
+<span class="d">-                      item={item}</span>
+<span class="d">-                      viewMode=&quot;list&quot;</span>
+<span class="d">-                      onDelete={</span>
+<span class="d">-                        activeSection === &quot;ignoreFiles&quot; || item.isIgnored</span>
+<span class="d">-                          ? handleDeleteIgnoreItem</span>
+<span class="d">-                          : handleDeleteItem</span>
+<span class="d">-                      }</span>
+<span class="d">-                    /&gt;</span>
+<span class="d">-                  ))}</span>
+<span class="a">+                  {activeSection || searchTerm</span>
+<span class="a">+                    ? // When a category is selected or a search is performed, display the normal item list.</span>
+<span class="a">+                      sortItems(getDisplayItems)</span>
+<span class="a">+                        .map((item) =&gt;</span>
+<span class="a">+                          !isCategoryItem(item) ? (</span>
+<span class="a">+                            &lt;ItemCard</span>
+<span class="a">+                              key={item.id}</span>
+<span class="a">+                              item={item}</span>
+<span class="a">+                              viewMode=&quot;list&quot;</span>
+<span class="a">+                              onDelete={</span>
+<span class="a">+                                activeSection === &quot;ignoreFiles&quot; || item.isIgnored</span>
+<span class="a">+                                  ? handleDeleteIgnoreItem</span>
+<span class="a">+                                  : handleDeleteItem</span>
+<span class="a">+                              }</span>
+<span class="a">+                            /&gt;</span>
+<span class="a">+                          ) : null</span>
+<span class="a">+                        )</span>
+<span class="a">+                        .filter(Boolean)</span>
+<span class="a">+                    : // When no category is selected and no search, display the grouped category list.</span>
+<span class="a">+                      getDisplayItems</span>
+<span class="a">+                        .map((item) =&gt;</span>
+<span class="a">+                          isCategoryItem(item) ? (</span>
+<span class="a">+                            &lt;CategoryItemCard</span>
+<span class="a">+                              key={item.id}</span>
+<span class="a">+                              item={item}</span>
+<span class="a">+                              onClick={handleCategoryItemClick}</span>
+<span class="a">+                            /&gt;</span>
+<span class="a">+                          ) : null</span>
+<span class="a">+                        )</span>
+<span class="a">+                        .filter(Boolean)}</span>
+                 &lt;/div&gt;
+               )}
+             &lt;/ScrollArea&gt;</pre><h2>Commit #2: <a href="https://github.com/logancyang/obsidian-copilot/commit/86b7fcab88fa51e7b66631c9d70cde6d64046472">86b7fcab88</a> (2025-09-22T18:06:54-07:00)</h2><p class="k">feat: add mobile-responsive components for settings. (#1813)<br>Path after this commit: src/components/modals/project/context-manage-modal.tsx. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: src/components/ui/help-tooltip.tsx.</p><pre>diff --git a/src/components/modals/project/context-manage-modal.tsx b/src/components/modals/project/context-manage-modal.tsx
+index 6e8250a4..130c0f9d 100644
+<span class="d">--- a/src/components/modals/project/context-manage-modal.tsx</span>
+<span class="a">+++ b/src/components/modals/project/context-manage-modal.tsx</span>
+<span class="h">@@ -8,7 +8,6 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from &quot;@/componen</span>
+ import { ScrollArea } from &quot;@/components/ui/scroll-area&quot;;
+ import { SearchBar } from &quot;@/components/ui/SearchBar&quot;;
+ import { Separator } from &quot;@/components/ui/separator&quot;;
+<span class="d m">-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from &quot;@/components/ui/tooltip&quot;;</span>
+ import { cn } from &quot;@/lib/utils&quot;;
+ import {
+   createPatternSettingsValue,
+<span class="h">@@ -25,15 +24,15 @@ import {</span>
+   FileText,
+   FileVideo,
+   FolderIcon,
+<span class="d">-  HelpCircle,</span>
+   Plus,
+   PlusCircle,
+   TagIcon,
+   XIcon,
+ } from &quot;lucide-react&quot;;
+<span class="d">-import { App, Modal, Notice, TFile } from &quot;obsidian&quot;;</span>
+<span class="a">+import { App, Modal, Notice, Platform, TFile } from &quot;obsidian&quot;;</span>
+ import React, { useCallback, useEffect, useMemo, useRef, useState } from &quot;react&quot;;
+ import { createRoot, Root } from &quot;react-dom/client&quot;;
+<span class="a">+import { HelpTooltip } from &quot;@/components/ui/help-tooltip&quot;;</span>
+ 
+ function FileIcon({ extension, size = &quot;tw-size-4&quot; }: { extension: string; size?: string }) {
+   const ext = extension.toLowerCase().replace(&quot;*.&quot;, &quot;&quot;);
+<span class="h">@@ -78,18 +77,13 @@ const SectionHeader: React.FC&lt;SectionHeaderProps&gt; = ({</span>
+         &lt;IconComponent className={`tw-mr-2 tw-size-4 ${iconColorClassName}`} /&gt;
+         &lt;h3 className={`tw-text-sm tw-font-semibold ${iconColorClassName}`}&gt;{title}&lt;/h3&gt;
+         {tooltip &amp;&amp; (
+<span class="d">-          &lt;TooltipProvider delayDuration={0}&gt;</span>
+<span class="d">-            &lt;Tooltip&gt;</span>
+<span class="d">-              &lt;TooltipTrigger asChild&gt;</span>
+<span class="d">-                &lt;HelpCircle className=&quot;tw-ml-2 tw-size-4 tw-text-muted&quot; /&gt;</span>
+<span class="d">-              &lt;/TooltipTrigger&gt;</span>
+<span class="d">-              &lt;TooltipContent&gt;</span>
+<span class="d">-                &lt;div className=&quot;tw-max-w-80&quot;&gt;{tooltip}&lt;/div&gt;</span>
+<span class="d">-              &lt;/TooltipContent&gt;</span>
+<span class="d">-            &lt;/Tooltip&gt;</span>
+<span class="d">-          &lt;/TooltipProvider&gt;</span>
+<span class="a">+          &lt;HelpTooltip</span>
+<span class="a">+            buttonClassName=&quot;tw-ml-2 tw-size-4 tw-text-muted&quot;</span>
+<span class="a">+            content={&lt;div className=&quot;tw-max-w-80&quot;&gt;{tooltip}&lt;/div&gt;}</span>
+<span class="a">+          /&gt;</span>
+         )}
+       &lt;/div&gt;
+<span class="a">+</span>
+       &lt;Button
+         variant=&quot;ghost&quot;
+         size=&quot;fit&quot;
+<span class="h">@@ -309,6 +303,7 @@ function isCategoryItem(item: DisplayItem): item is CategoryItem {</span>
+ }
+ 
+ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageProps) {
+<span class="a">+  const isMobile = Platform.isMobile;</span>
+   const { inclusions: inclusionPatterns, exclusions: exclusionPatterns } = useMemo(() =&gt; {
+     return getMatchingPatterns({
+       inclusions: initialProject?.contextSource.inclusions,
+<span class="h">@@ -997,7 +992,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+     &lt;div className=&quot;tw-flex tw-h-full tw-flex-col&quot;&gt;
+       &lt;ResizablePanelGroup direction=&quot;horizontal&quot; className=&quot;tw-flex-1&quot;&gt;
+         {/* Left Sidebar - Navigation */}
+<span class="d">-        &lt;ResizablePanel defaultSize={30} minSize={20} maxSize={40}&gt;</span>
+<span class="a">+        &lt;ResizablePanel defaultSize={isMobile ? 35 : 30} minSize={20} maxSize={40}&gt;</span>
+           &lt;div className=&quot;tw-flex tw-h-full tw-flex-col&quot;&gt;
+             {/* Header */}
+             &lt;div className=&quot;tw-border-b tw-p-4&quot;&gt;
+<span class="h">@@ -1094,7 +1089,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+                     )}
+                     onClick={groupHandlers.click.ignoreFiles}
+                   &gt;
+<span class="d">-                    Ignore Files ({ignoreItems.files.size})</span>
+<span class="a">+                    Files ({ignoreItems.files.size})</span>
+                   &lt;/div&gt;
+                 &lt;/div&gt;
+               &lt;/div&gt;
+<span class="h">@@ -1105,7 +1100,7 @@ function ContextManage({ initialProject, onSave, onCancel, app }: ContextManageP</span>
+         &lt;ResizableHandle withHandle /&gt;
+ 
+         {/* Right Content Area */}
+<span class="d">-        &lt;ResizablePanel defaultSize={70}&gt;</span>
+<span class="a">+        &lt;ResizablePanel defaultSize={isMobile ? 65 : 70}&gt;</span>
+           &lt;div className=&quot;tw-flex tw-h-full tw-flex-col&quot;&gt;
+             {/* Header */}
+             &lt;div className=&quot;tw-border-b tw-p-4&quot;&gt;</pre></body></html>

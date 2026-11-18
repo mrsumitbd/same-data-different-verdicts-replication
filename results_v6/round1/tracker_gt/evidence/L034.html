@@ -1,0 +1,589 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L034</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L034</h1><p><b>Repository:</b> <a href="https://github.com/logancyang/obsidian-copilot">logancyang/obsidian-copilot</a><br><b>File at merge:</b> src/components/chat-components/ChatContextMenu.tsx, line 46<br><b>Merge commit (birth):</b> <a href="https://github.com/logancyang/obsidian-copilot/commit/972b63d002c15d7ae58b4155e0245c7451e4158d">972b63d002</a> (2025-06-01T05:30:54)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/logancyang/obsidian-copilot/tree/13523c9fc19a18e5df37369426c47b9a5096c279">13523c9fc1</a>)</p><p><b>The line:</b></p><pre><span class="t">    &lt;Badge className=&quot;tw-items-center tw-py-0 tw-pl-2 tw-pr-0.5 tw-text-xs&quot;&gt;</span></pre><h2>File at the merge commit, lines 38 to 54</h2><pre>   38 |         &lt;X className=&quot;tw-size-4&quot; /&gt;
+   39 |       &lt;/Button&gt;
+   40 |     &lt;/Badge&gt;
+   41 |   );
+   42 | }
+   43 | 
+   44 | function ContextUrl({ url, onRemoveUrl }: { url: string; onRemoveUrl: (url: string) =&gt; void }) {
+   45 |   return (
+<span class="t">   46 |     &lt;Badge className=&quot;tw-items-center tw-py-0 tw-pl-2 tw-pr-0.5 tw-text-xs&quot;&gt;</span>
+   47 |       &lt;div className=&quot;tw-flex tw-items-center tw-gap-1&quot;&gt;
+   48 |         &lt;span className=&quot;tw-max-w-40 tw-truncate&quot;&gt;{url}&lt;/span&gt;
+   49 |         &lt;span className=&quot;tw-text-xs tw-text-faint&quot;&gt;Link&lt;/span&gt;
+   50 |       &lt;/div&gt;
+   51 |       &lt;Button
+   52 |         variant=&quot;ghost2&quot;
+   53 |         size=&quot;fit&quot;
+   54 |         onClick={() =&gt; onRemoveUrl(url)}</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/logancyang/obsidian-copilot/commit/585778b2f357df08c3e576e9781cb86a5255939e">585778b2f3</a> (2025-06-26T13:54:27-07:00)</h2><p class="k">feat: Add support for selected text context in chat component (#1576)<br>Path after this commit: src/components/chat-components/ChatContextMenu.tsx. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/components/chat-components/ChatContextMenu.tsx b/src/components/chat-components/ChatContextMenu.tsx
+index b54ccc03..be30c36b 100644
+<span class="d">--- a/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="h">@@ -3,14 +3,17 @@ import { TFile } from &quot;obsidian&quot;;</span>
+ import React from &quot;react&quot;;
+ import { Button } from &quot;@/components/ui/button&quot;;
+ import { Badge } from &quot;@/components/ui/badge&quot;;
+<span class="a">+import { SelectedTextContext } from &quot;@/sharedState&quot;;</span>
+ 
+ interface ChatContextMenuProps {
+   activeNote: TFile | null;
+   contextNotes: TFile[];
+   contextUrls: string[];
+<span class="a">+  selectedTextContexts?: SelectedTextContext[];</span>
+   onAddContext: () =&gt; void;
+   onRemoveContext: (path: string) =&gt; void;
+   onRemoveUrl: (url: string) =&gt; void;
+<span class="a">+  onRemoveSelectedText?: (id: string) =&gt; void;</span>
+ }
+ 
+ function ContextNote({
+<span class="h">@@ -60,13 +63,45 @@ function ContextUrl({ url, onRemoveUrl }: { url: string; onRemoveUrl: (url: stri</span>
+   );
+ }
+ 
+<span class="a">+function ContextSelection({</span>
+<span class="a">+  selectedText,</span>
+<span class="a">+  onRemoveSelectedText,</span>
+<span class="a">+}: {</span>
+<span class="a">+  selectedText: SelectedTextContext;</span>
+<span class="a">+  onRemoveSelectedText: (id: string) =&gt; void;</span>
+<span class="a">+}) {</span>
+<span class="a">+  const lineRange =</span>
+<span class="a">+    selectedText.startLine === selectedText.endLine</span>
+<span class="a">+      ? `L${selectedText.startLine}`</span>
+<span class="a">+      : `L${selectedText.startLine}-${selectedText.endLine}`;</span>
+<span class="a">+</span>
+<span class="a">+  return (</span>
+<span class="a m">+    &lt;Badge className=&quot;tw-items-center tw-py-0 tw-pl-2 tw-pr-0.5 tw-text-xs&quot;&gt;</span>
+<span class="a">+      &lt;div className=&quot;tw-flex tw-items-center tw-gap-1&quot;&gt;</span>
+<span class="a">+        &lt;span className=&quot;tw-max-w-40 tw-truncate&quot;&gt;{selectedText.noteTitle}&lt;/span&gt;</span>
+<span class="a">+        &lt;span className=&quot;tw-text-xs tw-text-faint&quot;&gt;{lineRange}&lt;/span&gt;</span>
+<span class="a">+      &lt;/div&gt;</span>
+<span class="a">+      &lt;Button</span>
+<span class="a">+        variant=&quot;ghost2&quot;</span>
+<span class="a">+        size=&quot;fit&quot;</span>
+<span class="a">+        onClick={() =&gt; onRemoveSelectedText(selectedText.id)}</span>
+<span class="a">+        aria-label=&quot;Remove from context&quot;</span>
+<span class="a">+      &gt;</span>
+<span class="a">+        &lt;X className=&quot;tw-size-4&quot; /&gt;</span>
+<span class="a">+      &lt;/Button&gt;</span>
+<span class="a">+    &lt;/Badge&gt;</span>
+<span class="a">+  );</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({
+   activeNote,
+   contextNotes,
+   contextUrls,
+<span class="a">+  selectedTextContexts = [],</span>
+   onAddContext,
+   onRemoveContext,
+   onRemoveUrl,
+<span class="a">+  onRemoveSelectedText,</span>
+ }) =&gt; {
+   const uniqueNotes = React.useMemo(() =&gt; {
+     const notesMap = new Map(contextNotes.map((note) =&gt; [note.path, note]));
+<span class="h">@@ -84,7 +119,11 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+ 
+   const uniqueUrls = React.useMemo(() =&gt; Array.from(new Set(contextUrls)), [contextUrls]);
+ 
+<span class="d">-  const hasContext = uniqueNotes.length &gt; 0 || uniqueUrls.length &gt; 0 || !!activeNote;</span>
+<span class="a">+  const hasContext =</span>
+<span class="a">+    uniqueNotes.length &gt; 0 ||</span>
+<span class="a">+    uniqueUrls.length &gt; 0 ||</span>
+<span class="a">+    selectedTextContexts.length &gt; 0 ||</span>
+<span class="a">+    !!activeNote;</span>
+ 
+   return (
+     &lt;div className=&quot;tw-flex tw-w-full tw-items-center tw-gap-1&quot;&gt;
+<span class="h">@@ -119,6 +158,13 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+         {uniqueUrls.map((url) =&gt; (
+           &lt;ContextUrl key={url} url={url} onRemoveUrl={onRemoveUrl} /&gt;
+         ))}
+<span class="a">+        {selectedTextContexts.map((selectedText) =&gt; (</span>
+<span class="a">+          &lt;ContextSelection</span>
+<span class="a">+            key={selectedText.id}</span>
+<span class="a">+            selectedText={selectedText}</span>
+<span class="a">+            onRemoveSelectedText={onRemoveSelectedText || (() =&gt; {})}</span>
+<span class="a">+          /&gt;</span>
+<span class="a">+        ))}</span>
+       &lt;/div&gt;
+     &lt;/div&gt;
+   );</pre><h2>Commit #2: <a href="https://github.com/logancyang/obsidian-copilot/commit/b79b8d0a384d14425f61a226f30505b4f2516fa2">b79b8d0a38</a> (2025-07-17T01:41:53-07:00)</h2><p class="k">Migrate chat messages (#1629)<br>Path after this commit: src/components/chat-components/ChatContextMenu.tsx. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/components/chat-components/ChatContextMenu.tsx b/src/components/chat-components/ChatContextMenu.tsx
+index be30c36b..c483ef5d 100644
+<span class="d">--- a/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="h">@@ -3,7 +3,7 @@ import { TFile } from &quot;obsidian&quot;;</span>
+ import React from &quot;react&quot;;
+ import { Button } from &quot;@/components/ui/button&quot;;
+ import { Badge } from &quot;@/components/ui/badge&quot;;
+<span class="d">-import { SelectedTextContext } from &quot;@/sharedState&quot;;</span>
+<span class="a">+import { SelectedTextContext } from &quot;@/types/message&quot;;</span>
+ 
+ interface ChatContextMenuProps {
+   activeNote: TFile | null;</pre><h2>Commit #3: <a href="https://github.com/logancyang/obsidian-copilot/commit/fe26c8943bdfe0ea6d43e990a6c6da6f8ee563f8">fe26c8943b</a> (2025-08-08T09:59:00-07:00)</h2><p class="k">feat: Add project new context loading ui. (#1695)<br>Path after this commit: src/components/chat-components/ChatContextMenu.tsx. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/components/chat-components/ChatContextMenu.tsx b/src/components/chat-components/ChatContextMenu.tsx
+index c483ef5d..da76d30a 100644
+<span class="d">--- a/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="h">@@ -1,9 +1,13 @@</span>
+<span class="d">-import { Plus, X } from &quot;lucide-react&quot;;</span>
+<span class="a">+import { AlertCircle, CheckCircle, CircleDashed, Loader2, Plus, X } from &quot;lucide-react&quot;;</span>
+ import { TFile } from &quot;obsidian&quot;;
+ import React from &quot;react&quot;;
+ import { Button } from &quot;@/components/ui/button&quot;;
+ import { Badge } from &quot;@/components/ui/badge&quot;;
+ import { SelectedTextContext } from &quot;@/types/message&quot;;
+<span class="a">+import { ChainType } from &quot;@/chainFactory&quot;;</span>
+<span class="a">+import { Separator } from &quot;@/components/ui/separator&quot;;</span>
+<span class="a">+import { useChainType } from &quot;@/aiParams&quot;;</span>
+<span class="a">+import { useProjectContextStatus } from &quot;@/hooks/useProjectContextStatus&quot;;</span>
+ 
+ interface ChatContextMenuProps {
+   activeNote: TFile | null;
+<span class="h">@@ -14,6 +18,7 @@ interface ChatContextMenuProps {</span>
+   onRemoveContext: (path: string) =&gt; void;
+   onRemoveUrl: (url: string) =&gt; void;
+   onRemoveSelectedText?: (id: string) =&gt; void;
+<span class="a">+  showProgressCard: () =&gt; void;</span>
+ }
+ 
+ function ContextNote({
+<span class="h">@@ -102,7 +107,11 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+   onRemoveContext,
+   onRemoveUrl,
+   onRemoveSelectedText,
+<span class="a">+  showProgressCard,</span>
+ }) =&gt; {
+<span class="a">+  const [currentChain] = useChainType();</span>
+<span class="a">+  const contextStatus = useProjectContextStatus();</span>
+<span class="a">+</span>
+   const uniqueNotes = React.useMemo(() =&gt; {
+     const notesMap = new Map(contextNotes.map((note) =&gt; [note.path, note]));
+ 
+<span class="h">@@ -125,6 +134,20 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+     selectedTextContexts.length &gt; 0 ||
+     !!activeNote;
+ 
+<span class="a">+  // Get contextStatus from the shared hook</span>
+<span class="a">+  const getContextStatusIcon = () =&gt; {</span>
+<span class="a">+    switch (contextStatus) {</span>
+<span class="a">+      case &quot;success&quot;:</span>
+<span class="a">+        return &lt;CheckCircle className=&quot;tw-size-4 tw-text-success&quot; /&gt;;</span>
+<span class="a">+      case &quot;loading&quot;:</span>
+<span class="a">+        return &lt;Loader2 className=&quot;tw-size-4 tw-animate-spin tw-text-loading&quot; /&gt;;</span>
+<span class="a">+      case &quot;error&quot;:</span>
+<span class="a">+        return &lt;AlertCircle className=&quot;tw-size-4 tw-text-error&quot; /&gt;;</span>
+<span class="a">+      case &quot;initial&quot;:</span>
+<span class="a">+        return &lt;CircleDashed className=&quot;tw-size-4 tw-text-faint&quot; /&gt;;</span>
+<span class="a">+    }</span>
+<span class="a">+  };</span>
+<span class="a">+</span>
+   return (
+     &lt;div className=&quot;tw-flex tw-w-full tw-items-center tw-gap-1&quot;&gt;
+       &lt;div className=&quot;tw-flex tw-h-full tw-items-start&quot;&gt;
+<span class="h">@@ -166,6 +189,22 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+           /&gt;
+         ))}
+       &lt;/div&gt;
+<span class="a">+</span>
+<span class="a">+      {currentChain === ChainType.PROJECT_CHAIN &amp;&amp; (</span>
+<span class="a">+        &lt;&gt;</span>
+<span class="a">+          &lt;Separator orientation=&quot;vertical&quot; /&gt;</span>
+<span class="a">+          &lt;div className=&quot;&quot;&gt;</span>
+<span class="a">+            &lt;Button</span>
+<span class="a">+              variant=&quot;ghost2&quot;</span>
+<span class="a">+              size=&quot;fit&quot;</span>
+<span class="a">+              className=&quot;tw-text-muted&quot;</span>
+<span class="a">+              onClick={() =&gt; showProgressCard()}</span>
+<span class="a">+            &gt;</span>
+<span class="a">+              {getContextStatusIcon()}</span>
+<span class="a">+            &lt;/Button&gt;</span>
+<span class="a">+          &lt;/div&gt;</span>
+<span class="a">+        &lt;/&gt;</span>
+<span class="a">+      )}</span>
+     &lt;/div&gt;
+   );
+ };</pre><h2>Commit #4: <a href="https://github.com/logancyang/obsidian-copilot/commit/9e77e4b86d3603374ce82bf7a3a173b4799ed1e1">9e77e4b86d</a> (2025-08-19T19:03:25-07:00)</h2><p class="k">Optimize error msg   and Improve UI (#1734)<br>Path after this commit: src/components/chat-components/ChatContextMenu.tsx. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/src/components/chat-components/ChatContextMenu.tsx b/src/components/chat-components/ChatContextMenu.tsx
+index da76d30a..c54f7852 100644
+<span class="d">--- a/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="h">@@ -42,6 +42,7 @@ function ContextNote({</span>
+         size=&quot;fit&quot;
+         onClick={() =&gt; onRemoveContext(note.path)}
+         aria-label=&quot;Remove from context&quot;
+<span class="a">+        className=&quot;tw-text-muted&quot;</span>
+       &gt;
+         &lt;X className=&quot;tw-size-4&quot; /&gt;
+       &lt;/Button&gt;
+<span class="h">@@ -61,6 +62,7 @@ function ContextUrl({ url, onRemoveUrl }: { url: string; onRemoveUrl: (url: stri</span>
+         size=&quot;fit&quot;
+         onClick={() =&gt; onRemoveUrl(url)}
+         aria-label=&quot;Remove from context&quot;
+<span class="a">+        className=&quot;tw-text-muted&quot;</span>
+       &gt;
+         &lt;X className=&quot;tw-size-4&quot; /&gt;
+       &lt;/Button&gt;
+<span class="h">@@ -91,6 +93,7 @@ function ContextSelection({</span>
+         size=&quot;fit&quot;
+         onClick={() =&gt; onRemoveSelectedText(selectedText.id)}
+         aria-label=&quot;Remove from context&quot;
+<span class="a">+        className=&quot;tw-text-muted&quot;</span>
+       &gt;
+         &lt;X className=&quot;tw-size-4&quot; /&gt;
+       &lt;/Button&gt;
+<span class="h">@@ -155,10 +158,10 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+           onClick={onAddContext}
+           variant=&quot;ghost2&quot;
+           size=&quot;fit&quot;
+<span class="d">-          className=&quot;tw-ml-1 tw-rounded-sm tw-border tw-border-solid tw-border-border&quot;</span>
+<span class="a">+          className=&quot;tw-ml-1 tw-rounded-sm tw-border tw-border-solid tw-border-border tw-text-muted&quot;</span>
+         &gt;
+           &lt;Plus className=&quot;tw-size-4&quot; /&gt;
+<span class="d">-          {!hasContext &amp;&amp; &lt;span className=&quot;tw-pr-1 tw-text-xs tw-leading-4&quot;&gt;Add context&lt;/span&gt;}</span>
+<span class="a">+          {!hasContext &amp;&amp; &lt;span className=&quot;tw-pr-1 tw-text-sm tw-leading-4&quot;&gt;Add context&lt;/span&gt;}</span>
+         &lt;/Button&gt;
+       &lt;/div&gt;
+       &lt;div className=&quot;tw-flex tw-flex-1 tw-flex-wrap tw-gap-1&quot;&gt;</pre><h2>Commit #5: <a href="https://github.com/logancyang/obsidian-copilot/commit/5568b70e0fe46469dd2901f325dfc6a7a41ec905">5568b70e0f</a> (2025-10-10T21:38:50-07:00)</h2><p class="k">Merge 3.1.0 preview (#1906)<br>Path after this commit: src/components/chat-components/ChatContextMenu.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/components/chat-components/ChatContextMenu.tsx b/src/components/chat-components/ChatContextMenu.tsx
+index c54f7852..0345d77e 100644
+<span class="d">--- a/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="h">@@ -1,81 +1,42 @@</span>
+<span class="d">-import { AlertCircle, CheckCircle, CircleDashed, Loader2, Plus, X } from &quot;lucide-react&quot;;</span>
+<span class="a">+import { AlertCircle, CheckCircle, CircleDashed, Loader2, X } from &quot;lucide-react&quot;;</span>
+ import { TFile } from &quot;obsidian&quot;;
+<span class="d">-import React from &quot;react&quot;;</span>
+<span class="a">+import React, { useRef, useState } from &quot;react&quot;;</span>
+ import { Button } from &quot;@/components/ui/button&quot;;
+ import { Badge } from &quot;@/components/ui/badge&quot;;
+<span class="a">+import {</span>
+<span class="a">+  ContextNoteBadge,</span>
+<span class="a">+  ContextActiveNoteBadge,</span>
+<span class="a">+  ContextUrlBadge,</span>
+<span class="a">+  ContextFolderBadge,</span>
+<span class="a">+} from &quot;@/components/chat-components/ContextBadges&quot;;</span>
+ import { SelectedTextContext } from &quot;@/types/message&quot;;
+ import { ChainType } from &quot;@/chainFactory&quot;;
+ import { Separator } from &quot;@/components/ui/separator&quot;;
+ import { useChainType } from &quot;@/aiParams&quot;;
+ import { useProjectContextStatus } from &quot;@/hooks/useProjectContextStatus&quot;;
+<span class="a">+import { isPlusChain } from &quot;@/utils&quot;;</span>
+<span class="a">+import { AtMentionTypeahead } from &quot;./AtMentionTypeahead&quot;;</span>
+<span class="a">+import { Popover, PopoverContent, PopoverTrigger } from &quot;@/components/ui/popover&quot;;</span>
+ 
+ interface ChatContextMenuProps {
+<span class="d">-  activeNote: TFile | null;</span>
+<span class="a">+  includeActiveNote: boolean;</span>
+<span class="a">+  currentActiveFile: TFile | null;</span>
+   contextNotes: TFile[];
+   contextUrls: string[];
+<span class="a">+  contextFolders: string[];</span>
+   selectedTextContexts?: SelectedTextContext[];
+<span class="d">-  onAddContext: () =&gt; void;</span>
+<span class="d">-  onRemoveContext: (path: string) =&gt; void;</span>
+<span class="d">-  onRemoveUrl: (url: string) =&gt; void;</span>
+<span class="d">-  onRemoveSelectedText?: (id: string) =&gt; void;</span>
+<span class="a">+  onRemoveContext: (category: string, data: any) =&gt; void;</span>
+   showProgressCard: () =&gt; void;
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-function ContextNote({</span>
+<span class="d">-  note,</span>
+<span class="d">-  isActive = false,</span>
+<span class="d">-  onRemoveContext,</span>
+<span class="d">-}: {</span>
+<span class="d">-  note: TFile;</span>
+<span class="d">-  isActive: boolean;</span>
+<span class="d">-  onRemoveContext: (path: string) =&gt; void;</span>
+<span class="d">-}) {</span>
+<span class="d">-  return (</span>
+<span class="d m">-    &lt;Badge className=&quot;tw-items-center tw-py-0 tw-pl-2 tw-pr-0.5 tw-text-xs&quot;&gt;</span>
+<span class="d">-      &lt;div className=&quot;tw-flex tw-items-center tw-gap-1&quot;&gt;</span>
+<span class="d">-        &lt;span className=&quot;tw-max-w-40 tw-truncate&quot;&gt;{note.basename}&lt;/span&gt;</span>
+<span class="d">-        {isActive &amp;&amp; &lt;span className=&quot;tw-text-xs tw-text-faint&quot;&gt;Current&lt;/span&gt;}</span>
+<span class="d">-        {note.extension === &quot;pdf&quot; &amp;&amp; &lt;span className=&quot;tw-text-xs tw-text-faint&quot;&gt;pdf&lt;/span&gt;}</span>
+<span class="d">-      &lt;/div&gt;</span>
+<span class="d">-      &lt;Button</span>
+<span class="d">-        variant=&quot;ghost2&quot;</span>
+<span class="d">-        size=&quot;fit&quot;</span>
+<span class="d">-        onClick={() =&gt; onRemoveContext(note.path)}</span>
+<span class="d">-        aria-label=&quot;Remove from context&quot;</span>
+<span class="d">-        className=&quot;tw-text-muted&quot;</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;X className=&quot;tw-size-4&quot; /&gt;</span>
+<span class="d">-      &lt;/Button&gt;</span>
+<span class="d">-    &lt;/Badge&gt;</span>
+<span class="d">-  );</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-function ContextUrl({ url, onRemoveUrl }: { url: string; onRemoveUrl: (url: string) =&gt; void }) {</span>
+<span class="d">-  return (</span>
+<span class="d m">-    &lt;Badge className=&quot;tw-items-center tw-py-0 tw-pl-2 tw-pr-0.5 tw-text-xs&quot;&gt;</span>
+<span class="d">-      &lt;div className=&quot;tw-flex tw-items-center tw-gap-1&quot;&gt;</span>
+<span class="d">-        &lt;span className=&quot;tw-max-w-40 tw-truncate&quot;&gt;{url}&lt;/span&gt;</span>
+<span class="d">-        &lt;span className=&quot;tw-text-xs tw-text-faint&quot;&gt;Link&lt;/span&gt;</span>
+<span class="d">-      &lt;/div&gt;</span>
+<span class="d">-      &lt;Button</span>
+<span class="d">-        variant=&quot;ghost2&quot;</span>
+<span class="d">-        size=&quot;fit&quot;</span>
+<span class="d">-        onClick={() =&gt; onRemoveUrl(url)}</span>
+<span class="d">-        aria-label=&quot;Remove from context&quot;</span>
+<span class="d">-        className=&quot;tw-text-muted&quot;</span>
+<span class="d">-      &gt;</span>
+<span class="d">-        &lt;X className=&quot;tw-size-4&quot; /&gt;</span>
+<span class="d">-      &lt;/Button&gt;</span>
+<span class="d">-    &lt;/Badge&gt;</span>
+<span class="d">-  );</span>
+<span class="a">+  onTypeaheadSelect: (category: string, data: any) =&gt; void;</span>
+<span class="a">+  lexicalEditorRef?: React.RefObject&lt;any&gt;;</span>
+ }
+ 
+ function ContextSelection({
+   selectedText,
+<span class="d">-  onRemoveSelectedText,</span>
+<span class="a">+  onRemoveContext,</span>
+ }: {
+   selectedText: SelectedTextContext;
+<span class="d">-  onRemoveSelectedText: (id: string) =&gt; void;</span>
+<span class="a">+  onRemoveContext: (category: string, data: any) =&gt; void;</span>
+ }) {
+   const lineRange =
+     selectedText.startLine === selectedText.endLine
+<span class="h">@@ -91,7 +52,7 @@ function ContextSelection({</span>
+       &lt;Button
+         variant=&quot;ghost2&quot;
+         size=&quot;fit&quot;
+<span class="d">-        onClick={() =&gt; onRemoveSelectedText(selectedText.id)}</span>
+<span class="a">+        onClick={() =&gt; onRemoveContext(&quot;selectedText&quot;, selectedText.id)}</span>
+         aria-label=&quot;Remove from context&quot;
+         className=&quot;tw-text-muted&quot;
+       &gt;
+<span class="h">@@ -102,32 +63,44 @@ function ContextSelection({</span>
+ }
+ 
+ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({
+<span class="d">-  activeNote,</span>
+<span class="a">+  includeActiveNote,</span>
+<span class="a">+  currentActiveFile,</span>
+   contextNotes,
+   contextUrls,
+<span class="a">+  contextFolders,</span>
+   selectedTextContexts = [],
+<span class="d">-  onAddContext,</span>
+   onRemoveContext,
+<span class="d">-  onRemoveUrl,</span>
+<span class="d">-  onRemoveSelectedText,</span>
+   showProgressCard,
+<span class="a">+  onTypeaheadSelect,</span>
+<span class="a">+  lexicalEditorRef,</span>
+ }) =&gt; {
+   const [currentChain] = useChainType();
+   const contextStatus = useProjectContextStatus();
+<span class="a">+  const [showTypeahead, setShowTypeahead] = useState(false);</span>
+<span class="a">+  const buttonRef = useRef&lt;HTMLButtonElement&gt;(null);</span>
+<span class="a">+  const isCopilotPlus = isPlusChain(currentChain);</span>
+ 
+<span class="d">-  const uniqueNotes = React.useMemo(() =&gt; {</span>
+<span class="d">-    const notesMap = new Map(contextNotes.map((note) =&gt; [note.path, note]));</span>
+<span class="a">+  const handleTypeaheadClose = () =&gt; {</span>
+<span class="a">+    setShowTypeahead(false);</span>
+<span class="a">+  };</span>
+<span class="a">+</span>
+<span class="a">+  // Simple wrapper that adds focus management to the ContextControl handler</span>
+<span class="a">+  const handleTypeaheadSelect = (category: string, data: any) =&gt; {</span>
+<span class="a">+    // Delegate to ContextControl handler</span>
+<span class="a">+    onTypeaheadSelect(category, data);</span>
+ 
+<span class="d">-    return Array.from(notesMap.values()).filter((note) =&gt; {</span>
+<span class="d">-      // If the note was added manually, always show it in the list</span>
+<span class="d">-      if ((note as any).wasAddedManually) {</span>
+<span class="d">-        return true;</span>
+<span class="a">+    // Return focus to the editor after selection</span>
+<span class="a">+    setTimeout(() =&gt; {</span>
+<span class="a">+      if (lexicalEditorRef?.current) {</span>
+<span class="a">+        lexicalEditorRef.current.focus();</span>
+       }
+<span class="a">+    }, 100);</span>
+<span class="a">+  };</span>
+ 
+<span class="d">-      // For non-manually added notes, show them if they&#x27;re not the active note</span>
+<span class="d">-      return !(activeNote &amp;&amp; note.path === activeNote.path);</span>
+<span class="d">-    });</span>
+<span class="d">-  }, [contextNotes, activeNote]);</span>
+<span class="a">+  const uniqueNotes = React.useMemo(() =&gt; {</span>
+<span class="a">+    const notesMap = new Map(contextNotes.map((note) =&gt; [note.path, note]));</span>
+<span class="a">+    return Array.from(notesMap.values());</span>
+<span class="a">+  }, [contextNotes]);</span>
+ 
+   const uniqueUrls = React.useMemo(() =&gt; Array.from(new Set(contextUrls)), [contextUrls]);
+ 
+<span class="h">@@ -135,7 +108,8 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+     uniqueNotes.length &gt; 0 ||
+     uniqueUrls.length &gt; 0 ||
+     selectedTextContexts.length &gt; 0 ||
+<span class="d">-    !!activeNote;</span>
+<span class="a">+    contextFolders.length &gt; 0 ||</span>
+<span class="a">+    includeActiveNote;</span>
+ 
+   // Get contextStatus from the shared hook
+   const getContextStatusIcon = () =&gt; {
+<span class="h">@@ -152,43 +126,60 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+   };
+ 
+   return (
+<span class="d">-    &lt;div className=&quot;tw-flex tw-w-full tw-items-center tw-gap-1&quot;&gt;</span>
+<span class="a">+    &lt;div className=&quot;tw-flex tw-w-full tw-items-start tw-gap-1&quot;&gt;</span>
+       &lt;div className=&quot;tw-flex tw-h-full tw-items-start&quot;&gt;
+<span class="d">-        &lt;Button</span>
+<span class="d">-          onClick={onAddContext}</span>
+<span class="d">-          variant=&quot;ghost2&quot;</span>
+<span class="d">-          size=&quot;fit&quot;</span>
+<span class="d">-          className=&quot;tw-ml-1 tw-rounded-sm tw-border tw-border-solid tw-border-border tw-text-muted&quot;</span>
+<span class="d">-        &gt;</span>
+<span class="d">-          &lt;Plus className=&quot;tw-size-4&quot; /&gt;</span>
+<span class="d">-          {!hasContext &amp;&amp; &lt;span className=&quot;tw-pr-1 tw-text-sm tw-leading-4&quot;&gt;Add context&lt;/span&gt;}</span>
+<span class="d">-        &lt;/Button&gt;</span>
+<span class="a">+        &lt;Popover open={showTypeahead} onOpenChange={setShowTypeahead}&gt;</span>
+<span class="a">+          &lt;PopoverTrigger asChild&gt;</span>
+<span class="a">+            &lt;Button</span>
+<span class="a">+              ref={buttonRef}</span>
+<span class="a">+              variant=&quot;ghost2&quot;</span>
+<span class="a">+              size=&quot;fit&quot;</span>
+<span class="a">+              className=&quot;tw-ml-1 tw-rounded-sm tw-border tw-border-solid tw-border-border tw-text-muted&quot;</span>
+<span class="a">+            &gt;</span>
+<span class="a">+              &lt;span className=&quot;tw-text-base tw-font-medium tw-leading-none&quot;&gt;@&lt;/span&gt;</span>
+<span class="a">+              {!hasContext &amp;&amp; &lt;span className=&quot;tw-pr-1 tw-text-sm tw-leading-4&quot;&gt;Add context&lt;/span&gt;}</span>
+<span class="a">+            &lt;/Button&gt;</span>
+<span class="a">+          &lt;/PopoverTrigger&gt;</span>
+<span class="a">+          &lt;PopoverContent className=&quot;tw-w-[400px] tw-p-0&quot; align=&quot;start&quot; side=&quot;top&quot; sideOffset={4}&gt;</span>
+<span class="a">+            &lt;AtMentionTypeahead</span>
+<span class="a">+              isOpen={showTypeahead}</span>
+<span class="a">+              onClose={handleTypeaheadClose}</span>
+<span class="a">+              onSelect={handleTypeaheadSelect}</span>
+<span class="a">+              isCopilotPlus={isCopilotPlus}</span>
+<span class="a">+              currentActiveFile={currentActiveFile}</span>
+<span class="a">+            /&gt;</span>
+<span class="a">+          &lt;/PopoverContent&gt;</span>
+<span class="a">+        &lt;/Popover&gt;</span>
+       &lt;/div&gt;
+       &lt;div className=&quot;tw-flex tw-flex-1 tw-flex-wrap tw-gap-1&quot;&gt;
+<span class="d">-        {activeNote &amp;&amp; (</span>
+<span class="d">-          &lt;ContextNote</span>
+<span class="d">-            key={activeNote.path}</span>
+<span class="d">-            note={activeNote}</span>
+<span class="d">-            isActive={true}</span>
+<span class="d">-            onRemoveContext={onRemoveContext}</span>
+<span class="a">+        {includeActiveNote &amp;&amp; (</span>
+<span class="a">+          &lt;ContextActiveNoteBadge</span>
+<span class="a">+            currentActiveFile={currentActiveFile}</span>
+<span class="a">+            onRemove={() =&gt; onRemoveContext(&quot;activeNote&quot;, &quot;&quot;)}</span>
+           /&gt;
+         )}
+         {uniqueNotes.map((note) =&gt; (
+<span class="d">-          &lt;ContextNote</span>
+<span class="a">+          &lt;ContextNoteBadge</span>
+             key={note.path}
+             note={note}
+<span class="d">-            isActive={false}</span>
+<span class="d">-            onRemoveContext={onRemoveContext}</span>
+<span class="a">+            onRemove={() =&gt; onRemoveContext(&quot;notes&quot;, note.path)}</span>
+           /&gt;
+         ))}
+         {uniqueUrls.map((url) =&gt; (
+<span class="d">-          &lt;ContextUrl key={url} url={url} onRemoveUrl={onRemoveUrl} /&gt;</span>
+<span class="a">+          &lt;ContextUrlBadge key={url} url={url} onRemove={() =&gt; onRemoveContext(&quot;urls&quot;, url)} /&gt;</span>
+<span class="a">+        ))}</span>
+<span class="a">+        {contextFolders.map((folder) =&gt; (</span>
+<span class="a">+          &lt;ContextFolderBadge</span>
+<span class="a">+            key={folder}</span>
+<span class="a">+            folder={folder}</span>
+<span class="a">+            onRemove={() =&gt; onRemoveContext(&quot;folders&quot;, folder)}</span>
+<span class="a">+          /&gt;</span>
+         ))}
+         {selectedTextContexts.map((selectedText) =&gt; (
+           &lt;ContextSelection
+             key={selectedText.id}
+             selectedText={selectedText}
+<span class="d">-            onRemoveSelectedText={onRemoveSelectedText || (() =&gt; {})}</span>
+<span class="a">+            onRemoveContext={onRemoveContext}</span>
+           /&gt;
+         ))}
+       &lt;/div&gt;</pre><h2>Commit #6: <a href="https://github.com/logancyang/obsidian-copilot/commit/2480a0e42aee0deb3953a92a5bc03fcec5bea2d3">2480a0e42a</a> (2025-10-27T23:09:43-07:00)</h2><p class="k">Support drag-n-drop files from file navbar (#1964)<br>Path after this commit: src/components/chat-components/ChatContextMenu.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/components/chat-components/ChatContextMenu.tsx b/src/components/chat-components/ChatContextMenu.tsx
+index 0345d77e..3d9b62bc 100644
+<span class="d">--- a/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="h">@@ -14,7 +14,7 @@ import { ChainType } from &quot;@/chainFactory&quot;;</span>
+ import { Separator } from &quot;@/components/ui/separator&quot;;
+ import { useChainType } from &quot;@/aiParams&quot;;
+ import { useProjectContextStatus } from &quot;@/hooks/useProjectContextStatus&quot;;
+<span class="d">-import { isPlusChain } from &quot;@/utils&quot;;</span>
+<span class="a">+import { isPlusChain, openFileInWorkspace } from &quot;@/utils&quot;;</span>
+ import { AtMentionTypeahead } from &quot;./AtMentionTypeahead&quot;;
+ import { Popover, PopoverContent, PopoverTrigger } from &quot;@/components/ui/popover&quot;;
+ 
+<span class="h">@@ -97,6 +97,13 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+     }, 100);
+   };
+ 
+<span class="a">+  /**</span>
+<span class="a">+   * Handles clicking on a badge to open the file in a new tab (or focus existing tab)</span>
+<span class="a">+   */</span>
+<span class="a">+  const handleBadgeClick = (file: TFile) =&gt; {</span>
+<span class="a">+    openFileInWorkspace(file);</span>
+<span class="a">+  };</span>
+<span class="a">+</span>
+   const uniqueNotes = React.useMemo(() =&gt; {
+     const notesMap = new Map(contextNotes.map((note) =&gt; [note.path, note]));
+     return Array.from(notesMap.values());
+<span class="h">@@ -152,10 +159,11 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+         &lt;/Popover&gt;
+       &lt;/div&gt;
+       &lt;div className=&quot;tw-flex tw-flex-1 tw-flex-wrap tw-gap-1&quot;&gt;
+<span class="d">-        {includeActiveNote &amp;&amp; (</span>
+<span class="a">+        {includeActiveNote &amp;&amp; currentActiveFile &amp;&amp; (</span>
+           &lt;ContextActiveNoteBadge
+             currentActiveFile={currentActiveFile}
+             onRemove={() =&gt; onRemoveContext(&quot;activeNote&quot;, &quot;&quot;)}
+<span class="a">+            onClick={() =&gt; handleBadgeClick(currentActiveFile)}</span>
+           /&gt;
+         )}
+         {uniqueNotes.map((note) =&gt; (
+<span class="h">@@ -163,6 +171,7 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+             key={note.path}
+             note={note}
+             onRemove={() =&gt; onRemoveContext(&quot;notes&quot;, note.path)}
+<span class="a">+            onClick={() =&gt; handleBadgeClick(note)}</span>
+           /&gt;
+         ))}
+         {uniqueUrls.map((url) =&gt; (</pre><h2>Commit #7: <a href="https://github.com/logancyang/obsidian-copilot/commit/72f34463c2a6f5695ad665d63bfed796c61c759e">72f34463c2</a> (2025-11-09T15:41:53-08:00)</h2><p class="k">Implement auto context inclusion on text selection (#2017)<br>Path after this commit: src/components/chat-components/ChatContextMenu.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/components/chat-components/ChatContextMenu.tsx b/src/components/chat-components/ChatContextMenu.tsx
+index 3d9b62bc..e1c59454 100644
+<span class="d">--- a/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ChatContextMenu.tsx</span>
+<span class="h">@@ -110,13 +110,15 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+   }, [contextNotes]);
+ 
+   const uniqueUrls = React.useMemo(() =&gt; Array.from(new Set(contextUrls)), [contextUrls]);
+<span class="a">+  const hasSelectedText = selectedTextContexts.length &gt; 0;</span>
+<span class="a">+  const activeNoteVisible = includeActiveNote &amp;&amp; !hasSelectedText &amp;&amp; Boolean(currentActiveFile);</span>
+ 
+   const hasContext =
+     uniqueNotes.length &gt; 0 ||
+     uniqueUrls.length &gt; 0 ||
+     selectedTextContexts.length &gt; 0 ||
+     contextFolders.length &gt; 0 ||
+<span class="d">-    includeActiveNote;</span>
+<span class="a">+    activeNoteVisible;</span>
+ 
+   // Get contextStatus from the shared hook
+   const getContextStatusIcon = () =&gt; {
+<span class="h">@@ -159,7 +161,7 @@ export const ChatContextMenu: React.FC&lt;ChatContextMenuProps&gt; = ({</span>
+         &lt;/Popover&gt;
+       &lt;/div&gt;
+       &lt;div className=&quot;tw-flex tw-flex-1 tw-flex-wrap tw-gap-1&quot;&gt;
+<span class="d">-        {includeActiveNote &amp;&amp; currentActiveFile &amp;&amp; (</span>
+<span class="a">+        {activeNoteVisible &amp;&amp; currentActiveFile &amp;&amp; (</span>
+           &lt;ContextActiveNoteBadge
+             currentActiveFile={currentActiveFile}
+             onRemove={() =&gt; onRemoveContext(&quot;activeNote&quot;, &quot;&quot;)}</pre></body></html>

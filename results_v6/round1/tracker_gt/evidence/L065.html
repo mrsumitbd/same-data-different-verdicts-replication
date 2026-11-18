@@ -1,0 +1,182 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L065</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L065</h1><p><b>Repository:</b> <a href="https://github.com/spcl/dace">spcl/dace</a><br><b>File at merge:</b> dace/transformation/passes/lift_struct_views.py, line 374<br><b>Merge commit (birth):</b> <a href="https://github.com/spcl/dace/commit/017d58ffc20786941faefce5b4e8e953faa6a688">017d58ffc2</a> (2025-01-22T08:17:59)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/spcl/dace/tree/f30728ab19c23b0a55f33fcdbdd849db98cc2caf">f30728ab19</a>)</p><p><b>The line:</b></p><pre><span class="t">        for code_block in cfg.get_meta_codeblocks():</span></pre><h2>File at the merge commit, lines 366 to 382</h2><pre>  366 |         return modified &amp; ppl.Modifies.AccessNodes &amp; ppl.Modifies.Tasklets &amp; ppl.Modifies.Memlets
+  367 | 
+  368 |     def depends_on(self):
+  369 |         return {}
+  370 | 
+  371 |     def _lift_control_flow_region_access(self, cfg: ControlFlowRegion, result: Dict[str, Set[str]]) -&gt; bool:
+  372 |         lifted_something = False
+  373 |         lifting_state = None
+<span class="t">  374 |         for code_block in cfg.get_meta_codeblocks():</span>
+  375 |             codes = code_block.code if isinstance(code_block.code, list) else [code_block.code]
+  376 |             for code in codes:
+  377 |                 for data in _data_containers_in_ast(code, cfg.sdfg.arrays.keys()):
+  378 |                     if &#x27;.&#x27; in data:
+  379 |                         continue
+  380 |                     container = cfg.sdfg.arrays[data]
+  381 |                     if isinstance(container, (dt.Structure, dt.ContainerArray)):
+  382 |                         if lifting_state is None:</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/spcl/dace/commit/b74e62c727ce44e1144347f607e6256eab5bc31e">b74e62c727</a> (2025-02-27T15:03:21+00:00)</h2><p class="k">New and Improved MapFusion (#1629)<br>Path after this commit: dace/transformation/passes/lift_struct_views.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dace/transformation/passes/lift_struct_views.py b/dace/transformation/passes/lift_struct_views.py
+index 8962d8539..73aaeba3e 100644
+<span class="d">--- a/dace/transformation/passes/lift_struct_views.py</span>
+<span class="a">+++ b/dace/transformation/passes/lift_struct_views.py</span>
+<span class="h">@@ -18,7 +18,6 @@ from dace import dtypes</span>
+ import sys
+ from typing import Literal
+ 
+<span class="d">-from tests.npbench.misc.stockham_fft_test import R</span>
+ dirtype = Literal[&#x27;in&#x27;, &#x27;out&#x27;]
+ 
+ class RecodeAttributeNodes(ast.NodeTransformer):</pre><h2>Commit #2: <a href="https://github.com/spcl/dace/commit/3b350b09f535ba642b59fb306f054291dfc77180">3b350b09f5</a> (2025-03-10T02:03:30-07:00)</h2><p class="k">Run automated formatting (#1966)<br>Path after this commit: dace/transformation/passes/lift_struct_views.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dace/transformation/passes/lift_struct_views.py b/dace/transformation/passes/lift_struct_views.py
+index 73aaeba3e..b0aaee0c9 100644
+<span class="d">--- a/dace/transformation/passes/lift_struct_views.py</span>
+<span class="a">+++ b/dace/transformation/passes/lift_struct_views.py</span>
+<span class="h">@@ -14,12 +14,12 @@ from dace.transformation import pass_pipeline as ppl</span>
+ from dace import data as dt
+ from dace import dtypes
+ 
+<span class="d">-</span>
+ import sys
+ from typing import Literal
+ 
+ dirtype = Literal[&#x27;in&#x27;, &#x27;out&#x27;]
+ 
+<span class="a">+</span>
+ class RecodeAttributeNodes(ast.NodeTransformer):
+ 
+     connector: str
+<span class="h">@@ -46,8 +46,7 @@ class RecodeAttributeNodes(ast.NodeTransformer):</span>
+         struct: dt.Structure = self.data
+         if not node.attr in struct.members:
+             raise RuntimeError(
+<span class="d">-                f&#x27;Structure attribute {node.attr} is not a member of the structure {struct.name} type definition&#x27;</span>
+<span class="d">-            )</span>
+<span class="a">+                f&#x27;Structure attribute {node.attr} is not a member of the structure {struct.name} type definition&#x27;)</span>
+ 
+         # Gather a new connector name and add the appropriate connector.
+         new_connector_name = val.id + &#x27;_&#x27; + node.attr
+<span class="h">@@ -78,13 +77,11 @@ class RecodeAttributeNodes(ast.NodeTransformer):</span>
+         if self.direction == &#x27;in&#x27;:
+             self.state.add_edge(self.data_node, None, view_node, &#x27;views&#x27;,
+                                 Memlet.from_array(self.data_node.data + &#x27;.&#x27; + node.attr, self.data.members[node.attr]))
+<span class="d">-            self.state.add_edge(view_node, None, self.tasklet, new_connector_name,</span>
+<span class="d">-                                Memlet.from_array(view_name, view))</span>
+<span class="a">+            self.state.add_edge(view_node, None, self.tasklet, new_connector_name, Memlet.from_array(view_name, view))</span>
+         else:
+             self.state.add_edge(view_node, &#x27;views&#x27;, self.data_node, None,
+                                 Memlet.from_array(self.data_node.data + &#x27;.&#x27; + node.attr, self.data.members[node.attr]))
+<span class="d">-            self.state.add_edge(self.tasklet, new_connector_name, view_node, None,</span>
+<span class="d">-                                Memlet.from_array(view_name, view))</span>
+<span class="a">+            self.state.add_edge(self.tasklet, new_connector_name, view_node, None, Memlet.from_array(view_name, view))</span>
+         return self.generic_visit(replacement)
+ 
+     def _handle_sliced_access(self, node: ast.Attribute, val: ast.Slice) -&gt; Any:
+<span class="h">@@ -93,8 +90,7 @@ class RecodeAttributeNodes(ast.NodeTransformer):</span>
+             raise ValueError(&#x27;Invalid ContainerView, can only lift ContainerViews to Structures&#x27;)
+         if not node.attr in struct.members:
+             raise RuntimeError(
+<span class="d">-                f&#x27;Structure attribute {node.attr} is not a member of the structure {struct.name} type definition&#x27;</span>
+<span class="d">-            )</span>
+<span class="a">+                f&#x27;Structure attribute {node.attr} is not a member of the structure {struct.name} type definition&#x27;)</span>
+ 
+         # Gather a new connector name and add the appropriate connector.
+         new_connector_name = node.value.value.id + &#x27;_slice_&#x27; + node.attr
+<span class="h">@@ -181,13 +177,14 @@ class RecodeAttributeNodes(ast.NodeTransformer):</span>
+                     self.state.add_edge(slice_view_node, &#x27;views&#x27;, self.data_node, None, self.memlet)
+                     self.state.add_edge(self.tasklet, self.connector, slice_view_node, None,
+                                         Memlet.from_array(slice_view_name, slice_view))
+<span class="d">-            elif (isinstance(node.value, ast.Subscript) and isinstance(node.value.value, ast.Name) and</span>
+<span class="d">-                  node.value.value.id == self.connector):</span>
+<span class="a">+            elif (isinstance(node.value, ast.Subscript) and isinstance(node.value.value, ast.Name)</span>
+<span class="a">+                  and node.value.value.id == self.connector):</span>
+                 return self._handle_sliced_access(node, node.value)
+             return self.generic_visit(node)
+         else:
+             raise NotImplementedError()
+ 
+<span class="a">+</span>
+ class InterstateEdgeRecoder(ast.NodeTransformer):
+ 
+     sdfg: SDFG
+<span class="h">@@ -197,8 +194,11 @@ class InterstateEdgeRecoder(ast.NodeTransformer):</span>
+     views_constructed: Set[str]
+     _lifting_state: SDFGState
+ 
+<span class="d">-    def __init__(self, sdfg: SDFG, element: Union[Edge[InterstateEdge], Tuple[ControlFlowBlock, CodeBlock]],</span>
+<span class="d">-                 data_name: str, data: Union[dt.Structure, dt.ContainerArray],</span>
+<span class="a">+    def __init__(self,</span>
+<span class="a">+                 sdfg: SDFG,</span>
+<span class="a">+                 element: Union[Edge[InterstateEdge], Tuple[ControlFlowBlock, CodeBlock]],</span>
+<span class="a">+                 data_name: str,</span>
+<span class="a">+                 data: Union[dt.Structure, dt.ContainerArray],</span>
+                  lifting_state: Optional[SDFGState] = None):
+         self.sdfg = sdfg
+         self.element = element
+<span class="h">@@ -211,8 +211,7 @@ class InterstateEdgeRecoder(ast.NodeTransformer):</span>
+         struct: dt.Structure = self.data
+         if not node.attr in struct.members:
+             raise RuntimeError(
+<span class="d">-                f&#x27;Structure attribute {node.attr} is not a member of the structure {struct.name} type definition&#x27;</span>
+<span class="d">-            )</span>
+<span class="a">+                f&#x27;Structure attribute {node.attr} is not a member of the structure {struct.name} type definition&#x27;)</span>
+ 
+         # Insert the appropriate view, if it does not exist yet.
+         view_name = &#x27;v_&#x27; + self.data_name + &#x27;_&#x27; + node.attr
+<span class="h">@@ -241,8 +240,7 @@ class InterstateEdgeRecoder(ast.NodeTransformer):</span>
+             raise ValueError(&#x27;Invalid ContainerArray, can only lift ContainerArrays to Structures&#x27;)
+         if not node.attr in struct.members:
+             raise RuntimeError(
+<span class="d">-                f&#x27;Structure attribute {node.attr} is not a member of the structure {struct.name} type definition&#x27;</span>
+<span class="d">-            )</span>
+<span class="a">+                f&#x27;Structure attribute {node.attr} is not a member of the structure {struct.name} type definition&#x27;)</span>
+ 
+         # We first lift the slice into a separate view, and then the attribute access.
+         slice_view_name = &#x27;v_&#x27; + self.data_name + &#x27;_slice&#x27;
+<span class="h">@@ -308,9 +306,9 @@ class InterstateEdgeRecoder(ast.NodeTransformer):</span>
+         if isinstance(self.data, dt.Structure):
+             if isinstance(node.value, ast.Name) and node.value.id == self.data_name:
+                 return self._handle_simple_name_access(node)
+<span class="d">-            elif (isinstance(node.value, ast.Subscript) and isinstance(node.value.slice, ast.Constant) and</span>
+<span class="d">-                  node.value.slice.value == 0 and isinstance(node.value.value, ast.Name) and</span>
+<span class="d">-                  node.value.value.id == self.data_name):</span>
+<span class="a">+            elif (isinstance(node.value, ast.Subscript) and isinstance(node.value.slice, ast.Constant)</span>
+<span class="a">+                  and node.value.slice.value == 0 and isinstance(node.value.value, ast.Name)</span>
+<span class="a">+                  and node.value.value.id == self.data_name):</span>
+                 return self._handle_simple_name_access(node)
+             return self.generic_visit(node)
+         else:
+<span class="h">@@ -331,8 +329,8 @@ class InterstateEdgeRecoder(ast.NodeTransformer):</span>
+                 slice_view_node = lift_state.add_access(slice_view_name)
+                 lift_state.add_edge(data_node, None, slice_view_node, &#x27;views&#x27;,
+                                     Memlet.from_array(self.data_name, self.sdfg.data(self.data_name)))
+<span class="d">-            elif (isinstance(node.value, ast.Subscript) and isinstance(node.value.value, ast.Name) and</span>
+<span class="d">-                  node.value.value.id == self.data_name):</span>
+<span class="a">+            elif (isinstance(node.value, ast.Subscript) and isinstance(node.value.value, ast.Name)</span>
+<span class="a">+                  and node.value.value.id == self.data_name):</span>
+                 return self._handle_sliced_access(node, node.value)
+             return self.generic_visit(node)
+ 
+<span class="h">@@ -346,6 +344,7 @@ def _data_containers_in_ast(node: ast.AST, arrnames: Set[str]) -&gt; Set[str]:</span>
+                 result.add(data)
+     return result
+ 
+<span class="a">+</span>
+ class LiftStructViews(ppl.Pass):
+     &quot;&quot;&quot;
+     Lift direct accesses to struct members to accesses to views pointing to that struct member.
+<span class="h">@@ -470,9 +469,10 @@ class LiftStructViews(ppl.Pass):</span>
+                     if isinstance(block, SDFGState):
+                         for node in block.data_nodes():
+                             cont = cfg.sdfg.data(node.data)
+<span class="d">-                            if (isinstance(cont, (dt.Structure, dt.StructureView, dt.StructureReference)) or</span>
+<span class="d">-                                (isinstance(cont, (dt.ContainerView, dt.ContainerArray, dt.ContainerArrayReference)) and</span>
+<span class="d">-                                isinstance(cont.stype, dt.Structure))):</span>
+<span class="a">+                            if (isinstance(cont, (dt.Structure, dt.StructureView, dt.StructureReference))</span>
+<span class="a">+                                    or (isinstance(cont,</span>
+<span class="a">+                                                   (dt.ContainerView, dt.ContainerArray, dt.ContainerArrayReference))</span>
+<span class="a">+                                        and isinstance(cont.stype, dt.Structure))):</span>
+                                 for oedge in block.out_edges(node):
+                                     if isinstance(oedge.dst, nd.Tasklet):
+                                         res = self._lift_tasklet(block, node, oedge.dst, oedge, cont, oedge.dst_conn,</pre></body></html>

@@ -1,0 +1,38 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L142 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L142: after the move</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>Original file:</b> apps/web/client/src/components/store/editor/state/index.ts (see L142.html)<br><b>Move commit:</b> <a href="https://github.com/onlook-dev/onlook/commit/ebb8ed45ac6c08c56dd95c901271d6263db062d0">ebb8ed45ac</a> (commit #1 on L142.html)<br><b>Destination file (your label):</b> apps/web/client/src/components/store/state/manager.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">    settingsTab: SettingsTabValue | string = SettingsTabValue.SITE;</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 7).</p><h2>Destination file at the move commit, lines 1 to 12</h2><pre>    1 | import { SettingsTabValue } from &#x27;@onlook/models&#x27;;
+    2 | import { makeAutoObservable } from &#x27;mobx&#x27;;
+    3 | 
+    4 | export class StateManager {
+    5 |     isSubscriptionModalOpen = false;
+    6 |     isSettingsModalOpen = false;
+<span class="t">    7 |     settingsTab: SettingsTabValue | string = SettingsTabValue.SITE;</span>
+    8 | 
+    9 |     constructor() {
+   10 |         makeAutoObservable(this);
+   11 |     }
+   12 | }</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/7f11890d34dbeb8f1de3a9f229926d65c3df609e">7f11890d34</a> (2025-08-24T16:46:02-07:00)</h2><p class="k">feat: add feedback form and table (#2740)<br>Path after this commit: apps/web/client/src/components/store/state/manager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/state/manager.ts b/apps/web/client/src/components/store/state/manager.ts
+index c6f25a1c..b64da7cb 100644
+<span class="d">--- a/apps/web/client/src/components/store/state/manager.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/state/manager.ts</span>
+<span class="h">@@ -4,6 +4,7 @@ import { makeAutoObservable } from &#x27;mobx&#x27;;</span>
+ export class StateManager {
+     isSubscriptionModalOpen = false;
+     isSettingsModalOpen = false;
+<span class="a">+    isFeedbackModalOpen = false;</span>
+<span class=" m">     settingsTab: SettingsTabValue | string = SettingsTabValue.SITE;</span>
+ 
+     constructor() {</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/7aa0df1730272e485ec114df511761e1e83d9ea7">7aa0df1730</a> (2025-09-08T18:12:43-07:00)</h2><p class="k">Feat: Add Gleap and remove custom feedback module (#2811)<br>Path after this commit: apps/web/client/src/components/store/state/manager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/state/manager.ts b/apps/web/client/src/components/store/state/manager.ts
+index b64da7cb..c6f25a1c 100644
+<span class="d">--- a/apps/web/client/src/components/store/state/manager.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/state/manager.ts</span>
+<span class="h">@@ -4,7 +4,6 @@ import { makeAutoObservable } from &#x27;mobx&#x27;;</span>
+ export class StateManager {
+     isSubscriptionModalOpen = false;
+     isSettingsModalOpen = false;
+<span class="d">-    isFeedbackModalOpen = false;</span>
+<span class=" m">     settingsTab: SettingsTabValue | string = SettingsTabValue.SITE;</span>
+ 
+     constructor() {</pre></body></html>

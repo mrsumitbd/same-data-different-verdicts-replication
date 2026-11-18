@@ -1,0 +1,509 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L138</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L138</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-sdk-for-net">azure/azure-sdk-for-net</a><br><b>File at merge:</b> eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs, line 2<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-sdk-for-net/commit/283da802084ab7f865fcc3822cc8c882a0663179">283da80208</a> (2025-07-08T17:22:43)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-sdk-for-net/tree/bac518d3adcf30853ec4211f736b905dde075813">bac518d3ad</a>)</p><p><b>The line:</b></p><pre><span class="t">// Licensed under the MIT License.</span></pre><h2>File at the merge commit, lines 1 to 10</h2><pre>    1 | // Copyright (c) Microsoft Corporation. All rights reserved.
+<span class="t">    2 | // Licensed under the MIT License.</span>
+    3 | 
+    4 | using System.Collections.Generic;
+    5 | using System.Linq;
+    6 | using Microsoft.TypeSpec.Generator.Input;
+    7 | using NUnit.Framework;
+    8 | using Azure.Generator.Tests.Common;
+    9 | using Azure.Generator.Tests.TestHelpers;
+   10 | using Azure.Generator.Visitors;</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-sdk-for-net/commit/cd51db91d384ce7e6f3486ae155f681e2a3d47b9">cd51db91d3</a> (2025-08-13T16:34:08-05:00)</h2><p class="k">refactor: consume input parameter changes from MTG (#51955)<br>Path after this commit: eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs b/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs
+index 66cc90c352e..38097603a82 100644
+<span class="d">--- a/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs</span>
+<span class="a">+++ b/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs</span>
+<span class="h">@@ -17,7 +17,8 @@ namespace Azure.Generator.Tests.Visitors</span>
+         public void RemovesSpecialHeaderParametersFromServiceMethod()
+         {
+             var visitor = new TestSpecialHeadersVisitor();
+<span class="d">-            var parameters = CreateParameters();</span>
+<span class="a">+            var parameters = CreateHttpParameters();</span>
+<span class="a">+            var methodParameters = CreateMethodParameters();</span>
+             var responseModel = InputFactory.Model(&quot;foo&quot;);
+             var operation = InputFactory.Operation(
+                 &quot;foo&quot;,
+<span class="h">@@ -26,24 +27,24 @@ namespace Azure.Generator.Tests.Visitors</span>
+             var serviceMethod = InputFactory.LongRunningServiceMethod(
+                 &quot;foo&quot;,
+                 operation,
+<span class="d">-                parameters: parameters,</span>
+<span class="a">+                parameters: methodParameters,</span>
+                 response: InputFactory.ServiceMethodResponse(responseModel, [&quot;result&quot;]));
+             var inputClient = InputFactory.Client(&quot;TestClient&quot;, methods: [serviceMethod]);
+             MockHelpers.LoadMockGenerator(clients: () =&gt; [inputClient]);
+ 
+             // Verify initial parameters include special headers
+             Assert.AreEqual(3, serviceMethod.Parameters.Count);
+<span class="d">-            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.NameInRequest == &quot;return-client-request-id&quot;));</span>
+<span class="d">-            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.NameInRequest == &quot;x-ms-client-request-id&quot;));</span>
+<span class="a">+            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;));</span>
+<span class="a">+            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;));</span>
+ 
+             // Act - this would normally be called by the visitor framework, but we&#x27;ll test the core logic
+             visitor.InvokeRemoveSpecialHeaders(serviceMethod);
+ 
+             // Verify special headers are removed
+             Assert.AreEqual(1, serviceMethod.Parameters.Count);
+<span class="d">-            Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.NameInRequest == &quot;return-client-request-id&quot;));</span>
+<span class="d">-            Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.NameInRequest == &quot;x-ms-client-request-id&quot;));</span>
+<span class="d">-            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.NameInRequest == &quot;some-other-parameter&quot;));</span>
+<span class="a">+            Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;));</span>
+<span class="a">+            Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;));</span>
+<span class="a">+            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;some-other-parameter&quot;));</span>
+         }
+ 
+         [Test]
+<span class="h">@@ -52,10 +53,17 @@ namespace Azure.Generator.Tests.Visitors</span>
+             var visitor = new TestSpecialHeadersVisitor();
+             var parameters = new List&lt;InputParameter&gt;
+             {
+<span class="d">-                InputFactory.Parameter(</span>
+<span class="a">+                InputFactory.HeaderParameter(</span>
+<span class="a">+                    &quot;some-parameter&quot;,</span>
+<span class="a">+                    type: InputPrimitiveType.String,</span>
+<span class="a">+                    serializedName: &quot;some-parameter&quot;)</span>
+<span class="a">+            };</span>
+<span class="a">+            var methodParameters = new List&lt;InputMethodParameter&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                InputFactory.MethodParameter(</span>
+                     &quot;some-parameter&quot;,
+                     type: InputPrimitiveType.String,
+<span class="d">-                    nameInRequest: &quot;some-parameter&quot;,</span>
+<span class="a">+                    serializedName: &quot;some-parameter&quot;,</span>
+                     location: InputRequestLocation.Header)
+             };
+             var responseModel = InputFactory.Model(&quot;foo&quot;);
+<span class="h">@@ -66,7 +74,7 @@ namespace Azure.Generator.Tests.Visitors</span>
+             var serviceMethod = InputFactory.LongRunningServiceMethod(
+                 &quot;foo&quot;,
+                 operation,
+<span class="d">-                parameters: parameters,</span>
+<span class="a">+                parameters: methodParameters,</span>
+                 response: InputFactory.ServiceMethodResponse(responseModel, [&quot;result&quot;]));
+ 
+             // Verify initial state
+<span class="h">@@ -81,44 +89,65 @@ namespace Azure.Generator.Tests.Visitors</span>
+             Assert.AreSame(originalParameter, serviceMethod.Parameters[0]);
+         }
+ 
+<span class="d">-        private static List&lt;InputParameter&gt; CreateParameters()</span>
+<span class="a">+        private static List&lt;InputMethodParameter&gt; CreateMethodParameters()</span>
+         {
+<span class="d">-            List&lt;InputParameter&gt; parameters =</span>
+<span class="a">+            List&lt;InputMethodParameter&gt; parameters =</span>
+             [
+<span class="d">-                InputFactory.Parameter(</span>
+<span class="a">+                InputFactory.MethodParameter(</span>
+                     &quot;return-client-request-id&quot;,
+                     type: new InputLiteralType(&quot;return-client-request-id&quot;, &quot;ns&quot;, InputPrimitiveType.Boolean, true),
+                     defaultValue: new InputConstant(true, InputPrimitiveType.Boolean),
+<span class="d">-                    nameInRequest: &quot;return-client-request-id&quot;,</span>
+<span class="a">+                    serializedName: &quot;return-client-request-id&quot;,</span>
+                     location: InputRequestLocation.Header),
+<span class="d">-                InputFactory.Parameter(</span>
+<span class="a">+                InputFactory.MethodParameter(</span>
+                     &quot;x-ms-client-request-id&quot;,
+                     type: InputPrimitiveType.String,
+<span class="d">-                    nameInRequest: &quot;x-ms-client-request-id&quot;,</span>
+<span class="a">+                    serializedName: &quot;x-ms-client-request-id&quot;,</span>
+                     location: InputRequestLocation.Header),
+<span class="d">-                InputFactory.Parameter(</span>
+<span class="a">+                InputFactory.MethodParameter(</span>
+                     &quot;some-other-parameter&quot;,
+                     type: InputPrimitiveType.String,
+<span class="d">-                    nameInRequest: &quot;some-other-parameter&quot;,</span>
+<span class="a">+                    serializedName: &quot;some-other-parameter&quot;,</span>
+                     location: InputRequestLocation.Header)
+             ];
+             return parameters;
+         }
+ 
+<span class="a">+        private static List&lt;InputParameter&gt; CreateHttpParameters()</span>
+<span class="a">+        {</span>
+<span class="a">+            List&lt;InputParameter&gt; parameters =</span>
+<span class="a">+            [</span>
+<span class="a">+                InputFactory.HeaderParameter(</span>
+<span class="a">+                    &quot;return-client-request-id&quot;,</span>
+<span class="a">+                    type: new InputLiteralType(&quot;return-client-request-id&quot;, &quot;ns&quot;, InputPrimitiveType.Boolean, true),</span>
+<span class="a">+                    defaultValue: new InputConstant(true, InputPrimitiveType.Boolean),</span>
+<span class="a">+                    serializedName: &quot;return-client-request-id&quot;),</span>
+<span class="a">+                InputFactory.HeaderParameter(</span>
+<span class="a">+                    &quot;x-ms-client-request-id&quot;,</span>
+<span class="a">+                    type: InputPrimitiveType.String,</span>
+<span class="a">+                    serializedName: &quot;x-ms-client-request-id&quot;),</span>
+<span class="a">+                InputFactory.HeaderParameter(</span>
+<span class="a">+                    &quot;some-other-parameter&quot;,</span>
+<span class="a">+                    type: InputPrimitiveType.String,</span>
+<span class="a">+                    serializedName: &quot;some-other-parameter&quot;)</span>
+<span class="a">+            ];</span>
+<span class="a">+            return parameters;</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         private class TestSpecialHeadersVisitor : SpecialHeadersVisitor
+         {
+             public void InvokeRemoveSpecialHeaders(InputServiceMethod serviceMethod)
+             {
+                 // Simulate the core logic of removing special headers
+                 var returnClientRequestIdParameter =
+<span class="d">-                    serviceMethod.Parameters.FirstOrDefault(p =&gt; p.NameInRequest == &quot;return-client-request-id&quot;);</span>
+<span class="a">+                    serviceMethod.Parameters.FirstOrDefault(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;);</span>
+                 var xMsClientRequestIdParameter =
+<span class="d">-                    serviceMethod.Parameters.FirstOrDefault(p =&gt; p.NameInRequest == &quot;x-ms-client-request-id&quot;);</span>
+<span class="a">+                    serviceMethod.Parameters.FirstOrDefault(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;);</span>
+ 
+                 if (returnClientRequestIdParameter != null || xMsClientRequestIdParameter != null)
+                 {
+<span class="d">-                    serviceMethod.Update(parameters: [.. serviceMethod.Parameters.Where(p =&gt; p.NameInRequest != &quot;return-client-request-id&quot; &amp;&amp; p.NameInRequest != &quot;x-ms-client-request-id&quot;)]);</span>
+<span class="d">-                    serviceMethod.Operation.Update(parameters: [.. serviceMethod.Operation.Parameters.Where(p =&gt; p.NameInRequest != &quot;return-client-request-id&quot; &amp;&amp; p.NameInRequest != &quot;x-ms-client-request-id&quot;)]);</span>
+<span class="a">+                    serviceMethod.Update(parameters: [.. serviceMethod.Parameters.Where(p =&gt; p.SerializedName != &quot;return-client-request-id&quot; &amp;&amp; p.SerializedName != &quot;x-ms-client-request-id&quot;)]);</span>
+<span class="a">+                    serviceMethod.Operation.Update(parameters: [.. serviceMethod.Operation.Parameters.Where(p =&gt; p.SerializedName != &quot;return-client-request-id&quot; &amp;&amp; p.SerializedName != &quot;x-ms-client-request-id&quot;)]);</span>
+                 }
+             }
+         }</pre><h2>Commit #2: <a href="https://github.com/azure/azure-sdk-for-net/commit/1580254d9ee5fbcab46b1125529173683d0c2c56">1580254d9e</a> (2025-11-03T16:26:59-08:00)</h2><p class="k">Just plugin changes (#53612)<br>Path after this commit: eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs b/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs
+index 38097603a82..7a8e85e6789 100644
+<span class="d">--- a/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs</span>
+<span class="a">+++ b/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs</span>
+<span class="h">@@ -8,43 +8,72 @@ using NUnit.Framework;</span>
+ using Azure.Generator.Tests.Common;
+ using Azure.Generator.Tests.TestHelpers;
+ using Azure.Generator.Visitors;
+<span class="a">+using Microsoft.TypeSpec.Generator.ClientModel.Providers;</span>
+ 
+ namespace Azure.Generator.Tests.Visitors
+ {
+     public class SpecialHeadersVisitorTests
+     {
+<span class="d">-        [Test]</span>
+<span class="d">-        public void RemovesSpecialHeaderParametersFromServiceMethod()</span>
+<span class="a">+        [TestCase(true)]</span>
+<span class="a">+        [TestCase(false)]</span>
+<span class="a">+        public void RemovesSpecialHeaderParametersFromServiceMethod(bool addBackXMsClientRequestId)</span>
+         {
+<span class="d">-            var visitor = new TestSpecialHeadersVisitor();</span>
+<span class="a">+            var visitor = new TestSpecialHeadersVisitor(addBackXMsClientRequestId);</span>
+             var parameters = CreateHttpParameters();
+             var methodParameters = CreateMethodParameters();
+             var responseModel = InputFactory.Model(&quot;foo&quot;);
+<span class="d">-            var operation = InputFactory.Operation(</span>
+<span class="d">-                &quot;foo&quot;,</span>
+<span class="d">-                parameters: parameters,</span>
+<span class="d">-                responses: [InputFactory.OperationResponse(bodytype: responseModel)]);</span>
+<span class="d">-            var serviceMethod = InputFactory.LongRunningServiceMethod(</span>
+<span class="d">-                &quot;foo&quot;,</span>
+<span class="d">-                operation,</span>
+<span class="d">-                parameters: methodParameters,</span>
+<span class="d">-                response: InputFactory.ServiceMethodResponse(responseModel, [&quot;result&quot;]));</span>
+<span class="d">-            var inputClient = InputFactory.Client(&quot;TestClient&quot;, methods: [serviceMethod]);</span>
+<span class="d">-            MockHelpers.LoadMockGenerator(clients: () =&gt; [inputClient]);</span>
+<span class="a">+            var serviceMethods = new List&lt;InputServiceMethod&gt;();</span>
+ 
+<span class="d">-            // Verify initial parameters include special headers</span>
+<span class="d">-            Assert.AreEqual(3, serviceMethod.Parameters.Count);</span>
+<span class="d">-            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;));</span>
+<span class="d">-            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;));</span>
+<span class="a">+            // Create two operations and service methods</span>
+<span class="a">+            for (int i = 1; i &lt;= 2; i++)</span>
+<span class="a">+            {</span>
+<span class="a">+                var operation = InputFactory.Operation(</span>
+<span class="a">+                    $&quot;operation{i}&quot;,</span>
+<span class="a">+                    parameters: parameters,</span>
+<span class="a">+                    responses: [InputFactory.OperationResponse(bodytype: responseModel)]);</span>
+<span class="a">+                var serviceMethod = InputFactory.LongRunningServiceMethod(</span>
+<span class="a">+                    $&quot;operation{i}&quot;,</span>
+<span class="a">+                    operation,</span>
+<span class="a">+                    parameters: methodParameters,</span>
+<span class="a">+                    response: InputFactory.ServiceMethodResponse(responseModel, [&quot;result&quot;]));</span>
+<span class="a">+                serviceMethods.Add(serviceMethod);</span>
+<span class="a">+            }</span>
+ 
+<span class="d">-            // Act - this would normally be called by the visitor framework, but we&#x27;ll test the core logic</span>
+<span class="d">-            visitor.InvokeRemoveSpecialHeaders(serviceMethod);</span>
+<span class="a">+            var inputClient = InputFactory.Client(&quot;TestClient&quot;, methods: serviceMethods);</span>
+ 
+<span class="d">-            // Verify special headers are removed</span>
+<span class="d">-            Assert.AreEqual(1, serviceMethod.Parameters.Count);</span>
+<span class="d">-            Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;));</span>
+<span class="d">-            Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;));</span>
+<span class="d">-            Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;some-other-parameter&quot;));</span>
+<span class="a">+            // Verify initial parameters include special headers for both methods</span>
+<span class="a">+            foreach (var serviceMethod in serviceMethods)</span>
+<span class="a">+            {</span>
+<span class="a">+                Assert.AreEqual(3, serviceMethod.Parameters.Count);</span>
+<span class="a">+                Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;));</span>
+<span class="a">+                Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;));</span>
+<span class="a">+            }</span>
+<span class="a">+</span>
+<span class="a">+            var generator = MockHelpers.LoadMockGenerator(</span>
+<span class="a">+                clients: () =&gt; [inputClient],</span>
+<span class="a">+                visitors: () =&gt; [visitor]);</span>
+<span class="a">+            var client = generator.Object.OutputLibrary.TypeProviders.OfType&lt;ClientProvider&gt;().First();</span>
+<span class="a">+</span>
+<span class="a">+            // Verify special headers are removed from both methods</span>
+<span class="a">+            foreach (var serviceMethod in serviceMethods)</span>
+<span class="a">+            {</span>
+<span class="a">+                var methodCollection = client.GetMethodCollectionByOperation(serviceMethod.Operation);</span>
+<span class="a">+                visitor.InvokePreVisit(serviceMethod, client, methodCollection);</span>
+<span class="a">+            }</span>
+<span class="a">+</span>
+<span class="a">+            foreach (var serviceMethod in serviceMethods)</span>
+<span class="a">+            {</span>
+<span class="a">+                var restClientMethod = client.RestClient.Methods.First(m =&gt; m.Signature.Name == $&quot;Create{serviceMethod.Name}Request&quot;);</span>
+<span class="a">+</span>
+<span class="a">+                visitor.InvokeVisit((restClientMethod as ScmMethodProvider)!);</span>
+<span class="a">+                Assert.AreEqual(1, serviceMethod.Parameters.Count);</span>
+<span class="a">+                Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;));</span>
+<span class="a">+                Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;));</span>
+<span class="a">+                Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;some-other-parameter&quot;));</span>
+<span class="a">+</span>
+<span class="a">+                // Verify x-ms-client-request-id is added back in method body if specified</span>
+<span class="a">+                Assert.AreEqual(addBackXMsClientRequestId, restClientMethod.BodyStatements!.ToDisplayString().Contains(&quot;request.Headers.SetValue(\&quot;x-ms-client-request-id\&quot;, request.ClientRequestId);&quot;));</span>
+<span class="a">+            }</span>
+         }
+ 
+         [Test]
+<span class="h">@@ -76,13 +105,17 @@ namespace Azure.Generator.Tests.Visitors</span>
+                 operation,
+                 parameters: methodParameters,
+                 response: InputFactory.ServiceMethodResponse(responseModel, [&quot;result&quot;]));
+<span class="a">+            var inputClient = InputFactory.Client(&quot;TestClient&quot;, methods: [serviceMethod]);</span>
+<span class="a">+            var generator = MockHelpers.LoadMockGenerator(clients: () =&gt; [inputClient]);</span>
+<span class="a">+            var client = generator.Object.OutputLibrary.TypeProviders.OfType&lt;ClientProvider&gt;().First();</span>
+<span class="a">+            var methodCollection = client.GetMethodCollectionByOperation(operation);</span>
+ 
+             // Verify initial state
+             Assert.AreEqual(1, serviceMethod.Parameters.Count);
+             var originalParameter = serviceMethod.Parameters[0];
+ 
+             // Act
+<span class="d">-            visitor.InvokeRemoveSpecialHeaders(serviceMethod);</span>
+<span class="a">+            visitor.InvokePreVisit(serviceMethod, client, methodCollection);</span>
+ 
+             // Verify no changes
+             Assert.AreEqual(1, serviceMethod.Parameters.Count);
+<span class="h">@@ -136,19 +169,18 @@ namespace Azure.Generator.Tests.Visitors</span>
+ 
+         private class TestSpecialHeadersVisitor : SpecialHeadersVisitor
+         {
+<span class="d">-            public void InvokeRemoveSpecialHeaders(InputServiceMethod serviceMethod)</span>
+<span class="a">+            public TestSpecialHeadersVisitor(bool addBackXMsClientRequestId = false)</span>
+<span class="a">+                : base(addBackXMsClientRequestId)</span>
+<span class="a">+            {</span>
+<span class="a">+            }</span>
+<span class="a">+            public void InvokePreVisit(InputServiceMethod serviceMethod, ClientProvider client, ScmMethodProviderCollection methods)</span>
+<span class="a">+            {</span>
+<span class="a">+                base.Visit(serviceMethod, client, methods);</span>
+<span class="a">+            }</span>
+<span class="a">+</span>
+<span class="a">+            public void InvokeVisit(ScmMethodProvider method)</span>
+             {
+<span class="d">-                // Simulate the core logic of removing special headers</span>
+<span class="d">-                var returnClientRequestIdParameter =</span>
+<span class="d">-                    serviceMethod.Parameters.FirstOrDefault(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;);</span>
+<span class="d">-                var xMsClientRequestIdParameter =</span>
+<span class="d">-                    serviceMethod.Parameters.FirstOrDefault(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;);</span>
+<span class="d">-</span>
+<span class="d">-                if (returnClientRequestIdParameter != null || xMsClientRequestIdParameter != null)</span>
+<span class="d">-                {</span>
+<span class="d">-                    serviceMethod.Update(parameters: [.. serviceMethod.Parameters.Where(p =&gt; p.SerializedName != &quot;return-client-request-id&quot; &amp;&amp; p.SerializedName != &quot;x-ms-client-request-id&quot;)]);</span>
+<span class="d">-                    serviceMethod.Operation.Update(parameters: [.. serviceMethod.Operation.Parameters.Where(p =&gt; p.SerializedName != &quot;return-client-request-id&quot; &amp;&amp; p.SerializedName != &quot;x-ms-client-request-id&quot;)]);</span>
+<span class="d">-                }</span>
+<span class="a">+                base.VisitMethod(method);</span>
+             }
+         }
+     }</pre><h2>Commit #3: <a href="https://github.com/azure/azure-sdk-for-net/commit/54046d159e766ea70a27a6f9860ac7aec6796b43">54046d159e</a> (2025-11-07T09:09:16-08:00)</h2><p class="k">Consolidate all client request ID header handling into ClientRequestIdHeaderVisitor (#53745)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: eng/packages/http-client-csharp/generator/Azure.Generator/src/Visitors/ClientRequestIdHeaderVisitor.cs, eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/ClientRequestIdHeaderVisitorTests.cs.</p><pre>diff --git a/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs b/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs
+deleted file mode 100644
+index 7a8e85e6789..00000000000
+<span class="d">--- a/eng/packages/http-client-csharp/generator/Azure.Generator/test/Visitors/SpecialHeadersVisitorTests.cs</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,187 +0,0 @@</span>
+<span class="d">-// Copyright (c) Microsoft Corporation. All rights reserved.</span>
+<span class="d m">-// Licensed under the MIT License.</span>
+<span class="d">-</span>
+<span class="d">-using System.Collections.Generic;</span>
+<span class="d">-using System.Linq;</span>
+<span class="d">-using Microsoft.TypeSpec.Generator.Input;</span>
+<span class="d">-using NUnit.Framework;</span>
+<span class="d">-using Azure.Generator.Tests.Common;</span>
+<span class="d">-using Azure.Generator.Tests.TestHelpers;</span>
+<span class="d">-using Azure.Generator.Visitors;</span>
+<span class="d">-using Microsoft.TypeSpec.Generator.ClientModel.Providers;</span>
+<span class="d">-</span>
+<span class="d">-namespace Azure.Generator.Tests.Visitors</span>
+<span class="d">-{</span>
+<span class="d">-    public class SpecialHeadersVisitorTests</span>
+<span class="d">-    {</span>
+<span class="d">-        [TestCase(true)]</span>
+<span class="d">-        [TestCase(false)]</span>
+<span class="d">-        public void RemovesSpecialHeaderParametersFromServiceMethod(bool addBackXMsClientRequestId)</span>
+<span class="d">-        {</span>
+<span class="d">-            var visitor = new TestSpecialHeadersVisitor(addBackXMsClientRequestId);</span>
+<span class="d">-            var parameters = CreateHttpParameters();</span>
+<span class="d">-            var methodParameters = CreateMethodParameters();</span>
+<span class="d">-            var responseModel = InputFactory.Model(&quot;foo&quot;);</span>
+<span class="d">-            var serviceMethods = new List&lt;InputServiceMethod&gt;();</span>
+<span class="d">-</span>
+<span class="d">-            // Create two operations and service methods</span>
+<span class="d">-            for (int i = 1; i &lt;= 2; i++)</span>
+<span class="d">-            {</span>
+<span class="d">-                var operation = InputFactory.Operation(</span>
+<span class="d">-                    $&quot;operation{i}&quot;,</span>
+<span class="d">-                    parameters: parameters,</span>
+<span class="d">-                    responses: [InputFactory.OperationResponse(bodytype: responseModel)]);</span>
+<span class="d">-                var serviceMethod = InputFactory.LongRunningServiceMethod(</span>
+<span class="d">-                    $&quot;operation{i}&quot;,</span>
+<span class="d">-                    operation,</span>
+<span class="d">-                    parameters: methodParameters,</span>
+<span class="d">-                    response: InputFactory.ServiceMethodResponse(responseModel, [&quot;result&quot;]));</span>
+<span class="d">-                serviceMethods.Add(serviceMethod);</span>
+<span class="d">-            }</span>
+<span class="d">-</span>
+<span class="d">-            var inputClient = InputFactory.Client(&quot;TestClient&quot;, methods: serviceMethods);</span>
+<span class="d">-</span>
+<span class="d">-            // Verify initial parameters include special headers for both methods</span>
+<span class="d">-            foreach (var serviceMethod in serviceMethods)</span>
+<span class="d">-            {</span>
+<span class="d">-                Assert.AreEqual(3, serviceMethod.Parameters.Count);</span>
+<span class="d">-                Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;));</span>
+<span class="d">-                Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;));</span>
+<span class="d">-            }</span>
+<span class="d">-</span>
+<span class="d">-            var generator = MockHelpers.LoadMockGenerator(</span>
+<span class="d">-                clients: () =&gt; [inputClient],</span>
+<span class="d">-                visitors: () =&gt; [visitor]);</span>
+<span class="d">-            var client = generator.Object.OutputLibrary.TypeProviders.OfType&lt;ClientProvider&gt;().First();</span>
+<span class="d">-</span>
+<span class="d">-            // Verify special headers are removed from both methods</span>
+<span class="d">-            foreach (var serviceMethod in serviceMethods)</span>
+<span class="d">-            {</span>
+<span class="d">-                var methodCollection = client.GetMethodCollectionByOperation(serviceMethod.Operation);</span>
+<span class="d">-                visitor.InvokePreVisit(serviceMethod, client, methodCollection);</span>
+<span class="d">-            }</span>
+<span class="d">-</span>
+<span class="d">-            foreach (var serviceMethod in serviceMethods)</span>
+<span class="d">-            {</span>
+<span class="d">-                var restClientMethod = client.RestClient.Methods.First(m =&gt; m.Signature.Name == $&quot;Create{serviceMethod.Name}Request&quot;);</span>
+<span class="d">-</span>
+<span class="d">-                visitor.InvokeVisit((restClientMethod as ScmMethodProvider)!);</span>
+<span class="d">-                Assert.AreEqual(1, serviceMethod.Parameters.Count);</span>
+<span class="d">-                Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;return-client-request-id&quot;));</span>
+<span class="d">-                Assert.IsFalse(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;x-ms-client-request-id&quot;));</span>
+<span class="d">-                Assert.IsTrue(serviceMethod.Parameters.Any(p =&gt; p.SerializedName == &quot;some-other-parameter&quot;));</span>
+<span class="d">-</span>
+<span class="d">-                // Verify x-ms-client-request-id is added back in method body if specified</span>
+<span class="d">-                Assert.AreEqual(addBackXMsClientRequestId, restClientMethod.BodyStatements!.ToDisplayString().Contains(&quot;request.Headers.SetValue(\&quot;x-ms-client-request-id\&quot;, request.ClientRequestId);&quot;));</span>
+<span class="d">-            }</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        [Test]</span>
+<span class="d">-        public void DoesNotChangeParametersWhenNoSpecialHeaders()</span>
+<span class="d">-        {</span>
+<span class="d">-            var visitor = new TestSpecialHeadersVisitor();</span>
+<span class="d">-            var parameters = new List&lt;InputParameter&gt;</span>
+<span class="d">-            {</span>
+<span class="d">-                InputFactory.HeaderParameter(</span>
+<span class="d">-                    &quot;some-parameter&quot;,</span>
+<span class="d">-                    type: InputPrimitiveType.String,</span>
+<span class="d">-                    serializedName: &quot;some-parameter&quot;)</span>
+<span class="d">-            };</span>
+<span class="d">-            var methodParameters = new List&lt;InputMethodParameter&gt;</span>
+<span class="d">-            {</span>
+<span class="d">-                InputFactory.MethodParameter(</span>
+<span class="d">-                    &quot;some-parameter&quot;,</span>
+<span class="d">-                    type: InputPrimitiveType.String,</span>
+<span class="d">-                    serializedName: &quot;some-parameter&quot;,</span>
+<span class="d">-                    location: InputRequestLocation.Header)</span>
+<span class="d">-            };</span>
+<span class="d">-            var responseModel = InputFactory.Model(&quot;foo&quot;);</span>
+<span class="d">-            var operation = InputFactory.Operation(</span>
+<span class="d">-                &quot;foo&quot;,</span>
+<span class="d">-                parameters: parameters,</span>
+<span class="d">-                responses: [InputFactory.OperationResponse(bodytype: responseModel)]);</span>
+<span class="d">-            var serviceMethod = InputFactory.LongRunningServiceMethod(</span>
+<span class="d">-                &quot;foo&quot;,</span>
+<span class="d">-                operation,</span>
+<span class="d">-                parameters: methodParameters,</span>
+<span class="d">-                response: InputFactory.ServiceMethodResponse(responseModel, [&quot;result&quot;]));</span>
+<span class="d">-            var inputClient = InputFactory.Client(&quot;TestClient&quot;, methods: [serviceMethod]);</span>
+<span class="d">-            var generator = MockHelpers.LoadMockGenerator(clients: () =&gt; [inputClient]);</span>
+<span class="d">-            var client = generator.Object.OutputLibrary.TypeProviders.OfType&lt;ClientProvider&gt;().First();</span>
+<span class="d">-            var methodCollection = client.GetMethodCollectionByOperation(operation);</span>
+<span class="d">-</span>
+<span class="d">-            // Verify initial state</span>
+<span class="d">-            Assert.AreEqual(1, serviceMethod.Parameters.Count);</span>
+<span class="d">-            var originalParameter = serviceMethod.Parameters[0];</span>
+<span class="d">-</span>
+<span class="d">-            // Act</span>
+<span class="d">-            visitor.InvokePreVisit(serviceMethod, client, methodCollection);</span>
+<span class="d">-</span>
+<span class="d">-            // Verify no changes</span>
+<span class="d">-            Assert.AreEqual(1, serviceMethod.Parameters.Count);</span>
+<span class="d">-            Assert.AreSame(originalParameter, serviceMethod.Parameters[0]);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        private static List&lt;InputMethodParameter&gt; CreateMethodParameters()</span>
+<span class="d">-        {</span>
+<span class="d">-            List&lt;InputMethodParameter&gt; parameters =</span>
+<span class="d">-            [</span>
+<span class="d">-                InputFactory.MethodParameter(</span>
+<span class="d">-                    &quot;return-client-request-id&quot;,</span>
+<span class="d">-                    type: new InputLiteralType(&quot;return-client-request-id&quot;, &quot;ns&quot;, InputPrimitiveType.Boolean, true),</span>
+<span class="d">-                    defaultValue: new InputConstant(true, InputPrimitiveType.Boolean),</span>
+<span class="d">-                    serializedName: &quot;return-client-request-id&quot;,</span>
+<span class="d">-                    location: InputRequestLocation.Header),</span>
+<span class="d">-                InputFactory.MethodParameter(</span>
+<span class="d">-                    &quot;x-ms-client-request-id&quot;,</span>
+<span class="d">-                    type: InputPrimitiveType.String,</span>
+<span class="d">-                    serializedName: &quot;x-ms-client-request-id&quot;,</span>
+<span class="d">-                    location: InputRequestLocation.Header),</span>
+<span class="d">-                InputFactory.MethodParameter(</span>
+<span class="d">-                    &quot;some-other-parameter&quot;,</span>
+<span class="d">-                    type: InputPrimitiveType.String,</span>
+<span class="d">-                    serializedName: &quot;some-other-parameter&quot;,</span>
+<span class="d">-                    location: InputRequestLocation.Header)</span>
+<span class="d">-            ];</span>
+<span class="d">-            return parameters;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        private static List&lt;InputParameter&gt; CreateHttpParameters()</span>
+<span class="d">-        {</span>
+<span class="d">-            List&lt;InputParameter&gt; parameters =</span>
+<span class="d">-            [</span>
+<span class="d">-                InputFactory.HeaderParameter(</span>
+<span class="d">-                    &quot;return-client-request-id&quot;,</span>
+<span class="d">-                    type: new InputLiteralType(&quot;return-client-request-id&quot;, &quot;ns&quot;, InputPrimitiveType.Boolean, true),</span>
+<span class="d">-                    defaultValue: new InputConstant(true, InputPrimitiveType.Boolean),</span>
+<span class="d">-                    serializedName: &quot;return-client-request-id&quot;),</span>
+<span class="d">-                InputFactory.HeaderParameter(</span>
+<span class="d">-                    &quot;x-ms-client-request-id&quot;,</span>
+<span class="d">-                    type: InputPrimitiveType.String,</span>
+<span class="d">-                    serializedName: &quot;x-ms-client-request-id&quot;),</span>
+<span class="d">-                InputFactory.HeaderParameter(</span>
+<span class="d">-                    &quot;some-other-parameter&quot;,</span>
+<span class="d">-                    type: InputPrimitiveType.String,</span>
+<span class="d">-                    serializedName: &quot;some-other-parameter&quot;)</span>
+<span class="d">-            ];</span>
+<span class="d">-            return parameters;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        private class TestSpecialHeadersVisitor : SpecialHeadersVisitor</span>
+<span class="d">-        {</span>
+<span class="d">-            public TestSpecialHeadersVisitor(bool addBackXMsClientRequestId = false)</span>
+<span class="d">-                : base(addBackXMsClientRequestId)</span>
+<span class="d">-            {</span>
+<span class="d">-            }</span>
+<span class="d">-            public void InvokePreVisit(InputServiceMethod serviceMethod, ClientProvider client, ScmMethodProviderCollection methods)</span>
+<span class="d">-            {</span>
+<span class="d">-                base.Visit(serviceMethod, client, methods);</span>
+<span class="d">-            }</span>
+<span class="d">-</span>
+<span class="d">-            public void InvokeVisit(ScmMethodProvider method)</span>
+<span class="d">-            {</span>
+<span class="d">-                base.VisitMethod(method);</span>
+<span class="d">-            }</span>
+<span class="d">-        }</span>
+<span class="d">-    }</span>
+<span class="d">-}</span>
+\ No newline at end of file</pre></body></html>

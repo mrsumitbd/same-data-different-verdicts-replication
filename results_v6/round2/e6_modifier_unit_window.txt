@@ -1,0 +1,24 @@
+E6. Share of modifications made by agents, and (self) by the agent that wrote the code, by unit and window
+Groups: commit unit = majority birth group (Table modifier_type); line and follow-up PR units = group of each line.
+Window = days from the merge of the original PR to the modifying commit.
+
+commit-to-PR map: 5,300 of 5,300 commits fetched; 4,737 in a merged follow-up PR, 563 in none (direct pushes or unmerged); 0 in more than one merged PR (earliest taken)
+
+Commit                7 days   | Human-supervised  14.5% (37/256) self 12.9% (33) | Devin             24.6% (55/224) self 24.6% (55) | Human              2.1% (15/705) self  0.1% (1)
+Commit                30 days  | Human-supervised  12.3% (69/559) self 11.3% (63) | Devin             22.5% (73/324) self 22.5% (73) | Human              2.3% (32/1421) self  0.1% (2)
+Commit                Full     | Human-supervised  11.4% (166/1453) self  9.9% (144) | Devin             14.3% (88/617) self 13.8% (85) | Human              3.1% (100/3230) self  0.2% (7)
+
+Line                  7 days   | Human-supervised   6.3% (880/13983) self  5.5% (767) | Devin             11.4% (883/7759) self 11.4% (883) | Human              0.3% (45/17196) self  0.0% (0)
+Line                  30 days  | Human-supervised   8.1% (1616/19866) self  6.2% (1234) | Devin              9.6% (994/10313) self  9.6% (994) | Human              1.1% (382/36194) self  0.0% (0)
+Line                  Full     | Human-supervised   9.8% (3509/35791) self  8.4% (2991) | Devin              5.7% (1065/18815) self  5.6% (1061) | Human              1.2% (1173/94859) self  0.0% (0)
+
+Follow-up PR          7 days   | Human-supervised  15.6% (38/243) self 13.2% (32) | Devin             29.9% (52/174) self 29.9% (52) | Human              2.8% (17/612) self  0.0% (0)
+Follow-up PR          30 days  | Human-supervised  13.3% (73/549) self 11.8% (65) | Devin             25.5% (71/278) self 25.5% (71) | Human              2.9% (38/1303) self  0.0% (0)
+Follow-up PR          Full     | Human-supervised  11.8% (171/1450) self 10.1% (147) | Devin             13.7% (87/635) self 13.2% (84) | Human              3.8% (119/3118) self  0.0% (0)
+
+Follow-up PR (pairs)  7 days   | Human-supervised  14.8% (43/291) self 12.4% (36) | Devin             37.7% (95/252) self 37.7% (95) | Human              2.6% (17/665) self  0.0% (0)
+Follow-up PR (pairs)  30 days  | Human-supervised  13.2% (93/706) self 11.9% (84) | Devin             30.3% (124/409) self 30.3% (124) | Human              2.8% (44/1568) self  0.0% (0)
+Follow-up PR (pairs)  Full     | Human-supervised  12.6% (254/2013) self 11.1% (223) | Devin             13.6% (144/1057) self 13.3% (141) | Human              3.2% (149/4630) self  0.0% (0)
+
+Agent authors of follow-up PRs (full window), per group: Human-supervised: Copilot 155, gru-agent[bot] 4, mergify[bot] 2, github-actions[bot] 2, devin-ai-integration[bot] 2, renovate[bot] 2, blink-so[bot] 1, dotnet-maestro[bot] 1, dependabot[bot] 1, google-labs-jules[bot] 1; Devin: devin-ai-integration[bot] 84, renovate[bot] 2, dependabot[bot] 1; Human: Copilot 52, devin-ai-integration[bot] 47, mlflow-app[bot] 4, gru-agent[bot] 4, github-actions[bot] 3, mergify[bot] 2, dependabot[bot] 2, SyliusBot 2, renovate[bot] 1, pre-commit-ci[bot] 1, mlflow-automation 1
+Note: the commit rows reproduce Table modifier_type in the full window (1,453 / 617 / 3,230 commits).

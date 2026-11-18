@@ -1,0 +1,22 @@
+Task 3 shares read from results_v6/paper_tables.tex (tab:rq4_intent), C/P/A/Prev (5th value = keyword unclassified; majority vote shares are of the 5,263 decided commits, residual is rounding):
+  Keyword rules  Human-supervised   36.2 / 12.8 / 30.6 / 10.3 / 10.1
+  Keyword rules  Devin              30.6 / 15.6 / 36.0 / 13.5 / 4.3
+  Keyword rules  Human baseline     34.2 / 13.7 / 28.7 / 11.2 / 12.2
+  Majority vote  Human-supervised   23.1 / 21.7 / 50.0 / 5.3 / 0.0
+  Majority vote  Devin              23.3 / 23.7 / 48.8 / 4.2 / 0.0
+  Majority vote  Human baseline     22.5 / 23.0 / 50.1 / 4.4 / 0.0
+  Human labels   Human-supervised   28.1 / 19.3 / 42.0 / 10.6 / 0.0
+  Human labels   Devin              19.3 / 22.3 / 46.3 / 12.1 / 0.0
+  Human labels   Human baseline     21.1 / 30.0 / 41.8 / 7.1 / 0.0
+
+Task 4 values read from results_v6/paper_tables.tex (tab:modifier_variants), agent share (self share):
+  Commit                   7 days   14.5 (12.9)  24.6 (24.6)  2.1 (-)
+  Commit                   30 days  12.3 (11.3)  22.5 (22.5)  2.3 (-)
+  Commit                   Full     11.4 (9.9)  14.3 (13.8)  3.1 (-)
+  Line                     7 days   6.3 (5.5)  11.4 (11.4)  0.3 (-)
+  Line                     30 days  8.1 (6.2)  9.6 (9.6)  1.1 (-)
+  Line                     Full     9.8 (8.4)  5.7 (5.6)  1.2 (-)
+  Follow-up PR             7 days   15.6 (13.2)  29.9 (29.9)  2.8 (-)
+  Follow-up PR             30 days  13.3 (11.8)  25.5 (25.5)  2.9 (-)
+  Follow-up PR             Full     11.8 (10.1)  13.7 (13.2)  3.8 (-)
+  Commit, co-author rule   Full     16.3 (12.9)  16.2 (14.6)  5.5 (-)

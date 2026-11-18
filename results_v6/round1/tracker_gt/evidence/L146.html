@@ -1,0 +1,332 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L146</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L146</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs, line 318<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/328b15e95ba9d18b631497b8dbafd1de7bd2be26">328b15e95b</a> (2025-06-27T01:31:40)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">        Assert.False(featureFlags.IsFeatureEnabled(KnownFeatures.DeployCommandEnabled, defaultValue: true));</span></pre><h2>File at the merge commit, lines 310 to 326</h2><pre>  310 |         // Set the feature flag to false
+  311 |         var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();
+  312 |         var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.{KnownFeatures.DeployCommandEnabled} false&quot;);
+  313 |         var setExitCode = await setResult.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+  314 |         Assert.Equal(0, setExitCode);
+  315 | 
+  316 |         // Check the feature flag
+  317 |         var featureFlags = provider.GetRequiredService&lt;IFeatures&gt;();
+<span class="t">  318 |         Assert.False(featureFlags.IsFeatureEnabled(KnownFeatures.DeployCommandEnabled, defaultValue: true));</span>
+  319 |     }
+  320 | 
+  321 |     [Fact]
+  322 |     public async Task FeatureFlags_WhenSetToInvalidValue_ReturnsFalse()
+  323 |     {
+  324 |         using var workspace = TemporaryWorkspace.Create(outputHelper);
+  325 |         var services = CliTestHelper.CreateServiceCollection(
+  326 |             workspace,</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/b223748c4e4f410b2c2568c34a9cd401d23537c5">b223748c4e</a> (2025-07-01T00:53:35-07:00)</h2><p class="k">Remove deployCommandEnabled feature flag from Aspire CLI (#10155)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs
+index e8bf81c388..d9d337c485 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="h">@@ -285,37 +285,37 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var services = CliTestHelper.CreateServiceCollection(
+             workspace,
+             outputHelper,
+<span class="d">-            options =&gt; options.EnabledFeatures = new[] { KnownFeatures.DeployCommandEnabled }</span>
+<span class="a">+            options =&gt; options.EnabledFeatures = new[] { &quot;testFeature&quot; }</span>
+             );
+         var provider = services.BuildServiceProvider();
+ 
+         // Set the feature flag to true
+         var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();
+<span class="d">-        var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.{KnownFeatures.DeployCommandEnabled} true&quot;);</span>
+<span class="a">+        var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.testFeature true&quot;);</span>
+         var setExitCode = await setResult.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+         Assert.Equal(0, setExitCode);
+ 
+         // Check the feature flag
+         var featureFlags = provider.GetRequiredService&lt;IFeatures&gt;();
+<span class="d">-        Assert.True(featureFlags.IsFeatureEnabled(KnownFeatures.DeployCommandEnabled, defaultValue: false));</span>
+<span class="a">+        Assert.True(featureFlags.IsFeatureEnabled(&quot;testFeature&quot;, defaultValue: false));</span>
+     }
+ 
+     [Fact]
+     public async Task FeatureFlags_WhenSetToFalse_ReturnsFalse()
+     {
+         using var workspace = TemporaryWorkspace.Create(outputHelper);
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; options.DisabledFeatures = new[] { KnownFeatures.DeployCommandEnabled });</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper, options =&gt; options.DisabledFeatures = new[] { &quot;testFeature&quot; });</span>
+         var provider = services.BuildServiceProvider();
+ 
+         // Set the feature flag to false
+         var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();
+<span class="d">-        var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.{KnownFeatures.DeployCommandEnabled} false&quot;);</span>
+<span class="a">+        var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.testFeature false&quot;);</span>
+         var setExitCode = await setResult.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+         Assert.Equal(0, setExitCode);
+ 
+         // Check the feature flag
+         var featureFlags = provider.GetRequiredService&lt;IFeatures&gt;();
+<span class="d m">-        Assert.False(featureFlags.IsFeatureEnabled(KnownFeatures.DeployCommandEnabled, defaultValue: true));</span>
+<span class="a">+        Assert.False(featureFlags.IsFeatureEnabled(&quot;testFeature&quot;, defaultValue: true));</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -327,23 +327,23 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+             outputHelper,
+             options =&gt; options.ConfigurationCallback += confing =&gt;
+             {
+<span class="d">-                confing[$&quot;{KnownFeatures.FeaturePrefix}:{KnownFeatures.DeployCommandEnabled}&quot;] = &quot;invalid&quot;; // Set an invalid value</span>
+<span class="a">+                confing[$&quot;{KnownFeatures.FeaturePrefix}:testFeature&quot;] = &quot;invalid&quot;; // Set an invalid value</span>
+             });
+         var provider = services.BuildServiceProvider();
+ 
+         // Set the feature flag to an invalid value
+         var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();
+<span class="d">-        var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.{KnownFeatures.DeployCommandEnabled} invalid&quot;);</span>
+<span class="a">+        var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.testFeature invalid&quot;);</span>
+         var setExitCode = await setResult.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+         Assert.Equal(0, setExitCode);
+ 
+         // Check the feature flag
+         var featureFlags = provider.GetRequiredService&lt;IFeatures&gt;();
+<span class="d m">-        Assert.False(featureFlags.IsFeatureEnabled(KnownFeatures.DeployCommandEnabled, defaultValue: true));</span>
+<span class="a">+        Assert.False(featureFlags.IsFeatureEnabled(&quot;testFeature&quot;, defaultValue: true));</span>
+     }
+ 
+     [Fact]
+<span class="d">-    public void DeployCommand_WhenFeatureFlagDisabled_IsNotAvailable()</span>
+<span class="a">+    public void DeployCommand_IsAlwaysAvailable()</span>
+     {
+         using var workspace = TemporaryWorkspace.Create(outputHelper);
+         var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper);
+<span class="h">@@ -351,31 +351,8 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+ 
+         var rootCommand = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();
+         
+<span class="d">-        // Check that deploy command is not available</span>
+<span class="a">+        // Check that deploy command is always available</span>
+         var hasDeployCommand = rootCommand.Subcommands.Any(cmd =&gt; cmd.Name == &quot;deploy&quot;);
+<span class="d">-        Assert.False(hasDeployCommand);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    [Fact]</span>
+<span class="d">-    public async Task DeployCommand_WhenFeatureFlagEnabled_IsAvailable()</span>
+<span class="d">-    {</span>
+<span class="d">-        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="d">-        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper);</span>
+<span class="d">-        var provider = services.BuildServiceProvider();</span>
+<span class="d">-</span>
+<span class="d">-        // Set the feature flag to true</span>
+<span class="d">-        var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();</span>
+<span class="d">-        var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.{KnownFeatures.DeployCommandEnabled} true&quot;);</span>
+<span class="d">-        var setExitCode = await setResult.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);</span>
+<span class="d">-        Assert.Equal(0, setExitCode);</span>
+<span class="d">-</span>
+<span class="d">-        // Create a new service provider to get the updated configuration</span>
+<span class="d">-        var newServices = CliTestHelper.CreateServiceCollection(workspace, outputHelper);</span>
+<span class="d">-        var newProvider = newServices.BuildServiceProvider();</span>
+<span class="d">-        var newRootCommand = newProvider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();</span>
+<span class="d">-        </span>
+<span class="d">-        // Check that deploy command is available</span>
+<span class="d">-        var hasDeployCommand = newRootCommand.Subcommands.Any(cmd =&gt; cmd.Name == &quot;deploy&quot;);</span>
+         Assert.True(hasDeployCommand);
+     }
+ }
+\ No newline at end of file</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/7c8b37c473b5a6aa1c0403e8580546793535bb51">7c8b37c473</a> (2025-07-14T16:42:47+00:00)</h2><p class="k">Add xmldocs to generated metadata projects (#9868)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs
+index d9d337c485..077ed1665e 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="h">@@ -5,7 +5,6 @@ using Aspire.Cli.Configuration;</span>
+ using Aspire.Cli.Tests.Utils;
+ using Microsoft.Extensions.DependencyInjection;
+ using System.Text.Json.Nodes;
+<span class="d">-using Xunit;</span>
+ 
+ namespace Aspire.Cli.Tests.Commands;
+ </pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/436cd189a9972eabed5fbee72ff784b363c70b84">436cd189a9</a> (2025-08-27T07:57:40-07:00)</h2><p class="k">Add showDeprecatedPackages feature flag to control deprecated NuGet package visibility (#11131)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs
+index 077ed1665e..c2e52ffa07 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="h">@@ -354,4 +354,39 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var hasDeployCommand = rootCommand.Subcommands.Any(cmd =&gt; cmd.Name == &quot;deploy&quot;);
+         Assert.True(hasDeployCommand);
+     }
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ShowDeprecatedPackages_CanBeConfiguredViaCommandLine()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper);</span>
+<span class="a">+        var provider = services.BuildServiceProvider();</span>
+<span class="a">+</span>
+<span class="a">+        var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();</span>
+<span class="a">+        </span>
+<span class="a">+        // Set the show deprecated packages feature flag to true</span>
+<span class="a">+        var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.{KnownFeatures.ShowDeprecatedPackages} true&quot;);</span>
+<span class="a">+        var setExitCode = await setResult.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);</span>
+<span class="a">+        Assert.Equal(0, setExitCode);</span>
+<span class="a">+</span>
+<span class="a">+        // Create new service provider to pick up the configuration change</span>
+<span class="a">+        var newServices = CliTestHelper.CreateServiceCollection(workspace, outputHelper);</span>
+<span class="a">+        var newProvider = newServices.BuildServiceProvider();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify the feature flag is enabled</span>
+<span class="a">+        var featureFlags = newProvider.GetRequiredService&lt;IFeatures&gt;();</span>
+<span class="a">+        Assert.True(featureFlags.IsFeatureEnabled(KnownFeatures.ShowDeprecatedPackages, defaultValue: false));</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ShowDeprecatedPackages_DefaultsToFalse()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper);</span>
+<span class="a">+        var provider = services.BuildServiceProvider();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify the feature flag defaults to false</span>
+<span class="a">+        var featureFlags = provider.GetRequiredService&lt;IFeatures&gt;();</span>
+<span class="a">+        Assert.False(featureFlags.IsFeatureEnabled(KnownFeatures.ShowDeprecatedPackages, defaultValue: false));</span>
+<span class="a">+    }</span>
+ }
+\ No newline at end of file</pre><h2>Commit #4: <a href="https://github.com/dotnet/aspire/commit/45ea7d8940fe1d32344cccada2cd46e39c8fb299">45ea7d8940</a> (2025-09-16T05:09:37+00:00)</h2><p class="k">Add extension-compatible aspire config command implementation (#10231)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs
+index c2e52ffa07..f164cbf518 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="h">@@ -5,11 +5,39 @@ using Aspire.Cli.Configuration;</span>
+ using Aspire.Cli.Tests.Utils;
+ using Microsoft.Extensions.DependencyInjection;
+ using System.Text.Json.Nodes;
+<span class="a">+using Aspire.Cli.Tests.TestServices;</span>
+ 
+ namespace Aspire.Cli.Tests.Commands;
+ 
+ public class ConfigCommandTests(ITestOutputHelper outputHelper)
+ {
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ConfigCommand_WithExtensionMode_Works()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var workspace = TemporaryWorkspace.Create(outputHelper);</span>
+<span class="a">+        var services = CliTestHelper.CreateServiceCollection(workspace, outputHelper,</span>
+<span class="a">+            options =&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                options.ConfigurationCallback += config =&gt;</span>
+<span class="a">+                {</span>
+<span class="a">+                    // Enable extension mode for testing</span>
+<span class="a">+                    config[&quot;ASPIRE_EXTENSION_PROMPT_ENABLED&quot;] = &quot;true&quot;;</span>
+<span class="a">+                    config[&quot;ASPIRE_EXTENSION_TOKEN&quot;] = &quot;token&quot;;</span>
+<span class="a">+                };</span>
+<span class="a">+</span>
+<span class="a">+                options.InteractionServiceFactory = sp =&gt; new TestExtensionInteractionService(sp);</span>
+<span class="a">+</span>
+<span class="a">+                options.ConfigurationServiceFactory = _ =&gt; new TestConfigurationService();</span>
+<span class="a">+            });</span>
+<span class="a">+        var provider = services.BuildServiceProvider();</span>
+<span class="a">+</span>
+<span class="a">+        var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();</span>
+<span class="a">+        var result = command.Parse(&quot;config&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        var exitCode = await result.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);</span>
+<span class="a">+        Assert.Equal(0, exitCode);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     [Fact]
+     public async Task ConfigCommandReturnsInvalidCommandExitCode()
+     {
+<span class="h">@@ -92,7 +120,7 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var json = await File.ReadAllTextAsync(settingsPath);
+         var settings = JsonNode.Parse(json)?.AsObject();
+         Assert.NotNull(settings);
+<span class="d">-        </span>
+<span class="a">+</span>
+         Assert.True(settings[&quot;foo&quot;] is JsonObject);
+         var fooObject = settings[&quot;foo&quot;]!.AsObject();
+         Assert.True(fooObject[&quot;bar&quot;] is JsonObject);
+<span class="h">@@ -108,7 +136,7 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var provider = services.BuildServiceProvider();
+ 
+         var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();
+<span class="d">-        </span>
+<span class="a">+</span>
+         // First set a primitive value
+         var result1 = command.Parse(&quot;config set foo primitive&quot;);
+         var exitCode1 = await result1.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+<span class="h">@@ -124,7 +152,7 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var json = await File.ReadAllTextAsync(settingsPath);
+         var settings = JsonNode.Parse(json)?.AsObject();
+         Assert.NotNull(settings);
+<span class="d">-        </span>
+<span class="a">+</span>
+         Assert.True(settings[&quot;foo&quot;] is JsonObject);
+         var fooObject = settings[&quot;foo&quot;]!.AsObject();
+         Assert.Equal(&quot;nested&quot;, fooObject[&quot;bar&quot;]?.ToString());
+<span class="h">@@ -244,7 +272,7 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var json = await File.ReadAllTextAsync(settingsPath);
+         var settings = JsonNode.Parse(json)?.AsObject();
+         Assert.NotNull(settings);
+<span class="d">-        </span>
+<span class="a">+</span>
+         // The deep object should be completely removed since it became empty
+         Assert.False(settings.ContainsKey(&quot;deep&quot;));
+     }
+<span class="h">@@ -349,7 +377,7 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var provider = services.BuildServiceProvider();
+ 
+         var rootCommand = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();
+<span class="d">-        </span>
+<span class="a">+</span>
+         // Check that deploy command is always available
+         var hasDeployCommand = rootCommand.Subcommands.Any(cmd =&gt; cmd.Name == &quot;deploy&quot;);
+         Assert.True(hasDeployCommand);
+<span class="h">@@ -363,7 +391,7 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var provider = services.BuildServiceProvider();
+ 
+         var command = provider.GetRequiredService&lt;Aspire.Cli.Commands.RootCommand&gt;();
+<span class="d">-        </span>
+<span class="a">+</span>
+         // Set the show deprecated packages feature flag to true
+         var setResult = command.Parse($&quot;config set {KnownFeatures.FeaturePrefix}.{KnownFeatures.ShowDeprecatedPackages} true&quot;);
+         var setExitCode = await setResult.InvokeAsync().WaitAsync(CliTestConstants.DefaultTimeout);
+<span class="h">@@ -389,4 +417,36 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+         var featureFlags = provider.GetRequiredService&lt;IFeatures&gt;();
+         Assert.False(featureFlags.IsFeatureEnabled(KnownFeatures.ShowDeprecatedPackages, defaultValue: false));
+     }
+<span class="d">-}</span>
+\ No newline at end of file
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+public class TestConfigurationService : IConfigurationService</span>
+<span class="a">+{</span>
+<span class="a">+    public Task SetConfigurationAsync(string key, string value, bool isGlobal = false, CancellationToken cancellationToken = default)</span>
+<span class="a">+    {</span>
+<span class="a">+        return Task.CompletedTask;</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    public Task&lt;bool&gt; DeleteConfigurationAsync(string key, bool isGlobal = false, CancellationToken cancellationToken = default)</span>
+<span class="a">+    {</span>
+<span class="a">+        return Task.FromResult(true);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    public Task&lt;Dictionary&lt;string, string&gt;&gt; GetAllConfigurationAsync(CancellationToken cancellationToken = default)</span>
+<span class="a">+    {</span>
+<span class="a">+        return Task.FromResult(new Dictionary&lt;string, string&gt;</span>
+<span class="a">+        {</span>
+<span class="a">+            { &quot;testkey&quot;, &quot;testvalue&quot; },</span>
+<span class="a">+            { &quot;&quot;, &quot;&quot; },</span>
+<span class="a">+        });</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    public Task&lt;string?&gt; GetConfigurationAsync(string key, CancellationToken cancellationToken = default)</span>
+<span class="a">+    {</span>
+<span class="a">+        return Task.FromResult&lt;string?&gt;(key);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    public string GetSettingsFilePath(bool isGlobal)</span>
+<span class="a">+    {</span>
+<span class="a">+        return string.Empty;</span>
+<span class="a">+    }</span>
+<span class="a">+}</span></pre><h2>Commit #5: <a href="https://github.com/dotnet/aspire/commit/4e2e56a9c1f10f2416f8da2c6573d2e8ef7aa942">4e2e56a9c1</a> (2025-10-15T15:28:35+11:00)</h2><p class="k">Update SDK to 10.0 RC2 (#12024)<br>Path after this commit: tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs
+index f164cbf518..25b5339f3f 100644
+<span class="d">--- a/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Cli.Tests/Commands/ConfigCommandTests.cs</span>
+<span class="h">@@ -26,6 +26,7 @@ public class ConfigCommandTests(ITestOutputHelper outputHelper)</span>
+                 };
+ 
+                 options.InteractionServiceFactory = sp =&gt; new TestExtensionInteractionService(sp);
+<span class="a">+                options.ExtensionBackchannelFactory = sp =&gt; new TestExtensionBackchannel();</span>
+ 
+                 options.ConfigurationServiceFactory = _ =&gt; new TestConfigurationService();
+             });</pre></body></html>

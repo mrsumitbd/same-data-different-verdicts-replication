@@ -1,0 +1,94 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L039</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L039</h1><p><b>Repository:</b> <a href="https://github.com/sam-goodwin/alchemy">sam-goodwin/alchemy</a><br><b>File at merge:</b> examples/cloudflare-astro/alchemy.run.ts, line 15<br><b>Merge commit (birth):</b> <a href="https://github.com/sam-goodwin/alchemy/commit/dbea5738ce40d64793fd535b60534c7182233aeb">dbea5738ce</a> (2025-06-10T21:06:45)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/sam-goodwin/alchemy/tree/ff4155941fe13145370a52fb222d74cdd7247fb8">ff4155941f</a>)</p><p><b>The line:</b></p><pre><span class="t">export const website = await Astro(`cloudflare-astro-website${BRANCH_PREFIX}`, {</span></pre><h2>File at the merge commit, lines 7 to 23</h2><pre>    7 |   phase: process.argv.includes(&quot;--destroy&quot;) ? &quot;destroy&quot; : &quot;up&quot;,
+    8 |   password: process.env.ALCHEMY_PASSWORD,
+    9 |   stateStore:
+   10 |     process.env.ALCHEMY_STATE_STORE === &quot;cloudflare&quot;
+   11 |       ? (scope) =&gt; new DOStateStore(scope)
+   12 |       : undefined,
+   13 | });
+   14 | 
+<span class="t">   15 | export const website = await Astro(`cloudflare-astro-website${BRANCH_PREFIX}`, {</span>
+   16 |   command: &quot;bun run build&quot;,
+   17 | });
+   18 | 
+   19 | console.log({
+   20 |   url: website.url,
+   21 | });
+   22 | 
+   23 | await app.finalize();</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/sam-goodwin/alchemy/commit/ddf5508589d898a684ba980e5475351b5504b508">ddf5508589</a> (2025-06-12T00:24:04-07:00)</h2><p class="k">feat: add automatic CLI argument parsing to alchemy() function (#356)<br>Path after this commit: examples/cloudflare-astro/alchemy.run.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/examples/cloudflare-astro/alchemy.run.ts b/examples/cloudflare-astro/alchemy.run.ts
+index 86a83299a..695ca880a 100644
+<span class="d">--- a/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="a">+++ b/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="h">@@ -3,9 +3,6 @@ import { Astro, DOStateStore } from &quot;alchemy/cloudflare&quot;;</span>
+ 
+ const BRANCH_PREFIX = process.env.BRANCH_PREFIX ?? &quot;&quot;;
+ const app = await alchemy(&quot;cloudflare-astro&quot;, {
+<span class="d">-  stage: process.env.USER ?? &quot;dev&quot;,</span>
+<span class="d">-  phase: process.argv.includes(&quot;--destroy&quot;) ? &quot;destroy&quot; : &quot;up&quot;,</span>
+<span class="d">-  password: process.env.ALCHEMY_PASSWORD,</span>
+   stateStore:
+     process.env.ALCHEMY_STATE_STORE === &quot;cloudflare&quot;
+       ? (scope) =&gt; new DOStateStore(scope)</pre><h2>Commit #2: <a href="https://github.com/sam-goodwin/alchemy/commit/85a8e2f80573351ae92e26e5368144dc38a08087">85a8e2f805</a> (2025-06-16T14:48:34-07:00)</h2><p class="k">feat: implement alchemy create CLI (#376)<br>Path after this commit: examples/cloudflare-astro/alchemy.run.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/examples/cloudflare-astro/alchemy.run.ts b/examples/cloudflare-astro/alchemy.run.ts
+index 695ca880a..6ca307486 100644
+<span class="d">--- a/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="a">+++ b/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="h">@@ -9,7 +9,8 @@ const app = await alchemy(&quot;cloudflare-astro&quot;, {</span>
+       : undefined,
+ });
+ 
+<span class="d m">-export const website = await Astro(`cloudflare-astro-website${BRANCH_PREFIX}`, {</span>
+<span class="a">+export const website = await Astro(&quot;website&quot;, {</span>
+<span class="a">+  name: `cloudflare-astro-website${BRANCH_PREFIX}`,</span>
+   command: &quot;bun run build&quot;,
+ });
+ </pre><h2>Commit #3: <a href="https://github.com/sam-goodwin/alchemy/commit/e63c7077750b0a68bbc61a40a49e8d7d66bcce37">e63c707775</a> (2025-07-06T20:00:51-07:00)</h2><p class="k">feat(core): simplify Scope&#x27;s arguments and re-enable CI/CD (#563)<br>Path after this commit: examples/cloudflare-astro/alchemy.run.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/examples/cloudflare-astro/alchemy.run.ts b/examples/cloudflare-astro/alchemy.run.ts
+index 6ca307486..635c9d9a6 100644
+<span class="d">--- a/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="a">+++ b/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="h">@@ -1,16 +1,10 @@</span>
+ import alchemy from &quot;alchemy&quot;;
+<span class="d">-import { Astro, DOStateStore } from &quot;alchemy/cloudflare&quot;;</span>
+<span class="a">+import { Astro } from &quot;alchemy/cloudflare&quot;;</span>
+ 
+<span class="d">-const BRANCH_PREFIX = process.env.BRANCH_PREFIX ?? &quot;&quot;;</span>
+<span class="d">-const app = await alchemy(&quot;cloudflare-astro&quot;, {</span>
+<span class="d">-  stateStore:</span>
+<span class="d">-    process.env.ALCHEMY_STATE_STORE === &quot;cloudflare&quot;</span>
+<span class="d">-      ? (scope) =&gt; new DOStateStore(scope)</span>
+<span class="d">-      : undefined,</span>
+<span class="d">-});</span>
+<span class="a">+const app = await alchemy(&quot;cloudflare-astro&quot;);</span>
+ 
+ export const website = await Astro(&quot;website&quot;, {
+<span class="d">-  name: `cloudflare-astro-website${BRANCH_PREFIX}`,</span>
+<span class="a">+  name: `${app.name}-${app.stage}-website`,</span>
+   command: &quot;bun run build&quot;,
+ });
+ </pre><h2>Commit #4: <a href="https://github.com/sam-goodwin/alchemy/commit/f58bcd3823057d15e57de61c538dc98180e0372a">f58bcd3823</a> (2025-08-04T14:40:17-07:00)</h2><p class="k">feat(cloudflare): alchemy vite plugin (#758)<br>Path after this commit: examples/cloudflare-astro/alchemy.run.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/examples/cloudflare-astro/alchemy.run.ts b/examples/cloudflare-astro/alchemy.run.ts
+index 635c9d9a6..e3f3215bf 100644
+<span class="d">--- a/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="a">+++ b/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="h">@@ -5,7 +5,6 @@ const app = await alchemy(&quot;cloudflare-astro&quot;);</span>
+ 
+ export const website = await Astro(&quot;website&quot;, {
+   name: `${app.name}-${app.stage}-website`,
+<span class="d">-  command: &quot;bun run build&quot;,</span>
+ });
+ 
+ console.log({</pre><h2>Commit #5: <a href="https://github.com/sam-goodwin/alchemy/commit/b48fe0f98f62402a19856176cae03b0266fa5e55">b48fe0f98f</a> (2025-09-12T22:47:01-07:00)</h2><p class="k">chore: stabilize smoke tests and run them all in parallel, outside of our monorepo (#960)<br>Path after this commit: examples/cloudflare-astro/alchemy.run.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/examples/cloudflare-astro/alchemy.run.ts b/examples/cloudflare-astro/alchemy.run.ts
+index e3f3215bf..f1eceb793 100644
+<span class="d">--- a/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="a">+++ b/examples/cloudflare-astro/alchemy.run.ts</span>
+<span class="h">@@ -5,6 +5,9 @@ const app = await alchemy(&quot;cloudflare-astro&quot;);</span>
+ 
+ export const website = await Astro(&quot;website&quot;, {
+   name: `${app.name}-${app.stage}-website`,
+<span class="a">+  dev: {</span>
+<span class="a">+    command: &quot;astro dev --port 5000&quot;,</span>
+<span class="a">+  },</span>
+ });
+ 
+ console.log({</pre></body></html>

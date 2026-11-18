@@ -1,0 +1,7 @@
+Values read from results_v6/paper_tables.tex (tab:rq3_per_agent):
+  Per agent, syntactic     GitHub Copilot     Within (cluster bootstrap)   0.653 [0.459, 0.954]
+  Per agent, syntactic     OpenAI Codex       Within (cluster bootstrap)   0.831 [0.468, 1.218]
+  Per agent, syntactic     Cursor             Within (cluster bootstrap)   0.379 [0.150, 3.695]
+  Per agent, syntactic     Claude Code        Within (cluster bootstrap)   0.934 [0.136, 1.950]
+  Per agent, syntactic     Devin              Within (cluster bootstrap)   1.059 [0.409, 2.076]
+  few-shared block: ['Cursor', 'Claude Code'] repositories [16, 13]

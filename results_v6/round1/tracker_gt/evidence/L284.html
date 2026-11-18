@@ -1,0 +1,492 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L284</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L284</h1><p><b>Repository:</b> <a href="https://github.com/promptfoo/promptfoo">promptfoo/promptfoo</a><br><b>File at merge:</b> src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx, line 14<br><b>Merge commit (birth):</b> <a href="https://github.com/promptfoo/promptfoo/commit/215cb0131fc254f0722a20c226c1d3b25478ce72">215cb0131f</a> (2025-06-05T19:15:01)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/promptfoo/promptfoo/tree/6c1afb7d5e8232d9f7d594819ed8fd7bc8c903df">6c1afb7d5e</a>)</p><p><b>The line:</b></p><pre><span class="t">import EvaluateTestSuiteCreator from &#x27;./EvaluateTestSuiteCreator&#x27;;</span></pre><h2>File at the merge commit, lines 6 to 22</h2><pre>    6 |   ProviderOptions,
+    7 |   TestCase,
+    8 |   EvaluateOptions,
+    9 |   EnvOverrides,
+   10 |   Scenario,
+   11 | } from &#x27;@promptfoo/types&#x27;;
+   12 | import userEvent from &#x27;@testing-library/user-event&#x27;;
+   13 | import { describe, it, expect, vi, beforeEach } from &#x27;vitest&#x27;;
+<span class="t">   14 | import EvaluateTestSuiteCreator from &#x27;./EvaluateTestSuiteCreator&#x27;;</span>
+   15 | 
+   16 | // Mock child components
+   17 | vi.mock(&#x27;./ConfigureEnvButton&#x27;, () =&gt; ({
+   18 |   default: vi.fn(() =&gt; &lt;div data-testid=&quot;mock-configure-env-button&quot; /&gt;),
+   19 | }));
+   20 | vi.mock(&#x27;./PromptsSection&#x27;, () =&gt; ({
+   21 |   default: vi.fn(() =&gt; &lt;div data-testid=&quot;mock-prompts-section&quot; /&gt;),
+   22 | }));</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/promptfoo/promptfoo/commit/9a3c26e9830ef99661a50f1d09b6ea27ae1b4ab4">9a3c26e983</a> (2025-06-28T11:30:27-04:00)</h2><p class="k">fix(webui): support derived metrics in eval config uploaded (#4647)<br>Path after this commit: src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx
+index fba2b1025e..e0d08e8e32 100755
+<span class="d">--- a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="h">@@ -3,6 +3,7 @@ import React from &#x27;react&#x27;;</span>
+ import { useStore } from &#x27;@app/stores/evalConfig&#x27;;
+ import { ThemeProvider, createTheme } from &#x27;@mui/material/styles&#x27;;
+ import type {
+<span class="a">+  DerivedMetric,</span>
+   ProviderOptions,
+   TestCase,
+   EvaluateOptions,
+<span class="h">@@ -65,6 +66,7 @@ const defaultStoreValues = {</span>
+   prompts: [] as any[],
+   testCases: [] as TestCase[],
+   defaultTest: {} as TestCase,
+<span class="a">+  derivedMetrics: [] as DerivedMetric[],</span>
+   env: {} as EnvOverrides,
+   evaluateOptions: {} as EvaluateOptions,
+   scenarios: [] as Scenario[],
+<span class="h">@@ -146,6 +148,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+       prompts: [&#x27;Test Prompt {{var}}&#x27;],
+       testCases: [{ vars: { var: &#x27;value&#x27; } }] as TestCase[],
+       defaultTest: { assert: [{ type: &#x27;equals&#x27;, value: &#x27;expected&#x27; }] } as TestCase,
+<span class="a">+      derivedMetrics: [{ name: &#x27;precision&#x27;, value: &#x27;formula&#x27; }] as DerivedMetric[],</span>
+       env: { OPENAI_API_KEY: &#x27;testkey&#x27; } as EnvOverrides,
+       evaluateOptions: { maxConcurrency: 5 } as EvaluateOptions,
+       scenarios: [{ description: &#x27;Test Scenario&#x27;, config: [], tests: [] }] as Scenario[],
+<span class="h">@@ -172,6 +175,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+     expect(currentState.prompts).toEqual(defaultStoreValues.prompts);
+     expect(currentState.testCases).toEqual(defaultStoreValues.testCases);
+     expect(currentState.defaultTest).toEqual(defaultStoreValues.defaultTest);
+<span class="a">+    expect(currentState.derivedMetrics).toEqual(defaultStoreValues.derivedMetrics);</span>
+     expect(currentState.env).toEqual(defaultStoreValues.env);
+     expect(currentState.evaluateOptions).toEqual(defaultStoreValues.evaluateOptions);
+     expect(currentState.scenarios).toEqual(defaultStoreValues.scenarios);
+<span class="h">@@ -186,6 +190,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+       prompts: [&#x27;Test Prompt {{var}}&#x27;],
+       testCases: [{ vars: { var: &#x27;value&#x27; } }] as TestCase[],
+       defaultTest: { assert: [{ type: &#x27;equals&#x27;, value: &#x27;expected&#x27; }] } as TestCase,
+<span class="a">+      derivedMetrics: [{ name: &#x27;precision&#x27;, value: &#x27;formula&#x27; }] as DerivedMetric[],</span>
+       env: { OPENAI_API_KEY: &#x27;testkey&#x27; } as EnvOverrides,
+       evaluateOptions: { maxConcurrency: 5 } as EvaluateOptions,
+       scenarios: [{ description: &#x27;Test Scenario&#x27;, config: [], tests: [] }] as Scenario[],
+<span class="h">@@ -212,6 +217,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+     expect(currentState.prompts).toEqual(defaultStoreValues.prompts);
+     expect(currentState.testCases).toEqual(defaultStoreValues.testCases);
+     expect(currentState.defaultTest).toEqual(defaultStoreValues.defaultTest);
+<span class="a">+    expect(currentState.derivedMetrics).toEqual(defaultStoreValues.derivedMetrics);</span>
+     expect(currentState.env).toEqual(defaultStoreValues.env);
+     expect(currentState.evaluateOptions).toEqual(defaultStoreValues.evaluateOptions);
+     expect(currentState.scenarios).toEqual(defaultStoreValues.scenarios);</pre><h2>Commit #2: <a href="https://github.com/promptfoo/promptfoo/commit/be0c501a7e296c0ac725a388bdb9baca5e5b81ca">be0c501a7e</a> (2025-07-14T04:59:41-04:00)</h2><p class="k">refactor(eval-config): modernize eval-creator state management (#4908)<br>Path after this commit: src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx
+index e0d08e8e32..876e7a13ad 100755
+<span class="d">--- a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+ import { render, screen, within, waitFor, waitForElementToBeRemoved } from &#x27;@testing-library/react&#x27;;
+ import React from &#x27;react&#x27;;
+<span class="d">-import { useStore } from &#x27;@app/stores/evalConfig&#x27;;</span>
+<span class="a">+import { useStore, DEFAULT_CONFIG } from &#x27;@app/stores/evalConfig&#x27;;</span>
+ import { ThemeProvider, createTheme } from &#x27;@mui/material/styles&#x27;;
+ import type {
+   DerivedMetric,
+<span class="h">@@ -56,28 +56,11 @@ const renderWithTheme = (component: React.ReactNode) =&gt; {</span>
+   return render(&lt;ThemeProvider theme={theme}&gt;{component}&lt;/ThemeProvider&gt;);
+ };
+ 
+<span class="d">-// Capture the true initial state structure from the store, including functions</span>
+<span class="d">-const initialZustandState = useStore.getState();</span>
+<span class="d">-</span>
+<span class="d">-// Define the default values for state properties based on the store&#x27;s definition</span>
+<span class="d">-const defaultStoreValues = {</span>
+<span class="d">-  description: &#x27;&#x27;,</span>
+<span class="d">-  providers: [] as ProviderOptions[],</span>
+<span class="d">-  prompts: [] as any[],</span>
+<span class="d">-  testCases: [] as TestCase[],</span>
+<span class="d">-  defaultTest: {} as TestCase,</span>
+<span class="d">-  derivedMetrics: [] as DerivedMetric[],</span>
+<span class="d">-  env: {} as EnvOverrides,</span>
+<span class="d">-  evaluateOptions: {} as EvaluateOptions,</span>
+<span class="d">-  scenarios: [] as Scenario[],</span>
+<span class="d">-  extensions: [] as string[],</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {
+   beforeEach(() =&gt; {
+     vi.clearAllMocks();
+<span class="d">-    // Reset store to its defined initial state before each test</span>
+<span class="d">-    useStore.setState({ ...initialZustandState, ...defaultStoreValues }, true);</span>
+<span class="a">+    // Reset store to its default state before each test</span>
+<span class="a">+    useStore.getState().reset();</span>
+   });
+ 
+   it(&#x27;should open the reset confirmation dialog when the Reset button is clicked&#x27;, async () =&gt; {
+<span class="h">@@ -123,7 +106,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+   it(&#x27;should update varsList to empty array after reset&#x27;, async () =&gt; {
+     // Arrange
+     const initialPrompts = [&#x27;Test Prompt {{var}}&#x27;];
+<span class="d">-    useStore.setState({ prompts: initialPrompts });</span>
+<span class="a">+    useStore.getState().updateConfig({ prompts: initialPrompts });</span>
+ 
+     renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);
+ 
+<span class="h">@@ -146,7 +129,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+       description: &#x27;Test Description&#x27;,
+       providers: [{ id: &#x27;provider1&#x27;, label: &#x27;Provider 1&#x27; }] as ProviderOptions[],
+       prompts: [&#x27;Test Prompt {{var}}&#x27;],
+<span class="d">-      testCases: [{ vars: { var: &#x27;value&#x27; } }] as TestCase[],</span>
+<span class="a">+      tests: [{ vars: { var: &#x27;value&#x27; } }] as TestCase[],</span>
+       defaultTest: { assert: [{ type: &#x27;equals&#x27;, value: &#x27;expected&#x27; }] } as TestCase,
+       derivedMetrics: [{ name: &#x27;precision&#x27;, value: &#x27;formula&#x27; }] as DerivedMetric[],
+       env: { OPENAI_API_KEY: &#x27;testkey&#x27; } as EnvOverrides,
+<span class="h">@@ -154,7 +137,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+       scenarios: [{ description: &#x27;Test Scenario&#x27;, config: [], tests: [] }] as Scenario[],
+       extensions: [&#x27;file://path/to/extension.py:function_name&#x27;] as string[],
+     };
+<span class="d">-    useStore.setState(nonEmptyState);</span>
+<span class="a">+    useStore.getState().updateConfig(nonEmptyState);</span>
+ 
+     renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);
+ 
+<span class="h">@@ -168,18 +151,9 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+     await userEvent.click(dialogResetButton);
+ 
+     // Assert: Check if the store state has been reset to default values
+<span class="d">-    const currentState = useStore.getState();</span>
+<span class="d">-</span>
+<span class="d">-    expect(currentState.description).toBe(defaultStoreValues.description);</span>
+<span class="d">-    expect(currentState.providers).toEqual(defaultStoreValues.providers);</span>
+<span class="d">-    expect(currentState.prompts).toEqual(defaultStoreValues.prompts);</span>
+<span class="d">-    expect(currentState.testCases).toEqual(defaultStoreValues.testCases);</span>
+<span class="d">-    expect(currentState.defaultTest).toEqual(defaultStoreValues.defaultTest);</span>
+<span class="d">-    expect(currentState.derivedMetrics).toEqual(defaultStoreValues.derivedMetrics);</span>
+<span class="d">-    expect(currentState.env).toEqual(defaultStoreValues.env);</span>
+<span class="d">-    expect(currentState.evaluateOptions).toEqual(defaultStoreValues.evaluateOptions);</span>
+<span class="d">-    expect(currentState.scenarios).toEqual(defaultStoreValues.scenarios);</span>
+<span class="d">-    expect(currentState.extensions).toEqual(defaultStoreValues.extensions);</span>
+<span class="a">+    const currentConfig = useStore.getState().config;</span>
+<span class="a">+</span>
+<span class="a">+    expect(currentConfig).toEqual(DEFAULT_CONFIG);</span>
+   });
+ 
+   it(&#x27;should clear persisted state when the Reset button is clicked&#x27;, async () =&gt; {
+<span class="h">@@ -188,7 +162,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+       description: &#x27;Test Description&#x27;,
+       providers: [{ id: &#x27;provider1&#x27;, label: &#x27;Provider 1&#x27; }] as ProviderOptions[],
+       prompts: [&#x27;Test Prompt {{var}}&#x27;],
+<span class="d">-      testCases: [{ vars: { var: &#x27;value&#x27; } }] as TestCase[],</span>
+<span class="a">+      tests: [{ vars: { var: &#x27;value&#x27; } }] as TestCase[],</span>
+       defaultTest: { assert: [{ type: &#x27;equals&#x27;, value: &#x27;expected&#x27; }] } as TestCase,
+       derivedMetrics: [{ name: &#x27;precision&#x27;, value: &#x27;formula&#x27; }] as DerivedMetric[],
+       env: { OPENAI_API_KEY: &#x27;testkey&#x27; } as EnvOverrides,
+<span class="h">@@ -196,7 +170,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+       scenarios: [{ description: &#x27;Test Scenario&#x27;, config: [], tests: [] }] as Scenario[],
+       extensions: [&#x27;file://path/to/extension.py:function_name&#x27;] as string[],
+     };
+<span class="d">-    useStore.setState(nonEmptyState);</span>
+<span class="a">+    useStore.getState().updateConfig(nonEmptyState);</span>
+ 
+     renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);
+ 
+<span class="h">@@ -210,18 +184,38 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+     await userEvent.click(dialogResetButton);
+ 
+     // Assert: Check if the store state has been reset to default values
+<span class="d">-    const currentState = useStore.getState();</span>
+<span class="d">-</span>
+<span class="d">-    expect(currentState.description).toBe(defaultStoreValues.description);</span>
+<span class="d">-    expect(currentState.providers).toEqual(defaultStoreValues.providers);</span>
+<span class="d">-    expect(currentState.prompts).toEqual(defaultStoreValues.prompts);</span>
+<span class="d">-    expect(currentState.testCases).toEqual(defaultStoreValues.testCases);</span>
+<span class="d">-    expect(currentState.defaultTest).toEqual(defaultStoreValues.defaultTest);</span>
+<span class="d">-    expect(currentState.derivedMetrics).toEqual(defaultStoreValues.derivedMetrics);</span>
+<span class="d">-    expect(currentState.env).toEqual(defaultStoreValues.env);</span>
+<span class="d">-    expect(currentState.evaluateOptions).toEqual(defaultStoreValues.evaluateOptions);</span>
+<span class="d">-    expect(currentState.scenarios).toEqual(defaultStoreValues.scenarios);</span>
+<span class="d">-    expect(currentState.extensions).toEqual(defaultStoreValues.extensions);</span>
+<span class="a">+    const currentConfig = useStore.getState().config;</span>
+<span class="a">+</span>
+<span class="a">+    expect(currentConfig).toEqual(DEFAULT_CONFIG);</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+<span class="a">+  it(&#x27;should update state when interacting with components&#x27;, async () =&gt; {</span>
+<span class="a">+    renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);</span>
+<span class="a">+</span>
+<span class="a">+    // Find the provider selector</span>
+<span class="a">+    const providerSelector = screen.getByTestId(&#x27;mock-provider-selector&#x27;);</span>
+<span class="a">+    expect(providerSelector).toHaveTextContent(&#x27;0 providers&#x27;);</span>
+<span class="a">+</span>
+<span class="a">+    // Click the clear providers button to trigger onChange</span>
+<span class="a">+    const clearButton = within(providerSelector).getByText(&#x27;Mock Clear Providers&#x27;);</span>
+<span class="a">+    await userEvent.click(clearButton);</span>
+<span class="a">+</span>
+<span class="a">+    // Verify the state was updated</span>
+<span class="a">+    expect(useStore.getState().config.providers).toEqual([]);</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+<span class="a">+  it(&#x27;should handle new fields like derivedMetrics automatically&#x27;, async () =&gt; {</span>
+<span class="a">+    // This demonstrates that new fields work without any store changes</span>
+<span class="a">+    const configWithNewField = {</span>
+<span class="a">+      derivedMetrics: [{ name: &#x27;f1&#x27;, value: &#x27;2 * precision * recall / (precision + recall)&#x27; }],</span>
+<span class="a">+      someNewFieldInFuture: &#x27;This will work automatically!&#x27;,</span>
+<span class="a">+    };</span>
+<span class="a">+</span>
+<span class="a">+    useStore.getState().updateConfig(configWithNewField);</span>
+<span class="a">+</span>
+<span class="a">+    const config = useStore.getState().config;</span>
+<span class="a">+    expect(config.derivedMetrics).toEqual(configWithNewField.derivedMetrics);</span>
+<span class="a">+    expect((config as any).someNewFieldInFuture).toBe(&#x27;This will work automatically!&#x27;);</span>
+   });
+ 
+   // Future test scenarios will be added here</pre><h2>Commit #3: <a href="https://github.com/promptfoo/promptfoo/commit/193a8d3eabce80ef5df1ca04a277f44a0447a998">193a8d3eab</a> (2025-07-21T13:51:14-07:00)</h2><p class="k">chore: Sort imports and turn on rule against unused imports (#5010)<br>Path after this commit: src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx
+index 876e7a13ad..6faa393182 100755
+<span class="d">--- a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="h">@@ -1,18 +1,19 @@</span>
+<span class="d">-import { render, screen, within, waitFor, waitForElementToBeRemoved } from &#x27;@testing-library/react&#x27;;</span>
+ import React from &#x27;react&#x27;;
+<span class="d">-import { useStore, DEFAULT_CONFIG } from &#x27;@app/stores/evalConfig&#x27;;</span>
+<span class="d">-import { ThemeProvider, createTheme } from &#x27;@mui/material/styles&#x27;;</span>
+<span class="a">+</span>
+<span class="a">+import { DEFAULT_CONFIG, useStore } from &#x27;@app/stores/evalConfig&#x27;;</span>
+<span class="a">+import { createTheme, ThemeProvider } from &#x27;@mui/material/styles&#x27;;</span>
+<span class="a">+import { render, screen, waitFor, waitForElementToBeRemoved, within } from &#x27;@testing-library/react&#x27;;</span>
+<span class="a">+import userEvent from &#x27;@testing-library/user-event&#x27;;</span>
+<span class="a">+import { beforeEach, describe, expect, it, vi } from &#x27;vitest&#x27;;</span>
+<span class="a m">+import EvaluateTestSuiteCreator from &#x27;./EvaluateTestSuiteCreator&#x27;;</span>
+ import type {
+   DerivedMetric,
+<span class="d">-  ProviderOptions,</span>
+<span class="d">-  TestCase,</span>
+<span class="d">-  EvaluateOptions,</span>
+   EnvOverrides,
+<span class="a">+  EvaluateOptions,</span>
+<span class="a">+  ProviderOptions,</span>
+   Scenario,
+<span class="a">+  TestCase,</span>
+ } from &#x27;@promptfoo/types&#x27;;
+<span class="d">-import userEvent from &#x27;@testing-library/user-event&#x27;;</span>
+<span class="d">-import { describe, it, expect, vi, beforeEach } from &#x27;vitest&#x27;;</span>
+<span class="d m">-import EvaluateTestSuiteCreator from &#x27;./EvaluateTestSuiteCreator&#x27;;</span>
+ 
+ // Mock child components
+ vi.mock(&#x27;./ConfigureEnvButton&#x27;, () =&gt; ({</pre><h2>Commit #4: <a href="https://github.com/promptfoo/promptfoo/commit/fdb792a2d1908007786571d54a8d7f66fb54940c">fdb792a2d1</a> (2025-11-24T01:06:57-08:00)</h2><p class="k">feat(server): add server-side provider list customization (#6124)<br>Path after this commit: src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx
+old mode 100755
+new mode 100644
+index 6faa393182..cdc0b053a3
+<span class="d">--- a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="h">@@ -14,6 +14,15 @@ import type {</span>
+   Scenario,
+   TestCase,
+ } from &#x27;@promptfoo/types&#x27;;
+<span class="a">+import { callApi } from &#x27;@app/utils/api&#x27;;</span>
+<span class="a">+</span>
+<span class="a">+// Mock useToast hook</span>
+<span class="a">+const showToastMock = vi.fn();</span>
+<span class="a">+vi.mock(&#x27;@app/hooks/useToast&#x27;, () =&gt; ({</span>
+<span class="a">+  useToast: () =&gt; ({</span>
+<span class="a">+    showToast: showToastMock,</span>
+<span class="a">+  }),</span>
+<span class="a">+}));</span>
+ 
+ // Mock child components
+ vi.mock(&#x27;./ConfigureEnvButton&#x27;, () =&gt; ({
+<span class="h">@@ -52,6 +61,15 @@ vi.mock(&#x27;./YamlEditor&#x27;, () =&gt; ({</span>
+   )),
+ }));
+ 
+<span class="a">+vi.mock(&#x27;@app/utils/api&#x27;, () =&gt; ({</span>
+<span class="a">+  callApi: vi.fn(() =&gt;</span>
+<span class="a">+    Promise.resolve({</span>
+<span class="a">+      ok: true,</span>
+<span class="a">+      json: () =&gt; Promise.resolve({ hasCustomConfig: false }),</span>
+<span class="a">+    }),</span>
+<span class="a">+  ),</span>
+<span class="a">+}));</span>
+<span class="a">+</span>
+ const renderWithTheme = (component: React.ReactNode) =&gt; {
+   const theme = createTheme({ palette: { mode: &#x27;light&#x27; } });
+   return render(&lt;ThemeProvider theme={theme}&gt;{component}&lt;/ThemeProvider&gt;);
+<span class="h">@@ -219,5 +237,48 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+     expect((config as any).someNewFieldInFuture).toBe(&#x27;This will work automatically!&#x27;);
+   });
+ 
+<span class="a">+  it(&#x27;should handle edge cases in variable extraction from prompts&#x27;, () =&gt; {</span>
+<span class="a">+    useStore.getState().updateConfig({</span>
+<span class="a">+      prompts: [</span>
+<span class="a">+        &#x27;{{{nestedVar}}}&#x27;,</span>
+<span class="a">+        &#x27;{{ var with spaces }}&#x27;,</span>
+<span class="a">+        &#x27;{{incomplete&#x27;,</span>
+<span class="a">+        &#x27;{{ complete }}&#x27;,</span>
+<span class="a">+        &#x27;{{validVar}}&#x27;,</span>
+<span class="a">+      ],</span>
+<span class="a">+    });</span>
+<span class="a">+</span>
+<span class="a">+    renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);</span>
+<span class="a">+</span>
+<span class="a">+    const testCasesSection = screen.getByTestId(&#x27;mock-test-cases-section&#x27;);</span>
+<span class="a">+    expect(testCasesSection).toHaveTextContent(&#x27;Vars: nestedVar, complete, validVar&#x27;);</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+<span class="a">+  it(&#x27;should gracefully handle a missing hasCustomConfig property in the /providers/config-status response&#x27;, async () =&gt; {</span>
+<span class="a">+    vi.mocked(callApi).mockResolvedValue({</span>
+<span class="a">+      ok: true,</span>
+<span class="a">+      json: async () =&gt; ({}),</span>
+<span class="a">+    } as Response);</span>
+<span class="a">+</span>
+<span class="a">+    renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);</span>
+<span class="a">+</span>
+<span class="a">+    await waitFor(() =&gt; {</span>
+<span class="a">+      expect(callApi).toHaveBeenCalledWith(&#x27;/providers/config-status&#x27;);</span>
+<span class="a">+    });</span>
+<span class="a">+</span>
+<span class="a">+    expect(showToastMock).not.toHaveBeenCalled();</span>
+<span class="a">+</span>
+<span class="a">+    const configureEnvButton = screen.getByTestId(&#x27;mock-configure-env-button&#x27;);</span>
+<span class="a">+    expect(configureEnvButton).toBeInTheDocument();</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+<span class="a">+  it(&#x27;should show the ConfigureEnvButton when the server responds with { hasCustomConfig: false }&#x27;, async () =&gt; {</span>
+<span class="a">+    renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);</span>
+<span class="a">+</span>
+<span class="a">+    const configureEnvButton = await screen.findByTestId(&#x27;mock-configure-env-button&#x27;);</span>
+<span class="a">+</span>
+<span class="a">+    expect(configureEnvButton).toBeInTheDocument();</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+   // Future test scenarios will be added here
+ });</pre><h2>Commit #5: <a href="https://github.com/promptfoo/promptfoo/commit/c628550469762d46c5bf2584f2926f594456612e">c628550469</a> (2025-12-18T09:29:32-08:00)</h2><p class="k">chore(biome): run linter (#6761)<br>Path after this commit: src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx
+index cdc0b053a3..a1d9d809aa 100644
+<span class="d">--- a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="h">@@ -1,6 +1,7 @@</span>
+ import React from &#x27;react&#x27;;
+ 
+ import { DEFAULT_CONFIG, useStore } from &#x27;@app/stores/evalConfig&#x27;;
+<span class="a">+import { callApi } from &#x27;@app/utils/api&#x27;;</span>
+ import { createTheme, ThemeProvider } from &#x27;@mui/material/styles&#x27;;
+ import { render, screen, waitFor, waitForElementToBeRemoved, within } from &#x27;@testing-library/react&#x27;;
+ import userEvent from &#x27;@testing-library/user-event&#x27;;
+<span class="h">@@ -14,7 +15,6 @@ import type {</span>
+   Scenario,
+   TestCase,
+ } from &#x27;@promptfoo/types&#x27;;
+<span class="d">-import { callApi } from &#x27;@app/utils/api&#x27;;</span>
+ 
+ // Mock useToast hook
+ const showToastMock = vi.fn();</pre><h2>Commit #6: <a href="https://github.com/promptfoo/promptfoo/commit/c5c698bc97b3927b023eff623b9b73d6fa9d5940">c5c698bc97</a> (2025-12-25T23:37:04-08:00)</h2><p class="k">feat: Introduce promptfoo design system, new nav, model audit, eval creator, and more (#6823)<br>Path after this commit: src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx
+index a1d9d809aa..692acc836d 100644
+<span class="d">--- a/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval-creator/components/EvaluateTestSuiteCreator.test.tsx</span>
+<span class="h">@@ -3,7 +3,7 @@ import React from &#x27;react&#x27;;</span>
+ import { DEFAULT_CONFIG, useStore } from &#x27;@app/stores/evalConfig&#x27;;
+ import { callApi } from &#x27;@app/utils/api&#x27;;
+ import { createTheme, ThemeProvider } from &#x27;@mui/material/styles&#x27;;
+<span class="d">-import { render, screen, waitFor, waitForElementToBeRemoved, within } from &#x27;@testing-library/react&#x27;;</span>
+<span class="a">+import { render, screen, waitFor, within } from &#x27;@testing-library/react&#x27;;</span>
+ import userEvent from &#x27;@testing-library/user-event&#x27;;
+ import { beforeEach, describe, expect, it, vi } from &#x27;vitest&#x27;;
+<span class=" m"> import EvaluateTestSuiteCreator from &#x27;./EvaluateTestSuiteCreator&#x27;;</span>
+<span class="h">@@ -31,9 +31,8 @@ vi.mock(&#x27;./ConfigureEnvButton&#x27;, () =&gt; ({</span>
+ vi.mock(&#x27;./PromptsSection&#x27;, () =&gt; ({
+   default: vi.fn(() =&gt; &lt;div data-testid=&quot;mock-prompts-section&quot; /&gt;),
+ }));
+<span class="d">-vi.mock(&#x27;./ProviderSelector&#x27;, () =&gt; ({</span>
+<span class="d">-  // ProviderSelector expects providers and onChange props.</span>
+<span class="d">-  default: vi.fn(({ providers, onChange }) =&gt; (</span>
+<span class="a">+vi.mock(&#x27;./ProvidersListSection&#x27;, () =&gt; ({</span>
+<span class="a">+  ProvidersListSection: vi.fn(({ providers, onChange }) =&gt; (</span>
+     &lt;div data-testid=&quot;mock-provider-selector&quot;&gt;
+       &lt;button onClick={() =&gt; onChange([])}&gt;Mock Clear Providers&lt;/button&gt;
+       {/* Render something based on providers if needed for other tests, or keep simple */}
+<span class="h">@@ -41,6 +40,9 @@ vi.mock(&#x27;./ProviderSelector&#x27;, () =&gt; ({</span>
+     &lt;/div&gt;
+   )),
+ }));
+<span class="a">+vi.mock(&#x27;./RunOptionsSection&#x27;, () =&gt; ({</span>
+<span class="a">+  RunOptionsSection: vi.fn(() =&gt; &lt;div data-testid=&quot;mock-run-options-section&quot; /&gt;),</span>
+<span class="a">+}));</span>
+ vi.mock(&#x27;./RunTestSuiteButton&#x27;, () =&gt; ({
+   default: vi.fn(() =&gt; &lt;div data-testid=&quot;mock-run-test-suite-button&quot; /&gt;),
+ }));
+<span class="h">@@ -54,12 +56,18 @@ vi.mock(&#x27;./TestCasesSection&#x27;, () =&gt; ({</span>
+ }));
+ vi.mock(&#x27;./YamlEditor&#x27;, () =&gt; ({
+   // YamlEditor expects initialConfig prop.
+<span class="d">-  default: vi.fn(({ initialConfig }) =&gt; (</span>
+<span class="a">+  default: vi.fn(() =&gt; (</span>
+     &lt;div data-testid=&quot;mock-yaml-editor&quot;&gt;
+<span class="d">-      &lt;pre&gt;{JSON.stringify(initialConfig)}&lt;/pre&gt;</span>
+<span class="a">+      &lt;pre&gt;YAML Editor&lt;/pre&gt;</span>
+     &lt;/div&gt;
+   )),
+ }));
+<span class="a">+vi.mock(&#x27;./StepSection&#x27;, () =&gt; ({</span>
+<span class="a">+  StepSection: vi.fn(({ children }) =&gt; &lt;div data-testid=&quot;mock-step-section&quot;&gt;{children}&lt;/div&gt;),</span>
+<span class="a">+}));</span>
+<span class="a">+vi.mock(&#x27;./InfoBox&#x27;, () =&gt; ({</span>
+<span class="a">+  InfoBox: vi.fn(({ children }) =&gt; &lt;div data-testid=&quot;mock-info-box&quot;&gt;{children}&lt;/div&gt;),</span>
+<span class="a">+}));</span>
+ 
+ vi.mock(&#x27;@app/utils/api&#x27;, () =&gt; ({
+   callApi: vi.fn(() =&gt;
+<span class="h">@@ -101,7 +109,9 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+     await userEvent.click(cancelButton);
+ 
+     // Wait for the dialog to be removed from the DOM
+<span class="d">-    await waitForElementToBeRemoved(() =&gt; screen.queryByRole(&#x27;dialog&#x27;, { name: &#x27;Confirm Reset&#x27; }));</span>
+<span class="a">+    await waitFor(() =&gt; {</span>
+<span class="a">+      expect(screen.queryByRole(&#x27;dialog&#x27;, { name: &#x27;Confirm Reset&#x27; })).toBeNull();</span>
+<span class="a">+    });</span>
+   });
+ 
+   it(&#x27;should close the reset confirmation dialog after the Reset button in the dialog is clicked&#x27;, async () =&gt; {
+<span class="h">@@ -129,6 +139,14 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+ 
+     renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);
+ 
+<span class="a">+    // Navigate to step 3 (Test Cases) to see the TestCasesSection</span>
+<span class="a">+    const step3Button = screen.getByRole(&#x27;button&#x27;, { name: /add test cases/i });</span>
+<span class="a">+    await userEvent.click(step3Button);</span>
+<span class="a">+</span>
+<span class="a">+    // Verify initial state has the variable</span>
+<span class="a">+    const testCasesSectionBefore = screen.getByTestId(&#x27;mock-test-cases-section&#x27;);</span>
+<span class="a">+    expect(testCasesSectionBefore).toHaveTextContent(&#x27;Vars: var&#x27;);</span>
+<span class="a">+</span>
+     // Act
+     const mainResetButton = screen.getByRole(&#x27;button&#x27;, { name: &#x27;Reset&#x27; });
+     await userEvent.click(mainResetButton);
+<span class="h">@@ -138,8 +156,8 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+     await userEvent.click(dialogResetButton);
+ 
+     // Assert
+<span class="d">-    const testCasesSection = screen.getByTestId(&#x27;mock-test-cases-section&#x27;);</span>
+<span class="d">-    expect(testCasesSection).toHaveTextContent(&#x27;Vars:&#x27;); // varsList is empty</span>
+<span class="a">+    const testCasesSectionAfter = screen.getByTestId(&#x27;mock-test-cases-section&#x27;);</span>
+<span class="a">+    expect(testCasesSectionAfter).toHaveTextContent(&#x27;Vars:&#x27;); // varsList is empty</span>
+   });
+ 
+   it(&#x27;should reset all fields to their default state when the Reset button is clicked&#x27;, async () =&gt; {
+<span class="h">@@ -211,8 +229,9 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+   it(&#x27;should update state when interacting with components&#x27;, async () =&gt; {
+     renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);
+ 
+<span class="a">+    // Step 1 (Choose Providers) should be active by default, so provider selector should be visible</span>
+     // Find the provider selector
+<span class="d">-    const providerSelector = screen.getByTestId(&#x27;mock-provider-selector&#x27;);</span>
+<span class="a">+    const providerSelector = await screen.findByTestId(&#x27;mock-provider-selector&#x27;);</span>
+     expect(providerSelector).toHaveTextContent(&#x27;0 providers&#x27;);
+ 
+     // Click the clear providers button to trigger onChange
+<span class="h">@@ -237,7 +256,7 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+     expect((config as any).someNewFieldInFuture).toBe(&#x27;This will work automatically!&#x27;);
+   });
+ 
+<span class="d">-  it(&#x27;should handle edge cases in variable extraction from prompts&#x27;, () =&gt; {</span>
+<span class="a">+  it(&#x27;should handle edge cases in variable extraction from prompts&#x27;, async () =&gt; {</span>
+     useStore.getState().updateConfig({
+       prompts: [
+         &#x27;{{{nestedVar}}}&#x27;,
+<span class="h">@@ -250,6 +269,10 @@ describe(&#x27;EvaluateTestSuiteCreator&#x27;, () =&gt; {</span>
+ 
+     renderWithTheme(&lt;EvaluateTestSuiteCreator /&gt;);
+ 
+<span class="a">+    // Navigate to step 3 (Test Cases) to see the TestCasesSection</span>
+<span class="a">+    const step3Button = screen.getByRole(&#x27;button&#x27;, { name: /add test cases/i });</span>
+<span class="a">+    await userEvent.click(step3Button);</span>
+<span class="a">+</span>
+     const testCasesSection = screen.getByTestId(&#x27;mock-test-cases-section&#x27;);
+     expect(testCasesSection).toHaveTextContent(&#x27;Vars: nestedVar, complete, validVar&#x27;);
+   });</pre></body></html>

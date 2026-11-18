@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L202</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L202</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/android">dotnet/android</a><br><b>File at merge:</b> src/Xamarin.Android.Build.Tasks/Tests/Xamarin.Android.Build.Tests/MarshalMethodTests.cs, line 31<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/android/commit/6a279151422f3ee79f9b8f028ea3c849db034850">6a27915142</a> (2025-05-01T17:45:35)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/android/tree/bb5968d700eaea7c4aae25e7c671c73efebc777f">bb5968d700</a>)</p><p><b>The line:</b></p><pre><span class="t">		proj.AndroidJavaSources.Add (new AndroidItem.AndroidJavaSource (&quot;JavaSourceTestInterface.java&quot;) {</span></pre><h2>File at the merge commit, lines 23 to 39</h2><pre>   23 | 		var proj = new XamarinAndroidApplicationProject {
+   24 | 			ProjectName = &quot;mmtest&quot;,
+   25 | 		};
+   26 | 
+   27 | 		proj.Sources.Add (new AndroidItem.AndroidLibrary (&quot;javaclasses.jar&quot;) {
+   28 | 			BinaryContent = () =&gt; ResourceData.JavaSourceJarTestJar,
+   29 | 		});
+   30 | 
+<span class="t">   31 | 		proj.AndroidJavaSources.Add (new AndroidItem.AndroidJavaSource (&quot;JavaSourceTestInterface.java&quot;) {</span>
+   32 | 			Encoding = Encoding.ASCII,
+   33 | 			TextContent = () =&gt; ResourceData.JavaSourceTestInterface,
+   34 | 			Metadata = { { &quot;Bind&quot;, &quot;True&quot; } },
+   35 | 		});
+   36 | 
+   37 | 		proj.AndroidJavaSources.Add (new AndroidItem.AndroidJavaSource (&quot;JavaSourceTestExtension.java&quot;) {
+   38 | 			Encoding = Encoding.ASCII,
+   39 | 			TextContent = () =&gt; ResourceData.JavaSourceTestExtension,</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/android/commit/0db0be12a3fa91e152a6679c948cb395a56ad4ab">0db0be12a3</a> (2025-11-04T23:42:06+00:00)</h2><p class="k">[xabt] don&#x27;t set `$(UseMonoRuntime)` by default (#10527)<br>Path after this commit: src/Xamarin.Android.Build.Tasks/Tests/Xamarin.Android.Build.Tests/MarshalMethodTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/Xamarin.Android.Build.Tasks/Tests/Xamarin.Android.Build.Tests/MarshalMethodTests.cs b/src/Xamarin.Android.Build.Tasks/Tests/Xamarin.Android.Build.Tests/MarshalMethodTests.cs
+index 20873467b..96ea956e6 100644
+<span class="d">--- a/src/Xamarin.Android.Build.Tasks/Tests/Xamarin.Android.Build.Tests/MarshalMethodTests.cs</span>
+<span class="a">+++ b/src/Xamarin.Android.Build.Tasks/Tests/Xamarin.Android.Build.Tests/MarshalMethodTests.cs</span>
+<span class="h">@@ -24,6 +24,11 @@ public class MarshalMethodTests : BaseTest</span>
+ 			ProjectName = &quot;mmtest&quot;,
+ 		};
+ 
+<span class="a">+		// Mono-only test.</span>
+<span class="a">+		// Managed typemaps have known issues in CoreCLR and will be replaced by a different</span>
+<span class="a">+		// implementation at some point.</span>
+<span class="a">+		proj.SetRuntime (AndroidRuntime.MonoVM);</span>
+<span class="a">+</span>
+ 		proj.Sources.Add (new AndroidItem.AndroidLibrary (&quot;javaclasses.jar&quot;) {
+ 			BinaryContent = () =&gt; ResourceData.JavaSourceJarTestJar,
+ 		});
+<span class="h">@@ -55,7 +60,7 @@ public class MarshalMethodTests : BaseTest</span>
+ 			class MyGreeter2 : Java.Lang.Object, Com.Xamarin.Android.Test.Msbuildtest.IJavaSourceTestInterface {
+ 			    public virtual string? GreetWithQuestion (string? p0, Java.Util.Date? p1, string? p2) =&gt; &quot;duplicate greetings!&quot;;
+ 			}
+<span class="d">-		</span>
+<span class="a">+</span>
+ 			// Overrides Java class method
+ 			class MyOverriddenGreeter : Com.Xamarin.Android.Test.Msbuildtest.JavaSourceTestExtension {
+ 			    public override string? GreetWithQuestion (string? p0, Java.Util.Date? p1, string? p2) =&gt; &quot;even more greetings!&quot;;</pre></body></html>

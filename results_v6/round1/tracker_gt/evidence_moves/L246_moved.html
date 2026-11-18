@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L246 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L246: after the move</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-storage-azcopy">azure/azure-storage-azcopy</a><br><b>Original file:</b> cmd/copyUtil.go (see L246.html)<br><b>Move commit:</b> <a href="https://github.com/azure/azure-storage-azcopy/commit/a7f6c745214360ba39b4566946937c38a4f119f0">a7f6c74521</a> (commit #5 on L246.html)<br><b>Destination file (your label):</b> azcopy/pathUtils.go<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-storage-azcopy/tree/ffcdb9e082d96f5ce020c3019963c80e1acbfd00">ffcdb9e082</a>)</p><p><b>The line:</b></p><pre><span class="t">		return</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 3 (lines 241, 252, 265).</p><h2>Destination file at the move commit, lines 233 to 249</h2><pre>  233 | // if nothing happens, the original source is returned
+  234 | func StripTrailingWildcardOnRemoteSource(source string, location common.Location) (result string, stripTopDir bool, err error) {
+  235 | 	result = source
+  236 | 	resourceURL, err := url.Parse(result)
+  237 | 	gURLParts := common.NewGenericResourceURLParts(*resourceURL, location)
+  238 | 
+  239 | 	if err != nil {
+  240 | 		err = fmt.Errorf(&quot;failed to parse url %s; %w&quot;, result, err)
+<span class="t">  241 | 		return</span>
+  242 | 	}
+  243 | 
+  244 | 	if strings.Contains(gURLParts.GetContainerName(), &quot;*&quot;) {
+  245 | 		// Disallow container name search and object specifics
+  246 | 		if gURLParts.GetObjectName() != &quot;&quot; {
+  247 | 			err = errors.New(&quot;cannot combine a specific object name with an account-level search&quot;)
+  248 | 			return
+  249 | 		}</pre><h2>Destination file at the move commit, lines 244 to 260</h2><pre>  244 | 	if strings.Contains(gURLParts.GetContainerName(), &quot;*&quot;) {
+  245 | 		// Disallow container name search and object specifics
+  246 | 		if gURLParts.GetObjectName() != &quot;&quot; {
+  247 | 			err = errors.New(&quot;cannot combine a specific object name with an account-level search&quot;)
+  248 | 			return
+  249 | 		}
+  250 | 
+  251 | 		// Return immediately here because we know this will be safe.
+<span class="t">  252 | 		return</span>
+  253 | 	}
+  254 | 
+  255 | 	// Trim the trailing /*.
+  256 | 	if strings.HasSuffix(resourceURL.RawPath, &quot;/*&quot;) {
+  257 | 		resourceURL.RawPath = strings.TrimSuffix(resourceURL.RawPath, &quot;/*&quot;)
+  258 | 		resourceURL.Path = strings.TrimSuffix(resourceURL.Path, &quot;/*&quot;)
+  259 | 		stripTopDir = true
+  260 | 	}</pre><h2>Destination file at the move commit, lines 257 to 273</h2><pre>  257 | 		resourceURL.RawPath = strings.TrimSuffix(resourceURL.RawPath, &quot;/*&quot;)
+  258 | 		resourceURL.Path = strings.TrimSuffix(resourceURL.Path, &quot;/*&quot;)
+  259 | 		stripTopDir = true
+  260 | 	}
+  261 | 
+  262 | 	// Ensure there aren&#x27;t any extra *s floating around.
+  263 | 	if strings.Contains(resourceURL.RawPath, &quot;*&quot;) {
+  264 | 		err = errors.New(&quot;cannot use wildcards in the path section of the URL except in trailing \&quot;/*\&quot;. If you wish to use * in your URL, manually encode it to %2A&quot;)
+<span class="t">  265 | 		return</span>
+  266 | 	}
+  267 | 
+  268 | 	result = resourceURL.String()
+  269 | 
+  270 | 	return
+  271 | }
+  272 | 
+  273 | // NormalizeResourceRoot should eliminate wildcards and error out in invalid scenarios. This is intended for the jobPartOrder.SourceRoot.</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches the destination file after the move in the window.</b></p></body></html>

@@ -1,0 +1,462 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L113</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L113</h1><p><b>Repository:</b> <a href="https://github.com/prebid/prebid.js">prebid/prebid.js</a><br><b>File at merge:</b> modules/pubmaticBidAdapter.js, line 688<br><b>Merge commit (birth):</b> <a href="https://github.com/prebid/prebid.js/commit/0295e87069b1be00673b20e0bfdf6de5403ef5f4">0295e87069</a> (2025-06-11T02:57:02)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/prebid/prebid.js/tree/60baec61d09bdc52b09bde5de4ce4cc0f84f0953">60baec61d0</a>)</p><p><b>The line:</b></p><pre><span class="t">    : &#x27;na&#x27;;</span></pre><h2>File at the merge commit, lines 680 to 696</h2><pre>  680 |   } else {
+  681 |     elementSize = _getMinSize(sizes);
+  682 |   }
+  683 |   const element = document.getElementById(adUnitCode);
+  684 |   if (!element) return;
+  685 | 
+  686 |   const viewabilityAmount = isViewabilityMeasurable(element)
+  687 |     ? getViewability(element, getWindowTop(), elementSize)
+<span class="t">  688 |     : &#x27;na&#x27;;</span>
+  689 | 
+  690 |   if (!imp.ext) {
+  691 |     imp.ext = {};
+  692 |   }
+  693 | 
+  694 |   // Add viewability data at the imp.ext level
+  695 |   imp.ext.viewability = {
+  696 |     amount: isNaN(viewabilityAmount) ? viewabilityAmount : Math.round(viewabilityAmount)</pre><p class="k">Below are all 12 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/prebid/prebid.js/commit/3d7355f86b33b4f98b86e16cc32f3cdb4f174c7e">3d7355f86b</a> (2025-06-10T23:25:26-04:00)</h2><p class="k">Update pubmaticBidAdapter.js (#13356)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index b67c3b408..a5204d82a 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -654,8 +654,6 @@ const _handleCustomParams = (params, conf) =&gt; {</span>
+   return conf;
+ };
+ 
+<span class="d">-</span>
+<span class="d">-</span>
+ /**
+  * Gets the minimum size from an array of sizes
+  * @param {Array} sizes - Array of size objects with w and h properties</pre><h2>Commit #2: <a href="https://github.com/prebid/prebid.js/commit/02a827de8a2b1f3885ae7fd8db7451cd61cd9993">02a827de8a</a> (2025-06-25T06:18:38-06:00)</h2><p class="k">Added code changes to remove empty format array when there is single size in imp (#13434)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index a5204d82a..f718d5354 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -327,6 +327,7 @@ const updateBannerImp = (bannerObj, adSlot) =&gt; {</span>
+   bannerObj.format = bannerObj.format.filter(
+     (item) =&gt; !(item.w === bannerObj.w &amp;&amp; item.h === bannerObj.h)
+   );
+<span class="a">+  if (!bannerObj.format?.length) delete bannerObj.format;</span>
+   bannerObj.pos ??= 0;
+ }
+ </pre><h2>Commit #3: <a href="https://github.com/prebid/prebid.js/commit/7203d19a6349b12b34cd82dc7afa2fb15fcef918">7203d19a63</a> (2025-07-10T10:32:20-04:00)</h2><p class="k">Linting: remove exception (#13518)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index f718d5354..dafe8f5d3 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -219,7 +219,7 @@ const handleImageProperties = asset =&gt; {</span>
+ 
+ const toOrtbNativeRequest = legacyNativeAssets =&gt; {
+   const ortb = { ver: &#x27;1.2&#x27;, assets: [] };
+<span class="d">-  for (let key in legacyNativeAssets) {</span>
+<span class="a">+  for (const key in legacyNativeAssets) {</span>
+     if (NATIVE_KEYS_THAT_ARE_NOT_ASSETS.includes(key)) continue;
+     if (!NATIVE_KEYS.hasOwnProperty(key) &amp;&amp; !PREBID_NATIVE_DATA_KEY_VALUES.includes(key)) {
+       logWarn(`${LOG_WARN_PREFIX}: Unrecognized asset: ${key}. Ignored.`);
+<span class="h">@@ -267,8 +267,8 @@ function removeGranularFloor(imp, mediaTypes) {</span>
+ 
+ const setFloorInImp = (imp, bid) =&gt; {
+   let bidFloor = -1;
+<span class="d">-  let requestedMediatypes = Object.keys(bid.mediaTypes);</span>
+<span class="d">-  let isMultiFormatRequest = requestedMediatypes.length &gt; 1</span>
+<span class="a">+  const requestedMediatypes = Object.keys(bid.mediaTypes);</span>
+<span class="a">+  const isMultiFormatRequest = requestedMediatypes.length &gt; 1</span>
+   if (typeof bid.getFloor === &#x27;function&#x27; &amp;&amp; !config.getConfig(&#x27;pubmatic.disableFloors&#x27;)) {
+     [BANNER, VIDEO, NATIVE].forEach(mediaType =&gt; {
+       if (!imp.hasOwnProperty(mediaType)) return;
+<span class="h">@@ -312,7 +312,7 @@ const setFloorInImp = (imp, bid) =&gt; {</span>
+ }
+ 
+ const updateBannerImp = (bannerObj, adSlot) =&gt; {
+<span class="d">-  let slot = adSlot.split(&#x27;:&#x27;);</span>
+<span class="a">+  const slot = adSlot.split(&#x27;:&#x27;);</span>
+   let splits = slot[0]?.split(&#x27;@&#x27;);
+   splits = splits?.length == 2 ? splits[1].split(&#x27;x&#x27;) : splits.length == 3 ? splits[2].split(&#x27;x&#x27;) : [];
+   const primarySize = bannerObj.format[0];
+<span class="h">@@ -341,7 +341,7 @@ const updateNativeImp = (imp, nativeParams) =&gt; {</span>
+     imp.native.request = JSON.stringify(toOrtbNativeRequest(nativeParams));
+   }
+   if (nativeParams?.ortb) {
+<span class="d">-    let nativeConfig = JSON.parse(imp.native.request);</span>
+<span class="a">+    const nativeConfig = JSON.parse(imp.native.request);</span>
+     const { assets } = nativeConfig;
+     if (!assets?.some(asset =&gt; asset.title || asset.img || asset.data || asset.video)) {
+       logWarn(`${LOG_WARN_PREFIX}: Native assets object is empty or contains invalid objects`);
+<span class="h">@@ -403,7 +403,7 @@ const addPMPDeals = (imp, deals) =&gt; {</span>
+ 
+ const updateRequestExt = (req, bidderRequest) =&gt; {
+   const allBiddersList = [&#x27;all&#x27;];
+<span class="d">-  let allowedBiddersList = bidderSettings.get(bidderRequest.bidderCode, &#x27;allowedAlternateBidderCodes&#x27;);</span>
+<span class="a">+  const allowedBiddersList = bidderSettings.get(bidderRequest.bidderCode, &#x27;allowedAlternateBidderCodes&#x27;);</span>
+   const biddersList = isArray(allowedBiddersList)
+     ? allowedBiddersList.map(val =&gt; val.trim().toLowerCase()).filter(uniques)
+     : allBiddersList;
+<span class="h">@@ -564,7 +564,7 @@ const validateBlockedCategories = (bcats) =&gt; {</span>
+ }
+ 
+ const getConnectionType = () =&gt; {
+<span class="d">-  let connection = window.navigator &amp;&amp; (window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection);</span>
+<span class="a">+  const connection = window.navigator &amp;&amp; (window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection);</span>
+   const types = { ethernet: 1, wifi: 2, &#x27;slow-2g&#x27;: 4, &#x27;2g&#x27;: 4, &#x27;3g&#x27;: 5, &#x27;4g&#x27;: 6 };
+   return types[connection?.effectiveType] || 0;
+ }
+<span class="h">@@ -779,7 +779,7 @@ export const spec = {</span>
+     })
+     const data = converter.toORTB({ validBidRequests, bidderRequest });
+ 
+<span class="d">-    let serverRequest = {</span>
+<span class="a">+    const serverRequest = {</span>
+       method: &#x27;POST&#x27;,
+       url: ENDPOINT,
+       data: data,</pre><h2>Commit #4: <a href="https://github.com/prebid/prebid.js/commit/e10f6e67a78a3a956cf703be2a1e41486375358b">e10f6e67a7</a> (2025-07-21T17:23:15-04:00)</h2><p class="k">PubMatic Bid Adapter: Add support for disabling gzip (#13631)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index dafe8f5d3..4874aeacd 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -30,6 +30,7 @@ const RENDERER_URL = &#x27;https://pubmatic.bbvms.com/r/&#x27;.concat(&#x27;$RENDERER&#x27;, &#x27;.js&#x27;);</span>
+ const MSG_VIDEO_PLCMT_MISSING = &#x27;Video.plcmt param missing&#x27;;
+ const PREBID_NATIVE_DATA_KEY_VALUES = Object.values(PREBID_NATIVE_DATA_KEYS_TO_ORTB);
+ const DEFAULT_TTL = 360;
+<span class="a">+const DEFAULT_GZIP_ENABLED = true;</span>
+ const CUSTOM_PARAMS = {
+   &#x27;kadpageurl&#x27;: &#x27;&#x27;, // Custom page url
+   &#x27;gender&#x27;: &#x27;&#x27;, // User gender
+<span class="h">@@ -641,6 +642,25 @@ const getPublisherId = (bids) =&gt;</span>
+     ? bids.find(bid =&gt; bid.params?.publisherId?.trim())?.params.publisherId || null
+     : null;
+ 
+<span class="a">+function getGzipSetting() {</span>
+<span class="a">+  // Check bidder-specific configuration</span>
+<span class="a">+  try {</span>
+<span class="a">+    const gzipSetting = deepAccess(config.getBidderConfig(), &#x27;pubmatic.gzipEnabled&#x27;);</span>
+<span class="a">+    if (gzipSetting !== undefined) {</span>
+<span class="a">+      const gzipValue = String(gzipSetting).toLowerCase().trim();</span>
+<span class="a">+      if (gzipValue === &#x27;true&#x27; || gzipValue === &#x27;false&#x27;) {</span>
+<span class="a">+        const parsedValue = gzipValue === &#x27;true&#x27;;</span>
+<span class="a">+        logInfo(&#x27;PubMatic: Using bidder-specific gzipEnabled setting:&#x27;, parsedValue);</span>
+<span class="a">+        return parsedValue;</span>
+<span class="a">+      }</span>
+<span class="a">+      logWarn(&#x27;PubMatic: Invalid gzipEnabled value in bidder config:&#x27;, gzipSetting);</span>
+<span class="a">+    }</span>
+<span class="a">+  } catch (e) { logWarn(&#x27;PubMatic: Error accessing bidder config:&#x27;, e); }</span>
+<span class="a">+</span>
+<span class="a">+  logInfo(&#x27;PubMatic: Using default gzipEnabled setting:&#x27;, DEFAULT_GZIP_ENABLED);</span>
+<span class="a">+  return DEFAULT_GZIP_ENABLED;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ const _handleCustomParams = (params, conf) =&gt; {
+   Object.keys(CUSTOM_PARAMS).forEach(key =&gt; {
+     const value = params[key];
+<span class="h">@@ -785,7 +805,7 @@ export const spec = {</span>
+       data: data,
+       bidderRequest: bidderRequest,
+       options: {
+<span class="d">-        endpointCompression: true</span>
+<span class="a">+        endpointCompression: getGzipSetting()</span>
+       },
+     };
+     return data?.imp?.length ? serverRequest : null;</pre><h2>Commit #5: <a href="https://github.com/prebid/prebid.js/commit/9d45096c4f9c3ed04a734e29de55f6484ca6d8c8">9d45096c4f</a> (2025-07-29T10:57:51-04:00)</h2><p class="k">deepintent &amp; pubmatic bid adapters: import deals getter from library (#13680)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index 4874aeacd..999daa09e 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -7,6 +7,7 @@ import { isViewabilityMeasurable, getViewability } from &#x27;../libraries/percentInV</span>
+ import { bidderSettings } from &#x27;../src/bidderSettings.js&#x27;;
+ import { ortbConverter } from &#x27;../libraries/ortbConverter/converter.js&#x27;;
+ import { NATIVE_ASSET_TYPES, NATIVE_IMAGE_TYPES, PREBID_NATIVE_DATA_KEYS_TO_ORTB, NATIVE_KEYS_THAT_ARE_NOT_ASSETS, NATIVE_KEYS } from &#x27;../src/constants.js&#x27;;
+<span class="a">+import { addDealCustomTargetings, addPMPDeals } from &#x27;../libraries/dealUtils/dealUtils.js&#x27;;</span>
+ 
+ /**
+  * @typedef {import(&#x27;../src/adapters/bidderFactory.js&#x27;).BidRequest} BidRequest
+<span class="h">@@ -73,8 +74,8 @@ const converter = ortbConverter({</span>
+     if (!imp.hasOwnProperty(&#x27;banner&#x27;) &amp;&amp; !imp.hasOwnProperty(&#x27;video&#x27;) &amp;&amp; !imp.hasOwnProperty(&#x27;native&#x27;)) {
+       return null;
+     }
+<span class="d">-    if (deals) addPMPDeals(imp, deals);</span>
+<span class="d">-    if (dctr) addDealCustomTargetings(imp, dctr);</span>
+<span class="a">+    if (deals) addPMPDeals(imp, deals, LOG_WARN_PREFIX);</span>
+<span class="a">+    if (dctr) addDealCustomTargetings(imp, dctr, LOG_WARN_PREFIX);</span>
+     if (rtd?.jwplayer) addJWPlayerSegmentData(imp, rtd.jwplayer);
+     imp.bidfloor = _parseSlotParam(&#x27;kadfloor&#x27;, kadfloor);
+     imp.bidfloorcur = currency ? _parseSlotParam(&#x27;currency&#x27;, currency) : DEFAULT_CURRENCY;
+<span class="h">@@ -375,33 +376,6 @@ const addJWPlayerSegmentData = (imp, jwplayer) =&gt; {</span>
+   imp.ext.key_val = imp.ext.key_val ? `${imp.ext.key_val}|${jwPlayerData}` : jwPlayerData;
+ };
+ 
+<span class="d">-const addDealCustomTargetings = (imp, dctr) =&gt; {</span>
+<span class="d">-  if (isStr(dctr) &amp;&amp; dctr.length &gt; 0) {</span>
+<span class="d">-    const arr = dctr.split(&#x27;|&#x27;).filter(val =&gt; val.trim().length &gt; 0);</span>
+<span class="d">-    dctr = arr.map(val =&gt; val.trim()).join(&#x27;|&#x27;);</span>
+<span class="d">-    imp.ext[&#x27;key_val&#x27;] = dctr;</span>
+<span class="d">-  } else {</span>
+<span class="d">-    logWarn(LOG_WARN_PREFIX + &#x27;Ignoring param : dctr with value : &#x27; + dctr + &#x27;, expects string-value, found empty or non-string value&#x27;);</span>
+<span class="d">-  }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-const addPMPDeals = (imp, deals) =&gt; {</span>
+<span class="d">-  if (!isArray(deals)) {</span>
+<span class="d">-    logWarn(`${LOG_WARN_PREFIX}Error: bid.params.deals should be an array of strings.`);</span>
+<span class="d">-    return;</span>
+<span class="d">-  }</span>
+<span class="d">-  deals.forEach(deal =&gt; {</span>
+<span class="d">-    if (typeof deal === &#x27;string&#x27; &amp;&amp; deal.length &gt; 3) {</span>
+<span class="d">-      if (!imp.pmp) {</span>
+<span class="d">-        imp.pmp = { private_auction: 0, deals: [] };</span>
+<span class="d">-      }</span>
+<span class="d">-      imp.pmp.deals.push({ id: deal });</span>
+<span class="d">-    } else {</span>
+<span class="d">-      logWarn(`${LOG_WARN_PREFIX}Error: deal-id present in array bid.params.deals should be a string with more than 3 characters length, deal-id ignored: ${deal}`);</span>
+<span class="d">-    }</span>
+<span class="d">-  });</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ const updateRequestExt = (req, bidderRequest) =&gt; {
+   const allBiddersList = [&#x27;all&#x27;];
+   const allowedBiddersList = bidderSettings.get(bidderRequest.bidderCode, &#x27;allowedAlternateBidderCodes&#x27;);</pre><h2>Commit #6: <a href="https://github.com/prebid/prebid.js/commit/3cbfac32242623968547cfa3fc193dd45de4316b">3cbfac3224</a> (2025-07-31T09:28:48-04:00)</h2><p class="k">PubMatic Adapter : Read custom targeting from RTD providers (#13705)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index 999daa09e..0b7469850 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -66,7 +66,7 @@ const converter = ortbConverter({</span>
+   },
+   imp(buildImp, bidRequest, context) {
+     const { kadfloor, currency, adSlot = &#x27;&#x27;, deals, dctr, pmzoneid, hashedKey } = bidRequest.params;
+<span class="d">-    const { adUnitCode, mediaTypes, rtd } = bidRequest;</span>
+<span class="a">+    const { adUnitCode, mediaTypes, rtd, ortb2 } = bidRequest;</span>
+     const imp = buildImp(bidRequest, context);
+ 
+     // Check if the imp object does not have banner, video, or native
+<span class="h">@@ -76,6 +76,16 @@ const converter = ortbConverter({</span>
+     }
+     if (deals) addPMPDeals(imp, deals, LOG_WARN_PREFIX);
+     if (dctr) addDealCustomTargetings(imp, dctr, LOG_WARN_PREFIX);
+<span class="a">+    const customTargetings = shouldAddDealTargeting(ortb2);</span>
+<span class="a">+    if (customTargetings) {</span>
+<span class="a">+      imp.ext = imp.ext || {};</span>
+<span class="a">+      const targetingValues = Object.values(customTargetings).filter(Boolean);</span>
+<span class="a">+      if (targetingValues.length) {</span>
+<span class="a">+        imp.ext[&#x27;key_val&#x27;] = imp.ext[&#x27;key_val&#x27;]</span>
+<span class="a">+          ? `${imp.ext[&#x27;key_val&#x27;]}|${targetingValues.join(&#x27;|&#x27;)}`</span>
+<span class="a">+          : targetingValues.join(&#x27;|&#x27;);</span>
+<span class="a">+      }</span>
+<span class="a">+    }</span>
+     if (rtd?.jwplayer) addJWPlayerSegmentData(imp, rtd.jwplayer);
+     imp.bidfloor = _parseSlotParam(&#x27;kadfloor&#x27;, kadfloor);
+     imp.bidfloorcur = currency ? _parseSlotParam(&#x27;currency&#x27;, currency) : DEFAULT_CURRENCY;
+<span class="h">@@ -159,6 +169,17 @@ const converter = ortbConverter({</span>
+   }
+ });
+ 
+<span class="a">+export const shouldAddDealTargeting = (ortb2) =&gt; {</span>
+<span class="a">+  const imSegmentData = ortb2?.user?.ext?.data?.im_segments;</span>
+<span class="a">+  const iasBrandSafety = ortb2?.site?.ext?.data?.[&#x27;ias-brand-safety&#x27;];</span>
+<span class="a">+  const hasImSegments = imSegmentData &amp;&amp; isArray(imSegmentData) &amp;&amp; imSegmentData.length;</span>
+<span class="a">+  const hasIasBrandSafety = typeof iasBrandSafety === &#x27;object&#x27; &amp;&amp; Object.keys(iasBrandSafety).length;</span>
+<span class="a">+  const result = {};</span>
+<span class="a">+  if (hasImSegments) result.im_segments = `im_segments=${imSegmentData.join(&#x27;,&#x27;)}`;</span>
+<span class="a">+  if (hasIasBrandSafety) result[&#x27;ias-brand-safety&#x27;] = Object.entries(iasBrandSafety).map(([key, value]) =&gt; `${key}=${value}`).join(&#x27;|&#x27;);</span>
+<span class="a">+  return Object.keys(result).length ? result : undefined;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export function _calculateBidCpmAdjustment(bid) {
+   if (!bid) return;
+ </pre><h2>Commit #7: <a href="https://github.com/prebid/prebid.js/commit/61ef1cd1845239e6fa544cec225a45cf8839091a">61ef1cd184</a> (2025-09-03T08:56:49-06:00)</h2><p class="k">PubMatic Bid Adapter : optimize impressions (#13791)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index 0b7469850..b231f26c7 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -74,11 +74,12 @@ const converter = ortbConverter({</span>
+     if (!imp.hasOwnProperty(&#x27;banner&#x27;) &amp;&amp; !imp.hasOwnProperty(&#x27;video&#x27;) &amp;&amp; !imp.hasOwnProperty(&#x27;native&#x27;)) {
+       return null;
+     }
+<span class="a">+    imp.ext = imp.ext || {};</span>
+<span class="a">+    imp.ext.pbcode = adUnitCode;</span>
+     if (deals) addPMPDeals(imp, deals, LOG_WARN_PREFIX);
+     if (dctr) addDealCustomTargetings(imp, dctr, LOG_WARN_PREFIX);
+     const customTargetings = shouldAddDealTargeting(ortb2);
+     if (customTargetings) {
+<span class="d">-      imp.ext = imp.ext || {};</span>
+       const targetingValues = Object.values(customTargetings).filter(Boolean);
+       if (targetingValues.length) {
+         imp.ext[&#x27;key_val&#x27;] = imp.ext[&#x27;key_val&#x27;]
+<span class="h">@@ -106,7 +107,9 @@ const converter = ortbConverter({</span>
+     return imp;
+   },
+   request(buildRequest, imps, bidderRequest, context) {
+<span class="d">-    const request = buildRequest(imps, bidderRequest, context);</span>
+<span class="a">+    // Optimize the imps array before building the request</span>
+<span class="a">+    const optimizedImps = optimizeImps(imps, bidderRequest);</span>
+<span class="a">+    const request = buildRequest(optimizedImps, bidderRequest, context);</span>
+     if (blockedIabCategories.length || request.bcat) {
+       const validatedBCategories = validateBlockedCategories([...(blockedIabCategories || []), ...(request.bcat || [])]);
+       if (validatedBCategories.length) request.bcat = validatedBCategories;
+<span class="h">@@ -565,6 +568,45 @@ const getConnectionType = () =&gt; {</span>
+   return types[connection?.effectiveType] || 0;
+ }
+ 
+<span class="a">+/**</span>
+<span class="a">+ * Optimizes the impressions array by consolidating impressions for the same ad unit and media type</span>
+<span class="a">+ * @param {Array} imps - Array of impression objects</span>
+<span class="a">+ * @param {Object} bidderRequest - The bidder request object</span>
+<span class="a">+ * @returns {Array} - Optimized impressions array</span>
+<span class="a">+ */</span>
+<span class="a">+function optimizeImps(imps, bidderRequest) {</span>
+<span class="a">+  const optimizedImps = {};</span>
+<span class="a">+</span>
+<span class="a">+  bidderRequest.bids.forEach(bid =&gt; {</span>
+<span class="a">+    const correspondingImp = imps.find(imp =&gt; imp.id === bid.bidId);</span>
+<span class="a">+    if (!correspondingImp) return;</span>
+<span class="a">+    const uniqueKey = bid.adUnitId;</span>
+<span class="a">+    if (!optimizedImps[uniqueKey]) {</span>
+<span class="a">+      optimizedImps[uniqueKey] = deepClone(correspondingImp);</span>
+<span class="a">+      return;</span>
+<span class="a">+    }</span>
+<span class="a">+    const baseImp = optimizedImps[uniqueKey];</span>
+<span class="a">+</span>
+<span class="a">+    if (isStr(correspondingImp.tagid)) {</span>
+<span class="a">+      baseImp.tagid = correspondingImp.tagid;</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    const copyPropertytoPath = (propPath, propName, toMerge) =&gt; {</span>
+<span class="a">+      if (!correspondingImp[propPath] || !correspondingImp[propPath][propName]) return;</span>
+<span class="a">+      if (!baseImp[propPath]) baseImp[propPath] = {};</span>
+<span class="a">+      if (toMerge) {</span>
+<span class="a">+        if (!baseImp[propPath][propName]) baseImp[propPath][propName] = [];</span>
+<span class="a">+        baseImp[propPath][propName] = [...baseImp[propPath][propName], ...correspondingImp[propPath][propName]];</span>
+<span class="a">+      } else {</span>
+<span class="a">+        baseImp[propPath][propName] = correspondingImp[propPath][propName];</span>
+<span class="a">+      }</span>
+<span class="a">+    };</span>
+<span class="a">+    copyPropertytoPath(&#x27;ext&#x27;, &#x27;key_val&#x27;, false);</span>
+<span class="a">+    copyPropertytoPath(&#x27;ext&#x27;, &#x27;pmZoneId&#x27;, false);</span>
+<span class="a">+    copyPropertytoPath(&#x27;pmp&#x27;, &#x27;deals&#x27;, true);</span>
+<span class="a">+  });</span>
+<span class="a">+  return Object.values(optimizedImps);</span>
+<span class="a">+}</span>
+ // BB stands for Blue BillyWig
+ const BB_RENDERER = {
+   bootstrapPlayer: function(bid) {</pre><h2>Commit #8: <a href="https://github.com/prebid/prebid.js/commit/74a15ddb36ef9824010c33b55c3a6bcf4d1ec836">74a15ddb36</a> (2025-09-03T10:03:49-06:00)</h2><p class="k">Pubmatic Bid Adapter : add biddercode in translator payload for reporting purposes (#13797)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index b231f26c7..2f3b5c169 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -120,7 +120,7 @@ const converter = ortbConverter({</span>
+     }
+     reqLevelParams(request);
+     updateUserSiteDevice(request, context?.bidRequests);
+<span class="d">-    addExtenstionParams(request);</span>
+<span class="a">+    addExtenstionParams(request, bidderRequest);</span>
+     const marketPlaceEnabled = bidderRequest?.bidderCode
+       ? bidderSettings.get(bidderRequest.bidderCode, &#x27;allowAlternateBidderCodes&#x27;) : undefined;
+     if (marketPlaceEnabled) updateRequestExt(request, bidderRequest);
+<span class="h">@@ -504,7 +504,7 @@ const updateResponseWithCustomFields = (res, bid, ctx) =&gt; {</span>
+   }
+ }
+ 
+<span class="d">-const addExtenstionParams = (req) =&gt; {</span>
+<span class="a">+const addExtenstionParams = (req, bidderRequest) =&gt; {</span>
+   const { profId, verId, wiid, transactionId } = conf;
+   req.ext = {
+     epoch: new Date().getTime(), // Sending epoch timestamp in request.ext object
+<span class="h">@@ -514,7 +514,8 @@ const addExtenstionParams = (req) =&gt; {</span>
+       wiid: wiid,
+       wv: &#x27;$$REPO_AND_VERSION$$&#x27;,
+       transactionId,
+<span class="d">-      wp: &#x27;pbjs&#x27;</span>
+<span class="a">+      wp: &#x27;pbjs&#x27;,</span>
+<span class="a">+      biddercode: bidderRequest?.bidderCode</span>
+     },
+     cpmAdjustment: cpmAdjustment
+   }</pre><h2>Commit #9: <a href="https://github.com/prebid/prebid.js/commit/0ac97fb9c9b7d40e1912db39244178bce8b761fb">0ac97fb9c9</a> (2025-09-22T17:03:33-04:00)</h2><p class="k">Linting: Eqeqeq (#13586)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index 2f3b5c169..71d03bf16 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -340,9 +340,9 @@ const setFloorInImp = (imp, bid) =&gt; {</span>
+ const updateBannerImp = (bannerObj, adSlot) =&gt; {
+   const slot = adSlot.split(&#x27;:&#x27;);
+   let splits = slot[0]?.split(&#x27;@&#x27;);
+<span class="d">-  splits = splits?.length == 2 ? splits[1].split(&#x27;x&#x27;) : splits.length == 3 ? splits[2].split(&#x27;x&#x27;) : [];</span>
+<span class="a">+  splits = splits?.length === 2 ? splits[1].split(&#x27;x&#x27;) : splits.length === 3 ? splits[2].split(&#x27;x&#x27;) : [];</span>
+   const primarySize = bannerObj.format[0];
+<span class="d">-  if (splits.length !== 2 || (parseInt(splits[0]) == 0 &amp;&amp; parseInt(splits[1]) == 0)) {</span>
+<span class="a">+  if (splits.length !== 2 || (parseInt(splits[0]) === 0 &amp;&amp; parseInt(splits[1]) === 0)) {</span>
+     bannerObj.w = primarySize.w;
+     bannerObj.h = primarySize.h;
+   } else {
+<span class="h">@@ -460,7 +460,7 @@ const updateResponseWithCustomFields = (res, bid, ctx) =&gt; {</span>
+   res.pm_dspid = bid.ext?.dspid ? bid.ext.dspid : null;
+   res.pm_seat = seatbid.seat;
+   if (!res.creativeId) res.creativeId = bid.id;
+<span class="d">-  if (res.ttl == DEFAULT_TTL) res.ttl = MEDIATYPE_TTL[res.mediaType];</span>
+<span class="a">+  if (Number(res.ttl) === DEFAULT_TTL) res.ttl = MEDIATYPE_TTL[res.mediaType];</span>
+   if (bid.dealid) {
+     res.dealChannel = bid.ext?.deal_channel ? dealChannel[bid.ext.deal_channel] || null : &#x27;PMP&#x27;;
+   }
+<span class="h">@@ -531,7 +531,7 @@ const addExtenstionParams = (req, bidderRequest) =&gt; {</span>
+  */
+ const assignDealTier = (bid, context, maxduration) =&gt; {
+   if (!bid?.ext?.prebiddealpriority || !FEATURES.VIDEO) return;
+<span class="d">-  if (context != ADPOD) return;</span>
+<span class="a">+  if (context !== ADPOD) return;</span>
+ 
+   const duration = bid?.ext?.video?.duration || maxduration;
+   // if (!duration) return;</pre><h2>Commit #10: <a href="https://github.com/prebid/prebid.js/commit/2c3ea6298444ab84cea637a8af10422f1fe15e27">2c3ea62984</a> (2025-10-08T07:17:42-04:00)</h2><p class="k">Linting: fix array-callback-return warnings (#13621)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index 71d03bf16..8b8fb74e7 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -550,6 +550,7 @@ const validateAllowedCategories = (acat) =&gt; {</span>
+           return true;
+         } else {
+           logWarn(LOG_WARN_PREFIX + &#x27;acat: Each category should be a string, ignoring category: &#x27; + item);
+<span class="a">+          return false;</span>
+         }
+       })
+       .map(item =&gt; item.trim())</pre><h2>Commit #11: <a href="https://github.com/prebid/prebid.js/commit/7c3edc558319e2e3e5e39a6f9499efab14bab3b0">7c3edc5583</a> (2025-10-31T13:20:48-06:00)</h2><p class="k">Pubmatic bid adapter: remove extra transactionId from bidder request (#14084)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index 8b8fb74e7..7f2abeb5b 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -505,7 +505,7 @@ const updateResponseWithCustomFields = (res, bid, ctx) =&gt; {</span>
+ }
+ 
+ const addExtenstionParams = (req, bidderRequest) =&gt; {
+<span class="d">-  const { profId, verId, wiid, transactionId } = conf;</span>
+<span class="a">+  const { profId, verId, wiid } = conf;</span>
+   req.ext = {
+     epoch: new Date().getTime(), // Sending epoch timestamp in request.ext object
+     wrapper: {
+<span class="h">@@ -513,7 +513,6 @@ const addExtenstionParams = (req, bidderRequest) =&gt; {</span>
+       version: verId ? parseInt(verId) : undefined,
+       wiid: wiid,
+       wv: &#x27;$$REPO_AND_VERSION$$&#x27;,
+<span class="d">-      transactionId,</span>
+       wp: &#x27;pbjs&#x27;,
+       biddercode: bidderRequest?.bidderCode
+     },
+<span class="h">@@ -827,7 +826,6 @@ export const spec = {</span>
+       originalBid.params.wiid = originalBid.params.wiid || bidderRequest.auctionId || wiid;
+       bid = deepClone(originalBid);
+       _handleCustomParams(bid.params, conf);
+<span class="d">-      conf.transactionId = bid.ortb2Imp?.ext?.tid;</span>
+       const { bcat, acat } = bid.params;
+       if (bcat) {
+         blockedIabCategories = blockedIabCategories.concat(bcat);</pre><h2>Commit #12: <a href="https://github.com/prebid/prebid.js/commit/e480e4f90e4cece5fd2250f04745714d8ac108b0">e480e4f90e</a> (2025-12-17T12:00:38-05:00)</h2><p class="k">Various modules: Ensure modules use connection utils (#14038)<br>Path after this commit: modules/pubmaticBidAdapter.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/modules/pubmaticBidAdapter.js b/modules/pubmaticBidAdapter.js
+index 7f2abeb5b..2a326867a 100644
+<span class="d">--- a/modules/pubmaticBidAdapter.js</span>
+<span class="a">+++ b/modules/pubmaticBidAdapter.js</span>
+<span class="h">@@ -8,6 +8,7 @@ import { bidderSettings } from &#x27;../src/bidderSettings.js&#x27;;</span>
+ import { ortbConverter } from &#x27;../libraries/ortbConverter/converter.js&#x27;;
+ import { NATIVE_ASSET_TYPES, NATIVE_IMAGE_TYPES, PREBID_NATIVE_DATA_KEYS_TO_ORTB, NATIVE_KEYS_THAT_ARE_NOT_ASSETS, NATIVE_KEYS } from &#x27;../src/constants.js&#x27;;
+ import { addDealCustomTargetings, addPMPDeals } from &#x27;../libraries/dealUtils/dealUtils.js&#x27;;
+<span class="a">+import { getConnectionType } from &#x27;../libraries/connectionInfo/connectionUtils.js&#x27;;</span>
+ 
+ /**
+  * @typedef {import(&#x27;../src/adapters/bidderFactory.js&#x27;).BidRequest} BidRequest
+<span class="h">@@ -563,12 +564,6 @@ const validateBlockedCategories = (bcats) =&gt; {</span>
+   return [...new Set(bcats.filter(item =&gt; typeof item === &#x27;string&#x27; &amp;&amp; item.length &gt;= 3))];
+ }
+ 
+<span class="d">-const getConnectionType = () =&gt; {</span>
+<span class="d">-  const connection = window.navigator &amp;&amp; (window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection);</span>
+<span class="d">-  const types = { ethernet: 1, wifi: 2, &#x27;slow-2g&#x27;: 4, &#x27;2g&#x27;: 4, &#x27;3g&#x27;: 5, &#x27;4g&#x27;: 6 };</span>
+<span class="d">-  return types[connection?.effectiveType] || 0;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ /**
+  * Optimizes the impressions array by consolidating impressions for the same ad unit and media type
+  * @param {Array} imps - Array of impression objects</pre></body></html>

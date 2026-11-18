@@ -1,0 +1,254 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L137</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L137</h1><p><b>Repository:</b> <a href="https://github.com/appsmithorg/appsmith">appsmithorg/appsmith</a><br><b>File at merge:</b> app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx, line 3<br><b>Merge commit (birth):</b> <a href="https://github.com/appsmithorg/appsmith/commit/e40564d7392c554aa5ad2729fb5cc481479daea0">e40564d739</a> (2025-02-17T11:59:38)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/appsmithorg/appsmith/tree/8f2592704d8b6627387c1608a0545812bcbf95b5">8f2592704d</a>)</p><p><b>The line:</b></p><pre><span class="t">import FormControl from &quot;pages/Editor/FormControl&quot;;</span></pre><h2>File at the merge commit, lines 1 to 11</h2><pre>    1 | import { Button, Text } from &quot;@appsmith/ads&quot;;
+    2 | import type { AppState } from &quot;ee/reducers&quot;;
+<span class="t">    3 | import FormControl from &quot;pages/Editor/FormControl&quot;;</span>
+    4 | import React, { useCallback, useEffect } from &quot;react&quot;;
+    5 | import { useDispatch, useSelector } from &quot;react-redux&quot;;
+    6 | import { change, formValueSelector } from &quot;redux-form&quot;;
+    7 | import styled from &quot;styled-components&quot;;
+    8 | import type { DropDownGroupedOptions } from &quot;../../DropDownControl&quot;;
+    9 | import type {
+   10 |   FunctionCallingEntityTypeOption,
+   11 |   FunctionCallingEntityType,</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/appsmithorg/appsmith/commit/f5b5df8eaea6bbc49b1c4d8e2b5adabfb3d7b010">f5b5df8eae</a> (2025-02-24T15:32:06+01:00)</h2><p class="k">feat: rename isApprovalRequired field (#39422)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx
+index e8cb942173..f073662540 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx</span>
+<span class="h">@@ -147,7 +147,7 @@ export const FunctionCallingConfigToolField = ({</span>
+         &lt;FormControl
+           config={{
+             controlType: &quot;SWITCH&quot;,
+<span class="d">-            configProperty: `${props.fieldPath}.requiresApproval`,</span>
+<span class="a">+            configProperty: `${props.fieldPath}.isApprovalRequired`,</span>
+             formName: props.formName,
+             id: props.fieldPath,
+             label: &quot;Requires approval&quot;,</pre><h2>Commit #2: <a href="https://github.com/appsmithorg/appsmith/commit/384685b27c822d59a381a4734851af6aeaa2102e">384685b27c</a> (2025-02-27T14:17:23+01:00)</h2><p class="k">feat: remove system functions (#39479)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx
+index f073662540..4d244ab812 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx</span>
+<span class="h">@@ -71,8 +71,6 @@ export const FunctionCallingConfigToolField = ({</span>
+           return &quot;Query&quot;;
+         case findEntityOption(entityId, entityOptions.JSFunction):
+           return &quot;JSFunction&quot;;
+<span class="d">-        case findEntityOption(entityId, entityOptions.SystemFunction):</span>
+<span class="d">-          return &quot;SystemFunction&quot;;</span>
+       }
+ 
+       return &quot;&quot;;
+<span class="h">@@ -118,11 +116,7 @@ export const FunctionCallingConfigToolField = ({</span>
+               isValid: true,
+               // @ts-expect-error FormControl component has incomplete TypeScript definitions for some valid properties
+               isSearchable: true,
+<span class="d">-              options: [</span>
+<span class="d">-                ...entityOptions.Query,</span>
+<span class="d">-                ...entityOptions.JSFunction,</span>
+<span class="d">-                ...entityOptions.SystemFunction,</span>
+<span class="d">-              ],</span>
+<span class="a">+              options: [...entityOptions.Query, ...entityOptions.JSFunction],</span>
+               optionGroupConfig: {
+                 Query: {
+                   label: &quot;Queries&quot;,
+<span class="h">@@ -132,10 +126,6 @@ export const FunctionCallingConfigToolField = ({</span>
+                   label: &quot;JS Functions&quot;,
+                   children: [],
+                 },
+<span class="d">-                SystemFunction: {</span>
+<span class="d">-                  label: &quot;System Functions&quot;,</span>
+<span class="d">-                  children: [],</span>
+<span class="d">-                },</span>
+               } satisfies Record&lt;
+                 FunctionCallingEntityType,
+                 DropDownGroupedOptions</pre><h2>Commit #3: <a href="https://github.com/appsmithorg/appsmith/commit/5a6d755980671b4406b9b175c3061626c6defd78">5a6d755980</a> (2025-03-27T09:58:20+05:30)</h2><p class="k">chore: Improve the UX of Function Calling form (#39916)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx
+index 4d244ab812..7ebdfbd5d1 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx</span>
+<span class="h">@@ -1,16 +1,11 @@</span>
+ import { Button, Text } from &quot;@appsmith/ads&quot;;
+<span class="d">-import type { AppState } from &quot;ee/reducers&quot;;</span>
+<span class=" m"> import FormControl from &quot;pages/Editor/FormControl&quot;;</span>
+<span class="d">-import React, { useCallback, useEffect } from &quot;react&quot;;</span>
+<span class="d">-import { useDispatch, useSelector } from &quot;react-redux&quot;;</span>
+<span class="d">-import { change, formValueSelector } from &quot;redux-form&quot;;</span>
+<span class="a">+import React, { useCallback, useMemo } from &quot;react&quot;;</span>
+<span class="a">+import { useDispatch } from &quot;react-redux&quot;;</span>
+<span class="a">+import { change } from &quot;redux-form&quot;;</span>
+ import styled from &quot;styled-components&quot;;
+<span class="d">-import type { DropDownGroupedOptions } from &quot;../../DropDownControl&quot;;</span>
+<span class="d">-import type {</span>
+<span class="d">-  FunctionCallingEntityTypeOption,</span>
+<span class="d">-  FunctionCallingEntityType,</span>
+<span class="d">-} from &quot;../types&quot;;</span>
+<span class="d">-import { selectEntityOptions } from &quot;./selectors&quot;;</span>
+<span class="a">+import type { FunctionCallingEntityType } from &quot;../types&quot;;</span>
+<span class="a">+import FunctionCallingMenuField from &quot;./FunctionCallingMenuField&quot;;</span>
+ 
+ interface FunctionCallingConfigToolFieldProps {
+   fieldPath: string;
+<span class="h">@@ -48,47 +43,45 @@ export const FunctionCallingConfigToolField = ({</span>
+   ...props
+ }: FunctionCallingConfigToolFieldProps) =&gt; {
+   const dispatch = useDispatch();
+<span class="d">-  const fieldValue = useSelector((state: AppState) =&gt;</span>
+<span class="d">-    formValueSelector(props.formName)(state, props.fieldPath),</span>
+<span class="d">-  );</span>
+<span class="d">-  const entityOptions = useSelector(selectEntityOptions);</span>
+ 
+   const handleRemoveButtonClick = useCallback(() =&gt; {
+     onRemove(index);
+   }, [onRemove, index]);
+ 
+<span class="d">-  const findEntityOption = useCallback(</span>
+<span class="d">-    (entityId: string, items: FunctionCallingEntityTypeOption[]): boolean =&gt; {</span>
+<span class="d">-      return items.find(({ value }) =&gt; value === entityId) !== undefined;</span>
+<span class="a">+  // entityType is dependent on entityId</span>
+<span class="a">+  // Every time entityId changes, we need to find the new entityType</span>
+<span class="a">+  const handleFunctionChange = useCallback(</span>
+<span class="a">+    (entityId: string, entityType: FunctionCallingEntityType) =&gt; {</span>
+<span class="a">+      dispatch(</span>
+<span class="a">+        change(props.formName, `${props.fieldPath}.entityType`, entityType),</span>
+<span class="a">+      );</span>
+     },
+<span class="d">-    [entityOptions],</span>
+<span class="a">+    [dispatch, props.formName, props.fieldPath],</span>
+   );
+ 
+<span class="d">-  const findEntityType = useCallback(</span>
+<span class="d">-    (entityId: string): string =&gt; {</span>
+<span class="d">-      switch (true) {</span>
+<span class="d">-        case findEntityOption(entityId, entityOptions.Query):</span>
+<span class="d">-          return &quot;Query&quot;;</span>
+<span class="d">-        case findEntityOption(entityId, entityOptions.JSFunction):</span>
+<span class="d">-          return &quot;JSFunction&quot;;</span>
+<span class="d">-      }</span>
+<span class="d">-</span>
+<span class="d">-      return &quot;&quot;;</span>
+<span class="d">-    },</span>
+<span class="d">-    [fieldValue.entityId, entityOptions],</span>
+<span class="a">+  const ApprovalSwitchConfig = useMemo(</span>
+<span class="a">+    () =&gt; ({</span>
+<span class="a">+      controlType: &quot;SWITCH&quot;,</span>
+<span class="a">+      configProperty: `${props.fieldPath}.isApprovalRequired`,</span>
+<span class="a">+      formName: props.formName,</span>
+<span class="a">+      id: props.fieldPath,</span>
+<span class="a">+      label: &quot;Requires approval&quot;,</span>
+<span class="a">+      isValid: true,</span>
+<span class="a">+    }),</span>
+<span class="a">+    [props.fieldPath, props.formName],</span>
+   );
+ 
+<span class="d">-  useEffect(</span>
+<span class="d">-    // entityType is dependent on entityId</span>
+<span class="d">-    // Every time entityId changes, we need to find the new entityType</span>
+<span class="d">-    function handleEntityTypeChange() {</span>
+<span class="d">-      const entityType = findEntityType(fieldValue.entityId);</span>
+<span class="d">-</span>
+<span class="d">-      dispatch(</span>
+<span class="d">-        change(props.formName, `${props.fieldPath}.entityType`, entityType),</span>
+<span class="d">-      );</span>
+<span class="d">-    },</span>
+<span class="d">-    [fieldValue.entityId],</span>
+<span class="a">+  const FunctionDescriptionInputConfig = useMemo(</span>
+<span class="a">+    () =&gt; ({</span>
+<span class="a">+      controlType: &quot;QUERY_DYNAMIC_INPUT_TEXT&quot;,</span>
+<span class="a">+      configProperty: `${props.fieldPath}.description`,</span>
+<span class="a">+      formName: props.formName,</span>
+<span class="a">+      id: props.fieldPath,</span>
+<span class="a">+      placeholderText: &quot;Describe how this function should be used...&quot;,</span>
+<span class="a">+      label: &quot;Description&quot;,</span>
+<span class="a">+      isValid: true,</span>
+<span class="a">+    }),</span>
+<span class="a">+    [props.fieldPath, props.formName],</span>
+   );
+ 
+   return (
+<span class="h">@@ -106,56 +99,15 @@ export const FunctionCallingConfigToolField = ({</span>
+       &lt;/ConfigItemRow&gt;
+       &lt;ConfigItemRow&gt;
+         &lt;ConfigItemSelectWrapper&gt;
+<span class="d">-          &lt;FormControl</span>
+<span class="d">-            config={{</span>
+<span class="d">-              controlType: &quot;DROP_DOWN&quot;,</span>
+<span class="d">-              configProperty: `${props.fieldPath}.entityId`,</span>
+<span class="d">-              formName: props.formName,</span>
+<span class="d">-              id: props.fieldPath,</span>
+<span class="d">-              label: &quot;&quot;,</span>
+<span class="d">-              isValid: true,</span>
+<span class="d">-              // @ts-expect-error FormControl component has incomplete TypeScript definitions for some valid properties</span>
+<span class="d">-              isSearchable: true,</span>
+<span class="d">-              options: [...entityOptions.Query, ...entityOptions.JSFunction],</span>
+<span class="d">-              optionGroupConfig: {</span>
+<span class="d">-                Query: {</span>
+<span class="d">-                  label: &quot;Queries&quot;,</span>
+<span class="d">-                  children: [],</span>
+<span class="d">-                },</span>
+<span class="d">-                JSFunction: {</span>
+<span class="d">-                  label: &quot;JS Functions&quot;,</span>
+<span class="d">-                  children: [],</span>
+<span class="d">-                },</span>
+<span class="d">-              } satisfies Record&lt;</span>
+<span class="d">-                FunctionCallingEntityType,</span>
+<span class="d">-                DropDownGroupedOptions</span>
+<span class="d">-              &gt;,</span>
+<span class="d">-            }}</span>
+<span class="d">-            formName={props.formName}</span>
+<span class="a">+          &lt;FunctionCallingMenuField</span>
+<span class="a">+            name={`${props.fieldPath}.entityId`}</span>
+<span class="a">+            onValueChange={handleFunctionChange}</span>
+           /&gt;
+         &lt;/ConfigItemSelectWrapper&gt;
+<span class="d">-        &lt;FormControl</span>
+<span class="d">-          config={{</span>
+<span class="d">-            controlType: &quot;SWITCH&quot;,</span>
+<span class="d">-            configProperty: `${props.fieldPath}.isApprovalRequired`,</span>
+<span class="d">-            formName: props.formName,</span>
+<span class="d">-            id: props.fieldPath,</span>
+<span class="d">-            label: &quot;Requires approval&quot;,</span>
+<span class="d">-            isValid: true,</span>
+<span class="d">-          }}</span>
+<span class="d">-          formName={props.formName}</span>
+<span class="d">-        /&gt;</span>
+<span class="a">+        &lt;FormControl config={ApprovalSwitchConfig} formName={props.formName} /&gt;</span>
+       &lt;/ConfigItemRow&gt;
+       &lt;FormControl
+<span class="d">-        config={{</span>
+<span class="d">-          controlType: &quot;QUERY_DYNAMIC_INPUT_TEXT&quot;,</span>
+<span class="d">-          configProperty: `${props.fieldPath}.description`,</span>
+<span class="d">-          formName: props.formName,</span>
+<span class="d">-          id: props.fieldPath,</span>
+<span class="d">-          placeholderText: &quot;Describe how this function should be used...&quot;,</span>
+<span class="d">-          label: &quot;Description&quot;,</span>
+<span class="d">-          isValid: true,</span>
+<span class="d">-        }}</span>
+<span class="a">+        config={FunctionDescriptionInputConfig}</span>
+         formName={props.formName}
+       /&gt;
+     &lt;/ConfigItemRoot&gt;</pre><h2>Commit #4: <a href="https://github.com/appsmithorg/appsmith/commit/3f696facefa7f1192e9e6c320a124a905cb90107">3f696facef</a> (2025-03-27T09:58:30+03:00)</h2><p class="k">chore: Simpler autofocus of function call (#39946)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx
+index 7ebdfbd5d1..9b046fb8db 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigToolField.tsx</span>
+<span class="h">@@ -12,6 +12,7 @@ interface FunctionCallingConfigToolFieldProps {</span>
+   formName: string;
+   index: number;
+   onRemove: (index: number) =&gt; void;
+<span class="a">+  isLastAdded?: boolean;</span>
+ }
+ 
+ const ConfigItemRoot = styled.div`
+<span class="h">@@ -39,6 +40,7 @@ const ConfigItemSelectWrapper = styled.div`</span>
+ 
+ export const FunctionCallingConfigToolField = ({
+   index,
+<span class="a">+  isLastAdded,</span>
+   onRemove,
+   ...props
+ }: FunctionCallingConfigToolFieldProps) =&gt; {
+<span class="h">@@ -100,6 +102,7 @@ export const FunctionCallingConfigToolField = ({</span>
+       &lt;ConfigItemRow&gt;
+         &lt;ConfigItemSelectWrapper&gt;
+           &lt;FunctionCallingMenuField
+<span class="a">+            autoFocus={isLastAdded}</span>
+             name={`${props.fieldPath}.entityId`}
+             onValueChange={handleFunctionChange}
+           /&gt;</pre></body></html>

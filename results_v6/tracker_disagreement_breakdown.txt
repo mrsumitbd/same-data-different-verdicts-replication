@@ -1,0 +1,38 @@
+Lines conference=modified, identity=censored: 26,963 of 854,139 (12.7% vendored). Sample: 1,000 (seed 42).
+
+same end snapshot as the conference cutoff: 100.0%
+identity tracker reports a different path at the end (file renamed/moved): 77.3%
+
+first blame --reverse option under which the line reaches the end snapshot:
+first_option_surviving
+none              64.8
+-M                20.5
+-C                11.8
+--first-parent     2.9
+
+reason (first option that makes the line survive; else rename at end):
+reason
+file renamed/moved (identity tracker follows the rename)    56.3
+moved within the file                                       20.5
+moved/copied from another file                              11.8
+other                                                        8.5
+changed only off the first-parent chain (side branch)        2.9
+
+conference death commit vs the line (first-parent diff of the file):
+conf_death_commit
+line removed by death commit                               52.2
+file not changed by death commit (vs first parent)         25.5
+line removed and re-added (whitespace/move within diff)    15.2
+file touched, line not removed                              7.1
+
+cross-tab (rows first option, columns death-commit check), %:
+conf_death_commit       file not changed by death commit (vs first parent)  file touched, line not removed  line removed and re-added (whitespace/move within diff)  line removed by death commit
+first_option_surviving                                                                                                                                                                           
+--first-parent                                                         0.3                             0.5                                                      0.2                           1.9
+-C                                                                     1.2                             0.0                                                      0.3                          10.3
+-M                                                                     5.9                             0.3                                                      7.8                           6.5
+none                                                                  18.1                             6.3                                                      6.9                          33.5
+
+vendored=False (n=879): none 66.3%, -M 17.5%, -C 13.4%, --first-parent 2.7%
+
+vendored=True (n=121): none 53.7%, -M 42.1%, --first-parent 4.1%

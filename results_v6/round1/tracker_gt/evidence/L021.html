@@ -1,0 +1,114 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L021</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L021</h1><p><b>Repository:</b> <a href="https://github.com/near/nearcore">near/nearcore</a><br><b>File at merge:</b> test-loop-tests/src/tests/fix_stake_threshold.rs, line 83<br><b>Merge commit (birth):</b> <a href="https://github.com/near/nearcore/commit/a3a01ebfd6fa99fa4b7669122b4240012af256df">a3a01ebfd6</a> (2025-04-08T17:41:07)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/near/nearcore/tree/2eba640aeb7663faf4d638aa5ac5214200e9fc09">2eba640aeb</a>)</p><p><b>The line:</b></p><pre><span class="t">    //           = (1 / 62_500) * total_stake / (62_499 / 62_500)</span></pre><h2>File at the merge commit, lines 75 to 89</h2><pre>   75 |         })
+   76 |         .sum::&lt;u128&gt;();
+   77 | 
+   78 |     assert_eq!(validators.len(), 2, &quot;proposal with stake at threshold should not be approved&quot;);
+   79 |     assert_eq!(total_stake / ONE_NEAR, 37_500_000_000);
+   80 | 
+   81 |     // after threshold fix
+   82 |     // threshold = min_stake_ratio * total_stake / (1 - min_stake_ratio)
+<span class="t">   83 |     //           = (1 / 62_500) * total_stake / (62_499 / 62_500)</span>
+   84 |     //           = total_stake / 62_499
+   85 |     assert_eq!(epoch_info.seat_price() / ONE_NEAR, total_stake / 62_499 / ONE_NEAR);
+   86 | 
+   87 |     TestLoopEnv { test_loop, node_datas, shared_state }
+   88 |         .shutdown_and_drain_remaining_events(Duration::seconds(20));
+   89 | }</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/near/nearcore/commit/75a35420084a3f75907a7dc0aa02c48adb1cda54">75a3542008</a> (2025-09-24T12:41:16+00:00)</h2><p class="k">refactor: switch type::Balance to near_token::NearToken (#14235)<br>Path after this commit: test-loop-tests/src/tests/fix_stake_threshold.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test-loop-tests/src/tests/fix_stake_threshold.rs b/test-loop-tests/src/tests/fix_stake_threshold.rs
+index 4afb5636f..57bbf335b 100644
+<span class="d">--- a/test-loop-tests/src/tests/fix_stake_threshold.rs</span>
+<span class="a">+++ b/test-loop-tests/src/tests/fix_stake_threshold.rs</span>
+<span class="h">@@ -1,6 +1,5 @@</span>
+ use crate::setup::builder::TestLoopBuilder;
+ use crate::setup::env::TestLoopEnv;
+<span class="d">-use crate::utils::ONE_NEAR;</span>
+ use crate::utils::validators::get_epoch_all_validators;
+ use itertools::Itertools;
+ use near_async::time::Duration;
+<span class="h">@@ -10,8 +9,7 @@ use near_o11y::testonly::init_test_logger;</span>
+ use near_primitives::epoch_manager::EpochConfigStore;
+ use near_primitives::num_rational::Rational32;
+ use near_primitives::test_utils::create_test_signer;
+<span class="d">-use near_primitives::types::AccountId;</span>
+<span class="d">-use near_primitives::types::AccountInfo;</span>
+<span class="a">+use near_primitives::types::{AccountId, AccountInfo, Balance};</span>
+ use near_primitives::version::PROTOCOL_VERSION;
+ 
+ #[test]
+<span class="h">@@ -21,7 +19,7 @@ fn slow_test_fix_validator_stake_threshold() {</span>
+     let test_loop_builder = TestLoopBuilder::new();
+     let epoch_config_store = EpochConfigStore::for_chain_id(&quot;mainnet&quot;, None).unwrap();
+     let epoch_length = 10;
+<span class="d">-    let initial_balance = 1_000_000 * ONE_NEAR;</span>
+<span class="a">+    let initial_balance = Balance::from_near(1_000_000);</span>
+     let accounts =
+         (0..6).map(|i| format!(&quot;account{}&quot;, i).parse().unwrap()).collect::&lt;Vec&lt;AccountId&gt;&gt;();
+     let clients = accounts.iter().cloned().collect_vec();
+<span class="h">@@ -29,17 +27,17 @@ fn slow_test_fix_validator_stake_threshold() {</span>
+         AccountInfo {
+             account_id: accounts[0].clone(),
+             public_key: create_test_signer(accounts[0].as_str()).public_key(),
+<span class="d">-            amount: 300_000 * 62_500 * ONE_NEAR,</span>
+<span class="a">+            amount: Balance::from_near(300_000 * 62_500),</span>
+         },
+         AccountInfo {
+             account_id: accounts[1].clone(),
+             public_key: create_test_signer(accounts[1].as_str()).public_key(),
+<span class="d">-            amount: 300_000 * 62_500 * ONE_NEAR,</span>
+<span class="a">+            amount: Balance::from_near(300_000 * 62_500),</span>
+         },
+         AccountInfo {
+             account_id: accounts[2].clone(),
+             public_key: create_test_signer(accounts[2].as_str()).public_key(),
+<span class="d">-            amount: 100_000 * ONE_NEAR,</span>
+<span class="a">+            amount: Balance::from_near(100_000),</span>
+         },
+     ];
+     let validators_spec = ValidatorsSpec::raw(validators, 3, 3, 3);
+<span class="h">@@ -67,22 +65,22 @@ fn slow_test_fix_validator_stake_threshold() {</span>
+         client.epoch_manager.get_epoch_id_from_prev_block(&amp;head.prev_block_hash).unwrap();
+     let epoch_info = client.epoch_manager.get_epoch_info(&amp;epoch_id).unwrap();
+     let validators = get_epoch_all_validators(client);
+<span class="d">-    let total_stake = validators</span>
+<span class="d">-        .iter()</span>
+<span class="d">-        .map(|v| {</span>
+<span class="d">-            let account_id = &amp;v.parse().unwrap();</span>
+<span class="d">-            epoch_info.get_validator_stake(account_id).unwrap()</span>
+<span class="d">-        })</span>
+<span class="d">-        .sum::&lt;u128&gt;();</span>
+<span class="d">-</span>
+<span class="a">+    let total_stake = validators.iter().fold(Balance::ZERO, |sum, v| {</span>
+<span class="a">+        let account_id = &amp;v.parse().unwrap();</span>
+<span class="a">+        let stake = epoch_info.get_validator_stake(account_id).unwrap();</span>
+<span class="a">+        sum.checked_add(stake).unwrap()</span>
+<span class="a">+    });</span>
+     assert_eq!(validators.len(), 2, &quot;proposal with stake at threshold should not be approved&quot;);
+<span class="d">-    assert_eq!(total_stake / ONE_NEAR, 37_500_000_000);</span>
+<span class="a">+    assert_eq!(total_stake.as_near(), 37_500_000_000);</span>
+ 
+     // after threshold fix
+     // threshold = min_stake_ratio * total_stake / (1 - min_stake_ratio)
+<span class=" m">     //           = (1 / 62_500) * total_stake / (62_499 / 62_500)</span>
+     //           = total_stake / 62_499
+<span class="d">-    assert_eq!(epoch_info.seat_price() / ONE_NEAR, total_stake / 62_499 / ONE_NEAR);</span>
+<span class="a">+    assert_eq!(</span>
+<span class="a">+        epoch_info.seat_price().as_near(),</span>
+<span class="a">+        total_stake.checked_div(62_499).unwrap().as_near()</span>
+<span class="a">+    );</span>
+ 
+     TestLoopEnv { test_loop, node_datas, shared_state }
+         .shutdown_and_drain_remaining_events(Duration::seconds(20));</pre><h2>Commit #2: <a href="https://github.com/near/nearcore/commit/ac275e15017d55812773b5bf2635bc4cdcc7a5de">ac275e1501</a> (2025-12-03T14:04:15+00:00)</h2><p class="k">chore(dynamic_resharding): make shard_layout private in EpochConfig (#14627)<br>Path after this commit: test-loop-tests/src/tests/fix_stake_threshold.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test-loop-tests/src/tests/fix_stake_threshold.rs b/test-loop-tests/src/tests/fix_stake_threshold.rs
+index 57bbf335b..a9cf12dce 100644
+<span class="d">--- a/test-loop-tests/src/tests/fix_stake_threshold.rs</span>
+<span class="a">+++ b/test-loop-tests/src/tests/fix_stake_threshold.rs</span>
+<span class="h">@@ -44,7 +44,7 @@ fn slow_test_fix_validator_stake_threshold() {</span>
+ 
+     let genesis = TestGenesisBuilder::new()
+         .genesis_time_from_clock(&amp;test_loop_builder.clock())
+<span class="d">-        .shard_layout(epoch_config_store.get_config(PROTOCOL_VERSION).shard_layout.clone())</span>
+<span class="a">+        .shard_layout(epoch_config_store.get_config(PROTOCOL_VERSION).legacy_shard_layout())</span>
+         .epoch_length(epoch_length)
+         .validators_spec(validators_spec)
+         .max_inflation_rate(Rational32::new(0, 1))</pre></body></html>

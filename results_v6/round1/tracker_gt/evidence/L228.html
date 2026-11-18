@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L228</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L228</h1><p><b>Repository:</b> <a href="https://github.com/rqlite/rqlite">rqlite/rqlite</a><br><b>File at merge:</b> db/db_commit_hook_test.go, line 93<br><b>Merge commit (birth):</b> <a href="https://github.com/rqlite/rqlite/commit/eec3ef2d18ed087fd4ba8607aa02a17c98e1cd05">eec3ef2d18</a> (2025-04-09T02:20:14)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/rqlite/rqlite/tree/953a6d69b54e79a59175375ae0972c32cfb8ce28">953a6d69b5</a>)</p><p><b>The line:</b></p><pre><span class="t">		return true</span></pre><h2>File at the merge commit, lines 85 to 101</h2><pre>   85 | 		t.Fatalf(&quot;error opening database&quot;)
+   86 | 	}
+   87 | 	defer db.Close()
+   88 | 	mustExecute(db, &quot;CREATE TABLE foo (id INTEGER PRIMARY KEY, name TEXT)&quot;)
+   89 | 
+   90 | 	count := &amp;atomic.Int32{}
+   91 | 	hook := func() bool {
+   92 | 		count.Add(1)
+<span class="t">   93 | 		return true</span>
+   94 | 	}
+   95 | 	if err := db.RegisterCommitHook(hook); err != nil {
+   96 | 		t.Fatalf(&quot;error registering commit hook&quot;)
+   97 | 	}
+   98 | 	mustExecute(db, &quot;BEGIN&quot;)
+   99 | 	mustExecute(db, &quot;INSERT INTO foo(id, name) VALUES(1, &#x27;fiona&#x27;)&quot;)
+  100 | 	mustExecute(db, &quot;ROLLBACK&quot;)
+  101 | </pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

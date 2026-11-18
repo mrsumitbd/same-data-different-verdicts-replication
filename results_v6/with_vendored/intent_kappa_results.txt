@@ -1,0 +1,103 @@
+
+======================================================================
+SECTION A: Cohen's kappa vs human gold labels (primary intent)
+======================================================================
+
+Gold labels: results/intent_annotation_sheet.xlsx  (385 of 385 commits labelled)
+Gold distribution: adaptive=163, corrective=92, perfective=87, preventive=43
+By two-tier group: human_supervised=192, human=97, fully_autonomous=96
+
+  keyword           kappa=0.457 [0.392, 0.520]  agreement=60.3%  (n=385)
+  deepseek          kappa=0.725 [0.671, 0.781]  agreement=81.3%  (n=385)
+  gpt_oss           kappa=0.673 [0.612, 0.732]  agreement=77.9%  (n=385)
+  minimax           kappa=0.733 [0.679, 0.787]  agreement=81.8%  (n=385)
+  keyword (labelled) kappa=0.499 [0.430, 0.564]  agreement=64.3%  (n=361)  [24 unknown dropped]
+
+By two-tier group:
+  human_supervised (n=192):
+    keyword           kappa=0.426 [0.336, 0.514]  agreement=58.3%  (n=192)
+    deepseek          kappa=0.781 [0.706, 0.848]  agreement=84.9%  (n=192)
+    gpt_oss           kappa=0.711 [0.630, 0.790]  agreement=80.2%  (n=192)
+    minimax           kappa=0.797 [0.725, 0.866]  agreement=85.9%  (n=192)
+  fully_autonomous (n=96):
+    keyword           kappa=0.477 [0.338, 0.602]  agreement=63.5%  (n=96)
+    deepseek          kappa=0.681 [0.546, 0.803]  agreement=79.2%  (n=96)
+    gpt_oss           kappa=0.591 [0.442, 0.721]  agreement=74.0%  (n=96)
+    minimax           kappa=0.678 [0.547, 0.793]  agreement=79.2%  (n=96)
+  human (n=97):
+    keyword           kappa=0.474 [0.345, 0.596]  agreement=60.8%  (n=97)
+    deepseek          kappa=0.653 [0.532, 0.765]  agreement=76.3%  (n=97)
+    gpt_oss           kappa=0.666 [0.545, 0.783]  agreement=77.3%  (n=97)
+    minimax           kappa=0.651 [0.530, 0.767]  agreement=76.3%  (n=97)
+
+Excluding the 42 rows flagged in notes (n=343):
+  keyword           kappa=0.498 [0.431, 0.561]  agreement=63.3%  (n=343)
+  deepseek          kappa=0.782 [0.727, 0.834]  agreement=85.1%  (n=343)
+  gpt_oss           kappa=0.720 [0.659, 0.775]  agreement=81.0%  (n=343)
+  minimax           kappa=0.790 [0.734, 0.839]  agreement=85.7%  (n=343)
+
+Restricted to the 224 sample commits that are modification commits in data/death_commit_messages_v6conf.csv (the rest are not modification commits in the current corpus):
+  keyword           kappa=0.472 [0.387, 0.552]  agreement=61.6%  (n=224)
+  deepseek          kappa=0.697 [0.616, 0.774]  agreement=79.5%  (n=224)
+  gpt_oss           kappa=0.655 [0.570, 0.736]  agreement=76.8%  (n=224)
+  minimax           kappa=0.696 [0.618, 0.770]  agreement=79.5%  (n=224)
+
+======================================================================
+SECTION B: Label provenance checks
+======================================================================
+
+keyword (death_commit_messages) == sample keyword_label: 385/385
+deepseek: 385 calls; finish_reason=length 0, empty 0, unparseable 0, api_error 0, retried at 4000 tokens 0; tokens in 6,298,951 / out 100,486 (median out 112)
+gpt_oss: 385 calls; finish_reason=length 0, empty 0, unparseable 0, api_error 0, retried at 4000 tokens 0; tokens in 5,928,570 / out 67,549 (median out 152)
+minimax: 385 calls; finish_reason=length 0, empty 0, unparseable 0, api_error 0, retried at 4000 tokens 0; tokens in 6,027,157 / out 116,355 (median out 150)
+gold identical to deepseek: 313/385 (should be well below 100% for an independent annotation)
+gold identical to gpt_oss: 300/385 (should be well below 100% for an independent annotation)
+gold identical to minimax: 315/385 (should be well below 100% for an independent annotation)
+
+======================================================================
+SECTION D: RQ2 comparison on the validation sample (same commits)
+Intent shares (%) per tier; gap = classifier share - human-label share
+======================================================================
+
+  human_supervised (n=192):
+    method             corrective  perfective    adaptive  preventive     unknown
+    gold                     28.6        21.9        38.5        10.9         0.0
+    keyword                  43.8        14.6        28.6         5.7         7.3
+      gap vs human          +15.1        -7.3        -9.9        -5.2        +7.3
+    deepseek                 27.1        20.8        47.4         4.7         0.0
+      gap vs human           -1.6        -1.0        +8.9        -6.2        +0.0
+    gpt_oss                  26.6        20.3        49.5         3.6         0.0
+      gap vs human           -2.1        -1.6       +10.9        -7.3        +0.0
+    minimax                  28.6        20.3        45.8         5.2         0.0
+      gap vs human           +0.0        -1.6        +7.3        -5.7        +0.0
+
+  fully_autonomous (n=96):
+    method             corrective  perfective    adaptive  preventive     unknown
+    gold                     15.6        20.8        52.1        11.5         0.0
+    keyword                  22.9        19.8        39.6        16.7         1.0
+      gap vs human           +7.3        -1.0       -12.5        +5.2        +1.0
+    deepseek                 17.7        28.1        49.0         5.2         0.0
+      gap vs human           +2.1        +7.3        -3.1        -6.2        +0.0
+    gpt_oss                  13.5        29.2        53.1         4.2         0.0
+      gap vs human           -2.1        +8.3        +1.0        -7.3        +0.0
+    minimax                  19.8        24.0        51.0         5.2         0.0
+      gap vs human           +4.2        +3.1        -1.0        -6.2        +0.0
+
+  human (n=97):
+    method             corrective  perfective    adaptive  preventive     unknown
+    gold                     22.7        25.8        40.2        11.3         0.0
+    keyword                  30.9        21.6        29.9         8.2         9.3
+      gap vs human           +8.2        -4.1       -10.3        -3.1        +9.3
+    deepseek                 23.7        24.7        48.5         3.1         0.0
+      gap vs human           +1.0        -1.0        +8.2        -8.2        +0.0
+    gpt_oss                  20.6        28.9        49.5         1.0         0.0
+      gap vs human           -2.1        +3.1        +9.3       -10.3        +0.0
+    minimax                  23.7        25.8        49.5         1.0         0.0
+      gap vs human           +1.0        +0.0        +9.3       -10.3        +0.0
+
+  Tier vs human-authored baseline (chi-square, Cramer's V):
+    gold              HS: chi2=1.34 p=0.720 V=0.068   FA: chi2=3.23 p=0.357 V=0.129
+    keyword           HS: chi2=5.56 p=0.235 V=0.139   FA: chi2=11.60 p=0.021 V=0.245
+    deepseek          HS: chi2=1.14 p=0.768 V=0.063   FA: chi2=1.57 p=0.666 V=0.090
+    gpt_oss           HS: chi2=4.55 p=0.208 V=0.126   FA: chi2=3.37 p=0.338 V=0.132
+    minimax           HS: chi2=4.59 p=0.205 V=0.126   FA: chi2=3.14 p=0.371 V=0.127

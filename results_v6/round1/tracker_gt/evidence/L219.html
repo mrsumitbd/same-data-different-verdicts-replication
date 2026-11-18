@@ -1,0 +1,170 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L219</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L219</h1><p><b>Repository:</b> <a href="https://github.com/sam-goodwin/alchemy">sam-goodwin/alchemy</a><br><b>File at merge:</b> alchemy/src/stripe/promotion-code.ts, line 211<br><b>Merge commit (birth):</b> <a href="https://github.com/sam-goodwin/alchemy/commit/c938be63c2110b90c7307e855a1e8e223b42330a">c938be63c2</a> (2025-06-04T07:54:29)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/sam-goodwin/alchemy/tree/ff4155941fe13145370a52fb222d74cdd7247fb8">ff4155941f</a>)</p><p><b>The line:</b></p><pre><span class="t">        metadata: promotionCode.metadata || undefined,</span></pre><h2>File at the merge commit, lines 203 to 219</h2><pre>  203 |         code: promotionCode.code,
+  204 |         active: promotionCode.active,
+  205 |         customer:
+  206 |           typeof promotionCode.customer === &quot;string&quot;
+  207 |             ? promotionCode.customer
+  208 |             : promotionCode.customer?.id,
+  209 |         expiresAt: promotionCode.expires_at || undefined,
+  210 |         maxRedemptions: promotionCode.max_redemptions || undefined,
+<span class="t">  211 |         metadata: promotionCode.metadata || undefined,</span>
+  212 |         restrictions: promotionCode.restrictions
+  213 |           ? {
+  214 |               firstTimeTransaction:
+  215 |                 promotionCode.restrictions.first_time_transaction || undefined,
+  216 |               minimumAmount:
+  217 |                 promotionCode.restrictions.minimum_amount || undefined,
+  218 |               minimumAmountCurrency:
+  219 |                 promotionCode.restrictions.minimum_amount_currency || undefined,</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/sam-goodwin/alchemy/commit/18ae67ad817abf3ce41849f2a5c3d4b36a211516">18ae67ad81</a> (2025-06-04T22:06:15-07:00)</h2><p class="k">feat(stripe): add adoption pattern to all Stripe resources (#275)<br>Path after this commit: alchemy/src/stripe/promotion-code.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/promotion-code.ts b/alchemy/src/stripe/promotion-code.ts
+index 119663072..3a4bd5536 100644
+<span class="d">--- a/alchemy/src/stripe/promotion-code.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/promotion-code.ts</span>
+<span class="h">@@ -2,7 +2,11 @@ import type Stripe from &quot;stripe&quot;;</span>
+ import type { Context } from &quot;../context.ts&quot;;
+ import { Resource } from &quot;../resource.ts&quot;;
+ import type { Secret } from &quot;../secret.ts&quot;;
+<span class="d">-import { createStripeClient, handleStripeDeleteError } from &quot;./client.ts&quot;;</span>
+<span class="a">+import {</span>
+<span class="a">+  createStripeClient,</span>
+<span class="a">+  handleStripeDeleteError,</span>
+<span class="a">+  isStripeConflictError,</span>
+<span class="a">+} from &quot;./client.ts&quot;;</span>
+ 
+ /**
+  * Restrictions for promotion code usage
+<span class="h">@@ -63,6 +67,11 @@ export interface PromotionCodeProps {</span>
+    * API key to use (overrides environment variable)
+    */
+   apiKey?: Secret;
+<span class="a">+</span>
+<span class="a">+  /**</span>
+<span class="a">+   * If true, adopt existing resource if creation fails due to conflict</span>
+<span class="a">+   */</span>
+<span class="a">+  adopt?: boolean;</span>
+ }
+ 
+ /**
+<span class="h">@@ -190,7 +199,35 @@ export const PromotionCode = Resource(</span>
+           };
+         }
+ 
+<span class="d">-        promotionCode = await stripe.promotionCodes.create(createParams);</span>
+<span class="a">+        try {</span>
+<span class="a">+          promotionCode = await stripe.promotionCodes.create(createParams);</span>
+<span class="a">+        } catch (error) {</span>
+<span class="a">+          if (isStripeConflictError(error) &amp;&amp; props.adopt) {</span>
+<span class="a">+            if (props.code) {</span>
+<span class="a">+              const existingPromotionCodes = await stripe.promotionCodes.list({</span>
+<span class="a">+                code: props.code,</span>
+<span class="a">+                limit: 1,</span>
+<span class="a">+              });</span>
+<span class="a">+              if (existingPromotionCodes.data.length &gt; 0) {</span>
+<span class="a">+                const existingPromotionCode = existingPromotionCodes.data[0];</span>
+<span class="a">+                const updateParams: Stripe.PromotionCodeUpdateParams = {</span>
+<span class="a">+                  active: props.active,</span>
+<span class="a">+                  metadata: props.metadata,</span>
+<span class="a">+                };</span>
+<span class="a">+                promotionCode = await stripe.promotionCodes.update(</span>
+<span class="a">+                  existingPromotionCode.id,</span>
+<span class="a">+                  updateParams,</span>
+<span class="a">+                );</span>
+<span class="a">+              } else {</span>
+<span class="a">+                throw error;</span>
+<span class="a">+              }</span>
+<span class="a">+            } else {</span>
+<span class="a">+              throw error;</span>
+<span class="a">+            }</span>
+<span class="a">+          } else {</span>
+<span class="a">+            throw error;</span>
+<span class="a">+          }</span>
+<span class="a">+        }</span>
+       }
+ 
+       return this({</pre><h2>Commit #2: <a href="https://github.com/sam-goodwin/alchemy/commit/5efac1842a6230d1c924350611d0c1c3392b3efb">5efac1842a</a> (2025-06-08T21:35:10-07:00)</h2><p class="k">feat: add fancy deployment CLI (#315)<br>Path after this commit: alchemy/src/stripe/promotion-code.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/promotion-code.ts b/alchemy/src/stripe/promotion-code.ts
+index 3a4bd5536..a7100841d 100644
+<span class="d">--- a/alchemy/src/stripe/promotion-code.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/promotion-code.ts</span>
+<span class="h">@@ -2,6 +2,7 @@ import type Stripe from &quot;stripe&quot;;</span>
+ import type { Context } from &quot;../context.ts&quot;;
+ import { Resource } from &quot;../resource.ts&quot;;
+ import type { Secret } from &quot;../secret.ts&quot;;
+<span class="a">+import { logger } from &quot;../util/logger.ts&quot;;</span>
+ import {
+   createStripeClient,
+   handleStripeDeleteError,
+<span class="h">@@ -261,7 +262,7 @@ export const PromotionCode = Resource(</span>
+         timesRedeemed: promotionCode.times_redeemed,
+       });
+     } catch (error) {
+<span class="d">-      console.error(&quot;Error creating/updating promotion code:&quot;, error);</span>
+<span class="a">+      logger.error(&quot;Error creating/updating promotion code:&quot;, error);</span>
+       throw error;
+     }
+   },</pre><h2>Commit #3: <a href="https://github.com/sam-goodwin/alchemy/commit/ca5c6e2b108dd0c209da9cfad67d6708e3b45c66">ca5c6e2b10</a> (2025-08-19T17:04:57-04:00)</h2><p class="k">chore: remove unused resources and dependencies (#869)<br>Path after this commit: alchemy/src/stripe/promotion-code.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/promotion-code.ts b/alchemy/src/stripe/promotion-code.ts
+index a7100841d..c21cd5561 100644
+<span class="d">--- a/alchemy/src/stripe/promotion-code.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/promotion-code.ts</span>
+<span class="h">@@ -156,7 +156,7 @@ export const PromotionCode = Resource(</span>
+     _id: string,
+     props: PromotionCodeProps,
+   ): Promise&lt;PromotionCode&gt; {
+<span class="d">-    const stripe = createStripeClient({ apiKey: props.apiKey });</span>
+<span class="a">+    const stripe = await createStripeClient({ apiKey: props.apiKey });</span>
+ 
+     if (this.phase === &quot;delete&quot;) {
+       try {</pre><h2>Commit #4: <a href="https://github.com/sam-goodwin/alchemy/commit/50a84fde99fec4aa179dcc14083e4a661b52fe7b">50a84fde99</a> (2025-08-25T16:46:48-07:00)</h2><p class="k">feat(cli): support --adopt flag to blanket adopt resources (#900)<br>Path after this commit: alchemy/src/stripe/promotion-code.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/promotion-code.ts b/alchemy/src/stripe/promotion-code.ts
+index c21cd5561..6f873ca51 100644
+<span class="d">--- a/alchemy/src/stripe/promotion-code.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/promotion-code.ts</span>
+<span class="h">@@ -156,6 +156,7 @@ export const PromotionCode = Resource(</span>
+     _id: string,
+     props: PromotionCodeProps,
+   ): Promise&lt;PromotionCode&gt; {
+<span class="a">+    const adopt = props.adopt ?? this.scope.adopt;</span>
+     const stripe = await createStripeClient({ apiKey: props.apiKey });
+ 
+     if (this.phase === &quot;delete&quot;) {
+<span class="h">@@ -203,7 +204,7 @@ export const PromotionCode = Resource(</span>
+         try {
+           promotionCode = await stripe.promotionCodes.create(createParams);
+         } catch (error) {
+<span class="d">-          if (isStripeConflictError(error) &amp;&amp; props.adopt) {</span>
+<span class="a">+          if (isStripeConflictError(error) &amp;&amp; adopt) {</span>
+             if (props.code) {
+               const existingPromotionCodes = await stripe.promotionCodes.list({
+                 code: props.code,</pre><h2>Commit #5: <a href="https://github.com/sam-goodwin/alchemy/commit/d967c0dc121f9da47270869e6e6ca34ff77dcb58">d967c0dc12</a> (2025-09-24T16:31:03-07:00)</h2><p class="k">feat: remove Resource symbols and this(..) syntax (#1003)<br>Path after this commit: alchemy/src/stripe/promotion-code.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/promotion-code.ts b/alchemy/src/stripe/promotion-code.ts
+index 6f873ca51..a58ce3dd5 100644
+<span class="d">--- a/alchemy/src/stripe/promotion-code.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/promotion-code.ts</span>
+<span class="h">@@ -78,9 +78,7 @@ export interface PromotionCodeProps {</span>
+ /**
+  * Output from the Stripe promotion code
+  */
+<span class="d">-export interface PromotionCode</span>
+<span class="d">-  extends Resource&lt;&quot;stripe::PromotionCode&quot;&gt;,</span>
+<span class="d">-    PromotionCodeProps {</span>
+<span class="a">+export interface PromotionCode extends PromotionCodeProps {</span>
+   /**
+    * The ID of the promotion code
+    */
+<span class="h">@@ -232,7 +230,7 @@ export const PromotionCode = Resource(</span>
+         }
+       }
+ 
+<span class="d">-      return this({</span>
+<span class="a">+      return {</span>
+         id: promotionCode.id,
+         object: promotionCode.object,
+         coupon:
+<span class="h">@@ -261,7 +259,7 @@ export const PromotionCode = Resource(</span>
+         created: promotionCode.created,
+         livemode: promotionCode.livemode,
+         timesRedeemed: promotionCode.times_redeemed,
+<span class="d">-      });</span>
+<span class="a">+      };</span>
+     } catch (error) {
+       logger.error(&quot;Error creating/updating promotion code:&quot;, error);
+       throw error;</pre></body></html>

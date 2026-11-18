@@ -1,0 +1,459 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L224</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L224</h1><p><b>Repository:</b> <a href="https://github.com/lingodotdev/lingo.dev">lingodotdev/lingo.dev</a><br><b>File at merge:</b> packages/cli/src/cli/loaders/typescript.spec.ts, line 82<br><b>Merge commit (birth):</b> <a href="https://github.com/lingodotdev/lingo.dev/commit/6d4e9439487469df0d77bd229986aa7ca98a50e9">6d4e943948</a> (2025-05-06T00:31:07)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/lingodotdev/lingo.dev/tree/5b096c8c9ba15ebf38719eec323a1e993c4fe642">5b096c8c9b</a>)</p><p><b>The line:</b></p><pre><span class="t">          welcome: &quot;Welcome to our app&quot;,</span></pre><h2>File at the merge commit, lines 74 to 90</h2><pre>   74 |     expect(result).toContain(&quot;farewell: \&quot;Adi&quot;);
+   75 |     expect(result).toContain(&quot;number: 42&quot;);
+   76 |   });
+   77 | 
+   78 |   it(&quot;should extract string literals from nested objects&quot;, async () =&gt; {
+   79 |     const input = `
+   80 |       export default {
+   81 |         messages: {
+<span class="t">   82 |           welcome: &quot;Welcome to our app&quot;,</span>
+   83 |           error: &quot;Something went wrong&quot;,
+   84 |           count: 5
+   85 |         },
+   86 |         settings: {
+   87 |           theme: {
+   88 |             name: &quot;Dark Mode&quot;,
+   89 |             colors: {
+   90 |               primary: &quot;blue&quot;,</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/lingodotdev/lingo.dev/commit/b0e550261afc83784a6b70dccb66b4683484195f">b0e550261a</a> (2025-05-06T15:08:55-07:00)</h2><p class="k">fix: babel imports in typescript loader (#764)<br>Path after this commit: packages/cli/src/cli/loaders/typescript/index.spec.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/packages/cli/src/cli/loaders/typescript.spec.ts b/packages/cli/src/cli/loaders/typescript/index.spec.ts
+similarity index 92%
+rename from packages/cli/src/cli/loaders/typescript.spec.ts
+rename to packages/cli/src/cli/loaders/typescript/index.spec.ts
+index e3727fc9..3399a1cb 100644
+<span class="d">--- a/packages/cli/src/cli/loaders/typescript.spec.ts</span>
+<span class="a">+++ b/packages/cli/src/cli/loaders/typescript/index.spec.ts</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import { describe, expect, it } from &quot;vitest&quot;;
+<span class="d">-import createTypescriptLoader from &quot;./typescript&quot;;</span>
+<span class="a">+import createTypescriptLoader from &quot;.&quot;;</span>
+ 
+ describe(&quot;typescript loader&quot;, () =&gt; {
+   it(&quot;should extract string literals from default export object&quot;, async () =&gt; {
+<span class="h">@@ -17,7 +17,7 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+ 
+     expect(result).toEqual({
+       greeting: &quot;Hello, world!&quot;,
+<span class="d">-      farewell: &quot;Goodbye!&quot;</span>
+<span class="a">+      farewell: &quot;Goodbye!&quot;,</span>
+     });
+   });
+ 
+<span class="h">@@ -36,16 +36,16 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+ 
+     expect(result).toEqual({
+<span class=" m">       welcome: &quot;Welcome to our app&quot;,</span>
+<span class="d">-      error: &quot;Something went wrong&quot;</span>
+<span class="a">+      error: &quot;Something went wrong&quot;,</span>
+     });
+   });
+ 
+   it(&quot;should handle empty or invalid input&quot;, async () =&gt; {
+     const loader = createTypescriptLoader().setDefaultLocale(&quot;en&quot;);
+<span class="d">-    </span>
+<span class="a">+</span>
+     let result = await loader.pull(&quot;en&quot;, &quot;&quot;);
+     expect(result).toEqual({});
+<span class="d">-    </span>
+<span class="a">+</span>
+     result = await loader.pull(&quot;en&quot;, &quot;const x = 5;&quot;);
+     expect(result).toEqual({});
+   });
+<span class="h">@@ -60,18 +60,18 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+     `;
+ 
+     const loader = createTypescriptLoader().setDefaultLocale(&quot;en&quot;);
+<span class="d">-    </span>
+<span class="a">+</span>
+     await loader.pull(&quot;en&quot;, input);
+<span class="d">-    </span>
+<span class="a">+</span>
+     const data = {
+       greeting: &quot;Hola, mundo!&quot;,
+<span class="d">-      farewell: &quot;Adiós!&quot;</span>
+<span class="a">+      farewell: &quot;Adiós!&quot;,</span>
+     };
+<span class="d">-    </span>
+<span class="a">+</span>
+     const result = await loader.push(&quot;es&quot;, data);
+<span class="d">-    </span>
+<span class="d">-    expect(result).toContain(&quot;greeting: \&quot;Hola, mundo!\&quot;&quot;);</span>
+<span class="d">-    expect(result).toContain(&quot;farewell: \&quot;Adi&quot;);</span>
+<span class="a">+</span>
+<span class="a">+    expect(result).toContain(&#x27;greeting: &quot;Hola, mundo!&quot;&#x27;);</span>
+<span class="a">+    expect(result).toContain(&#x27;farewell: &quot;Adi&#x27;);</span>
+     expect(result).toContain(&quot;number: 42&quot;);
+   });
+ 
+<span class="h">@@ -103,7 +103,7 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+       &quot;messages/error&quot;: &quot;Something went wrong&quot;,
+       &quot;settings/theme/name&quot;: &quot;Dark Mode&quot;,
+       &quot;settings/theme/colors/primary&quot;: &quot;blue&quot;,
+<span class="d">-      &quot;settings/theme/colors/secondary&quot;: &quot;gray&quot;</span>
+<span class="a">+      &quot;settings/theme/colors/secondary&quot;: &quot;gray&quot;,</span>
+     });
+   });
+ 
+<span class="h">@@ -128,7 +128,7 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+       &quot;categories/0/name&quot;: &quot;Electronics&quot;,
+       &quot;categories/0/description&quot;: &quot;Electronic devices&quot;,
+       &quot;categories/1/name&quot;: &quot;Books&quot;,
+<span class="d">-      &quot;categories/1/description&quot;: &quot;Reading materials&quot;</span>
+<span class="a">+      &quot;categories/1/description&quot;: &quot;Reading materials&quot;,</span>
+     });
+   });
+ 
+<span class="h">@@ -151,18 +151,18 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+     `;
+ 
+     const loader = createTypescriptLoader().setDefaultLocale(&quot;en&quot;);
+<span class="d">-    </span>
+<span class="a">+</span>
+     await loader.pull(&quot;en&quot;, input);
+<span class="d">-    </span>
+<span class="a">+</span>
+     const data = {
+       &quot;messages/welcome&quot;: &quot;Bienvenido a nuestra aplicación&quot;,
+       &quot;messages/error&quot;: &quot;Algo salió mal&quot;,
+       &quot;settings/theme/name&quot;: &quot;Modo Oscuro&quot;,
+<span class="d">-      &quot;settings/theme/colors/primary&quot;: &quot;azul&quot;</span>
+<span class="a">+      &quot;settings/theme/colors/primary&quot;: &quot;azul&quot;,</span>
+     };
+<span class="d">-    </span>
+<span class="a">+</span>
+     const result = await loader.push(&quot;es&quot;, data);
+<span class="d">-    </span>
+<span class="a">+</span>
+     const resultStr = JSON.stringify(result);
+     expect(resultStr).toContain(&quot;Bienvenido a nuestra aplicaci&quot;);
+     expect(resultStr).toContain(&quot;Algo sali&quot;);
+<span class="h">@@ -182,9 +182,9 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+     `;
+ 
+     const loader = createTypescriptLoader().setDefaultLocale(&quot;en&quot;);
+<span class="d">-    </span>
+<span class="a">+</span>
+     await loader.pull(&quot;en&quot;, input);
+<span class="d">-    </span>
+<span class="a">+</span>
+     const data = {
+       &quot;greetings/0&quot;: &quot;Hola&quot;,
+       &quot;greetings/1&quot;: &quot;Hola&quot;,
+<span class="h">@@ -192,11 +192,11 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+       &quot;categories/0/name&quot;: &quot;Electrónica&quot;,
+       &quot;categories/0/description&quot;: &quot;Dispositivos electrónicos&quot;,
+       &quot;categories/1/name&quot;: &quot;Libros&quot;,
+<span class="d">-      &quot;categories/1/description&quot;: &quot;Materiales de lectura&quot;</span>
+<span class="a">+      &quot;categories/1/description&quot;: &quot;Materiales de lectura&quot;,</span>
+     };
+<span class="d">-    </span>
+<span class="a">+</span>
+     const result = await loader.push(&quot;es&quot;, data);
+<span class="d">-    </span>
+<span class="a">+</span>
+     const resultStr = JSON.stringify(result);
+     expect(resultStr).toContain(&quot;Hola&quot;);
+     expect(resultStr).toContain(&quot;Oye&quot;);
+<span class="h">@@ -248,7 +248,7 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+       &quot;app/pages/0/sections/1/content&quot;: &quot;Check out our features&quot;,
+       &quot;app/pages/1/title&quot;: &quot;About&quot;,
+       &quot;app/pages/1/sections/0/heading&quot;: &quot;Our Story&quot;,
+<span class="d">-      &quot;app/pages/1/sections/0/content&quot;: &quot;We started in 2020&quot;</span>
+<span class="a">+      &quot;app/pages/1/sections/0/content&quot;: &quot;We started in 2020&quot;,</span>
+     });
+   });
+ });</pre><h2>Commit #2: <a href="https://github.com/lingodotdev/lingo.dev/commit/80cd8578d7d30e606a5692772d1be4b516a58299">80cd8578d7</a> (2025-05-08T16:21:15-07:00)</h2><p class="k">fix: fix nested typescript support (#768)<br>Path after this commit: packages/cli/src/cli/loaders/typescript/index.spec.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/packages/cli/src/cli/loaders/typescript/index.spec.ts b/packages/cli/src/cli/loaders/typescript/index.spec.ts
+index 3399a1cb..08eb6d1e 100644
+<span class="d">--- a/packages/cli/src/cli/loaders/typescript/index.spec.ts</span>
+<span class="a">+++ b/packages/cli/src/cli/loaders/typescript/index.spec.ts</span>
+<span class="h">@@ -1,5 +1,6 @@</span>
+ import { describe, expect, it } from &quot;vitest&quot;;
+<span class="d">-import createTypescriptLoader from &quot;.&quot;;</span>
+<span class="a">+import createTypescriptLoader from &quot;./index&quot;;</span>
+<span class="a">+import dedent from &quot;dedent&quot;;</span>
+ 
+ describe(&quot;typescript loader&quot;, () =&gt; {
+   it(&quot;should extract string literals from default export object&quot;, async () =&gt; {
+<span class="h">@@ -99,11 +100,19 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+     const result = await loader.pull(&quot;en&quot;, input);
+ 
+     expect(result).toEqual({
+<span class="d">-      &quot;messages/welcome&quot;: &quot;Welcome to our app&quot;,</span>
+<span class="d">-      &quot;messages/error&quot;: &quot;Something went wrong&quot;,</span>
+<span class="d">-      &quot;settings/theme/name&quot;: &quot;Dark Mode&quot;,</span>
+<span class="d">-      &quot;settings/theme/colors/primary&quot;: &quot;blue&quot;,</span>
+<span class="d">-      &quot;settings/theme/colors/secondary&quot;: &quot;gray&quot;,</span>
+<span class="a">+      messages: {</span>
+<span class="a m">+        welcome: &quot;Welcome to our app&quot;,</span>
+<span class="a">+        error: &quot;Something went wrong&quot;,</span>
+<span class="a">+      },</span>
+<span class="a">+      settings: {</span>
+<span class="a">+        theme: {</span>
+<span class="a">+          name: &quot;Dark Mode&quot;,</span>
+<span class="a">+          colors: {</span>
+<span class="a">+            primary: &quot;blue&quot;,</span>
+<span class="a">+            secondary: &quot;gray&quot;,</span>
+<span class="a">+          },</span>
+<span class="a">+        },</span>
+<span class="a">+      },</span>
+     });
+   });
+ 
+<span class="h">@@ -122,18 +131,16 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+     const result = await loader.pull(&quot;en&quot;, input);
+ 
+     expect(result).toEqual({
+<span class="d">-      &quot;greetings/0&quot;: &quot;Hello&quot;,</span>
+<span class="d">-      &quot;greetings/1&quot;: &quot;Hi&quot;,</span>
+<span class="d">-      &quot;greetings/2&quot;: &quot;Hey&quot;,</span>
+<span class="d">-      &quot;categories/0/name&quot;: &quot;Electronics&quot;,</span>
+<span class="d">-      &quot;categories/0/description&quot;: &quot;Electronic devices&quot;,</span>
+<span class="d">-      &quot;categories/1/name&quot;: &quot;Books&quot;,</span>
+<span class="d">-      &quot;categories/1/description&quot;: &quot;Reading materials&quot;,</span>
+<span class="a">+      greetings: [&quot;Hello&quot;, &quot;Hi&quot;, &quot;Hey&quot;],</span>
+<span class="a">+      categories: [</span>
+<span class="a">+        { name: &quot;Electronics&quot;, description: &quot;Electronic devices&quot; },</span>
+<span class="a">+        { name: &quot;Books&quot;, description: &quot;Reading materials&quot; },</span>
+<span class="a">+      ],</span>
+     });
+   });
+ 
+   it(&quot;should update string literals in nested objects&quot;, async () =&gt; {
+<span class="d">-    const input = `</span>
+<span class="a">+    const input = dedent`</span>
+       export default {
+         messages: {
+<span class=" m">           welcome: &quot;Welcome to our app&quot;,</span>
+<span class="h">@@ -152,58 +159,52 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+ 
+     const loader = createTypescriptLoader().setDefaultLocale(&quot;en&quot;);
+ 
+<span class="d">-    await loader.pull(&quot;en&quot;, input);</span>
+<span class="a">+    let data = await loader.pull(&quot;en&quot;, input);</span>
+ 
+<span class="d">-    const data = {</span>
+<span class="d">-      &quot;messages/welcome&quot;: &quot;Bienvenido a nuestra aplicación&quot;,</span>
+<span class="d">-      &quot;messages/error&quot;: &quot;Algo salió mal&quot;,</span>
+<span class="d">-      &quot;settings/theme/name&quot;: &quot;Modo Oscuro&quot;,</span>
+<span class="d">-      &quot;settings/theme/colors/primary&quot;: &quot;azul&quot;,</span>
+<span class="d">-    };</span>
+<span class="a">+    data.settings.theme.colors.primary = &quot;red&quot;;</span>
+ 
+     const result = await loader.push(&quot;es&quot;, data);
+ 
+<span class="d">-    const resultStr = JSON.stringify(result);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Bienvenido a nuestra aplicaci&quot;);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Algo sali&quot;);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Modo Oscuro&quot;);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;azul&quot;);</span>
+<span class="a">+    expect(result).toBe(dedent`</span>
+<span class="a">+      export default {</span>
+<span class="a">+        messages: {</span>
+<span class="a m">+          welcome: &quot;Welcome to our app&quot;,</span>
+<span class="a">+          error: &quot;Something went wrong&quot;</span>
+<span class="a">+        },</span>
+<span class="a">+        settings: {</span>
+<span class="a">+          theme: {</span>
+<span class="a">+            name: &quot;Dark Mode&quot;,</span>
+<span class="a">+            colors: {</span>
+<span class="a">+              primary: &quot;red&quot;</span>
+<span class="a">+            }</span>
+<span class="a">+          }</span>
+<span class="a">+        }</span>
+<span class="a">+      };</span>
+<span class="a">+      `);</span>
+   });
+ 
+   it(&quot;should update string literals in arrays&quot;, async () =&gt; {
+     const input = `
+       export default {
+         greetings: [&quot;Hello&quot;, &quot;Hi&quot;, &quot;Hey&quot;],
+<span class="d">-        categories: [</span>
+<span class="d">-          { name: &quot;Electronics&quot;, description: &quot;Electronic devices&quot; },</span>
+<span class="d">-          { name: &quot;Books&quot;, description: &quot;Reading materials&quot; }</span>
+<span class="d">-        ]</span>
+       };
+     `;
+ 
+     const loader = createTypescriptLoader().setDefaultLocale(&quot;en&quot;);
+ 
+<span class="d">-    await loader.pull(&quot;en&quot;, input);</span>
+<span class="a">+    let data = await loader.pull(&quot;en&quot;, input);</span>
+ 
+<span class="d">-    const data = {</span>
+<span class="d">-      &quot;greetings/0&quot;: &quot;Hola&quot;,</span>
+<span class="d">-      &quot;greetings/1&quot;: &quot;Hola&quot;,</span>
+<span class="d">-      &quot;greetings/2&quot;: &quot;Oye&quot;,</span>
+<span class="d">-      &quot;categories/0/name&quot;: &quot;Electrónica&quot;,</span>
+<span class="d">-      &quot;categories/0/description&quot;: &quot;Dispositivos electrónicos&quot;,</span>
+<span class="d">-      &quot;categories/1/name&quot;: &quot;Libros&quot;,</span>
+<span class="d">-      &quot;categories/1/description&quot;: &quot;Materiales de lectura&quot;,</span>
+<span class="d">-    };</span>
+<span class="a">+    data.greetings[0] = &quot;Hola&quot;;</span>
+<span class="a">+    data.greetings[1] = &quot;Hola&quot;;</span>
+<span class="a">+    data.greetings[2] = &quot;Oye&quot;;</span>
+ 
+     const result = await loader.push(&quot;es&quot;, data);
+ 
+<span class="d">-    const resultStr = JSON.stringify(result);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Hola&quot;);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Oye&quot;);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Electr&quot;);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Dispositivos electr&quot;);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Libros&quot;);</span>
+<span class="d">-    expect(resultStr).toContain(&quot;Materiales de lectura&quot;);</span>
+<span class="a">+    expect(result).toBe(dedent`</span>
+<span class="a">+      export default {</span>
+<span class="a">+        greetings: [&quot;Hola&quot;, &quot;Hola&quot;, &quot;Oye&quot;]</span>
+<span class="a">+      };</span>
+<span class="a">+      `);</span>
+   });
+ 
+   it(&quot;should handle mixed nested structures&quot;, async () =&gt; {
+<span class="h">@@ -236,19 +237,41 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+     const result = await loader.pull(&quot;en&quot;, input);
+ 
+     expect(result).toEqual({
+<span class="d">-      &quot;app/name&quot;: &quot;My App&quot;,</span>
+<span class="d">-      &quot;app/version&quot;: &quot;1.0.0&quot;,</span>
+<span class="d">-      &quot;app/features/0&quot;: &quot;Login&quot;,</span>
+<span class="d">-      &quot;app/features/1&quot;: &quot;Dashboard&quot;,</span>
+<span class="d">-      &quot;app/features/2&quot;: &quot;Settings&quot;,</span>
+<span class="d">-      &quot;app/pages/0/title&quot;: &quot;Home&quot;,</span>
+<span class="d">-      &quot;app/pages/0/sections/0/heading&quot;: &quot;Welcome&quot;,</span>
+<span class="d">-      &quot;app/pages/0/sections/0/content&quot;: &quot;Welcome to our app&quot;,</span>
+<span class="d">-      &quot;app/pages/0/sections/1/heading&quot;: &quot;Features&quot;,</span>
+<span class="d">-      &quot;app/pages/0/sections/1/content&quot;: &quot;Check out our features&quot;,</span>
+<span class="d">-      &quot;app/pages/1/title&quot;: &quot;About&quot;,</span>
+<span class="d">-      &quot;app/pages/1/sections/0/heading&quot;: &quot;Our Story&quot;,</span>
+<span class="d">-      &quot;app/pages/1/sections/0/content&quot;: &quot;We started in 2020&quot;,</span>
+<span class="a">+      app: {</span>
+<span class="a">+        name: &quot;My App&quot;,</span>
+<span class="a">+        version: &quot;1.0.0&quot;,</span>
+<span class="a">+        features: [&quot;Login&quot;, &quot;Dashboard&quot;, &quot;Settings&quot;],</span>
+<span class="a">+        pages: [</span>
+<span class="a">+          {</span>
+<span class="a">+            title: &quot;Home&quot;,</span>
+<span class="a">+            sections: [</span>
+<span class="a">+              { heading: &quot;Welcome&quot;, content: &quot;Welcome to our app&quot; },</span>
+<span class="a">+              { heading: &quot;Features&quot;, content: &quot;Check out our features&quot; },</span>
+<span class="a">+            ],</span>
+<span class="a">+          },</span>
+<span class="a">+          {</span>
+<span class="a">+            title: &quot;About&quot;,</span>
+<span class="a">+            sections: [{ heading: &quot;Our Story&quot;, content: &quot;We started in 2020&quot; }],</span>
+<span class="a">+          },</span>
+<span class="a">+        ],</span>
+<span class="a">+      },</span>
+<span class="a">+    });</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+<span class="a">+  it(&quot;should extract string literals when default export has &#x27;as const&#x27;&quot;, async () =&gt; {</span>
+<span class="a">+    const input = `</span>
+<span class="a">+      export default {</span>
+<span class="a">+        greeting: &quot;Hello, world!&quot;,</span>
+<span class="a">+        farewell: &quot;Goodbye!&quot;</span>
+<span class="a">+      } as const;</span>
+<span class="a">+    `;</span>
+<span class="a">+</span>
+<span class="a">+    const loader = createTypescriptLoader().setDefaultLocale(&quot;en&quot;);</span>
+<span class="a">+    const result = await loader.pull(&quot;en&quot;, input);</span>
+<span class="a">+</span>
+<span class="a">+    expect(result).toEqual({</span>
+<span class="a">+      greeting: &quot;Hello, world!&quot;,</span>
+<span class="a">+      farewell: &quot;Goodbye!&quot;,</span>
+     });
+   });
+ });</pre><h2>Commit #3: <a href="https://github.com/lingodotdev/lingo.dev/commit/846d695bf65a0975081c8bef38148ed84aadaeac">846d695bf6</a> (2025-05-12T15:27:30-07:00)</h2><p class="k">feat: template strings support for ts loader (#775)<br>Path after this commit: packages/cli/src/cli/loaders/typescript/index.spec.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/packages/cli/src/cli/loaders/typescript/index.spec.ts b/packages/cli/src/cli/loaders/typescript/index.spec.ts
+index 08eb6d1e..29ece161 100644
+<span class="d">--- a/packages/cli/src/cli/loaders/typescript/index.spec.ts</span>
+<span class="a">+++ b/packages/cli/src/cli/loaders/typescript/index.spec.ts</span>
+<span class="h">@@ -71,9 +71,13 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+ 
+     const result = await loader.push(&quot;es&quot;, data);
+ 
+<span class="d">-    expect(result).toContain(&#x27;greeting: &quot;Hola, mundo!&quot;&#x27;);</span>
+<span class="d">-    expect(result).toContain(&#x27;farewell: &quot;Adi&#x27;);</span>
+<span class="d">-    expect(result).toContain(&quot;number: 42&quot;);</span>
+<span class="a">+    expect(result).toBe(dedent`</span>
+<span class="a">+      export default {</span>
+<span class="a">+        greeting: &quot;Hola, mundo!&quot;,</span>
+<span class="a">+        farewell: &quot;Adiós!&quot;,</span>
+<span class="a">+        number: 42</span>
+<span class="a">+      };</span>
+<span class="a">+      `);</span>
+   });
+ 
+   it(&quot;should extract string literals from nested objects&quot;, async () =&gt; {
+<span class="h">@@ -274,4 +278,69 @@ describe(&quot;typescript loader&quot;, () =&gt; {</span>
+       farewell: &quot;Goodbye!&quot;,
+     });
+   });
+<span class="a">+</span>
+<span class="a">+  it(&quot;should extract and update string literals including multiline template literals, URLs, and numeric keys&quot;, async () =&gt; {</span>
+<span class="a">+    const input = dedent`</span>
+<span class="a">+      export default {</span>
+<span class="a">+        multilineContent: \`Multiline test</span>
+<span class="a">+</span>
+<span class="a">+  Super content</span>
+<span class="a">+</span>
+<span class="a">+  Includes also &quot;test&quot;\`,</span>
+<span class="a">+        testUrl: &#x27;https://someurl.com&#x27;,</span>
+<span class="a">+        6: &#x27;6. Class&#x27;,</span>
+<span class="a">+        9: &#x27;9. Class&#x27;,</span>
+<span class="a">+      };</span>
+<span class="a">+    `;</span>
+<span class="a">+</span>
+<span class="a">+    const loader = createTypescriptLoader().setDefaultLocale(&quot;en&quot;);</span>
+<span class="a">+</span>
+<span class="a">+    // Pull phase – ensure the loader extracts all expected strings</span>
+<span class="a">+    const pulled = await loader.pull(&quot;en&quot;, input);</span>
+<span class="a">+</span>
+<span class="a">+    expect(pulled).toEqual({</span>
+<span class="a">+      multilineContent: dedent`</span>
+<span class="a">+      Multiline test</span>
+<span class="a">+</span>
+<span class="a">+      Super content</span>
+<span class="a">+</span>
+<span class="a">+      Includes also &quot;test&quot;`,</span>
+<span class="a">+      testUrl: &quot;https://someurl.com&quot;,</span>
+<span class="a">+      6: &quot;6. Class&quot;,</span>
+<span class="a">+      9: &quot;9. Class&quot;,</span>
+<span class="a">+    });</span>
+<span class="a">+</span>
+<span class="a">+    // Push phase – modify some values and ensure they are written back</span>
+<span class="a">+    const updatedData = {</span>
+<span class="a">+      ...pulled,</span>
+<span class="a">+      multilineContent: dedent`</span>
+<span class="a">+      Prueba multilínea</span>
+<span class="a">+</span>
+<span class="a">+      Contenido superior</span>
+<span class="a">+</span>
+<span class="a">+      Incluye también &quot;prueba&quot;`,</span>
+<span class="a">+      testUrl: &quot;https://algunaurl.com&quot;,</span>
+<span class="a">+      6: &quot;6. Clase&quot;,</span>
+<span class="a">+      9: &quot;9. Clase&quot;,</span>
+<span class="a">+    } as any;</span>
+<span class="a">+</span>
+<span class="a">+    const result = await loader.push(&quot;es&quot;, updatedData);</span>
+<span class="a">+</span>
+<span class="a">+    expect(result).toBe(</span>
+<span class="a">+      `</span>
+<span class="a">+export default {</span>
+<span class="a">+  multilineContent: \`Prueba multilínea</span>
+<span class="a">+</span>
+<span class="a">+Contenido superior</span>
+<span class="a">+</span>
+<span class="a">+Incluye también &quot;prueba&quot;\`,</span>
+<span class="a">+  testUrl: &quot;https://algunaurl.com&quot;,</span>
+<span class="a">+  6: &quot;6. Clase&quot;,</span>
+<span class="a">+  9: &quot;9. Clase&quot;</span>
+<span class="a">+};</span>
+<span class="a">+      `.trim(),</span>
+<span class="a">+    );</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+<span class="a">+  // TODO</span>
+ });</pre></body></html>

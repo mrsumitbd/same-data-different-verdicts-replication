@@ -1,0 +1,65 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L201</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L201</h1><p><b>Repository:</b> <a href="https://github.com/marimo-team/marimo">marimo-team/marimo</a><br><b>File at merge:</b> frontend/src/plugins/impl/SearchableSelect.tsx, line 3<br><b>Merge commit (birth):</b> <a href="https://github.com/marimo-team/marimo/commit/ce90ae8434bc864fdfa10c6bd337ca12f55b99a4">ce90ae8434</a> (2025-02-10T20:17:01)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/marimo-team/marimo/tree/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a>)</p><p><b>The line:</b></p><pre><span class="t">import { Combobox, ComboboxItem } from &quot;../../components/ui/combobox&quot;;</span></pre><h2>File at the merge commit, lines 1 to 11</h2><pre>    1 | /* Copyright 2024 Marimo. All rights reserved. */
+    2 | import { useId, useMemo, useState } from &quot;react&quot;;
+<span class="t">    3 | import { Combobox, ComboboxItem } from &quot;../../components/ui/combobox&quot;;</span>
+    4 | import { Labeled } from &quot;./common/labeled&quot;;
+    5 | import { cn } from &quot;../../utils/cn&quot;;
+    6 | import { multiselectFilterFn } from &quot;./multiselectFilterFn&quot;;
+    7 | import { Virtuoso } from &quot;react-virtuoso&quot;;
+    8 | 
+    9 | interface SearchableSelectProps {
+   10 |   options: string[];
+   11 |   value: string | null;</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/marimo-team/marimo/commit/5653f92be945c47fab74a30ba7c13ffa808ebf50">5653f92be9</a> (2025-06-11T15:05:49-04:00)</h2><p class="k">chore: remove context provider &amp; update types (react 19) (#5252)<br>Path after this commit: frontend/src/plugins/impl/SearchableSelect.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/plugins/impl/SearchableSelect.tsx b/frontend/src/plugins/impl/SearchableSelect.tsx
+index a20f58f28..64cd70c72 100644
+<span class="d">--- a/frontend/src/plugins/impl/SearchableSelect.tsx</span>
+<span class="a">+++ b/frontend/src/plugins/impl/SearchableSelect.tsx</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ /* Copyright 2024 Marimo. All rights reserved. */
+<span class="d">-import { useId, useMemo, useState } from &quot;react&quot;;</span>
+<span class="a">+import { useId, useMemo, useState, type JSX } from &quot;react&quot;;</span>
+<span class=" m"> import { Combobox, ComboboxItem } from &quot;../../components/ui/combobox&quot;;</span>
+ import { Labeled } from &quot;./common/labeled&quot;;
+ import { cn } from &quot;../../utils/cn&quot;;</pre><h2>Commit #2: <a href="https://github.com/marimo-team/marimo/commit/e543a9b45dc8af04aa40517ef33d6110799cc553">e543a9b45d</a> (2025-06-12T21:10:32-04:00)</h2><p class="k">chore: biome 2x (#5291)<br>Path after this commit: frontend/src/plugins/impl/SearchableSelect.tsx. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: frontend/src/plugins/impl/MultiselectPlugin.tsx.</p><pre>diff --git a/frontend/src/plugins/impl/SearchableSelect.tsx b/frontend/src/plugins/impl/SearchableSelect.tsx
+index 64cd70c72..175ed443e 100644
+<span class="d">--- a/frontend/src/plugins/impl/SearchableSelect.tsx</span>
+<span class="a">+++ b/frontend/src/plugins/impl/SearchableSelect.tsx</span>
+<span class="h">@@ -1,10 +1,10 @@</span>
+ /* Copyright 2024 Marimo. All rights reserved. */
+<span class="d">-import { useId, useMemo, useState, type JSX } from &quot;react&quot;;</span>
+<span class="a">+import { type JSX, useId, useMemo, useState } from &quot;react&quot;;</span>
+<span class="a">+import { Virtuoso } from &quot;react-virtuoso&quot;;</span>
+<span class=" m"> import { Combobox, ComboboxItem } from &quot;../../components/ui/combobox&quot;;</span>
+<span class="d">-import { Labeled } from &quot;./common/labeled&quot;;</span>
+ import { cn } from &quot;../../utils/cn&quot;;
+<span class="a">+import { Labeled } from &quot;./common/labeled&quot;;</span>
+ import { multiselectFilterFn } from &quot;./multiselectFilterFn&quot;;
+<span class="d">-import { Virtuoso } from &quot;react-virtuoso&quot;;</span>
+ 
+ interface SearchableSelectProps {
+   options: string[];</pre><h2>Commit #3: <a href="https://github.com/marimo-team/marimo/commit/52d80a970728732db48df264e313d91cde6b0bc2">52d80a9707</a> (2025-07-31T09:08:46-04:00)</h2><p class="k">style: set combobox to truncate (#5829)<br>Path after this commit: frontend/src/plugins/impl/SearchableSelect.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/plugins/impl/SearchableSelect.tsx b/frontend/src/plugins/impl/SearchableSelect.tsx
+index 175ed443e..924f92c26 100644
+<span class="d">--- a/frontend/src/plugins/impl/SearchableSelect.tsx</span>
+<span class="a">+++ b/frontend/src/plugins/impl/SearchableSelect.tsx</span>
+<span class="h">@@ -105,7 +105,9 @@ export const SearchableSelect = (props: SearchableSelectProps): JSX.Element =&gt; {</span>
+         }}
+         placeholder=&quot;Select...&quot;
+         multiple={false}
+<span class="d">-        className={cn(&quot;w-full&quot;, { &quot;w-full&quot;: fullWidth })}</span>
+<span class="a">+        className={cn({</span>
+<span class="a">+          &quot;w-full&quot;: fullWidth,</span>
+<span class="a">+        })}</span>
+         value={value ?? NONE_KEY}
+         onValueChange={handleValueChange}
+         shouldFilter={false}</pre><h2>Commit #4: <a href="https://github.com/marimo-team/marimo/commit/adebb475066ed8d1d5bdf5006472b9750c8faaa9">adebb47506</a> (2025-12-26T09:56:49-05:00)</h2><p class="k">Change copyright to 2026 including scripts (#7606)<br>Path after this commit: frontend/src/plugins/impl/SearchableSelect.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/plugins/impl/SearchableSelect.tsx b/frontend/src/plugins/impl/SearchableSelect.tsx
+index 924f92c26..9ddcdcb9b 100644
+<span class="d">--- a/frontend/src/plugins/impl/SearchableSelect.tsx</span>
+<span class="a">+++ b/frontend/src/plugins/impl/SearchableSelect.tsx</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-/* Copyright 2024 Marimo. All rights reserved. */</span>
+<span class="a">+/* Copyright 2026 Marimo. All rights reserved. */</span>
+ import { type JSX, useId, useMemo, useState } from &quot;react&quot;;
+ import { Virtuoso } from &quot;react-virtuoso&quot;;
+<span class=" m"> import { Combobox, ComboboxItem } from &quot;../../components/ui/combobox&quot;;</span></pre></body></html>

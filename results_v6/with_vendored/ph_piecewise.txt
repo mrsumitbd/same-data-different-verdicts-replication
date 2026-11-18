@@ -1,0 +1,31 @@
+======================================================================
+Proportional hazards: tier HR by time since merge
+======================================================================
+
+Diagnosis (unadjusted, delayed entry):
+  human_supervised       0-7 d: HR=1.834 [1.793, 1.875] p=0 events=31,606
+  human_supervised      7-30 d: HR=0.707 [0.687, 0.728] p=1.8e-122 events=25,420
+  human_supervised     30-90 d: HR=0.480 [0.468, 0.493] p=0 events=35,750
+  human_supervised    90-180 d: HR=0.824 [0.803, 0.846] p=7.3e-48 events=28,256
+  human_supervised      >180 d: HR=2.349 [2.232, 2.472] p=6e-236 events=12,753
+  fully_autonomous       0-7 d: HR=2.098 [2.042, 2.155] p=0 events=25,203
+  fully_autonomous      7-30 d: HR=0.635 [0.609, 0.662] p=2.7e-103 events=21,894
+  fully_autonomous     30-90 d: HR=0.602 [0.582, 0.623] p=2.5e-189 events=33,103
+  fully_autonomous    90-180 d: HR=0.622 [0.598, 0.647] p=1.9e-122 events=23,254
+  fully_autonomous      >180 d: HR=1.291 [1.229, 1.355] p=1.6e-24 events=12,433
+
+Piecewise Cox (0-30, 30-90, >90 days):
+  unadjusted:
+    human_supervised      0-30 d: HR=1.241 [1.220, 1.262] p=3.2e-134 events=57,026
+    human_supervised     30-90 d: HR=0.480 [0.468, 0.493] p=0 events=35,750
+    human_supervised       >90 d: HR=0.989 [0.966, 1.012] p=0.33 events=41,009
+    fully_autonomous      0-30 d: HR=1.334 [1.305, 1.363] p=1.6e-147 events=47,097
+    fully_autonomous     30-90 d: HR=0.602 [0.582, 0.623] p=2.5e-189 events=33,103
+    fully_autonomous       >90 d: HR=0.795 [0.771, 0.819] p=1.2e-48 events=35,687
+  repository-stratified, cluster-robust SE:
+    human_supervised      0-30 d: HR=1.257 [0.591, 2.673] p=0.55 events=45,127
+    human_supervised     30-90 d: HR=0.394 [0.159, 0.979] p=0.045 events=29,578
+    human_supervised       >90 d: HR=0.746 [0.417, 1.336] p=0.32 events=32,109
+    fully_autonomous      0-30 d: HR=1.054 [0.420, 2.645] p=0.91 events=31,336
+    fully_autonomous     30-90 d: HR=0.947 [0.447, 2.008] p=0.89 events=20,283
+    fully_autonomous       >90 d: HR=1.185 [0.527, 2.667] p=0.68 events=17,446

@@ -1,0 +1,226 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L104</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L104</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/rayexec_execution/src/arrays/array/raw.rs, line 30<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/600a7e7375f5397ed3573b6103a8ed75d3e17ce4">600a7e7375</a> (2025-01-08T17:07:26)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">    pub fn try_with_capacity&lt;T&gt;(manager: &amp;Arc&lt;B&gt;, cap: usize) -&gt; Result&lt;Self&gt; {</span></pre><h2>File at the merge commit, lines 22 to 38</h2><pre>   22 | unsafe impl&lt;B: BufferManager&gt; Send for RawBuffer&lt;B&gt; {}
+   23 | unsafe impl&lt;B: BufferManager&gt; Sync for RawBuffer&lt;B&gt; {}
+   24 | 
+   25 | impl&lt;B&gt; RawBuffer&lt;B&gt;
+   26 | where
+   27 |     B: BufferManager,
+   28 | {
+   29 |     /// Try to create a new buffer with a given capacity for type `T`.
+<span class="t">   30 |     pub fn try_with_capacity&lt;T&gt;(manager: &amp;Arc&lt;B&gt;, cap: usize) -&gt; Result&lt;Self&gt; {</span>
+   31 |         assert!(std::mem::size_of::&lt;T&gt;() &gt; 0);
+   32 | 
+   33 |         if cap == 0 {
+   34 |             return Ok(RawBuffer {
+   35 |                 reservation: manager.reserve_external(0, 0)?,
+   36 |                 ptr: NonNull::dangling(),
+   37 |             });
+   38 |         }</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/12d54eb59ed3bc5618a52ef334e49482c66d8281">12d54eb59e</a> (2025-01-08T19:39:08+00:00)</h2><p class="k">chore: Add array buffer on top of raw buffer (#3391)<br>Path after this commit: crates/rayexec_execution/src/arrays/array/raw.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/rayexec_execution/src/arrays/array/raw.rs b/crates/rayexec_execution/src/arrays/array/raw.rs
+index dc4be4a0..d1623a89 100644
+<span class="d">--- a/crates/rayexec_execution/src/arrays/array/raw.rs</span>
+<span class="a">+++ b/crates/rayexec_execution/src/arrays/array/raw.rs</span>
+<span class="h">@@ -1,5 +1,3 @@</span>
+<span class="d">-#![allow(dead_code)]</span>
+<span class="d">-</span>
+ use std::alloc::{self, Layout};
+ use std::ptr::NonNull;
+ use std::sync::Arc;
+<span class="h">@@ -65,7 +63,10 @@ where</span>
+         std::slice::from_raw_parts_mut(self.ptr.as_ptr().cast::&lt;T&gt;(), cap)
+     }
+ 
+<span class="d">-    pub unsafe fn reserve&lt;T&gt;(&amp;mut self, manager: &amp;Arc&lt;B&gt;, additional: usize) -&gt; Result&lt;()&gt; {</span>
+<span class="a">+    /// Reserves memory for holding `additional` number of `T` elements.</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// This will reallocate using the buffer manager on the existing memory reservation.</span>
+<span class="a">+    pub unsafe fn reserve&lt;T&gt;(&amp;mut self, additional: usize) -&gt; Result&lt;()&gt; {</span>
+         debug_assert_eq!(std::mem::align_of::&lt;T&gt;(), self.reservation.align());
+         debug_assert_eq!(0, self.reservation.size() % std::mem::size_of::&lt;T&gt;());
+ 
+<span class="h">@@ -85,7 +86,7 @@ where</span>
+             None =&gt; alloc::handle_alloc_error(layout),
+         };
+ 
+<span class="d">-        self.reservation = manager.reserve_from_layout(layout)?;</span>
+<span class="a">+        self.reservation = self.reservation.manager().reserve_from_layout(layout)?;</span>
+ 
+         Ok(())
+     }
+<span class="h">@@ -144,7 +145,7 @@ mod tests {</span>
+             s[i] = i as i64;
+         }
+ 
+<span class="d">-        unsafe { b.reserve::&lt;i64&gt;(&amp;Arc::new(NopBufferManager), 4).unwrap() };</span>
+<span class="a">+        unsafe { b.reserve::&lt;i64&gt;(4).unwrap() };</span>
+         assert_eq!(64, b.reservation.size());
+ 
+         let s = unsafe { b.as_slice_mut::&lt;i64&gt;() };</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/f70d6d34deac2407272dae7226cfecb77621baa3">f70d6d34de</a> (2025-03-16T15:52:37-04:00)</h2><p class="k">feat: Execution rework (#3401)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/rayexec_execution/src/arrays/array/raw.rs b/crates/rayexec_execution/src/arrays/array/raw.rs
+deleted file mode 100644
+index d1623a89..00000000
+<span class="d">--- a/crates/rayexec_execution/src/arrays/array/raw.rs</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,161 +0,0 @@</span>
+<span class="d">-use std::alloc::{self, Layout};</span>
+<span class="d">-use std::ptr::NonNull;</span>
+<span class="d">-use std::sync::Arc;</span>
+<span class="d">-</span>
+<span class="d">-use rayexec_error::{Result, ResultExt};</span>
+<span class="d">-</span>
+<span class="d">-use super::buffer_manager::{BufferManager, Reservation};</span>
+<span class="d">-</span>
+<span class="d">-#[derive(Debug)]</span>
+<span class="d">-pub struct RawBuffer&lt;B: BufferManager&gt; {</span>
+<span class="d">-    /// Memory reservation for this buffer.</span>
+<span class="d">-    pub(crate) reservation: Reservation&lt;B&gt;,</span>
+<span class="d">-    /// Raw pointer to start of vec.</span>
+<span class="d">-    ///</span>
+<span class="d">-    /// This stores the pointer as a u8 pointer and it&#x27;ll be casted to the right</span>
+<span class="d">-    /// type during array operations.</span>
+<span class="d">-    pub(crate) ptr: NonNull&lt;u8&gt;,</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-unsafe impl&lt;B: BufferManager&gt; Send for RawBuffer&lt;B&gt; {}</span>
+<span class="d">-unsafe impl&lt;B: BufferManager&gt; Sync for RawBuffer&lt;B&gt; {}</span>
+<span class="d">-</span>
+<span class="d">-impl&lt;B&gt; RawBuffer&lt;B&gt;</span>
+<span class="d">-where</span>
+<span class="d">-    B: BufferManager,</span>
+<span class="d">-{</span>
+<span class="d">-    /// Try to create a new buffer with a given capacity for type `T`.</span>
+<span class="d m">-    pub fn try_with_capacity&lt;T&gt;(manager: &amp;Arc&lt;B&gt;, cap: usize) -&gt; Result&lt;Self&gt; {</span>
+<span class="d">-        assert!(std::mem::size_of::&lt;T&gt;() &gt; 0);</span>
+<span class="d">-</span>
+<span class="d">-        if cap == 0 {</span>
+<span class="d">-            return Ok(RawBuffer {</span>
+<span class="d">-                reservation: manager.reserve_external(0, 0)?,</span>
+<span class="d">-                ptr: NonNull::dangling(),</span>
+<span class="d">-            });</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        let layout = Layout::array::&lt;T&gt;(cap).context(&quot;failed to create layout&quot;)?;</span>
+<span class="d">-        let ptr = unsafe { alloc::alloc(layout) };</span>
+<span class="d">-        let ptr = match NonNull::new(ptr) {</span>
+<span class="d">-            Some(ptr) =&gt; ptr,</span>
+<span class="d">-            None =&gt; alloc::handle_alloc_error(layout),</span>
+<span class="d">-        };</span>
+<span class="d">-</span>
+<span class="d">-        let reservation = manager.reserve_from_layout(layout)?;</span>
+<span class="d">-</span>
+<span class="d">-        Ok(RawBuffer { reservation, ptr })</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    pub unsafe fn as_slice&lt;T&gt;(&amp;self) -&gt; &amp;[T] {</span>
+<span class="d">-        debug_assert_eq!(std::mem::align_of::&lt;T&gt;(), self.reservation.align());</span>
+<span class="d">-        debug_assert_eq!(0, self.reservation.size() % std::mem::size_of::&lt;T&gt;());</span>
+<span class="d">-</span>
+<span class="d">-        let cap = self.reservation.size() / std::mem::size_of::&lt;T&gt;();</span>
+<span class="d">-        std::slice::from_raw_parts(self.ptr.as_ptr().cast::&lt;T&gt;().cast_const(), cap)</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    pub unsafe fn as_slice_mut&lt;T&gt;(&amp;mut self) -&gt; &amp;mut [T] {</span>
+<span class="d">-        debug_assert_eq!(std::mem::align_of::&lt;T&gt;(), self.reservation.align());</span>
+<span class="d">-        debug_assert_eq!(0, self.reservation.size() % std::mem::size_of::&lt;T&gt;());</span>
+<span class="d">-</span>
+<span class="d">-        let cap = self.reservation.size() / std::mem::size_of::&lt;T&gt;();</span>
+<span class="d">-        std::slice::from_raw_parts_mut(self.ptr.as_ptr().cast::&lt;T&gt;(), cap)</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    /// Reserves memory for holding `additional` number of `T` elements.</span>
+<span class="d">-    ///</span>
+<span class="d">-    /// This will reallocate using the buffer manager on the existing memory reservation.</span>
+<span class="d">-    pub unsafe fn reserve&lt;T&gt;(&amp;mut self, additional: usize) -&gt; Result&lt;()&gt; {</span>
+<span class="d">-        debug_assert_eq!(std::mem::align_of::&lt;T&gt;(), self.reservation.align());</span>
+<span class="d">-        debug_assert_eq!(0, self.reservation.size() % std::mem::size_of::&lt;T&gt;());</span>
+<span class="d">-</span>
+<span class="d">-        let cap = self.reservation.size() / std::mem::size_of::&lt;T&gt;();</span>
+<span class="d">-        let layout = Layout::array::&lt;T&gt;(cap + additional).context(&quot;failed to create layout&quot;)?;</span>
+<span class="d">-</span>
+<span class="d">-        let new_ptr = if cap == 0 {</span>
+<span class="d">-            unsafe { alloc::alloc(layout) }</span>
+<span class="d">-        } else {</span>
+<span class="d">-            let old_ptr = self.ptr.as_ptr();</span>
+<span class="d">-            let old_layout = self.reservation.layout();</span>
+<span class="d">-            unsafe { alloc::realloc(old_ptr, old_layout, layout.size()) }</span>
+<span class="d">-        };</span>
+<span class="d">-</span>
+<span class="d">-        self.ptr = match NonNull::new(new_ptr) {</span>
+<span class="d">-            Some(p) =&gt; p,</span>
+<span class="d">-            None =&gt; alloc::handle_alloc_error(layout),</span>
+<span class="d">-        };</span>
+<span class="d">-</span>
+<span class="d">-        self.reservation = self.reservation.manager().reserve_from_layout(layout)?;</span>
+<span class="d">-</span>
+<span class="d">-        Ok(())</span>
+<span class="d">-    }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-impl&lt;B&gt; Drop for RawBuffer&lt;B&gt;</span>
+<span class="d">-where</span>
+<span class="d">-    B: BufferManager,</span>
+<span class="d">-{</span>
+<span class="d">-    fn drop(&amp;mut self) {</span>
+<span class="d">-        if self.reservation.size() != 0 {</span>
+<span class="d">-            let layout = self.reservation.layout();</span>
+<span class="d">-            unsafe {</span>
+<span class="d">-                alloc::dealloc(self.ptr.as_ptr(), layout);</span>
+<span class="d">-            }</span>
+<span class="d">-        }</span>
+<span class="d">-    }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-#[cfg(test)]</span>
+<span class="d">-mod tests {</span>
+<span class="d">-    use super::*;</span>
+<span class="d">-    use crate::arrays::array::buffer_manager::NopBufferManager;</span>
+<span class="d">-</span>
+<span class="d">-    #[test]</span>
+<span class="d">-    fn new_drop() {</span>
+<span class="d">-        let b = RawBuffer::try_with_capacity::&lt;i64&gt;(&amp;Arc::new(NopBufferManager), 4).unwrap();</span>
+<span class="d">-</span>
+<span class="d">-        assert_eq!(32, b.reservation.size());</span>
+<span class="d">-</span>
+<span class="d">-        std::mem::drop(b);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    #[test]</span>
+<span class="d">-    fn as_slice_mut() {</span>
+<span class="d">-        let mut b = RawBuffer::try_with_capacity::&lt;i64&gt;(&amp;Arc::new(NopBufferManager), 4).unwrap();</span>
+<span class="d">-        let s = unsafe { b.as_slice_mut::&lt;i64&gt;() };</span>
+<span class="d">-        assert_eq!(4, s.len());</span>
+<span class="d">-</span>
+<span class="d">-        for i in 0..4 {</span>
+<span class="d">-            s[i] = i as i64;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        let s = unsafe { b.as_slice::&lt;i64&gt;() };</span>
+<span class="d">-        assert_eq!(4, s.len());</span>
+<span class="d">-        assert_eq!(&amp;[0, 1, 2, 3], s);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    #[test]</span>
+<span class="d">-    fn reserve() {</span>
+<span class="d">-        let mut b = RawBuffer::try_with_capacity::&lt;i64&gt;(&amp;Arc::new(NopBufferManager), 4).unwrap();</span>
+<span class="d">-        let s = unsafe { b.as_slice_mut::&lt;i64&gt;() };</span>
+<span class="d">-        assert_eq!(4, s.len());</span>
+<span class="d">-</span>
+<span class="d">-        for i in 0..4 {</span>
+<span class="d">-            s[i] = i as i64;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        unsafe { b.reserve::&lt;i64&gt;(4).unwrap() };</span>
+<span class="d">-        assert_eq!(64, b.reservation.size());</span>
+<span class="d">-</span>
+<span class="d">-        let s = unsafe { b.as_slice_mut::&lt;i64&gt;() };</span>
+<span class="d">-        assert_eq!(8, s.len());</span>
+<span class="d">-</span>
+<span class="d">-        for i in 0..4 {</span>
+<span class="d">-            s[i + 4] = s[i] * 2;</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        let s = unsafe { b.as_slice::&lt;i64&gt;() };</span>
+<span class="d">-        assert_eq!(&amp;[0, 1, 2, 3, 0, 2, 4, 6], s);</span>
+<span class="d">-    }</span>
+<span class="d">-}</span></pre></body></html>

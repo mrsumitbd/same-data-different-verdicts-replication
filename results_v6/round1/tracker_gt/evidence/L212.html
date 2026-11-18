@@ -1,0 +1,552 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L212</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L212</h1><p><b>Repository:</b> <a href="https://github.com/marimo-team/marimo">marimo-team/marimo</a><br><b>File at merge:</b> marimo/_runtime/app/script_runner.py, line 155<br><b>Merge commit (birth):</b> <a href="https://github.com/marimo-team/marimo/commit/db1a68e134683b898b89614c1349dc9c9fc57c84">db1a68e134</a> (2025-01-30T19:12:38)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/marimo-team/marimo/tree/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a>)</p><p><b>The line:</b></p><pre><span class="t">            create_main_module(</span></pre><h2>File at the merge commit, lines 147 to 163</h2><pre>  147 |                 outputs[cell.cell_id] = output
+  148 |         return outputs, glbls
+  149 | 
+  150 |     async def _run_asynchronous(
+  151 |         self,
+  152 |         post_execute_hooks: list[Callable[[], Any]],
+  153 |     ) -&gt; RunOutput:
+  154 |         with patch_main_module_context(
+<span class="t">  155 |             create_main_module(</span>
+  156 |                 file=self.filename, input_override=None, print_override=None
+  157 |             )
+  158 |         ) as module:
+  159 |             glbls = module.__dict__
+  160 |             outputs: dict[CellId_t, Any] = {}
+  161 |             for cell in self._cell_iterator():
+  162 |                 with get_context().with_cell_id(cell.cell_id):
+  163 |                     output = await execute_cell_async(</pre><p class="k">Below are all 11 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/marimo-team/marimo/commit/97bf1a38da0d81ed66ccfe58ec7a2f46a2ef1977">97bf1a38da</a> (2025-02-18T15:43:55-05:00)</h2><p class="k">chore: move ids to central file (#3839)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index 82b4a3003..de6086632 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -4,7 +4,7 @@ from __future__ import annotations</span>
+ import asyncio
+ from typing import TYPE_CHECKING, Any, Callable, Iterator
+ 
+<span class="d">-from marimo._ast.cell import CellId_t, CellImpl</span>
+<span class="a">+from marimo._ast.cell import CellImpl</span>
+ from marimo._dependencies.dependencies import DependencyManager
+ from marimo._messaging.types import NoopStream
+ from marimo._runtime.app.common import RunOutput
+<span class="h">@@ -25,6 +25,7 @@ from marimo._runtime.patches import (</span>
+     create_main_module,
+     patch_main_module_context,
+ )
+<span class="a">+from marimo._types.ids import CellId_t</span>
+ 
+ if TYPE_CHECKING:
+     from marimo._ast.app import InternalApp</pre><h2>Commit #2: <a href="https://github.com/marimo-team/marimo/commit/451981485d4c0fa72ebfca081342e16405909f7d">451981485d</a> (2025-02-25T12:42:35-05:00)</h2><p class="k">chore: ruff UP rules (#3911)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index de6086632..83e0767c1 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -2,7 +2,7 @@</span>
+ from __future__ import annotations
+ 
+ import asyncio
+<span class="d">-from typing import TYPE_CHECKING, Any, Callable, Iterator</span>
+<span class="a">+from typing import TYPE_CHECKING, Any, Callable</span>
+ 
+ from marimo._ast.cell import CellImpl
+ from marimo._dependencies.dependencies import DependencyManager
+<span class="h">@@ -28,6 +28,8 @@ from marimo._runtime.patches import (</span>
+ from marimo._types.ids import CellId_t
+ 
+ if TYPE_CHECKING:
+<span class="a">+    from collections.abc import Iterator</span>
+<span class="a">+</span>
+     from marimo._ast.app import InternalApp
+ 
+ </pre><h2>Commit #3: <a href="https://github.com/marimo-team/marimo/commit/90f7f4fd7fa59df3996e0909355ef90a3b68e7fe">90f7f4fd7f</a> (2025-03-27T09:01:00-04:00)</h2><p class="k">fix: allow mo.stop in scripts (#4273)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index 83e0767c1..3f6a3e9d7 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -4,15 +4,16 @@ from __future__ import annotations</span>
+ import asyncio
+ from typing import TYPE_CHECKING, Any, Callable
+ 
+<span class="d">-from marimo._ast.cell import CellImpl</span>
+ from marimo._dependencies.dependencies import DependencyManager
+ from marimo._messaging.types import NoopStream
+<span class="a">+from marimo._runtime import dataflow</span>
+ from marimo._runtime.app.common import RunOutput
+ from marimo._runtime.context.types import (
+     get_context,
+     runtime_context_installed,
+     teardown_context,
+ )
+<span class="a">+from marimo._runtime.control_flow import MarimoStopError</span>
+ from marimo._runtime.exceptions import (
+     MarimoMissingRefError,
+     MarimoRuntimeException,
+<span class="h">@@ -28,8 +29,6 @@ from marimo._runtime.patches import (</span>
+ from marimo._types.ids import CellId_t
+ 
+ if TYPE_CHECKING:
+<span class="d">-    from collections.abc import Iterator</span>
+<span class="d">-</span>
+     from marimo._ast.app import InternalApp
+ 
+ 
+<span class="h">@@ -39,6 +38,87 @@ class AppScriptRunner:</span>
+     def __init__(self, app: InternalApp, filename: str | None) -&gt; None:
+         self.app = app
+         self.filename = filename
+<span class="a">+        self.cells_cancelled: dict[CellId_t, set[CellId_t]] = {}</span>
+<span class="a">+        self.cells_to_run = [</span>
+<span class="a">+            cid</span>
+<span class="a">+            for cid in self.app.execution_order</span>
+<span class="a">+            if app.cell_manager.cell_data_at(cid).cell is not None</span>
+<span class="a">+            and not self.app.graph.is_disabled(cid)</span>
+<span class="a">+        ]</span>
+<span class="a">+</span>
+<span class="a">+    def _cancel(self, cell_id: CellId_t) -&gt; None:</span>
+<span class="a">+        self.cells_cancelled[cell_id] = set(</span>
+<span class="a">+            cid</span>
+<span class="a">+            for cid in dataflow.transitive_closure(</span>
+<span class="a">+                self.app.graph, set([cell_id])</span>
+<span class="a">+            )</span>
+<span class="a">+            if cid in self.cells_to_run</span>
+<span class="a">+        )</span>
+<span class="a">+        for cid in self.cells_cancelled[cell_id]:</span>
+<span class="a">+            self.app.graph.cells[cid].set_run_result_status(&quot;cancelled&quot;)</span>
+<span class="a">+</span>
+<span class="a">+    def _run_synchronous(</span>
+<span class="a">+        self,</span>
+<span class="a">+        post_execute_hooks: list[Callable[[], Any]],</span>
+<span class="a">+    ) -&gt; RunOutput:</span>
+<span class="a">+        with patch_main_module_context(</span>
+<span class="a m">+            create_main_module(</span>
+<span class="a">+                file=self.filename, input_override=None, print_override=None</span>
+<span class="a">+            )</span>
+<span class="a">+        ) as module:</span>
+<span class="a">+            glbls = module.__dict__</span>
+<span class="a">+            outputs: dict[CellId_t, Any] = {}</span>
+<span class="a">+            while self.cells_to_run:</span>
+<span class="a">+                cid = self.cells_to_run.pop(0)</span>
+<span class="a">+                cell = self.app.graph.cells[cid]</span>
+<span class="a">+                with get_context().with_cell_id(cid):</span>
+<span class="a">+                    try:</span>
+<span class="a">+                        output = execute_cell(cell, glbls, self.app.graph)</span>
+<span class="a">+                        outputs[cid] = output</span>
+<span class="a">+                    except MarimoRuntimeException as e:</span>
+<span class="a">+                        unwrapped_exception: BaseException | None = e.__cause__</span>
+<span class="a">+</span>
+<span class="a">+                        if isinstance(unwrapped_exception, MarimoStopError):</span>
+<span class="a">+                            self._cancel(cid)</span>
+<span class="a">+                        else:</span>
+<span class="a">+                            raise e</span>
+<span class="a">+                    finally:</span>
+<span class="a">+                        for hook in post_execute_hooks:</span>
+<span class="a">+                            hook()</span>
+<span class="a">+        return outputs, glbls</span>
+<span class="a">+</span>
+<span class="a">+    async def _run_asynchronous(</span>
+<span class="a">+        self,</span>
+<span class="a">+        post_execute_hooks: list[Callable[[], Any]],</span>
+<span class="a">+    ) -&gt; RunOutput:</span>
+<span class="a">+        with patch_main_module_context(</span>
+<span class="a m">+            create_main_module(</span>
+<span class="a">+                file=self.filename, input_override=None, print_override=None</span>
+<span class="a">+            )</span>
+<span class="a">+        ) as module:</span>
+<span class="a">+            glbls = module.__dict__</span>
+<span class="a">+            outputs: dict[CellId_t, Any] = {}</span>
+<span class="a">+</span>
+<span class="a">+            while self.cells_to_run:</span>
+<span class="a">+                cid = self.cells_to_run.pop(0)</span>
+<span class="a">+                cell = self.app.graph.cells[cid]</span>
+<span class="a">+                with get_context().with_cell_id(cid):</span>
+<span class="a">+                    try:</span>
+<span class="a">+                        output = await execute_cell_async(</span>
+<span class="a">+                            cell, glbls, self.app.graph</span>
+<span class="a">+                        )</span>
+<span class="a">+                        outputs[cid] = output</span>
+<span class="a">+                    except MarimoRuntimeException as e:</span>
+<span class="a">+                        unwrapped_exception: BaseException | None = e.__cause__</span>
+<span class="a">+</span>
+<span class="a">+                        if isinstance(unwrapped_exception, MarimoStopError):</span>
+<span class="a">+                            self._cancel(cid)</span>
+<span class="a">+                        else:</span>
+<span class="a">+                            raise e</span>
+<span class="a">+                    finally:</span>
+<span class="a">+                        for hook in post_execute_hooks:</span>
+<span class="a">+                            hook()</span>
+<span class="a">+        return outputs, glbls</span>
+ 
+     def run(self) -&gt; RunOutput:
+         from marimo._runtime.context.script_context import (
+<span class="h">@@ -120,53 +200,3 @@ class AppScriptRunner:</span>
+         finally:
+             if installed_script_context:
+                 teardown_context()
+<span class="d">-</span>
+<span class="d">-    def _cell_iterator(self) -&gt; Iterator[CellImpl]:</span>
+<span class="d">-        app = self.app</span>
+<span class="d">-        for cid in app.execution_order:</span>
+<span class="d">-            cell = app.cell_manager.cell_data_at(cid).cell</span>
+<span class="d">-            if cell is None:</span>
+<span class="d">-                continue</span>
+<span class="d">-</span>
+<span class="d">-            if cell is not None and not app.graph.is_disabled(cid):</span>
+<span class="d">-                yield cell._cell</span>
+<span class="d">-</span>
+<span class="d">-    def _run_synchronous(</span>
+<span class="d">-        self,</span>
+<span class="d">-        post_execute_hooks: list[Callable[[], Any]],</span>
+<span class="d">-    ) -&gt; RunOutput:</span>
+<span class="d">-        with patch_main_module_context(</span>
+<span class="d m">-            create_main_module(</span>
+<span class="d">-                file=self.filename, input_override=None, print_override=None</span>
+<span class="d">-            )</span>
+<span class="d">-        ) as module:</span>
+<span class="d">-            glbls = module.__dict__</span>
+<span class="d">-            outputs: dict[CellId_t, Any] = {}</span>
+<span class="d">-            for cell in self._cell_iterator():</span>
+<span class="d">-                with get_context().with_cell_id(cell.cell_id):</span>
+<span class="d">-                    output = execute_cell(cell, glbls, self.app.graph)</span>
+<span class="d">-                    for hook in post_execute_hooks:</span>
+<span class="d">-                        hook()</span>
+<span class="d">-                outputs[cell.cell_id] = output</span>
+<span class="d">-        return outputs, glbls</span>
+<span class="d">-</span>
+<span class="d">-    async def _run_asynchronous(</span>
+<span class="d">-        self,</span>
+<span class="d">-        post_execute_hooks: list[Callable[[], Any]],</span>
+<span class="d">-    ) -&gt; RunOutput:</span>
+<span class="d">-        with patch_main_module_context(</span>
+<span class="d m">-            create_main_module(</span>
+<span class="d">-                file=self.filename, input_override=None, print_override=None</span>
+<span class="d">-            )</span>
+<span class="d">-        ) as module:</span>
+<span class="d">-            glbls = module.__dict__</span>
+<span class="d">-            outputs: dict[CellId_t, Any] = {}</span>
+<span class="d">-            for cell in self._cell_iterator():</span>
+<span class="d">-                with get_context().with_cell_id(cell.cell_id):</span>
+<span class="d">-                    output = await execute_cell_async(</span>
+<span class="d">-                        cell, glbls, self.app.graph</span>
+<span class="d">-                    )</span>
+<span class="d">-                    for hook in post_execute_hooks:</span>
+<span class="d">-                        hook()</span>
+<span class="d">-                outputs[cell.cell_id] = output</span>
+<span class="d">-        return outputs, glbls</span></pre><h2>Commit #4: <a href="https://github.com/marimo-team/marimo/commit/143620ff38ed752d323f216a163f07153d72322a">143620ff38</a> (2025-04-08T19:43:41-04:00)</h2><p class="k">mep/8: Setup cell protections (#4382)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index 3f6a3e9d7..8caaa282f 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -2,8 +2,9 @@</span>
+ from __future__ import annotations
+ 
+ import asyncio
+<span class="d">-from typing import TYPE_CHECKING, Any, Callable</span>
+<span class="a">+from typing import TYPE_CHECKING, Any, Callable, Optional</span>
+ 
+<span class="a">+from marimo._ast.names import SETUP_CELL_NAME</span>
+ from marimo._dependencies.dependencies import DependencyManager
+ from marimo._messaging.types import NoopStream
+ from marimo._runtime import dataflow
+<span class="h">@@ -35,10 +36,16 @@ if TYPE_CHECKING:</span>
+ class AppScriptRunner:
+     &quot;&quot;&quot;Runs an app in a script context.&quot;&quot;&quot;
+ 
+<span class="d">-    def __init__(self, app: InternalApp, filename: str | None) -&gt; None:</span>
+<span class="a">+    def __init__(</span>
+<span class="a">+        self,</span>
+<span class="a">+        app: InternalApp,</span>
+<span class="a">+        filename: str | None,</span>
+<span class="a">+        glbls: Optional[dict[str, Any]] = None,</span>
+<span class="a">+    ) -&gt; None:</span>
+         self.app = app
+         self.filename = filename
+         self.cells_cancelled: dict[CellId_t, set[CellId_t]] = {}
+<span class="a">+        self._glbls = glbls if glbls else {}</span>
+         self.cells_to_run = [
+             cid
+             for cid in self.app.execution_order
+<span class="h">@@ -67,9 +74,16 @@ class AppScriptRunner:</span>
+             )
+         ) as module:
+             glbls = module.__dict__
+<span class="a">+            glbls.update(self._glbls)</span>
+             outputs: dict[CellId_t, Any] = {}
+             while self.cells_to_run:
+                 cid = self.cells_to_run.pop(0)
+<span class="a">+                # Set up has already run in this case.</span>
+<span class="a">+                if cid == CellId_t(SETUP_CELL_NAME):</span>
+<span class="a">+                    for hook in post_execute_hooks:</span>
+<span class="a">+                        hook()</span>
+<span class="a">+                    continue</span>
+<span class="a">+</span>
+                 cell = self.app.graph.cells[cid]
+                 with get_context().with_cell_id(cid):
+                     try:
+<span class="h">@@ -97,10 +111,16 @@ class AppScriptRunner:</span>
+             )
+         ) as module:
+             glbls = module.__dict__
+<span class="a">+            glbls.update(self._glbls)</span>
+             outputs: dict[CellId_t, Any] = {}
+ 
+             while self.cells_to_run:
+                 cid = self.cells_to_run.pop(0)
+<span class="a">+                if cid == CellId_t(SETUP_CELL_NAME):</span>
+<span class="a">+                    for hook in post_execute_hooks:</span>
+<span class="a">+                        hook()</span>
+<span class="a">+                    continue</span>
+<span class="a">+</span>
+                 cell = self.app.graph.cells[cid]
+                 with get_context().with_cell_id(cid):
+                     try:</pre><h2>Commit #5: <a href="https://github.com/marimo-team/marimo/commit/b071f90f812e40dfc1abe3de95e9e36e01e520f9">b071f90f81</a> (2025-05-02T13:29:32-04:00)</h2><p class="k">chore: cleanup executor, prefer composition (#4783)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index 8caaa282f..0456b2f13 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -20,8 +20,8 @@ from marimo._runtime.exceptions import (</span>
+     MarimoRuntimeException,
+ )
+ from marimo._runtime.executor import (
+<span class="d">-    execute_cell,</span>
+<span class="d">-    execute_cell_async,</span>
+<span class="a">+    ExecutionConfig,</span>
+<span class="a">+    get_executor,</span>
+ )
+ from marimo._runtime.patches import (
+     create_main_module,
+<span class="h">@@ -52,6 +52,7 @@ class AppScriptRunner:</span>
+             if app.cell_manager.cell_data_at(cid).cell is not None
+             and not self.app.graph.is_disabled(cid)
+         ]
+<span class="a">+        self._executor = get_executor(ExecutionConfig())</span>
+ 
+     def _cancel(self, cell_id: CellId_t) -&gt; None:
+         self.cells_cancelled[cell_id] = set(
+<span class="h">@@ -87,7 +88,9 @@ class AppScriptRunner:</span>
+                 cell = self.app.graph.cells[cid]
+                 with get_context().with_cell_id(cid):
+                     try:
+<span class="d">-                        output = execute_cell(cell, glbls, self.app.graph)</span>
+<span class="a">+                        output = self._executor.execute_cell(</span>
+<span class="a">+                            cell, glbls, self.app.graph</span>
+<span class="a">+                        )</span>
+                         outputs[cid] = output
+                     except MarimoRuntimeException as e:
+                         unwrapped_exception: BaseException | None = e.__cause__
+<span class="h">@@ -124,7 +127,7 @@ class AppScriptRunner:</span>
+                 cell = self.app.graph.cells[cid]
+                 with get_context().with_cell_id(cid):
+                     try:
+<span class="d">-                        output = await execute_cell_async(</span>
+<span class="a">+                        output = await self._executor.execute_cell_async(</span>
+                             cell, glbls, self.app.graph
+                         )
+                         outputs[cid] = output</pre><h2>Commit #6: <a href="https://github.com/marimo-team/marimo/commit/039a5b5d10257f0d10efcbb244f8325d823c35d6">039a5b5d10</a> (2025-05-17T22:37:40-04:00)</h2><p class="k">fix: skip stopped cells when running as a script (#4965)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index 0456b2f13..f42841bcb 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -44,7 +44,7 @@ class AppScriptRunner:</span>
+     ) -&gt; None:
+         self.app = app
+         self.filename = filename
+<span class="d">-        self.cells_cancelled: dict[CellId_t, set[CellId_t]] = {}</span>
+<span class="a">+        self.cells_cancelled: set[CellId_t] = set()</span>
+         self._glbls = glbls if glbls else {}
+         self.cells_to_run = [
+             cid
+<span class="h">@@ -55,15 +55,16 @@ class AppScriptRunner:</span>
+         self._executor = get_executor(ExecutionConfig())
+ 
+     def _cancel(self, cell_id: CellId_t) -&gt; None:
+<span class="d">-        self.cells_cancelled[cell_id] = set(</span>
+<span class="a">+        cancelled = set(</span>
+             cid
+             for cid in dataflow.transitive_closure(
+                 self.app.graph, set([cell_id])
+             )
+             if cid in self.cells_to_run
+         )
+<span class="d">-        for cid in self.cells_cancelled[cell_id]:</span>
+<span class="a">+        for cid in cancelled:</span>
+             self.app.graph.cells[cid].set_run_result_status(&quot;cancelled&quot;)
+<span class="a">+        self.cells_cancelled |= cancelled</span>
+ 
+     def _run_synchronous(
+         self,
+<span class="h">@@ -79,6 +80,8 @@ class AppScriptRunner:</span>
+             outputs: dict[CellId_t, Any] = {}
+             while self.cells_to_run:
+                 cid = self.cells_to_run.pop(0)
+<span class="a">+                if cid in self.cells_cancelled:</span>
+<span class="a">+                    continue</span>
+                 # Set up has already run in this case.
+                 if cid == CellId_t(SETUP_CELL_NAME):
+                     for hook in post_execute_hooks:
+<span class="h">@@ -119,6 +122,9 @@ class AppScriptRunner:</span>
+ 
+             while self.cells_to_run:
+                 cid = self.cells_to_run.pop(0)
+<span class="a">+                if cid in self.cells_cancelled:</span>
+<span class="a">+                    continue</span>
+<span class="a">+</span>
+                 if cid == CellId_t(SETUP_CELL_NAME):
+                     for hook in post_execute_hooks:
+                         hook()</pre><h2>Commit #7: <a href="https://github.com/marimo-team/marimo/commit/b59069ae5749fb5c4e71ebf1fcbcdb6b4a4c4aa1">b59069ae57</a> (2025-08-04T22:21:09-04:00)</h2><p class="k">fix: opinionated formatters work on subclasses. improve searching perf for formatters (#5899)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index f42841bcb..bf9190504 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -185,7 +185,7 @@ class AppScriptRunner:</span>
+             )
+             from marimo._output.formatting import FORMATTERS
+ 
+<span class="d">-            if not FORMATTERS:</span>
+<span class="a">+            if not FORMATTERS.is_empty():</span>
+                 register_formatters()
+ 
+             post_execute_hooks = []</pre><h2>Commit #8: <a href="https://github.com/marimo-team/marimo/commit/2da0c83d0f93e5dda8bc1591f982c1bbfb5ff2db">2da0c83d0f</a> (2025-09-16T12:53:58-04:00)</h2><p class="k">feat: expand `app.run` to allow programmatic overrides (#6359)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index bf9190504..013e910f7 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -4,6 +4,7 @@ from __future__ import annotations</span>
+ import asyncio
+ from typing import TYPE_CHECKING, Any, Callable, Optional
+ 
+<span class="a">+from marimo._ast.errors import IncompleteRefsError</span>
+ from marimo._ast.names import SETUP_CELL_NAME
+ from marimo._dependencies.dependencies import DependencyManager
+ from marimo._messaging.types import NoopStream
+<span class="h">@@ -46,11 +47,39 @@ class AppScriptRunner:</span>
+         self.filename = filename
+         self.cells_cancelled: set[CellId_t] = set()
+         self._glbls = glbls if glbls else {}
+<span class="a">+</span>
+<span class="a">+        # Prune cells that define provided refs</span>
+<span class="a">+        cells_to_prune: set[CellId_t] = set()</span>
+<span class="a">+        if self._glbls:</span>
+<span class="a">+            refs = set(self._glbls.keys())</span>
+<span class="a">+            for ref_name in refs:</span>
+<span class="a">+                if ref_name in self.app.graph.definitions:</span>
+<span class="a">+                    defining_cells = self.app.graph.get_defining_cells(</span>
+<span class="a">+                        ref_name</span>
+<span class="a">+                    )</span>
+<span class="a">+                    cells_to_prune.update(defining_cells)</span>
+<span class="a">+</span>
+<span class="a">+            # Validate that all definitions from pruned cells are provided</span>
+<span class="a">+            missing_defs: set[str] = set()</span>
+<span class="a">+            for cell_id in cells_to_prune:</span>
+<span class="a">+                cell = self.app.graph.cells[cell_id]</span>
+<span class="a">+                # Check all definitions this cell would have provided</span>
+<span class="a">+                for missing in cell.defs - refs:</span>
+<span class="a">+                    missing_defs.add(missing)</span>
+<span class="a">+</span>
+<span class="a">+            if missing_defs:</span>
+<span class="a">+                raise IncompleteRefsError(</span>
+<span class="a">+                    f&quot;When providing refs that override cell definitions, you must &quot;</span>
+<span class="a">+                    f&quot;provide all definitions from those cells. Missing: {sorted(missing_defs)}. &quot;</span>
+<span class="a">+                    f&quot;Provided refs: {sorted(refs)}.&quot;</span>
+<span class="a">+                )</span>
+<span class="a">+</span>
+         self.cells_to_run = [
+             cid
+             for cid in self.app.execution_order
+             if app.cell_manager.cell_data_at(cid).cell is not None
+             and not self.app.graph.is_disabled(cid)
+<span class="a">+            and cid not in cells_to_prune</span>
+         ]
+         self._executor = get_executor(ExecutionConfig())
+ 
+<span class="h">@@ -77,6 +106,7 @@ class AppScriptRunner:</span>
+         ) as module:
+             glbls = module.__dict__
+             glbls.update(self._glbls)
+<span class="a">+</span>
+             outputs: dict[CellId_t, Any] = {}
+             while self.cells_to_run:
+                 cid = self.cells_to_run.pop(0)
+<span class="h">@@ -118,6 +148,7 @@ class AppScriptRunner:</span>
+         ) as module:
+             glbls = module.__dict__
+             glbls.update(self._glbls)
+<span class="a">+</span>
+             outputs: dict[CellId_t, Any] = {}
+ 
+             while self.cells_to_run:</pre><h2>Commit #9: <a href="https://github.com/marimo-team/marimo/commit/38e767efcc84f58f98ac6c8cfa37bdbd97fc3cee">38e767efcc</a> (2025-12-15T14:41:49-08:00)</h2><p class="k">feat: app.embed(defs={&#x27;mine&#x27;: value}) (#7146)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index 013e910f7..ddce9273a 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -4,7 +4,6 @@ from __future__ import annotations</span>
+ import asyncio
+ from typing import TYPE_CHECKING, Any, Callable, Optional
+ 
+<span class="d">-from marimo._ast.errors import IncompleteRefsError</span>
+ from marimo._ast.names import SETUP_CELL_NAME
+ from marimo._dependencies.dependencies import DependencyManager
+ from marimo._messaging.types import NoopStream
+<span class="h">@@ -49,37 +48,15 @@ class AppScriptRunner:</span>
+         self._glbls = glbls if glbls else {}
+ 
+         # Prune cells that define provided refs
+<span class="d">-        cells_to_prune: set[CellId_t] = set()</span>
+<span class="d">-        if self._glbls:</span>
+<span class="d">-            refs = set(self._glbls.keys())</span>
+<span class="d">-            for ref_name in refs:</span>
+<span class="d">-                if ref_name in self.app.graph.definitions:</span>
+<span class="d">-                    defining_cells = self.app.graph.get_defining_cells(</span>
+<span class="d">-                        ref_name</span>
+<span class="d">-                    )</span>
+<span class="d">-                    cells_to_prune.update(defining_cells)</span>
+<span class="d">-</span>
+<span class="d">-            # Validate that all definitions from pruned cells are provided</span>
+<span class="d">-            missing_defs: set[str] = set()</span>
+<span class="d">-            for cell_id in cells_to_prune:</span>
+<span class="d">-                cell = self.app.graph.cells[cell_id]</span>
+<span class="d">-                # Check all definitions this cell would have provided</span>
+<span class="d">-                for missing in cell.defs - refs:</span>
+<span class="d">-                    missing_defs.add(missing)</span>
+<span class="d">-</span>
+<span class="d">-            if missing_defs:</span>
+<span class="d">-                raise IncompleteRefsError(</span>
+<span class="d">-                    f&quot;When providing refs that override cell definitions, you must &quot;</span>
+<span class="d">-                    f&quot;provide all definitions from those cells. Missing: {sorted(missing_defs)}. &quot;</span>
+<span class="d">-                    f&quot;Provided refs: {sorted(refs)}.&quot;</span>
+<span class="d">-                )</span>
+<span class="a">+        pruned_execution_order = dataflow.prune_cells_for_overrides(</span>
+<span class="a">+            self.app.graph, self.app.execution_order, self._glbls</span>
+<span class="a">+        )</span>
+ 
+         self.cells_to_run = [
+             cid
+<span class="d">-            for cid in self.app.execution_order</span>
+<span class="a">+            for cid in pruned_execution_order</span>
+             if app.cell_manager.cell_data_at(cid).cell is not None
+             and not self.app.graph.is_disabled(cid)
+<span class="d">-            and cid not in cells_to_prune</span>
+         ]
+         self._executor = get_executor(ExecutionConfig())
+ </pre><h2>Commit #10: <a href="https://github.com/marimo-team/marimo/commit/adebb475066ed8d1d5bdf5006472b9750c8faaa9">adebb47506</a> (2025-12-26T09:56:49-05:00)</h2><p class="k">Change copyright to 2026 including scripts (#7606)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index ddce9273a..5530864c2 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-# Copyright 2024 Marimo. All rights reserved.</span>
+<span class="a">+# Copyright 2026 Marimo. All rights reserved.</span>
+ from __future__ import annotations
+ 
+ import asyncio</pre><h2>Commit #11: <a href="https://github.com/marimo-team/marimo/commit/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a> (2025-12-31T17:09:22+00:00)</h2><p class="k">fix: invalid error thrown when undefined setup variables (#7649)<br>Path after this commit: marimo/_runtime/app/script_runner.py. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/marimo/_runtime/app/script_runner.py b/marimo/_runtime/app/script_runner.py
+index 5530864c2..37f2b35c0 100644
+<span class="d">--- a/marimo/_runtime/app/script_runner.py</span>
+<span class="a">+++ b/marimo/_runtime/app/script_runner.py</span>
+<span class="h">@@ -47,9 +47,13 @@ class AppScriptRunner:</span>
+         self.cells_cancelled: set[CellId_t] = set()
+         self._glbls = glbls if glbls else {}
+ 
+<span class="d">-        # Prune cells that define provided refs</span>
+<span class="a">+        # Setup cell cannot be overridden, and it&#x27;s possible that some</span>
+<span class="a">+        # variables are not defined, so ignore it.</span>
+         pruned_execution_order = dataflow.prune_cells_for_overrides(
+<span class="d">-            self.app.graph, self.app.execution_order, self._glbls</span>
+<span class="a">+            self.app.graph,</span>
+<span class="a">+            self.app.execution_order,</span>
+<span class="a">+            self._glbls,</span>
+<span class="a">+            excluded=CellId_t(SETUP_CELL_NAME),</span>
+         )
+ 
+         self.cells_to_run = [</pre></body></html>

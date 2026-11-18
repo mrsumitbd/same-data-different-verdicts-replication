@@ -1,0 +1,51 @@
+==============================================================================
+C5. Observation window as a specification choice (R refits, Efron)
+==============================================================================
+
+A. Verdict counts longer / none / sooner (specifications fitted; a spec is missing when the tier has no units)
+  estimator: as in the paper
+    fully_autonomous  across         | full      5/ 2/15 (n=22, med HR 1.16) | 8m-cut    0/ 0/22 (n=22, med HR 1.28) | 8m-240d   0/ 1/21 (n=22, med HR 1.24) | 10m-300d  0/ 1/21 (n=22, med HR 1.43)
+    fully_autonomous  across_shared  | full     16/ 2/ 4 (n=22, med HR 0.89) | 8m-cut    5/ 7/10 (n=22, med HR 0.99) | 8m-240d   3/ 9/10 (n=22, med HR 0.99) | 10m-300d  7/ 5/10 (n=22, med HR 1.01)
+    fully_autonomous  within         | full      0/22/ 0 (n=22, med HR 0.91) | 8m-cut    0/22/ 0 (n=22, med HR 1.06) | 8m-240d   0/22/ 0 (n=22, med HR 1.03) | 10m-300d  0/22/ 0 (n=22, med HR 0.98)
+    human_supervised  across         | full     21/ 0/ 1 (n=22, med HR 0.72) | 8m-cut   not testable (<10 tier PRs) | 8m-240d  not testable (<10 tier PRs) | 10m-300d not testable (<10 tier PRs)
+    human_supervised  across_shared  | full     21/ 0/ 1 (n=22, med HR 0.65) | 8m-cut   not testable (<10 tier PRs) | 8m-240d  not testable (<10 tier PRs) | 10m-300d not testable (<10 tier PRs)
+    human_supervised  within         | full     11/10/ 1 (n=22, med HR 0.77) | 8m-cut   not testable (<10 tier PRs) | 8m-240d  not testable (<10 tier PRs) | 10m-300d not testable (<10 tier PRs)
+  estimator: clustered by repository
+    fully_autonomous  across         | full      1/18/ 3 (n=22, med HR 1.16) | 8m-cut    0/14/ 8 (n=22, med HR 1.28) | 8m-240d   0/18/ 4 (n=22, med HR 1.24) | 10m-300d  0/17/ 5 (n=22, med HR 1.43)
+    fully_autonomous  across_shared  | full      3/19/ 0 (n=22, med HR 0.89) | 8m-cut    0/22/ 0 (n=22, med HR 0.99) | 8m-240d   0/22/ 0 (n=22, med HR 0.99) | 10m-300d  0/22/ 0 (n=22, med HR 1.01)
+    fully_autonomous  within         | full      0/22/ 0 (n=22, med HR 0.91) | 8m-cut    0/22/ 0 (n=22, med HR 1.06) | 8m-240d   0/22/ 0 (n=22, med HR 1.03) | 10m-300d  0/22/ 0 (n=22, med HR 0.98)
+    human_supervised  across         | full     13/ 9/ 0 (n=22, med HR 0.72) | 8m-cut   not testable (<10 tier PRs) | 8m-240d  not testable (<10 tier PRs) | 10m-300d not testable (<10 tier PRs)
+    human_supervised  across_shared  | full     14/ 8/ 0 (n=22, med HR 0.65) | 8m-cut   not testable (<10 tier PRs) | 8m-240d  not testable (<10 tier PRs) | 10m-300d not testable (<10 tier PRs)
+    human_supervised  within         | full     11/10/ 1 (n=22, med HR 0.77) | 8m-cut   not testable (<10 tier PRs) | 8m-240d  not testable (<10 tier PRs) | 10m-300d not testable (<10 tier PRs)
+
+B. Headline rung (identity tracking, vendored/generated removed, syntactic) per window
+  fully_autonomous  PR-weighted across         full (>=5 months, to cutoff)     HR 1.187  paper-SE [1.110, 1.269]  repo-cl [0.910, 1.548]  n=466,344 tier repos 31 tier PRs 412
+  fully_autonomous  PR-weighted across         >=8 months, to cutoff            HR 1.245  paper-SE [1.155, 1.342]  repo-cl [0.924, 1.679]  n=280,981 tier repos 26 tier PRs 270
+  fully_autonomous  PR-weighted across         >=8 months, censored at 240 d    HR 1.229  paper-SE [1.137, 1.329]  repo-cl [0.900, 1.679]  n=280,981 tier repos 26 tier PRs 270
+  fully_autonomous  PR-weighted across         >=10 months, censored at 300 d   HR 1.414  paper-SE [1.284, 1.557]  repo-cl [0.953, 2.097]  n=88,839 tier repos 14 tier PRs 125
+  fully_autonomous  PR-weighted across_shared  full (>=5 months, to cutoff)     HR 0.932  paper-SE [0.865, 1.004]  repo-cl [0.741, 1.171]  n=235,459 tier repos 31 tier PRs 412
+  fully_autonomous  PR-weighted across_shared  >=8 months, to cutoff            HR 0.989  paper-SE [0.909, 1.075]  repo-cl [0.794, 1.231]  n=138,953 tier repos 26 tier PRs 270
+  fully_autonomous  PR-weighted across_shared  >=8 months, censored at 240 d    HR 0.979  paper-SE [0.897, 1.068]  repo-cl [0.783, 1.223]  n=138,953 tier repos 26 tier PRs 270
+  fully_autonomous  PR-weighted across_shared  >=10 months, censored at 300 d   HR 0.954  paper-SE [0.859, 1.059]  repo-cl [0.709, 1.283]  n=43,737 tier repos 14 tier PRs 125
+  fully_autonomous  PR-weighted within         full (>=5 months, to cutoff)     HR 0.948  paper-SE [0.798, 1.126]  repo-cl [0.798, 1.126]  n=235,459 tier repos 31 tier PRs 412
+  fully_autonomous  PR-weighted within         >=8 months, to cutoff            HR 1.041  paper-SE [0.840, 1.290]  repo-cl [0.840, 1.290]  n=138,953 tier repos 26 tier PRs 270
+  fully_autonomous  PR-weighted within         >=8 months, censored at 240 d    HR 1.018  paper-SE [0.826, 1.256]  repo-cl [0.826, 1.256]  n=138,953 tier repos 26 tier PRs 270
+  fully_autonomous  PR-weighted within         >=10 months, censored at 300 d   HR 0.982  paper-SE [0.746, 1.293]  repo-cl [0.746, 1.293]  n=43,737 tier repos 14 tier PRs 125
+  fully_autonomous  line        across         full (>=5 months, to cutoff)     HR 0.896  paper-SE [0.882, 0.910]  repo-cl [0.425, 1.889]  n=466,344 tier repos 31 tier PRs 412
+  fully_autonomous  line        across         >=8 months, to cutoff            HR 1.704  paper-SE [1.673, 1.737]  repo-cl [1.001, 2.902]  n=280,981 tier repos 26 tier PRs 270
+  fully_autonomous  line        across         >=8 months, censored at 240 d    HR 1.720  paper-SE [1.686, 1.754]  repo-cl [0.961, 3.076]  n=280,981 tier repos 26 tier PRs 270
+  fully_autonomous  line        across         >=10 months, censored at 300 d   HR 1.747  paper-SE [1.701, 1.794]  repo-cl [0.985, 3.098]  n=88,839 tier repos 14 tier PRs 125
+  fully_autonomous  line        across_shared  full (>=5 months, to cutoff)     HR 0.624  paper-SE [0.614, 0.635]  repo-cl [0.289, 1.348]  n=235,459 tier repos 31 tier PRs 412
+  fully_autonomous  line        across_shared  >=8 months, to cutoff            HR 1.388  paper-SE [1.360, 1.416]  repo-cl [0.907, 2.125]  n=138,953 tier repos 26 tier PRs 270
+  fully_autonomous  line        across_shared  >=8 months, censored at 240 d    HR 1.346  paper-SE [1.318, 1.374]  repo-cl [0.848, 2.137]  n=138,953 tier repos 26 tier PRs 270
+  fully_autonomous  line        across_shared  >=10 months, censored at 300 d   HR 1.267  paper-SE [1.230, 1.306]  repo-cl [0.717, 2.239]  n=43,737 tier repos 14 tier PRs 125
+  fully_autonomous  line        within         full (>=5 months, to cutoff)     HR 1.059  paper-SE [0.505, 2.218]  repo-cl [0.505, 2.218]  n=235,459 tier repos 31 tier PRs 412
+  fully_autonomous  line        within         >=8 months, to cutoff            HR 1.573  paper-SE [0.870, 2.845]  repo-cl [0.870, 2.845]  n=138,953 tier repos 26 tier PRs 270
+  fully_autonomous  line        within         >=8 months, censored at 240 d    HR 1.539  paper-SE [0.792, 2.988]  repo-cl [0.792, 2.988]  n=138,953 tier repos 26 tier PRs 270
+  fully_autonomous  line        within         >=10 months, censored at 300 d   HR 1.089  paper-SE [0.785, 1.512]  repo-cl [0.785, 1.512]  n=43,737 tier repos 14 tier PRs 125
+  human_supervised  PR-weighted across         full (>=5 months, to cutoff)     HR 0.722  paper-SE [0.673, 0.775]  repo-cl [0.556, 0.939]  n=556,497 tier repos 150 tier PRs 1055
+  human_supervised  PR-weighted across_shared  full (>=5 months, to cutoff)     HR 0.638  paper-SE [0.591, 0.688]  repo-cl [0.460, 0.885]  n=460,096 tier repos 128 tier PRs 981
+  human_supervised  PR-weighted within         full (>=5 months, to cutoff)     HR 0.765  paper-SE [0.638, 0.918]  repo-cl [0.638, 0.918]  n=460,096 tier repos 128 tier PRs 981
+  human_supervised  line        across         full (>=5 months, to cutoff)     HR 0.888  paper-SE [0.877, 0.899]  repo-cl [0.612, 1.289]  n=556,497 tier repos 150 tier PRs 1055
+  human_supervised  line        across_shared  full (>=5 months, to cutoff)     HR 0.792  paper-SE [0.782, 0.803]  repo-cl [0.513, 1.224]  n=460,096 tier repos 128 tier PRs 981
+  human_supervised  line        within         full (>=5 months, to cutoff)     HR 0.807  paper-SE [0.600, 1.085]  repo-cl [0.600, 1.085]  n=460,096 tier repos 128 tier PRs 981

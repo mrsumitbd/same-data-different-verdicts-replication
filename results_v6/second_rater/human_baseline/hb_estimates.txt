@@ -1,0 +1,14 @@
+Human-baseline validation: 200 PRs, 100 labeled by both raters (final = first author).
+Stratum sizes in the 200 and labels in the double-coded sample:
+label              ai-attributed  bot  human  N_in_200
+stratum                                               
+bot account                    0   15      0        35
+empty description              0    1     14        30
+judged by hand                11    0     15        26
+no AI signal                   0    2     42       109
+
+Weighted share of the 200 [95% two-stage bootstrap interval] and expected count:
+  human            73.5% [67.1, 80.4]  ~147.0 PRs
+  bot              21.0% [14.7, 27.4]  ~42.0 PRs
+  ai-attributed     5.5% [2.8, 8.9]  ~11.0 PRs
+  cannot assess     0.0% [0.0, 0.0]  ~0.0 PRs

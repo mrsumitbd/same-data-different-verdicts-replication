@@ -1,0 +1,9 @@
+E11. RQ3 facts (checked 2026-11-08)
+
+1. Characteristics compared (results_v6/rq3_results.txt, Section B, Mann-Whitney U, repositories with vs without each tier):
+   stars, forks, size_kb, open_issues, contributors, loc  (six characteristics; confirmed).
+   human_supervised (150 vs 65): all p >= 0.245 (stars 0.906, forks 0.317, size_kb 0.799, open_issues 0.728, contributors 0.245, loc 0.897).
+   fully_autonomous (31 vs 184): contributors differ (median 9 vs 4, p < 0.0001); others p >= 0.062 (open_issues 0.062, size_kb 0.117).
+2. The single Devin across-repository 'longer' specification under repository clustering (results_v6/round1/c1_cox_variance.csv, row 37):
+   v3 tracking, all lines, with vendored; unit line; definition structural; HR 0.3195, repo-clustered 95% CI [0.1032, 0.9892], p = 0.048.  (confirmed: 0.320 [0.103, 0.989])
+   The 3 'sooner' ones are hunk-level, syntactic: conference tracking with vendored 1.594 [1.087, 2.338]; v3 with vendored 1.633 [1.114, 2.395]; v3 all lines 1.561 [1.068, 2.282].

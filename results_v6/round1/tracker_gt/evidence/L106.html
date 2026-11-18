@@ -1,0 +1,171 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L106</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L106</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-rest-api-specs">azure/azure-rest-api-specs</a><br><b>File at merge:</b> eng/tools/spec-gen-sdk-runner/src/types.ts, line 86<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-rest-api-specs/commit/e0000326d2538658ddc30ec9c9b52ebfbd4884cb">e0000326d2</a> (2025-06-03T22:56:41)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-rest-api-specs/tree/032a0e553ac3e692bf5858b50653a8e9a7d18264">032a0e553a</a>)</p><p><b>The line:</b></p><pre><span class="t">    dataPlane: false,</span></pre><h2>File at the merge commit, lines 78 to 94</h2><pre>   78 |  * Required check settings for all languages.
+   79 |  */
+   80 | export const SpecGenSdkRequiredSettings: Record&lt;SdkName, PlaneTypeSettings&gt; = {
+   81 |   &quot;azure-sdk-for-go&quot;: {
+   82 |     dataPlane: true,
+   83 |     managementPlane: true,
+   84 |   },
+   85 |   &quot;azure-sdk-for-java&quot;: {
+<span class="t">   86 |     dataPlane: false,</span>
+   87 |     managementPlane: true,
+   88 |   },
+   89 |   &quot;azure-sdk-for-js&quot;: {
+   90 |     dataPlane: false,
+   91 |     managementPlane: false,
+   92 |   },
+   93 |   &quot;azure-sdk-for-net&quot;: {
+   94 |     dataPlane: false,</pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-rest-api-specs/commit/c73201901830a9a0af782e7344dad5881750e98c">c732019018</a> (2025-06-03T16:16:49-07:00)</h2><p class="k">Enabled auth for sdk breaking change label WF (#35074)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/types.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/types.ts b/eng/tools/spec-gen-sdk-runner/src/types.ts
+index 9d1689a9a10..c91588e23ad 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="h">@@ -44,6 +44,7 @@ export type VsoLogs = Map&lt;</span>
+ export interface SpecGenSdkArtifactInfo {
+   language: string;
+   result: string;
+<span class="a">+  prNumber?: string;</span>
+   labelAction?: boolean;
+   isSpecGenSdkCheckRequired: boolean;
+   apiViewRequestData: APIViewRequestData[];</pre><h2>Commit #2: <a href="https://github.com/azure/azure-rest-api-specs/commit/3836922af5e6480b170551cde077d7e228248731">3836922af5</a> (2025-06-06T16:11:40-07:00)</h2><p class="k">Made SDK Validation check required for JS mgmt spec PR (#35150)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/types.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/types.ts b/eng/tools/spec-gen-sdk-runner/src/types.ts
+index c91588e23ad..e50d63947b7 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="h">@@ -89,7 +89,7 @@ export const SpecGenSdkRequiredSettings: Record&lt;SdkName, PlaneTypeSettings&gt; = {</span>
+   },
+   &quot;azure-sdk-for-js&quot;: {
+<span class=" m">     dataPlane: false,</span>
+<span class="d">-    managementPlane: false,</span>
+<span class="a">+    managementPlane: true,</span>
+   },
+   &quot;azure-sdk-for-net&quot;: {
+<span class=" m">     dataPlane: false,</span></pre><h2>Commit #3: <a href="https://github.com/azure/azure-rest-api-specs/commit/a9b08a23a9852fa8de3e6adcc083ef2ebbfd0783">a9b08a23a9</a> (2025-07-28T09:20:01-07:00)</h2><p class="k">Made .net required for typespec case only (#36179)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/types.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/types.ts b/eng/tools/spec-gen-sdk-runner/src/types.ts
+index e50d63947b7..3df7258b96c 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="h">@@ -93,7 +93,7 @@ export const SpecGenSdkRequiredSettings: Record&lt;SdkName, PlaneTypeSettings&gt; = {</span>
+   },
+   &quot;azure-sdk-for-net&quot;: {
+<span class=" m">     dataPlane: false,</span>
+<span class="d">-    managementPlane: false,</span>
+<span class="a">+    managementPlane: true,</span>
+   },
+   &quot;azure-sdk-for-python&quot;: {
+     dataPlane: true,</pre><h2>Commit #4: <a href="https://github.com/azure/azure-rest-api-specs/commit/4cf6f80480f28989b3af4704a0f8b3c86c9d9e82">4cf6f80480</a> (2025-08-05T16:10:43-07:00)</h2><p class="k">Flipped .net required settings to false (#36465)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/types.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/types.ts b/eng/tools/spec-gen-sdk-runner/src/types.ts
+index 3df7258b96c..e50d63947b7 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="h">@@ -93,7 +93,7 @@ export const SpecGenSdkRequiredSettings: Record&lt;SdkName, PlaneTypeSettings&gt; = {</span>
+   },
+   &quot;azure-sdk-for-net&quot;: {
+<span class=" m">     dataPlane: false,</span>
+<span class="d">-    managementPlane: true,</span>
+<span class="a">+    managementPlane: false,</span>
+   },
+   &quot;azure-sdk-for-python&quot;: {
+     dataPlane: true,</pre><h2>Commit #5: <a href="https://github.com/azure/azure-rest-api-specs/commit/881ba939df54bac44dd59da90383513cab22cf58">881ba939df</a> (2025-08-06T15:46:37-07:00)</h2><p class="k">[context.js] Flow head-sha like issue-number (#36479)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/types.ts. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/types.ts b/eng/tools/spec-gen-sdk-runner/src/types.ts
+index e50d63947b7..7cdbee04afa 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="h">@@ -44,6 +44,7 @@ export type VsoLogs = Map&lt;</span>
+ export interface SpecGenSdkArtifactInfo {
+   language: string;
+   result: string;
+<span class="a">+  headSha: string;</span>
+   prNumber?: string;
+   labelAction?: boolean;
+   isSpecGenSdkCheckRequired: boolean;</pre><h2>Commit #6: <a href="https://github.com/azure/azure-rest-api-specs/commit/19d86d9539ffab1bb5be0dec9571ef89a1c67ad5">19d86d9539</a> (2025-10-22T09:46:26-07:00)</h2><p class="k">Enable dataPlane required for Java and JS (#38329)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/types.ts b/eng/tools/spec-gen-sdk-runner/src/types.ts
+index 7cdbee04afa..9a4c6aae7d8 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="h">@@ -85,11 +85,11 @@ export const SpecGenSdkRequiredSettings: Record&lt;SdkName, PlaneTypeSettings&gt; = {</span>
+     managementPlane: true,
+   },
+   &quot;azure-sdk-for-java&quot;: {
+<span class="d m">-    dataPlane: false,</span>
+<span class="a">+    dataPlane: true,</span>
+     managementPlane: true,
+   },
+   &quot;azure-sdk-for-js&quot;: {
+<span class="d m">-    dataPlane: false,</span>
+<span class="a">+    dataPlane: true,</span>
+     managementPlane: true,
+   },
+   &quot;azure-sdk-for-net&quot;: {</pre><h2>Commit #7: <a href="https://github.com/azure/azure-rest-api-specs/commit/4a98ab7ea563a199f6fd154b8f9ac06deffbd7bd">4a98ab7ea5</a> (2025-11-18T10:28:36-08:00)</h2><p class="k">[spec-gen-sdk-runner] Move SpecGenSdkArtifactInfo to .github/shared (#38816)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/types.ts b/eng/tools/spec-gen-sdk-runner/src/types.ts
+index 9a4c6aae7d8..8ba8eced66e 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="h">@@ -1,3 +1,5 @@</span>
+<span class="a">+import { SdkName } from &quot;@azure-tools/specs-shared/sdk-types&quot;;</span>
+<span class="a">+</span>
+ /**
+  * Represents the input parameters required for spec-gen-sdk command execution.
+  */
+<span class="h">@@ -9,7 +11,7 @@ export interface SpecGenSdkCmdInput {</span>
+   tspConfigPath?: string;
+   readmePath?: string;
+   sdkRepoName: string;
+<span class="d">-  sdkLanguage: string;</span>
+<span class="a">+  sdkLanguage: SdkName;</span>
+   apiVersion?: string;
+   prNumber?: string;
+   sdkReleaseType?: string;
+<span class="h">@@ -19,14 +21,6 @@ export interface SpecGenSdkCmdInput {</span>
+   headBranch?: string;
+ }
+ 
+<span class="d">-/**</span>
+<span class="d">- * Data for the API view request.</span>
+<span class="d">- */</span>
+<span class="d">-export interface APIViewRequestData {</span>
+<span class="d">-  packageName: string;</span>
+<span class="d">-  filePath: string;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ /*
+  * VsoLogs is a map of task names to log entries. Each log entry contains an array of errors and warnings.
+  */
+<span class="h">@@ -38,29 +32,6 @@ export type VsoLogs = Map&lt;</span>
+   }
+ &gt;;
+ 
+<span class="d">-/**</span>
+<span class="d">- * Represents the result of the spec-gen-sdk generation process.</span>
+<span class="d">- */</span>
+<span class="d">-export interface SpecGenSdkArtifactInfo {</span>
+<span class="d">-  language: string;</span>
+<span class="d">-  result: string;</span>
+<span class="d">-  headSha: string;</span>
+<span class="d">-  prNumber?: string;</span>
+<span class="d">-  labelAction?: boolean;</span>
+<span class="d">-  isSpecGenSdkCheckRequired: boolean;</span>
+<span class="d">-  apiViewRequestData: APIViewRequestData[];</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * Represents supported SDK language identifiers.</span>
+<span class="d">- */</span>
+<span class="d">-export type SdkName =</span>
+<span class="d">-  | &quot;azure-sdk-for-go&quot;</span>
+<span class="d">-  | &quot;azure-sdk-for-java&quot;</span>
+<span class="d">-  | &quot;azure-sdk-for-js&quot;</span>
+<span class="d">-  | &quot;azure-sdk-for-net&quot;</span>
+<span class="d">-  | &quot;azure-sdk-for-python&quot;;</span>
+<span class="d">-</span>
+ /**
+  * Represents the plane types for SDK generation settings
+  */</pre><h2>Commit #8: <a href="https://github.com/azure/azure-rest-api-specs/commit/48fcf125117dd5c4ad60b512d76bfe0cf13cc5f1">48fcf12511</a> (2025-12-17T14:34:38-08:00)</h2><p class="k">Made dotnet SDK validation required (#39318)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/types.ts b/eng/tools/spec-gen-sdk-runner/src/types.ts
+index 8ba8eced66e..e886126129a 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/types.ts</span>
+<span class="h">@@ -65,7 +65,7 @@ export const SpecGenSdkRequiredSettings: Record&lt;SdkName, PlaneTypeSettings&gt; = {</span>
+   },
+   &quot;azure-sdk-for-net&quot;: {
+<span class=" m">     dataPlane: false,</span>
+<span class="d">-    managementPlane: false,</span>
+<span class="a">+    managementPlane: true,</span>
+   },
+   &quot;azure-sdk-for-python&quot;: {
+     dataPlane: true,</pre></body></html>

@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L241 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L241: after the move</h1><p><b>Repository:</b> <a href="https://github.com/567-labs/instructor">567-labs/instructor</a><br><b>Original file:</b> tests/llm/test_anthropic/test_stream.py (see L241.html)<br><b>Move commit:</b> <a href="https://github.com/567-labs/instructor/commit/cbe04e3ca1fd3b9752f2e591b134e97b49cfc389">cbe04e3ca1</a> (commit #1 on L241.html)<br><b>Destination file (your label):</b> tests/llm/test_core_providers/test_streaming.py<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/567-labs/instructor/tree/1f621067bea51aae30799a84c4be0d08017cb316">1f621067be</a>)</p><p><b>The line:</b></p><pre><span class="t">    client = instructor.from_provider(model, mode=mode, async_client=True)</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 5 (lines 36, 60, 83, 103, 126).</p><h2>Destination file at the move commit, lines 28 to 44</h2><pre>   28 |     query: str
+   29 |     category: str
+   30 | 
+   31 | 
+   32 | @pytest.mark.asyncio
+   33 | async def test_partial_streaming(provider_config):
+   34 |     &quot;&quot;&quot;Test partial streaming with incremental updates.&quot;&quot;&quot;
+   35 |     model, mode = provider_config
+<span class="t">   36 |     client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+   37 | 
+   38 |     updates = []
+   39 |     async for partial_user in await client.create(
+   40 |         response_model=Partial[User],
+   41 |         messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Jason Liu is 30 years old&quot;}],
+   42 |         stream=True,
+   43 |     ):
+   44 |         assert isinstance(partial_user, User)</pre><h2>Destination file at the move commit, lines 52 to 68</h2><pre>   52 |     assert final.name == &quot;Jason Liu&quot;
+   53 |     assert final.age == 30
+   54 | 
+   55 | 
+   56 | @pytest.mark.asyncio
+   57 | async def test_iterable_streaming(provider_config):
+   58 |     &quot;&quot;&quot;Test streaming multiple objects with Iterable.&quot;&quot;&quot;
+   59 |     model, mode = provider_config
+<span class="t">   60 |     client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+   61 | 
+   62 |     users = []
+   63 |     async for user in await client.create(
+   64 |         response_model=Iterable[User],
+   65 |         messages=[
+   66 |             {
+   67 |                 &quot;role&quot;: &quot;user&quot;,
+   68 |                 &quot;content&quot;: &quot;Create 3 users: Alice (25), Bob (30), Carol (35)&quot;,</pre><h2>Destination file at the move commit, lines 75 to 91</h2><pre>   75 |     assert all(isinstance(user, User) for user in users)
+   76 |     assert {user.name for user in users} == {&quot;Alice&quot;, &quot;Bob&quot;, &quot;Carol&quot;}
+   77 | 
+   78 | 
+   79 | @pytest.mark.asyncio
+   80 | async def test_iterable_streaming_with_stream_flag(provider_config):
+   81 |     &quot;&quot;&quot;Test Iterable with explicit stream=True flag.&quot;&quot;&quot;
+   82 |     model, mode = provider_config
+<span class="t">   83 |     client = instructor.from_provider(model, mode=mode, async_client=True)</span>
+   84 | 
+   85 |     users = []
+   86 |     async for user in await client.create(
+   87 |         response_model=Iterable[User],
+   88 |         messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Make 2 users: John (20), Jane (22)&quot;}],
+   89 |         stream=True,
+   90 |     ):
+   91 |         assert isinstance(user, User)</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches the destination file after the move in the window.</b></p></body></html>

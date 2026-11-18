@@ -1,0 +1,341 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L185</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L185</h1><p><b>Repository:</b> <a href="https://github.com/logancyang/obsidian-copilot">logancyang/obsidian-copilot</a><br><b>File at merge:</b> src/components/chat-components/ProjectList.tsx, line 228<br><b>Merge commit (birth):</b> <a href="https://github.com/logancyang/obsidian-copilot/commit/972b63d002c15d7ae58b4155e0245c7451e4158d">972b63d002</a> (2025-06-01T05:30:54)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/logancyang/obsidian-copilot/tree/13523c9fc19a18e5df37369426c47b9a5096c279">13523c9fc1</a>)</p><p><b>The line:</b></p><pre><span class="t">                &lt;div className=&quot;tw-flex tw-items-center tw-gap-2&quot;&gt;</span></pre><h2>File at the merge commit, lines 220 to 236</h2><pre>  220 |     };
+  221 | 
+  222 |     return (
+  223 |       &lt;div className={cn(&quot;tw-flex tw-flex-col&quot;, className)}&gt;
+  224 |         &lt;div className=&quot;tw-overflow-y-auto&quot;&gt;
+  225 |           &lt;div className=&quot;tw-flex tw-flex-col&quot;&gt;
+  226 |             {showChatInput &amp;&amp; selectedProject ? (
+  227 |               &lt;div className=&quot;tw-flex tw-items-center tw-justify-between tw-px-2 tw-py-3&quot;&gt;
+<span class="t">  228 |                 &lt;div className=&quot;tw-flex tw-items-center tw-gap-2&quot;&gt;</span>
+  229 |                   &lt;span className=&quot;tw-font-semibold tw-text-normal&quot;&gt;Projects&lt;/span&gt;
+  230 |                   &lt;Select
+  231 |                     value={selectedProject.name}
+  232 |                     onValueChange={(value) =&gt; {
+  233 |                       const project = projects.find((p) =&gt; p.name === value);
+  234 |                       if (project) {
+  235 |                         handleLoadContext(project);
+  236 |                       }</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/logancyang/obsidian-copilot/commit/1205d89ed300b9c4c332ad4e10cf64c974d164c3">1205d89ed3</a> (2025-06-05T10:37:34-07:00)</h2><p class="k">feat: Support the function of searching the project list. (#1522)<br>Path after this commit: src/components/chat-components/ProjectList.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/components/chat-components/ProjectList.tsx b/src/components/chat-components/ProjectList.tsx
+index 85afd121..50f89d3a 100644
+<span class="d">--- a/src/components/chat-components/ProjectList.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ProjectList.tsx</span>
+<span class="h">@@ -22,11 +22,15 @@ import {</span>
+   Info,
+   MessageSquare,
+   Plus,
+<span class="a">+  Search,</span>
+   Trash2,
+   X,
+<span class="a">+  XCircle,</span>
+ } from &quot;lucide-react&quot;;
+ import { App, Notice } from &quot;obsidian&quot;;
+<span class="d">-import React, { memo, useEffect, useState } from &quot;react&quot;;</span>
+<span class="a">+import React, { memo, useEffect, useMemo, useState } from &quot;react&quot;;</span>
+<span class="a">+import { filterProjects } from &quot;@/utils/projectUtils&quot;;</span>
+<span class="a">+import { Input } from &quot;../ui/input&quot;;</span>
+ 
+ function ProjectItem({
+   project,
+<span class="h">@@ -143,6 +147,7 @@ export const ProjectList = memo(</span>
+     const [isOpen, setIsOpen] = useState(defaultOpen);
+     const [showChatInput, setShowChatInput] = useState(false);
+     const [selectedProject, setSelectedProject] = useState&lt;ProjectConfig | null&gt;(null);
+<span class="a">+    const [searchQuery, setSearchQuery] = useState(&quot;&quot;);</span>
+ 
+     // Auto collapse when messages appear
+     useEffect(() =&gt; {
+<span class="h">@@ -151,6 +156,11 @@ export const ProjectList = memo(</span>
+       }
+     }, [hasMessages]);
+ 
+<span class="a">+    // Filter projects based on search query</span>
+<span class="a">+    const filteredProjects = useMemo(() =&gt; {</span>
+<span class="a">+      return filterProjects(projects, searchQuery);</span>
+<span class="a">+    }, [projects, searchQuery]);</span>
+<span class="a">+</span>
+     const handleAddProject = () =&gt; {
+       const modal = new AddProjectModal(app, async (project: ProjectConfig) =&gt; {
+         onProjectAdded(project);
+<span class="h">@@ -342,9 +352,33 @@ export const ProjectList = memo(</span>
+                 )}
+                 &lt;CollapsibleContent className=&quot;tw-transition-all tw-duration-200 tw-ease-in-out&quot;&gt;
+                   &lt;div className=&quot;tw-relative tw-bg-secondary/30&quot;&gt;
+<span class="a">+                    {/* Search input box */}</span>
+<span class="a">+                    {projects.length &gt; 0 &amp;&amp; (</span>
+<span class="a">+                      &lt;div className=&quot;tw-px-4 tw-pb-2 tw-pt-3&quot;&gt;</span>
+<span class="a">+                        &lt;div className=&quot;tw-relative&quot;&gt;</span>
+<span class="a">+                          &lt;Input</span>
+<span class="a">+                            type=&quot;text&quot;</span>
+<span class="a">+                            placeholder=&quot;Search projects...&quot;</span>
+<span class="a">+                            value={searchQuery}</span>
+<span class="a">+                            onChange={(e) =&gt; setSearchQuery(e.target.value)}</span>
+<span class="a">+                          /&gt;</span>
+<span class="a">+                          {searchQuery &amp;&amp; (</span>
+<span class="a">+                            &lt;Button</span>
+<span class="a">+                              variant={&quot;secondary&quot;}</span>
+<span class="a">+                              onClick={() =&gt; setSearchQuery(&quot;&quot;)}</span>
+<span class="a">+                              className=&quot;tw-absolute tw-right-8 tw-top-1/2 tw-size-4 -tw-translate-y-1/2 tw-transform tw-rounded-full tw-p-0 tw-transition-colors&quot;</span>
+<span class="a">+                              aria-label=&quot;Clear search&quot;</span>
+<span class="a">+                            &gt;</span>
+<span class="a">+                              &lt;XCircle className=&quot;tw-size-4 tw-text-muted/60 hover:tw-text-accent-hover&quot; /&gt;</span>
+<span class="a">+                            &lt;/Button&gt;</span>
+<span class="a">+                          )}</span>
+<span class="a">+                          &lt;Search className=&quot;tw-absolute tw-right-3 tw-top-1/2 tw-size-4 -tw-translate-y-1/2 tw-transform tw-text-muted&quot; /&gt;</span>
+<span class="a">+                        &lt;/div&gt;</span>
+<span class="a">+                      &lt;/div&gt;</span>
+<span class="a">+                    )}</span>
+                     &lt;div className=&quot;tw-max-h-[calc(3*5.7rem)] tw-overflow-y-auto tw-px-4 tw-pb-6 tw-pt-3&quot;&gt;
+                       &lt;div className=&quot;tw-flex tw-flex-col tw-gap-2 @2xl:tw-grid @2xl:tw-grid-cols-2 @4xl:tw-grid-cols-3&quot;&gt;
+<span class="d">-                        {projects.map((project) =&gt; (</span>
+<span class="a">+                        {filteredProjects.map((project) =&gt; (</span>
+                           &lt;ProjectItem
+                             key={project.name}
+                             project={project}
+<span class="h">@@ -354,6 +388,16 @@ export const ProjectList = memo(</span>
+                           /&gt;
+                         ))}
+                       &lt;/div&gt;
+<span class="a">+                      {/* No search results message */}</span>
+<span class="a">+                      {searchQuery.trim() &amp;&amp; filteredProjects.length === 0 &amp;&amp; (</span>
+<span class="a">+                        &lt;div className=&quot;tw-flex tw-flex-col tw-items-center tw-justify-center tw-py-8 tw-text-muted&quot;&gt;</span>
+<span class="a">+                          &lt;Search className=&quot;tw-mb-3 tw-size-12 tw-text-muted/50&quot; /&gt;</span>
+<span class="a">+                          &lt;p className=&quot;tw-text-base tw-font-medium&quot;&gt;No matching projects found&lt;/p&gt;</span>
+<span class="a">+                          &lt;p className=&quot;tw-mt-1 tw-text-sm&quot;&gt;</span>
+<span class="a">+                            Try searching with different keywords</span>
+<span class="a">+                          &lt;/p&gt;</span>
+<span class="a">+                        &lt;/div&gt;</span>
+<span class="a">+                      )}</span>
+                     &lt;/div&gt;
+                     {projects.length &gt; 0 &amp;&amp; (
+                       &lt;div className=&quot;tw-pointer-events-none tw-absolute tw-inset-x-0 tw-bottom-0 tw-h-8 tw-bg-[linear-gradient(to_top,var(--background-primary)_0%,var(--background-primary)_30%,transparent_100%)]&quot; /&gt;</pre><h2>Commit #2: <a href="https://github.com/logancyang/obsidian-copilot/commit/4539338dfe8311fd4f930335941d822bb9b5d582">4539338dfe</a> (2025-06-24T12:35:48-07:00)</h2><p class="k">feat: Support project context preview. (#1551)<br>Path after this commit: src/components/chat-components/ProjectList.tsx. Lines with exactly this text in the file after the commit: 2. Identical text added in other files in this commit: src/components/modals/project/context-manage-modal.tsx.</p><pre>diff --git a/src/components/chat-components/ProjectList.tsx b/src/components/chat-components/ProjectList.tsx
+index 50f89d3a..8f4d982f 100644
+<span class="d">--- a/src/components/chat-components/ProjectList.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ProjectList.tsx</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import { ProjectConfig, setCurrentProject } from &quot;@/aiParams&quot;;
+<span class="d">-import { AddProjectModal } from &quot;@/components/modals/AddProjectModal&quot;;</span>
+<span class="a">+import { AddProjectModal } from &quot;@/components/modals/project/AddProjectModal&quot;;</span>
+ import { ConfirmModal } from &quot;@/components/modals/ConfirmModal&quot;;
+ import { Button } from &quot;@/components/ui/button&quot;;
+ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from &quot;@/components/ui/collapsible&quot;;
+<span class="h">@@ -11,6 +11,7 @@ import {</span>
+   SelectValue,
+ } from &quot;@/components/ui/select&quot;;
+ import { Tooltip, TooltipContent, TooltipTrigger } from &quot;@/components/ui/tooltip&quot;;
+<span class="a">+import { SearchBar } from &quot;@/components/ui/SearchBar&quot;;</span>
+ import { cn } from &quot;@/lib/utils&quot;;
+ import { logError } from &quot;@/logger&quot;;
+ import { updateSetting } from &quot;@/settings/model&quot;;
+<span class="h">@@ -25,12 +26,10 @@ import {</span>
+   Search,
+   Trash2,
+   X,
+<span class="d">-  XCircle,</span>
+ } from &quot;lucide-react&quot;;
+ import { App, Notice } from &quot;obsidian&quot;;
+ import React, { memo, useEffect, useMemo, useState } from &quot;react&quot;;
+ import { filterProjects } from &quot;@/utils/projectUtils&quot;;
+<span class="d">-import { Input } from &quot;../ui/input&quot;;</span>
+ 
+ function ProjectItem({
+   project,
+<span class="h">@@ -356,23 +355,11 @@ export const ProjectList = memo(</span>
+                     {projects.length &gt; 0 &amp;&amp; (
+                       &lt;div className=&quot;tw-px-4 tw-pb-2 tw-pt-3&quot;&gt;
+                         &lt;div className=&quot;tw-relative&quot;&gt;
+<span class="d">-                          &lt;Input</span>
+<span class="d">-                            type=&quot;text&quot;</span>
+<span class="d">-                            placeholder=&quot;Search projects...&quot;</span>
+<span class="a">+                          &lt;SearchBar</span>
+                             value={searchQuery}
+<span class="d">-                            onChange={(e) =&gt; setSearchQuery(e.target.value)}</span>
+<span class="a">+                            onChange={setSearchQuery}</span>
+<span class="a">+                            placeholder=&quot;Search projects...&quot;</span>
+                           /&gt;
+<span class="d">-                          {searchQuery &amp;&amp; (</span>
+<span class="d">-                            &lt;Button</span>
+<span class="d">-                              variant={&quot;secondary&quot;}</span>
+<span class="d">-                              onClick={() =&gt; setSearchQuery(&quot;&quot;)}</span>
+<span class="d">-                              className=&quot;tw-absolute tw-right-8 tw-top-1/2 tw-size-4 -tw-translate-y-1/2 tw-transform tw-rounded-full tw-p-0 tw-transition-colors&quot;</span>
+<span class="d">-                              aria-label=&quot;Clear search&quot;</span>
+<span class="d">-                            &gt;</span>
+<span class="d">-                              &lt;XCircle className=&quot;tw-size-4 tw-text-muted/60 hover:tw-text-accent-hover&quot; /&gt;</span>
+<span class="d">-                            &lt;/Button&gt;</span>
+<span class="d">-                          )}</span>
+<span class="d">-                          &lt;Search className=&quot;tw-absolute tw-right-3 tw-top-1/2 tw-size-4 -tw-translate-y-1/2 tw-transform tw-text-muted&quot; /&gt;</span>
+                         &lt;/div&gt;
+                       &lt;/div&gt;
+                     )}</pre><h2>Commit #3: <a href="https://github.com/logancyang/obsidian-copilot/commit/fe26c8943bdfe0ea6d43e990a6c6da6f8ee563f8">fe26c8943b</a> (2025-08-08T09:59:00-07:00)</h2><p class="k">feat: Add project new context loading ui. (#1695)<br>Path after this commit: src/components/chat-components/ProjectList.tsx. Lines with exactly this text in the file after the commit: 2. Identical text added in other files in this commit: src/components/project/progress-card.tsx.</p><pre>diff --git a/src/components/chat-components/ProjectList.tsx b/src/components/chat-components/ProjectList.tsx
+index 8f4d982f..6389c96d 100644
+<span class="d">--- a/src/components/chat-components/ProjectList.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ProjectList.tsx</span>
+<span class="h">@@ -131,6 +131,7 @@ export const ProjectList = memo(</span>
+     showChatUI,
+     onClose,
+     inputRef,
+<span class="a">+    onProjectClose,</span>
+   }: {
+     className?: string;
+     projects: ProjectConfig[];
+<span class="h">@@ -142,6 +143,7 @@ export const ProjectList = memo(</span>
+     showChatUI: (v: boolean) =&gt; void;
+     onClose: () =&gt; void;
+     inputRef: React.RefObject&lt;HTMLTextAreaElement&gt;;
+<span class="a">+    onProjectClose: () =&gt; void;</span>
+   }): React.ReactElement =&gt; {
+     const [isOpen, setIsOpen] = useState(defaultOpen);
+     const [showChatInput, setShowChatInput] = useState(false);
+<span class="h">@@ -285,6 +287,7 @@ export const ProjectList = memo(</span>
+                         size=&quot;icon&quot;
+                         onClick={() =&gt; {
+                           enableOrDisableProject(false);
+<span class="a">+                          onProjectClose();</span>
+                         }}
+                         aria-label=&quot;Close Current Project&quot;
+                       &gt;</pre><h2>Commit #4: <a href="https://github.com/logancyang/obsidian-copilot/commit/86b7fcab88fa51e7b66631c9d70cde6d64046472">86b7fcab88</a> (2025-09-22T18:06:54-07:00)</h2><p class="k">feat: add mobile-responsive components for settings. (#1813)<br>Path after this commit: src/components/chat-components/ProjectList.tsx. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: src/components/ui/mobile-card.tsx, src/settings/v2/components/ModelTable.tsx.</p><pre>diff --git a/src/components/chat-components/ProjectList.tsx b/src/components/chat-components/ProjectList.tsx
+index 6389c96d..bed15128 100644
+<span class="d">--- a/src/components/chat-components/ProjectList.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ProjectList.tsx</span>
+<span class="h">@@ -10,7 +10,7 @@ import {</span>
+   SelectTrigger,
+   SelectValue,
+ } from &quot;@/components/ui/select&quot;;
+<span class="d">-import { Tooltip, TooltipContent, TooltipTrigger } from &quot;@/components/ui/tooltip&quot;;</span>
+<span class="a">+import { HelpTooltip } from &quot;@/components/ui/help-tooltip&quot;;</span>
+ import { SearchBar } from &quot;@/components/ui/SearchBar&quot;;
+ import { cn } from &quot;@/lib/utils&quot;;
+ import { logError } from &quot;@/logger&quot;;
+<span class="h">@@ -20,7 +20,6 @@ import {</span>
+   ChevronUp,
+   Edit2,
+   Folder,
+<span class="d">-  Info,</span>
+   MessageSquare,
+   Plus,
+   Search,
+<span class="h">@@ -30,6 +29,7 @@ import {</span>
+ import { App, Notice } from &quot;obsidian&quot;;
+ import React, { memo, useEffect, useMemo, useState } from &quot;react&quot;;
+ import { filterProjects } from &quot;@/utils/projectUtils&quot;;
+<span class="a">+import { Tooltip, TooltipContent, TooltipTrigger } from &quot;@/components/ui/tooltip&quot;;</span>
+ 
+ function ProjectItem({
+   project,
+<span class="h">@@ -236,7 +236,7 @@ export const ProjectList = memo(</span>
+           &lt;div className=&quot;tw-flex tw-flex-col&quot;&gt;
+             {showChatInput &amp;&amp; selectedProject ? (
+               &lt;div className=&quot;tw-flex tw-items-center tw-justify-between tw-px-2 tw-py-3&quot;&gt;
+<span class="d m">-                &lt;div className=&quot;tw-flex tw-items-center tw-gap-2&quot;&gt;</span>
+<span class="a">+                &lt;div className=&quot;tw-flex tw-min-w-0 tw-items-center tw-gap-2&quot;&gt;</span>
+                   &lt;span className=&quot;tw-font-semibold tw-text-normal&quot;&gt;Projects&lt;/span&gt;
+                   &lt;Select
+                     value={selectedProject.name}
+<span class="h">@@ -247,31 +247,31 @@ export const ProjectList = memo(</span>
+                       }
+                     }}
+                   &gt;
+<span class="d">-                    &lt;SelectTrigger className=&quot;tw-w-[200px]&quot;&gt;</span>
+<span class="a">+                    &lt;SelectTrigger className=&quot;tw-truncate&quot;&gt;</span>
+                       &lt;SelectValue&gt;
+<span class="d m">-                        &lt;div className=&quot;tw-flex tw-items-center tw-gap-2&quot;&gt;</span>
+<span class="d">-                          &lt;Folder className=&quot;tw-size-4 tw-text-accent/70&quot; /&gt;</span>
+<span class="d">-                          &lt;span&gt;{selectedProject.name}&lt;/span&gt;</span>
+<span class="a">+                        &lt;div className=&quot;tw-flex tw-min-w-0 tw-items-center tw-gap-2&quot;&gt;</span>
+<span class="a">+                          &lt;Folder className=&quot;tw-size-4 tw-shrink-0 tw-text-accent/70&quot; /&gt;</span>
+<span class="a">+                          &lt;span className=&quot;tw-flex-1 tw-truncate&quot;&gt;{selectedProject.name}&lt;/span&gt;</span>
+                         &lt;/div&gt;
+                       &lt;/SelectValue&gt;
+                     &lt;/SelectTrigger&gt;
+<span class="d">-                    &lt;SelectContent&gt;</span>
+<span class="a">+                    &lt;SelectContent className=&quot;tw-truncate&quot;&gt;</span>
+                       {projects.map((project) =&gt; (
+                         &lt;SelectItem
+                           key={project.name}
+                           value={project.name}
+                           className=&quot;tw-flex tw-items-center tw-gap-2&quot;
+                         &gt;
+<span class="d m">-                          &lt;div className=&quot;tw-flex tw-items-center tw-gap-2&quot;&gt;</span>
+<span class="d">-                            &lt;Folder className=&quot;tw-size-4&quot; /&gt;</span>
+<span class="d">-                            {project.name}</span>
+<span class="a">+                          &lt;div className=&quot;tw-flex tw-min-w-0 tw-items-center tw-gap-2&quot;&gt;</span>
+<span class="a">+                            &lt;Folder className=&quot;tw-size-4 tw-shrink-0&quot; /&gt;</span>
+<span class="a">+                            &lt;span className=&quot;tw-truncate&quot;&gt;{project.name}&lt;/span&gt;</span>
+                           &lt;/div&gt;
+                         &lt;/SelectItem&gt;
+                       ))}
+                     &lt;/SelectContent&gt;
+                   &lt;/Select&gt;
+                 &lt;/div&gt;
+<span class="d m">-                &lt;div className=&quot;tw-flex tw-items-center tw-gap-2&quot;&gt;</span>
+<span class="a">+                &lt;div className=&quot;tw-ml-1 tw-flex tw-items-center tw-gap-2&quot;&gt;</span>
+                   &lt;Button
+                     variant=&quot;secondary&quot;
+                     onClick={() =&gt; handleEditProject(selectedProject)}
+<span class="h">@@ -307,14 +307,11 @@ export const ProjectList = memo(</span>
+                 &lt;div className=&quot;tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-3&quot;&gt;
+                   &lt;div className=&quot;tw-flex tw-flex-1 tw-items-center tw-gap-2&quot;&gt;
+                     &lt;span className=&quot;tw-font-semibold tw-text-normal&quot;&gt;Projects&lt;/span&gt;
+<span class="d">-                    &lt;Tooltip&gt;</span>
+<span class="d">-                      &lt;TooltipTrigger asChild&gt;</span>
+<span class="d">-                        &lt;Info className=&quot;tw-size-4 tw-text-muted&quot; /&gt;</span>
+<span class="d">-                      &lt;/TooltipTrigger&gt;</span>
+<span class="d">-                      &lt;TooltipContent side=&quot;bottom&quot; className=&quot;tw-w-64&quot;&gt;</span>
+<span class="d">-                        Manage your projects with different contexts and configurations.</span>
+<span class="d">-                      &lt;/TooltipContent&gt;</span>
+<span class="d">-                    &lt;/Tooltip&gt;</span>
+<span class="a">+                    &lt;HelpTooltip</span>
+<span class="a">+                      content=&quot;Manage your projects with different contexts and configurations.&quot;</span>
+<span class="a">+                      contentClassName=&quot;tw-w-64&quot;</span>
+<span class="a">+                      buttonClassName=&quot;tw-size-4 tw-text-muted&quot;</span>
+<span class="a">+                    /&gt;</span>
+                   &lt;/div&gt;
+<span class=" m">                   &lt;div className=&quot;tw-flex tw-items-center tw-gap-2&quot;&gt;</span>
+                     &lt;Button className=&quot;tw-px-2&quot; variant=&quot;secondary&quot; onClick={handleAddProject}&gt;</pre><h2>Commit #5: <a href="https://github.com/logancyang/obsidian-copilot/commit/5568b70e0fe46469dd2901f325dfc6a7a41ec905">5568b70e0f</a> (2025-10-10T21:38:50-07:00)</h2><p class="k">Merge 3.1.0 preview (#1906)<br>Path after this commit: src/components/chat-components/ProjectList.tsx. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: src/components/chat-components/ChatInput.tsx, src/components/chat-components/TypeaheadMenuContent.tsx.</p><pre>diff --git a/src/components/chat-components/ProjectList.tsx b/src/components/chat-components/ProjectList.tsx
+index bed15128..802c670e 100644
+<span class="d">--- a/src/components/chat-components/ProjectList.tsx</span>
+<span class="a">+++ b/src/components/chat-components/ProjectList.tsx</span>
+<span class="h">@@ -2,6 +2,7 @@ import { ProjectConfig, setCurrentProject } from &quot;@/aiParams&quot;;</span>
+ import { AddProjectModal } from &quot;@/components/modals/project/AddProjectModal&quot;;
+ import { ConfirmModal } from &quot;@/components/modals/ConfirmModal&quot;;
+ import { Button } from &quot;@/components/ui/button&quot;;
+<span class="a">+import { useChatInput } from &quot;@/context/ChatInputContext&quot;;</span>
+ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from &quot;@/components/ui/collapsible&quot;;
+ import {
+   Select,
+<span class="h">@@ -130,7 +131,6 @@ export const ProjectList = memo(</span>
+     hasMessages = false,
+     showChatUI,
+     onClose,
+<span class="d">-    inputRef,</span>
+     onProjectClose,
+   }: {
+     className?: string;
+<span class="h">@@ -142,13 +142,13 @@ export const ProjectList = memo(</span>
+     hasMessages?: boolean;
+     showChatUI: (v: boolean) =&gt; void;
+     onClose: () =&gt; void;
+<span class="d">-    inputRef: React.RefObject&lt;HTMLTextAreaElement&gt;;</span>
+     onProjectClose: () =&gt; void;
+   }): React.ReactElement =&gt; {
+     const [isOpen, setIsOpen] = useState(defaultOpen);
+     const [showChatInput, setShowChatInput] = useState(false);
+     const [selectedProject, setSelectedProject] = useState&lt;ProjectConfig | null&gt;(null);
+     const [searchQuery, setSearchQuery] = useState(&quot;&quot;);
+<span class="a">+    const chatInput = useChatInput();</span>
+ 
+     // Auto collapse when messages appear
+     useEffect(() =&gt; {
+<span class="h">@@ -224,9 +224,7 @@ export const ProjectList = memo(</span>
+       setCurrentProject(p);
+ 
+       setTimeout(() =&gt; {
+<span class="d">-        if (inputRef.current) {</span>
+<span class="d">-          inputRef.current.focus();</span>
+<span class="d">-        }</span>
+<span class="a">+        chatInput.focusInput();</span>
+       }, 0);
+     };
+ </pre></body></html>

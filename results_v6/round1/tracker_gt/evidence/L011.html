@@ -1,0 +1,44 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L011</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L011</h1><p><b>Repository:</b> <a href="https://github.com/commaai/openpilot">commaai/openpilot</a><br><b>File at merge:</b> selfdrive/locationd/test/test_lagd.py, line 124<br><b>Merge commit (birth):</b> <a href="https://github.com/commaai/openpilot/commit/75b6ec68c6996cff9f52e5a70c8b559a6295de4e">75b6ec68c6</a> (2025-06-10T05:10:47)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/commaai/openpilot/tree/84b1f363e42293104b4d56ed5b07f549fce381cf">84b1f363e4</a>)</p><p><b>The line:</b></p><pre><span class="t">    assert msg.liveDelay.calPerc == 100</span></pre><h2>File at the merge commit, lines 116 to 132</h2><pre>  116 |     lag_frames = 5
+  117 |     process_messages(estimator, lag_frames, int(MIN_OKAY_WINDOW_SEC / DT) + BLOCK_NUM_NEEDED * BLOCK_SIZE)
+  118 |     msg = estimator.get_msg(True)
+  119 |     assert msg.liveDelay.status == &#x27;unestimated&#x27;
+  120 |     assert np.allclose(msg.liveDelay.lateralDelay, 1.0, atol=0.01)
+  121 |     assert np.allclose(msg.liveDelay.lateralDelayEstimate, lag_frames * DT, atol=0.01)
+  122 |     assert np.allclose(msg.liveDelay.lateralDelayEstimateStd, 0.0, atol=0.01)
+  123 |     assert msg.liveDelay.validBlocks == BLOCK_NUM_NEEDED
+<span class="t">  124 |     assert msg.liveDelay.calPerc == 100</span>
+  125 | 
+  126 |   def test_estimator_masking(self):
+  127 |     mocked_CP, lag_frames = car.CarParams(steerActuatorDelay=0.8), random.randint(1, 19)
+  128 |     estimator = LateralLagEstimator(mocked_CP, DT, min_recovery_buffer_sec=0.0, min_yr=0.0, min_valid_block_count=1)
+  129 |     process_messages(estimator, lag_frames, (int(MIN_OKAY_WINDOW_SEC / DT) + BLOCK_SIZE) * 2, rejection_threshold=0.4)
+  130 |     msg = estimator.get_msg(True)
+  131 |     assert np.allclose(msg.liveDelay.lateralDelayEstimate, lag_frames * DT, atol=0.01)
+  132 |     assert np.allclose(msg.liveDelay.lateralDelayEstimateStd, 0.0, atol=0.01)</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/commaai/openpilot/commit/44c8cc4cb0b107baf0eabd7885caee37b2f9cba0">44c8cc4cb0</a> (2025-07-07T10:18:31+02:00)</h2><p class="k">Revert &quot;lagd: disable in release (#35426)&quot; and &quot;lagd calib: hide on release (#35523)&quot; (#35633)<br>Path after this commit: selfdrive/locationd/test/test_lagd.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/selfdrive/locationd/test/test_lagd.py b/selfdrive/locationd/test/test_lagd.py
+index 8fb829edd..a3dfce9c2 100644
+<span class="d">--- a/selfdrive/locationd/test/test_lagd.py</span>
+<span class="a">+++ b/selfdrive/locationd/test/test_lagd.py</span>
+<span class="h">@@ -110,19 +110,6 @@ class TestLagd:</span>
+         assert msg.liveDelay.validBlocks == BLOCK_NUM_NEEDED
+<span class=" m">         assert msg.liveDelay.calPerc == 100</span>
+ 
+<span class="d">-  def test_disabled_estimator(self):</span>
+<span class="d">-    mocked_CP = car.CarParams(steerActuatorDelay=0.8)</span>
+<span class="d">-    estimator = LateralLagEstimator(mocked_CP, DT, min_recovery_buffer_sec=0.0, min_yr=0.0, enabled=False)</span>
+<span class="d">-    lag_frames = 5</span>
+<span class="d">-    process_messages(estimator, lag_frames, int(MIN_OKAY_WINDOW_SEC / DT) + BLOCK_NUM_NEEDED * BLOCK_SIZE)</span>
+<span class="d">-    msg = estimator.get_msg(True)</span>
+<span class="d">-    assert msg.liveDelay.status == &#x27;unestimated&#x27;</span>
+<span class="d">-    assert np.allclose(msg.liveDelay.lateralDelay, 1.0, atol=0.01)</span>
+<span class="d">-    assert np.allclose(msg.liveDelay.lateralDelayEstimate, lag_frames * DT, atol=0.01)</span>
+<span class="d">-    assert np.allclose(msg.liveDelay.lateralDelayEstimateStd, 0.0, atol=0.01)</span>
+<span class="d">-    assert msg.liveDelay.validBlocks == BLOCK_NUM_NEEDED</span>
+<span class="d m">-    assert msg.liveDelay.calPerc == 100</span>
+<span class="d">-</span>
+   def test_estimator_masking(self):
+     mocked_CP, lag_frames = car.CarParams(steerActuatorDelay=0.8), random.randint(1, 19)
+     estimator = LateralLagEstimator(mocked_CP, DT, min_recovery_buffer_sec=0.0, min_yr=0.0, min_valid_block_count=1)</pre></body></html>

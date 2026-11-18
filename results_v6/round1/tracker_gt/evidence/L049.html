@@ -1,0 +1,321 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L049</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L049</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-rest-api-specs">azure/azure-rest-api-specs</a><br><b>File at merge:</b> eng/tools/spec-gen-sdk-runner/src/command-helpers.ts, line 51<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-rest-api-specs/commit/333b7950d8c072bbde05cd197826e1990f675ff7">333b7950d8</a> (2025-05-21T20:56:24)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-rest-api-specs/tree/032a0e553ac3e692bf5858b50653a8e9a7d18264">032a0e553a</a>)</p><p><b>The line:</b></p><pre><span class="t">    const prTitle = `[AutoPR ${packageName}]`;</span></pre><h2>File at the merge commit, lines 43 to 59</h2><pre>   43 | export function setPipelineVariables(
+   44 |   stagedArtifactsFolder: string,
+   45 |   skipPrVariables: boolean = true,
+   46 |   packageName: string = &quot;&quot;,
+   47 |   installationInstructions: string = &quot;&quot;,
+   48 | ): void {
+   49 |   if (!skipPrVariables) {
+   50 |     const branchName = `sdkauto/${packageName?.replace(&quot;/&quot;, &quot;-&quot;)}`;
+<span class="t">   51 |     const prTitle = `[AutoPR ${packageName}]`;</span>
+   52 |     const prBody = installationInstructions;
+   53 |     setVsoVariable(&quot;PrBranch&quot;, branchName);
+   54 |     setVsoVariable(&quot;PrTitle&quot;, prTitle);
+   55 |     setVsoVariable(&quot;PrBody&quot;, prBody);
+   56 |   }
+   57 |   setVsoVariable(&quot;StagedArtifactsFolder&quot;, stagedArtifactsFolder);
+   58 | }
+   59 | </pre><p class="k">Below are all 10 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-rest-api-specs/commit/ddf3529468370207ca357e00c9d5ec0b55f700c2">ddf3529468</a> (2025-05-28T17:13:40-07:00)</h2><p class="k">Pass ArtifactName properly, confiton APIView step on presence of the artifact (#34951)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index d896c1604a0..a045b328e63 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -311,6 +311,7 @@ export function generateArtifact(</span>
+     setVsoVariable(&quot;StagedArtifactsFolder&quot;, stagedArtifactsFolder);
+     setVsoVariable(&quot;BreakingChangeLabelAction&quot;, hasBreakingChange ? &quot;add&quot; : &quot;remove&quot;);
+     setVsoVariable(&quot;BreakingChangeLabel&quot;, breakingChangeLabel);
+<span class="a">+    setVsoVariable(&quot;HasAPIViewArtifact&quot;, apiViewRequestData.length &gt; 0 ? &quot;true&quot; : &quot;false&quot;);</span>
+   } catch (error) {
+     logMessage(&quot;Runner: errors occurred while processing breaking change&quot;, LogLevel.Group);
+     vsoLogIssue(`Runner: errors writing breaking change label artifacts:${error}`);</pre><h2>Commit #2: <a href="https://github.com/azure/azure-rest-api-specs/commit/acdf47942fd452657a5d6f1d628869965ea53a9f">acdf47942f</a> (2025-05-28T18:30:30-07:00)</h2><p class="k">Support more openapi options in the batch run (#34979)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index a045b328e63..4b924ce3fc0 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -198,6 +198,18 @@ export function getSpecPaths(batchType: string, specRepoPath: string): SpecConfi</span>
+       readmes = findReadmeFiles(path.join(specRepoPath, &quot;specification&quot;));
+       break;
+     }
+<span class="a">+    case &quot;all-mgmtplane-openapis&quot;: {</span>
+<span class="a">+      readmes = findReadmeFiles(path.join(specRepoPath, &quot;specification&quot;)).filter((p) =&gt;</span>
+<span class="a">+        p.includes(&quot;resource-manager&quot;),</span>
+<span class="a">+      );</span>
+<span class="a">+      break;</span>
+<span class="a">+    }</span>
+<span class="a">+    case &quot;all-dataplane-openapis&quot;: {</span>
+<span class="a">+      readmes = findReadmeFiles(path.join(specRepoPath, &quot;specification&quot;)).filter((p) =&gt;</span>
+<span class="a">+        p.includes(&quot;data-plane&quot;),</span>
+<span class="a">+      );</span>
+<span class="a">+      break;</span>
+<span class="a">+    }</span>
+     case &quot;sample-typespecs&quot;: {
+       tspconfigs = [
+         &quot;specification/contosowidgetmanager/Contoso.Management/tspconfig.yaml&quot;,</pre><h2>Commit #3: <a href="https://github.com/azure/azure-rest-api-specs/commit/e0000326d2538658ddc30ec9c9b52ebfbd4884cb">e0000326d2</a> (2025-06-03T15:56:41-07:00)</h2><p class="k">Enabled required for go and python data plane cases (#35017)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index 4b924ce3fc0..4a295e5c4cd 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -283,6 +283,9 @@ export function getBreakingChangeInfo(executionReport: any): [boolean, string] {</span>
+  * @param breakingChangeLabel - The breaking change label.
+  * @param hasBreakingChange - A flag indicating whether there are breaking changes.
+  * @param hasManagementPlaneSpecs - A flag indicating whether there are management plane specs.
+<span class="a">+ * @param stagedArtifactsFolder - The staged artifacts folder.</span>
+<span class="a">+ * @param apiViewRequestData - The API view request data.</span>
+<span class="a">+ * @param sdkGenerationExecuted - A flag indicating whether the SDK generation was executed.</span>
+  * @returns the run status code.
+  */
+ export function generateArtifact(
+<span class="h">@@ -293,6 +296,7 @@ export function generateArtifact(</span>
+   hasManagementPlaneSpecs: boolean,
+   stagedArtifactsFolder: string,
+   apiViewRequestData: APIViewRequestData[],
+<span class="a">+  sdkGenerationExecuted: boolean = true,</span>
+ ): number {
+   const specGenSdkArtifactName = &quot;spec-gen-sdk-artifact&quot;;
+   const specGenSdkArtifactFileName = specGenSdkArtifactName + &quot;.json&quot;;
+<span class="h">@@ -305,13 +309,20 @@ export function generateArtifact(</span>
+     if (!fs.existsSync(specGenSdkArtifactAbsoluteFolder)) {
+       fs.mkdirSync(specGenSdkArtifactAbsoluteFolder, { recursive: true });
+     }
+<span class="a">+    let isSpecGenSdkCheckRequired = false;</span>
+<span class="a">+    if (sdkGenerationExecuted) {</span>
+<span class="a">+      isSpecGenSdkCheckRequired = getRequiredSettingValue(</span>
+<span class="a">+        hasManagementPlaneSpecs,</span>
+<span class="a">+        commandInput.sdkLanguage as SdkName,</span>
+<span class="a">+      );</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     // Write artifact
+     const artifactInfo: SpecGenSdkArtifactInfo = {
+       language: commandInput.sdkLanguage,
+       result,
+       labelAction: hasBreakingChange,
+<span class="d">-      isSpecGenSdkCheckRequired:</span>
+<span class="d">-        hasManagementPlaneSpecs &amp;&amp; SpecGenSdkRequiredSettings[commandInput.sdkLanguage as SdkName],</span>
+<span class="a">+      isSpecGenSdkCheckRequired,</span>
+       apiViewRequestData: apiViewRequestData,
+     };
+     fs.writeFileSync(
+<span class="h">@@ -348,3 +359,20 @@ export function getServiceFolderPath(specConfigPath: string): string {</span>
+   }
+   return specConfigPath;
+ }
+<span class="a">+</span>
+<span class="a">+/**</span>
+<span class="a">+ * Get the required setting value for the SDK check based on the spec PR types.</span>
+<span class="a">+ * @param hasManagementPlaneSpecs - A flag indicating whether there are management plane specs.</span>
+<span class="a">+ * @param sdkName - The SDK name.</span>
+<span class="a">+ * @returns boolean indicating whether the SDK check is required.</span>
+<span class="a">+ */</span>
+<span class="a">+export function getRequiredSettingValue(</span>
+<span class="a">+  hasManagementPlaneSpecs: boolean,</span>
+<span class="a">+  sdkName: SdkName,</span>
+<span class="a">+): boolean {</span>
+<span class="a">+  if (hasManagementPlaneSpecs) {</span>
+<span class="a">+    return SpecGenSdkRequiredSettings[sdkName].managementPlane;</span>
+<span class="a">+  } else {</span>
+<span class="a">+    return SpecGenSdkRequiredSettings[sdkName].dataPlane;</span>
+<span class="a">+  }</span>
+<span class="a">+}</span></pre><h2>Commit #4: <a href="https://github.com/azure/azure-rest-api-specs/commit/c73201901830a9a0af782e7344dad5881750e98c">c732019018</a> (2025-06-03T16:16:49-07:00)</h2><p class="k">Enabled auth for sdk breaking change label WF (#35074)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index 4a295e5c4cd..65f083ceb0b 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -321,6 +321,7 @@ export function generateArtifact(</span>
+     const artifactInfo: SpecGenSdkArtifactInfo = {
+       language: commandInput.sdkLanguage,
+       result,
+<span class="a">+      prNumber: commandInput.prNumber,</span>
+       labelAction: hasBreakingChange,
+       isSpecGenSdkCheckRequired,
+       apiViewRequestData: apiViewRequestData,</pre><h2>Commit #5: <a href="https://github.com/azure/azure-rest-api-specs/commit/32b50c6e56e94d4d244e0ccbae847535adc40cd0">32b50c6e56</a> (2025-06-05T16:47:24-07:00)</h2><p class="k">Support v2 folder structure (#35108)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index 65f083ceb0b..e9b7ee06cc5 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -263,24 +263,21 @@ export function logIssuesToPipeline(logPath: string, specConfigDisplayText: stri</span>
+  * Process the breaking change label artifacts.
+  *
+  * @param executionReport - The spec-gen-sdk execution report.
+<span class="d">- * @returns [flag of lable breaking change, breaking change label].</span>
+<span class="a">+ * @returns flag of lable breaking change.</span>
+  */
+<span class="d">-export function getBreakingChangeInfo(executionReport: any): [boolean, string] {</span>
+<span class="d">-  let breakingChangeLabel = &quot;&quot;;</span>
+<span class="a">+export function getBreakingChangeInfo(executionReport: any): boolean {</span>
+   for (const packageInfo of executionReport.packages) {
+<span class="d">-    breakingChangeLabel = packageInfo.breakingChangeLabel;</span>
+     if (packageInfo.shouldLabelBreakingChange) {
+<span class="d">-      return [true, breakingChangeLabel];</span>
+<span class="a">+      return true;</span>
+     }
+   }
+<span class="d">-  return [false, breakingChangeLabel];</span>
+<span class="a">+  return false;</span>
+ }
+ 
+ /**
+  * Generate the spec-gen-sdk artifacts.
+  * @param commandInput - The command input.
+  * @param result - The spec-gen-sdk execution result.
+<span class="d">- * @param breakingChangeLabel - The breaking change label.</span>
+  * @param hasBreakingChange - A flag indicating whether there are breaking changes.
+  * @param hasManagementPlaneSpecs - A flag indicating whether there are management plane specs.
+  * @param stagedArtifactsFolder - The staged artifacts folder.
+<span class="h">@@ -291,7 +288,6 @@ export function getBreakingChangeInfo(executionReport: any): [boolean, string] {</span>
+ export function generateArtifact(
+   commandInput: SpecGenSdkCmdInput,
+   result: string,
+<span class="d">-  breakingChangeLabel: string,</span>
+   hasBreakingChange: boolean,
+   hasManagementPlaneSpecs: boolean,
+   stagedArtifactsFolder: string,
+<span class="h">@@ -333,8 +329,6 @@ export function generateArtifact(</span>
+     setVsoVariable(&quot;SpecGenSdkArtifactName&quot;, specGenSdkArtifactName);
+     setVsoVariable(&quot;SpecGenSdkArtifactPath&quot;, specGenSdkArtifactPath);
+     setVsoVariable(&quot;StagedArtifactsFolder&quot;, stagedArtifactsFolder);
+<span class="d">-    setVsoVariable(&quot;BreakingChangeLabelAction&quot;, hasBreakingChange ? &quot;add&quot; : &quot;remove&quot;);</span>
+<span class="d">-    setVsoVariable(&quot;BreakingChangeLabel&quot;, breakingChangeLabel);</span>
+     setVsoVariable(&quot;HasAPIViewArtifact&quot;, apiViewRequestData.length &gt; 0 ? &quot;true&quot; : &quot;false&quot;);
+   } catch (error) {
+     logMessage(&quot;Runner: errors occurred while processing breaking change&quot;, LogLevel.Group);</pre><h2>Commit #6: <a href="https://github.com/azure/azure-rest-api-specs/commit/b8cc571658dabb87eab1ef29eaa7682d807e0d08">b8cc571658</a> (2025-07-23T17:38:54-07:00)</h2><p class="k">[eng/tools] Organize imports in JS/TS files (#36155)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index e9b7ee06cc5..3dbda439e9a 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -1,14 +1,8 @@</span>
+ import fs from &quot;node:fs&quot;;
+ import path from &quot;node:path&quot;;
+ import { fileURLToPath } from &quot;node:url&quot;;
+<span class="d">-import {</span>
+<span class="d">-  findReadmeFiles,</span>
+<span class="d">-  getArgumentValue,</span>
+<span class="d">-  getAllTypeSpecPaths,</span>
+<span class="d">-  objectToMap,</span>
+<span class="d">-  SpecConfigs,</span>
+<span class="d">-} from &quot;./utils.js&quot;;</span>
+ import { LogIssueType, LogLevel, logMessage, setVsoVariable, vsoLogIssue } from &quot;./log.js&quot;;
+<span class="a">+import { groupSpecConfigPaths } from &quot;./spec-helpers.js&quot;;</span>
+ import {
+   APIViewRequestData,
+   SdkName,
+<span class="h">@@ -17,7 +11,13 @@ import {</span>
+   SpecGenSdkRequiredSettings,
+   VsoLogs,
+ } from &quot;./types.js&quot;;
+<span class="d">-import { groupSpecConfigPaths } from &quot;./spec-helpers.js&quot;;</span>
+<span class="a">+import {</span>
+<span class="a">+  findReadmeFiles,</span>
+<span class="a">+  getAllTypeSpecPaths,</span>
+<span class="a">+  getArgumentValue,</span>
+<span class="a">+  objectToMap,</span>
+<span class="a">+  SpecConfigs,</span>
+<span class="a">+} from &quot;./utils.js&quot;;</span>
+ 
+ /**
+  * Load execution-report.json.</pre><h2>Commit #7: <a href="https://github.com/azure/azure-rest-api-specs/commit/a9b08a23a9852fa8de3e6adcc083ef2ebbfd0783">a9b08a23a9</a> (2025-07-28T09:20:01-07:00)</h2><p class="k">Made .net required for typespec case only (#36179)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index 3dbda439e9a..0cb2a9c53bf 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -280,6 +280,7 @@ export function getBreakingChangeInfo(executionReport: any): boolean {</span>
+  * @param result - The spec-gen-sdk execution result.
+  * @param hasBreakingChange - A flag indicating whether there are breaking changes.
+  * @param hasManagementPlaneSpecs - A flag indicating whether there are management plane specs.
+<span class="a">+ * @param hasTypeSpecProjects - A flag indicating whether there are TypeSpec projects.</span>
+  * @param stagedArtifactsFolder - The staged artifacts folder.
+  * @param apiViewRequestData - The API view request data.
+  * @param sdkGenerationExecuted - A flag indicating whether the SDK generation was executed.
+<span class="h">@@ -290,6 +291,7 @@ export function generateArtifact(</span>
+   result: string,
+   hasBreakingChange: boolean,
+   hasManagementPlaneSpecs: boolean,
+<span class="a">+  hasTypeSpecProjects: boolean,</span>
+   stagedArtifactsFolder: string,
+   apiViewRequestData: APIViewRequestData[],
+   sdkGenerationExecuted: boolean = true,
+<span class="h">@@ -309,6 +311,7 @@ export function generateArtifact(</span>
+     if (sdkGenerationExecuted) {
+       isSpecGenSdkCheckRequired = getRequiredSettingValue(
+         hasManagementPlaneSpecs,
+<span class="a">+        hasTypeSpecProjects,</span>
+         commandInput.sdkLanguage as SdkName,
+       );
+     }
+<span class="h">@@ -358,13 +361,19 @@ export function getServiceFolderPath(specConfigPath: string): string {</span>
+ /**
+  * Get the required setting value for the SDK check based on the spec PR types.
+  * @param hasManagementPlaneSpecs - A flag indicating whether there are management plane specs.
+<span class="a">+ * @param hasTypeSpecProjects - A flag indicating whether there are TypeSpec projects.</span>
+  * @param sdkName - The SDK name.
+  * @returns boolean indicating whether the SDK check is required.
+  */
+ export function getRequiredSettingValue(
+   hasManagementPlaneSpecs: boolean,
+<span class="a">+  hasTypeSpecProjects: boolean,</span>
+   sdkName: SdkName,
+ ): boolean {
+<span class="a">+  // If the SDK is azure-sdk-for-net, return false if there are no TypeSpec projects.</span>
+<span class="a">+  if (sdkName === &quot;azure-sdk-for-net&quot; &amp;&amp; !hasTypeSpecProjects) {</span>
+<span class="a">+    return false;</span>
+<span class="a">+  }</span>
+   if (hasManagementPlaneSpecs) {
+     return SpecGenSdkRequiredSettings[sdkName].managementPlane;
+   } else {</pre><h2>Commit #8: <a href="https://github.com/azure/azure-rest-api-specs/commit/881ba939df54bac44dd59da90383513cab22cf58">881ba939df</a> (2025-08-06T15:46:37-07:00)</h2><p class="k">[context.js] Flow head-sha like issue-number (#36479)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index 0cb2a9c53bf..fc42f69a1b4 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -320,6 +320,7 @@ export function generateArtifact(</span>
+     const artifactInfo: SpecGenSdkArtifactInfo = {
+       language: commandInput.sdkLanguage,
+       result,
+<span class="a">+      headSha: commandInput.specCommitSha,</span>
+       prNumber: commandInput.prNumber,
+       labelAction: hasBreakingChange,
+       isSpecGenSdkCheckRequired,</pre><h2>Commit #9: <a href="https://github.com/azure/azure-rest-api-specs/commit/4a98ab7ea563a199f6fd154b8f9ac06deffbd7bd">4a98ab7ea5</a> (2025-11-18T10:28:36-08:00)</h2><p class="k">[spec-gen-sdk-runner] Move SpecGenSdkArtifactInfo to .github/shared (#38816)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index fc42f69a1b4..c18366ff10b 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -1,16 +1,15 @@</span>
+<span class="a">+import {</span>
+<span class="a">+  APIViewRequestData,</span>
+<span class="a">+  SdkName,</span>
+<span class="a">+  SdkNameSchema,</span>
+<span class="a">+  SpecGenSdkArtifactInfo,</span>
+<span class="a">+} from &quot;@azure-tools/specs-shared/sdk-types&quot;;</span>
+ import fs from &quot;node:fs&quot;;
+ import path from &quot;node:path&quot;;
+ import { fileURLToPath } from &quot;node:url&quot;;
+ import { LogIssueType, LogLevel, logMessage, setVsoVariable, vsoLogIssue } from &quot;./log.js&quot;;
+ import { groupSpecConfigPaths } from &quot;./spec-helpers.js&quot;;
+<span class="d">-import {</span>
+<span class="d">-  APIViewRequestData,</span>
+<span class="d">-  SdkName,</span>
+<span class="d">-  SpecGenSdkArtifactInfo,</span>
+<span class="d">-  SpecGenSdkCmdInput,</span>
+<span class="d">-  SpecGenSdkRequiredSettings,</span>
+<span class="d">-  VsoLogs,</span>
+<span class="d">-} from &quot;./types.js&quot;;</span>
+<span class="a">+import { SpecGenSdkCmdInput, SpecGenSdkRequiredSettings, VsoLogs } from &quot;./types.js&quot;;</span>
+ import {
+   findReadmeFiles,
+   getAllTypeSpecPaths,
+<span class="h">@@ -93,7 +92,7 @@ export function parseArguments(): SpecGenSdkCmdInput {</span>
+     localSpecRepoPath,
+     localSdkRepoPath,
+     sdkRepoName,
+<span class="d">-    sdkLanguage: sdkRepoName.replace(&quot;-pr&quot;, &quot;&quot;),</span>
+<span class="a">+    sdkLanguage: SdkNameSchema.parse(sdkRepoName.replace(&quot;-pr&quot;, &quot;&quot;)),</span>
+     runMode,
+     tspConfigPath: getArgumentValue(args, &quot;--tsp-config-relative-path&quot;, &quot;&quot;),
+     readmePath: getArgumentValue(args, &quot;--readme-relative-path&quot;, &quot;&quot;),</pre><h2>Commit #10: <a href="https://github.com/azure/azure-rest-api-specs/commit/e5bd77c17d47f533027883951dd9736006c24a8d">e5bd77c17d</a> (2025-12-18T15:38:45-08:00)</h2><p class="k">Set StagedArtifactsFolder to empty if it&#x27;s undefined (#39303)<br>Path after this commit: eng/tools/spec-gen-sdk-runner/src/command-helpers.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts
+index c18366ff10b..17af0667298 100644
+<span class="d">--- a/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="a">+++ b/eng/tools/spec-gen-sdk-runner/src/command-helpers.ts</span>
+<span class="h">@@ -53,7 +53,9 @@ export function setPipelineVariables(</span>
+     setVsoVariable(&quot;PrTitle&quot;, prTitle);
+     setVsoVariable(&quot;PrBody&quot;, prBody);
+   }
+<span class="d">-  setVsoVariable(&quot;StagedArtifactsFolder&quot;, stagedArtifactsFolder);</span>
+<span class="a">+  if (stagedArtifactsFolder) {</span>
+<span class="a">+    setVsoVariable(&quot;StagedArtifactsFolder&quot;, stagedArtifactsFolder);</span>
+<span class="a">+  }</span>
+ }
+ 
+ /**</pre></body></html>

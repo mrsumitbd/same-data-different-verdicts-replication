@@ -1,0 +1,253 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L033</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L033</h1><p><b>Repository:</b> <a href="https://github.com/bespokelabsai/curator">bespokelabsai/curator</a><br><b>File at merge:</b> src/bespokelabs/curator/status_tracker/online_status_tracker.py, line 112<br><b>Merge commit (birth):</b> <a href="https://github.com/bespokelabsai/curator/commit/d1c355e053fc519ea6f196843b86a5a10910cf98">d1c355e053</a> (2025-04-05T07:18:40)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/bespokelabsai/curator/tree/4b41961db08c0c0beebeb4fa7b15cc6d032cf99d">4b41961db0</a>)</p><p><b>The line:</b></p><pre><span class="t">            self.input_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)[&quot;input_cost_per_token&quot;] * 1_000_000</span></pre><h2>File at the merge commit, lines 104 to 120</h2><pre>  104 | 
+  105 |         # Initialize cost strings
+  106 |         if self.model in model_cost:
+  107 |             self.input_cost_per_million = model_cost[self.model][&quot;input_cost_per_token&quot;] * 1_000_000
+  108 |             self.output_cost_per_million = model_cost[self.model][&quot;output_cost_per_token&quot;] * 1_000_000
+  109 |         else:
+  110 |             from bespokelabs.curator.cost import external_model_cost
+  111 | 
+<span class="t">  112 |             self.input_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)[&quot;input_cost_per_token&quot;] * 1_000_000</span>
+  113 |             self.output_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)[&quot;output_cost_per_token&quot;] * 1_000_000
+  114 | 
+  115 |         # Handle None values for cost per million tokens
+  116 |         self.input_cost_str = f&quot;[red]${self.input_cost_per_million:.3f}[/red]&quot; if self.input_cost_per_million is not None else &quot;[dim]N/A[/dim]&quot;
+  117 |         if not USE_RICH_DISPLAY:
+  118 |             self.input_cost_str = f&quot;${self.input_cost_per_million:.3f}&quot; if self.input_cost_per_million is not None else &quot;N/A&quot;
+  119 | 
+  120 |         self.output_cost_str = f&quot;[red]${self.output_cost_per_million:.3f}[/red]&quot; if self.output_cost_per_million is not None else &quot;[dim]N/A[/dim]&quot;</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/bespokelabsai/curator/commit/eddd131b9655bcf2a10107b7d01da66902314a7f">eddd131b96</a> (2025-04-10T09:42:04-07:00)</h2><p class="k">Disable loud log (#624)<br>Path after this commit: src/bespokelabs/curator/status_tracker/online_status_tracker.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/bespokelabs/curator/status_tracker/online_status_tracker.py b/src/bespokelabs/curator/status_tracker/online_status_tracker.py
+index 7ba04d9..0efa429 100644
+<span class="d">--- a/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="a">+++ b/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="h">@@ -606,12 +606,13 @@ class OnlineStatusTracker:</span>
+         else:
+             has_capacity = self._check_seperate_capacity(token_estimate)
+ 
+<span class="d">-        if not has_capacity:</span>
+<span class="d">-            logger.debug(</span>
+<span class="d">-                f&quot;No capacity for request with {token_estimate} tokens.&quot;</span>
+<span class="d">-                f&quot;Available capacity: {self.available_token_capacity} tokens, &quot;</span>
+<span class="d">-                f&quot;{int(self.available_request_capacity)} requests.&quot;</span>
+<span class="d">-            )</span>
+<span class="a">+        # This is a very loud log, enable only when needed</span>
+<span class="a">+        # if not has_capacity:</span>
+<span class="a">+        #     logger.debug(</span>
+<span class="a">+        #         f&quot;No capacity for request with {token_estimate} tokens.&quot;</span>
+<span class="a">+        #         f&quot;Available capacity: {self.available_token_capacity} tokens, &quot;</span>
+<span class="a">+        #         f&quot;{int(self.available_request_capacity)} requests.&quot;</span>
+<span class="a">+        #     )</span>
+         return has_capacity
+ 
+     def _check_combined_capacity(self, token_estimate: _TokenUsage):</pre><h2>Commit #2: <a href="https://github.com/bespokelabsai/curator/commit/b506f59167c24c41cf6e431fd8e76463d3b57b0c">b506f59167</a> (2025-04-13T14:08:59+05:30)</h2><p class="k">add fixes for rpm display and frequent tqdm update for tqdm (#629)<br>Path after this commit: src/bespokelabs/curator/status_tracker/online_status_tracker.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/bespokelabs/curator/status_tracker/online_status_tracker.py b/src/bespokelabs/curator/status_tracker/online_status_tracker.py
+index 0efa429..2c71669 100644
+<span class="d">--- a/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="a">+++ b/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="h">@@ -218,13 +218,27 @@ class OnlineStatusTracker:</span>
+         # Log initial stats
+         self._log_stats()
+ 
+<span class="a">+    def _update_tqdm_description(self):</span>
+<span class="a">+        &quot;&quot;&quot;Update the tqdm description.&quot;&quot;&quot;</span>
+<span class="a">+        if not USE_RICH_DISPLAY and self.pbar:</span>
+<span class="a">+            self.pbar.set_description(</span>
+<span class="a">+                f&quot;Processing {MODEL}{self.model}{END} &quot;</span>
+<span class="a">+                f&quot;[{SUCCESS}{self.num_tasks_succeeded} succeeded{END} • &quot;</span>
+<span class="a">+                f&quot;{WARNING}{self.num_tasks_in_progress} in progress{END} • &quot;</span>
+<span class="a">+                f&quot;{ERROR}{self.num_tasks_failed} failed{END} • &quot;</span>
+<span class="a">+                f&quot;{COST}${self.total_cost:.3f} spent{END} • &quot;</span>
+<span class="a">+                f&quot;{METRIC}{self.num_tasks_started / max(0.001, (time.time() - self.start_time) / 60):.1f} req/min{END} • &quot;</span>
+<span class="a">+                f&quot;{METRIC}{self.num_tasks_succeeded / max(0.001, (time.time() - self.start_time) / 60):.1f} res/min{END}]&quot;</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+     def _log_stats(self):
+         &quot;&quot;&quot;Log current statistics when using tqdm mode.&quot;&quot;&quot;
+         if not USE_RICH_DISPLAY:
+             elapsed_minutes = (time.time() - self.start_time) / 60
+<span class="d">-            current_rpm = (self.num_tasks_succeeded - self.num_tasks_already_completed) / max(0.001, elapsed_minutes)</span>
+             input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+             output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
+<span class="a">+            req_per_min = self.num_tasks_started / max(0.001, elapsed_minutes)</span>
+<span class="a">+            res_per_min = self.num_tasks_succeeded / max(0.001, elapsed_minutes)</span>
+ 
+             # Calculate averages based on completed tasks or in-progress tasks
+             total_tasks = max(1, self.num_tasks_succeeded + self.num_tasks_in_progress)
+<span class="h">@@ -233,13 +247,8 @@ class OnlineStatusTracker:</span>
+             projected_total = self.total_cost + self.projected_remaining_cost
+             cost_per_minute = self.total_cost / max(0.01, elapsed_minutes)
+ 
+<span class="d">-            # Update TQDM description with colored metrics</span>
+<span class="d">-            self.pbar.set_description(</span>
+<span class="d">-                f&quot;Processing {MODEL}{self.model}{END} &quot;</span>
+<span class="d">-                f&quot;[{WARNING}{self.num_tasks_in_progress} running{END} • &quot;</span>
+<span class="d">-                f&quot;{COST}${self.total_cost:.3f} spent{END} • &quot;</span>
+<span class="d">-                f&quot;{METRIC}{current_rpm:.1f} RPM{END}]&quot;</span>
+<span class="d">-            )</span>
+<span class="a">+            # Update TQDM description</span>
+<span class="a">+            self._update_tqdm_description()</span>
+ 
+             # Add curator viewer link if available
+             viewer_msg = &quot;&quot;
+<span class="h">@@ -255,7 +264,8 @@ class OnlineStatusTracker:</span>
+                 f&quot;Success: {SUCCESS}{self.num_tasks_succeeded}✓{END} • &quot;
+                 f&quot;Failed: {ERROR}{self.num_tasks_failed}✗{END} • &quot;
+                 f&quot;In Progress: {WARNING}{self.num_tasks_in_progress}⋯{END} • &quot;
+<span class="d">-                f&quot;RPM: {METRIC}{current_rpm:.1f}{END}\n&quot;</span>
+<span class="a">+                f&quot;Req/min: {METRIC}{req_per_min:.1f}{END} • &quot;</span>
+<span class="a">+                f&quot;Res/min: {METRIC}{res_per_min:.1f}{END}\n&quot;</span>
+                 f&quot;{HEADER}Tokens:{END} Avg Input: {METRIC}{avg_prompt:.0f}{END} • &quot;
+                 f&quot;Input TPM: {METRIC}{input_tpm:.0f}{END} • &quot;
+                 f&quot;Avg Output: {METRIC}{avg_completion:.0f}{END} • &quot;
+<span class="h">@@ -285,6 +295,7 @@ class OnlineStatusTracker:</span>
+                 # Always update progress bar position
+                 self.pbar.n = self.num_tasks_succeeded + self.num_tasks_already_completed
+                 self.pbar.refresh()
+<span class="a">+                self._update_tqdm_description()</span>
+ 
+                 # Update stats in any of these conditions:
+                 # 1. When tasks change state (in_progress, succeeded, failed)
+<span class="h">@@ -315,7 +326,8 @@ class OnlineStatusTracker:</span>
+         &quot;&quot;&quot;Refresh the console display with latest stats.&quot;&quot;&quot;
+         # Calculate stats
+         elapsed_minutes = (time.time() - self.start_time) / 60
+<span class="d">-        current_rpm = (self.num_tasks_succeeded - self.num_tasks_already_completed) / max(0.001, elapsed_minutes)</span>
+<span class="a">+        req_per_min = self.num_tasks_started / max(0.001, elapsed_minutes)</span>
+<span class="a">+        res_per_min = self.num_tasks_succeeded / max(0.001, elapsed_minutes)</span>
+         input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+         output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
+         avg_prompt = self.total_prompt_tokens / max(1, self.num_tasks_succeeded)
+<span class="h">@@ -340,7 +352,9 @@ class OnlineStatusTracker:</span>
+             f&quot;[white]•[/white] &quot;
+             f&quot;[white]In Progress:[/white] [yellow]{self.num_tasks_in_progress}⋯[/yellow] &quot;
+             f&quot;[white]•[/white] &quot;
+<span class="d">-            f&quot;[white]RPM:[/white] [blue]{current_rpm:.1f}[/blue]\n&quot;</span>
+<span class="a">+            f&quot;[white]Req/min:[/white] [blue]{req_per_min:.1f}[/blue] &quot;</span>
+<span class="a">+            f&quot;[white]•[/white] &quot;</span>
+<span class="a">+            f&quot;[white]Res/min:[/white] [blue]{res_per_min:.1f}[/blue]\n&quot;</span>
+             f&quot;[bold white]Tokens:[/bold white] &quot;
+             f&quot;[white]Avg Input:[/white] [blue]{avg_prompt:.0f}[/blue] &quot;
+             f&quot;[white]•[/white] &quot;
+<span class="h">@@ -495,7 +509,6 @@ class OnlineStatusTracker:</span>
+             &quot;Average Cost per Request&quot;,
+             f&quot;[red]${self.total_cost / max(1, self.num_tasks_succeeded):.3f}[/red]&quot;,
+         )
+<span class="d">-</span>
+         table.add_row(&quot;Input Cost per 1M Tokens&quot;, self.input_cost_str)
+         table.add_row(&quot;Output Cost per 1M Tokens&quot;, self.output_cost_str)
+ 
+<span class="h">@@ -503,7 +516,8 @@ class OnlineStatusTracker:</span>
+         table.add_row(&quot;Performance&quot;, &quot;&quot;, style=&quot;bold magenta&quot;)
+         elapsed_time = time.time() - self.start_time
+         elapsed_minutes = elapsed_time / 60
+<span class="d">-        rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)</span>
+<span class="a">+        req_per_min = self.num_tasks_started / max(0.001, elapsed_minutes)</span>
+<span class="a">+        res_per_min = self.num_tasks_succeeded / max(0.001, elapsed_minutes)</span>
+         input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+         output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
+ 
+<span class="h">@@ -512,7 +526,8 @@ class OnlineStatusTracker:</span>
+             &quot;Average Time per Request&quot;,
+             f&quot;{elapsed_time / max(1, self.num_tasks_succeeded):.2f}s&quot;,
+         )
+<span class="d">-        table.add_row(&quot;Requests per Minute&quot;, f&quot;{rpm:.1f}&quot;)</span>
+<span class="a">+        table.add_row(&quot;Requests per Minute&quot;, f&quot;{req_per_min:.1f}&quot;)</span>
+<span class="a">+        table.add_row(&quot;Responses per Minute&quot;, f&quot;{res_per_min:.1f}&quot;)</span>
+         table.add_row(&quot;Max Concurrent Requests&quot;, str(self.max_concurrent_requests_seen))
+         table.add_row(&quot;Input Tokens per Minute&quot;, f&quot;{input_tpm:.1f}&quot;)
+         table.add_row(&quot;Output Tokens per Minute&quot;, f&quot;{output_tpm:.1f}&quot;)</pre><h2>Commit #3: <a href="https://github.com/bespokelabsai/curator/commit/acd64fe3cda2f3e72678f5c9b8d3c2e702738c3d">acd64fe3cd</a> (2025-04-13T22:32:32-07:00)</h2><p class="k">improve projected total, projected remaining UI (#631)<br>Path after this commit: src/bespokelabs/curator/status_tracker/online_status_tracker.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/bespokelabs/curator/status_tracker/online_status_tracker.py b/src/bespokelabs/curator/status_tracker/online_status_tracker.py
+index 2c71669..00a0441 100644
+<span class="d">--- a/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="a">+++ b/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="h">@@ -17,7 +17,7 @@ from bespokelabs.curator import _CONSOLE</span>
+ from bespokelabs.curator.client import Client
+ from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
+ from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
+<span class="d">-from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING</span>
+<span class="a">+from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, DIM, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING</span>
+ from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
+ from bespokelabs.curator.types.generic_response import _TokenUsage
+ 
+<span class="h">@@ -271,8 +271,7 @@ class OnlineStatusTracker:</span>
+                 f&quot;Avg Output: {METRIC}{avg_completion:.0f}{END} • &quot;
+                 f&quot;Output TPM: {METRIC}{output_tpm:.0f}{END}\n&quot;
+                 f&quot;{HEADER}Cost:{END} Current: {COST}${self.total_cost:.3f}{END} • &quot;
+<span class="d">-                f&quot;Projected Remaining: {COST}${self.projected_remaining_cost:.3f}{END} • &quot;</span>
+<span class="d">-                f&quot;Projected Total: {COST}${projected_total:.3f}{END} • &quot;</span>
+<span class="a">+                f&quot;Est. Total: {COST}${projected_total:.3f}{END} {DIM}(${self.projected_remaining_cost:.3f} remaining){DIM}{END} • &quot;</span>
+                 f&quot;Rate: {COST}${cost_per_minute:.3f}/min{END}\n&quot;
+                 f&quot;{HEADER}Rate Limits:{END} RPM: {METRIC}{self.max_requests_per_minute}{END} • &quot;
+                 f&quot;TPM: {METRIC}{self.max_tokens_per_minute}{END} • &quot;
+<span class="h">@@ -366,9 +365,7 @@ class OnlineStatusTracker:</span>
+             f&quot;[bold white]Cost:[/bold white] &quot;
+             f&quot;[white]Current:[/white] [magenta]${self.total_cost:.3f}[/magenta] &quot;
+             f&quot;[white]•[/white] &quot;
+<span class="d">-            f&quot;[white]Projected Remaining:[/white] [magenta]${self.projected_remaining_cost:.3f}[/magenta] &quot;</span>
+<span class="d">-            f&quot;[white]•[/white] &quot;</span>
+<span class="d">-            f&quot;[white]Projected Total:[/white] [magenta]${projected_total:.3f}[/magenta] &quot;</span>
+<span class="a">+            f&quot;[white]Est. Total:[/white] [magenta]${projected_total:.3f}[/magenta] [dim](${self.projected_remaining_cost:.3f} remaining)[/dim] &quot;</span>
+             f&quot;[white]•[/white] &quot;
+             f&quot;[white]Rate:[/white] [magenta]${self.total_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]\n&quot;
+             f&quot;[bold white]Rate Limits:[/bold white] &quot;</pre><h2>Commit #4: <a href="https://github.com/bespokelabsai/curator/commit/373adbbf3eeecc260e314524be94210fefbb5552">373adbbf3e</a> (2025-04-14T21:42:22-04:00)</h2><p class="k">update metadata schema with cost<br>Path after this commit: src/bespokelabs/curator/status_tracker/online_status_tracker.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/bespokelabs/curator/status_tracker/online_status_tracker.py b/src/bespokelabs/curator/status_tracker/online_status_tracker.py
+index 00a0441..17d1494 100644
+<span class="d">--- a/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="a">+++ b/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="h">@@ -735,3 +735,12 @@ class OnlineStatusTracker:</span>
+                 self.projected_remaining_cost = estimated_cost * remaining_requests
+ 
+         self.update_display()
+<span class="a">+</span>
+<span class="a">+    def cost_info(self):</span>
+<span class="a">+        &quot;&quot;&quot;Get cost information for the current request.&quot;&quot;&quot;</span>
+<span class="a">+        return {</span>
+<span class="a">+            &quot;total_requests&quot;: self.total_requests,</span>
+<span class="a">+            &quot;total_input_tokens&quot;: self.total_prompt_tokens,</span>
+<span class="a">+            &quot;total_output_tokens&quot;: self.total_completion_tokens,</span>
+<span class="a">+            &quot;total_cost_milli_dollars&quot;: self.total_cost * 1000,</span>
+<span class="a">+        }</span></pre><h2>Commit #5: <a href="https://github.com/bespokelabsai/curator/commit/92ab260097cf048e47c239a88cf5b08f4b605bff">92ab260097</a> (2025-06-03T15:45:05-07:00)</h2><p class="k">If the model is not known, let the cost be None. (#681)<br>Path after this commit: src/bespokelabs/curator/status_tracker/online_status_tracker.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/bespokelabs/curator/status_tracker/online_status_tracker.py b/src/bespokelabs/curator/status_tracker/online_status_tracker.py
+index 17d1494..7603945 100644
+<span class="d">--- a/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="a">+++ b/src/bespokelabs/curator/status_tracker/online_status_tracker.py</span>
+<span class="h">@@ -16,6 +16,7 @@ from rich.table import Table</span>
+ from bespokelabs.curator import _CONSOLE
+ from bespokelabs.curator.client import Client
+ from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
+<span class="a">+from bespokelabs.curator.cost import external_model_cost</span>
+ from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
+ from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, DIM, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
+ from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
+<span class="h">@@ -104,13 +105,27 @@ class OnlineStatusTracker:</span>
+ 
+         # Initialize cost strings
+         if self.model in model_cost:
+<span class="d">-            self.input_cost_per_million = model_cost[self.model][&quot;input_cost_per_token&quot;] * 1_000_000</span>
+<span class="d">-            self.output_cost_per_million = model_cost[self.model][&quot;output_cost_per_token&quot;] * 1_000_000</span>
+<span class="a">+            model_pricing = model_cost[self.model]</span>
+<span class="a">+            if model_pricing.get(&quot;input_cost_per_token&quot;) is not None:</span>
+<span class="a">+                self.input_cost_per_million = model_pricing.get(&quot;input_cost_per_token&quot;, 0) * 1_000_000</span>
+<span class="a">+            else:</span>
+<span class="a">+                self.input_cost_per_million = None</span>
+<span class="a">+            if model_pricing.get(&quot;output_cost_per_token&quot;) is not None:</span>
+<span class="a">+                self.output_cost_per_million = model_pricing.get(&quot;output_cost_per_token&quot;, 0) * 1_000_000</span>
+<span class="a">+            else:</span>
+<span class="a">+                self.output_cost_per_million = None</span>
+         else:
+<span class="d">-            from bespokelabs.curator.cost import external_model_cost</span>
+<span class="d">-</span>
+<span class="d m">-            self.input_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)[&quot;input_cost_per_token&quot;] * 1_000_000</span>
+<span class="d">-            self.output_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)[&quot;output_cost_per_token&quot;] * 1_000_000</span>
+<span class="a">+            try:</span>
+<span class="a">+                external_pricing = external_model_cost(self.model, provider=self.compatible_provider)</span>
+<span class="a">+                self.input_cost_per_million = (</span>
+<span class="a">+                    external_pricing.get(&quot;input_cost_per_token&quot;, 0) * 1_000_000 if external_pricing.get(&quot;input_cost_per_token&quot;) is not None else None</span>
+<span class="a">+                )</span>
+<span class="a">+                self.output_cost_per_million = (</span>
+<span class="a">+                    external_pricing.get(&quot;output_cost_per_token&quot;, 0) * 1_000_000 if external_pricing.get(&quot;output_cost_per_token&quot;) is not None else None</span>
+<span class="a">+                )</span>
+<span class="a">+            except (KeyError, TypeError):</span>
+<span class="a">+                self.input_cost_per_million = None</span>
+<span class="a">+                self.output_cost_per_million = None</span>
+ 
+         # Handle None values for cost per million tokens
+         self.input_cost_str = f&quot;[red]${self.input_cost_per_million:.3f}[/red]&quot; if self.input_cost_per_million is not None else &quot;[dim]N/A[/dim]&quot;</pre></body></html>

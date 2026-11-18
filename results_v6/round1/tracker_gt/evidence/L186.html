@@ -1,0 +1,249 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L186</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L186</h1><p><b>Repository:</b> <a href="https://github.com/pdfme/pdfme">pdfme/pdfme</a><br><b>File at merge:</b> playground/src/routes/Templates.tsx, line 213<br><b>Merge commit (birth):</b> <a href="https://github.com/pdfme/pdfme/commit/3acbe6298c118eb2de5fe4acc03435a11d3a8aaf">3acbe6298c</a> (2025-03-13T02:24:11)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/pdfme/pdfme/tree/69f6be160bc79b30cbdc1125e18f8a49d0e33929">69f6be160b</a>)</p><p><b>The line:</b></p><pre><span class="t">    &lt;div className=&quot;flex items-center justify-center&quot;&gt;</span></pre><h2>File at the merge commit, lines 205 to 221</h2><pre>  205 |           &lt;/div&gt;
+  206 |         &lt;/div&gt;
+  207 |       &lt;/React.Fragment&gt;
+  208 |     );
+  209 |   };
+  210 | 
+  211 |   // Contribution card component
+  212 |   const ContributionCard = () =&gt; (
+<span class="t">  213 |     &lt;div className=&quot;flex items-center justify-center&quot;&gt;</span>
+  214 |       &lt;div className=&quot;relative border-2 border-green-300 rounded-lg p-6 bg-green-50 shadow-md&quot;&gt;
+  215 |         &lt;div className=&quot;relative mt-4&quot;&gt;
+  216 |           &lt;a
+  217 |             target=&quot;_blank&quot;
+  218 |             rel=&quot;noopener noreferrer&quot;
+  219 |             href=&quot;https://pdfme.com/docs/template-contribution-guide&quot;
+  220 |             className=&quot;text-md font-extrabold text-green-700 underline decoration-green-400 hover:text-green-600 hover:decoration-green-500 transition duration-300&quot;
+  221 |           &gt;</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/pdfme/pdfme/commit/aff9b7345e9ac965cc410fc63e9e9a34bee203ed">aff9b7345e</a> (2025-03-13T11:42:56+09:00)</h2><p class="k">feat: add ContributionCard component to encourage template contributions<br>Path after this commit: playground/src/routes/Templates.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/playground/src/routes/Templates.tsx b/playground/src/routes/Templates.tsx
+index 83e1c692..6516f41a 100644
+<span class="d">--- a/playground/src/routes/Templates.tsx</span>
+<span class="a">+++ b/playground/src/routes/Templates.tsx</span>
+<span class="h">@@ -61,6 +61,38 @@ const CopyButton = ({ ui, name }: { ui: UIType, name: string }) =&gt; {</span>
+   );
+ };
+ 
+<span class="a">+// Contribution card component</span>
+<span class="a">+const ContributionCard = () =&gt; (</span>
+<span class="a m">+  &lt;div className=&quot;flex items-center justify-center&quot;&gt;</span>
+<span class="a">+    &lt;div className=&quot;relative border-2 border-green-300 rounded-lg p-6 bg-green-50 shadow-md&quot;&gt;</span>
+<span class="a">+      &lt;div className=&quot;relative mt-4&quot;&gt;</span>
+<span class="a">+        &lt;a</span>
+<span class="a">+          target=&quot;_blank&quot;</span>
+<span class="a">+          rel=&quot;noopener noreferrer&quot;</span>
+<span class="a">+          href=&quot;https://pdfme.com/docs/template-contribution-guide&quot;</span>
+<span class="a">+          className=&quot;text-md font-extrabold text-green-700 underline decoration-green-400 hover:text-green-600 hover:decoration-green-500 transition duration-300&quot;</span>
+<span class="a">+        &gt;</span>
+<span class="a">+          Contribute Your Template ❤️</span>
+<span class="a">+        &lt;/a&gt;</span>
+<span class="a">+        &lt;p className=&quot;mt-2 text-sm text-green-800 flex items-center gap-2 font-medium&quot;&gt;</span>
+<span class="a">+          Share the templates you&#x27;ve created! Contributing your templates is extremely beneficial for other users.</span>
+<span class="a">+        &lt;/p&gt;</span>
+<span class="a">+      &lt;/div&gt;</span>
+<span class="a">+      &lt;div className=&quot;mt-6&quot;&gt;</span>
+<span class="a">+        &lt;a</span>
+<span class="a">+          target=&quot;_blank&quot;</span>
+<span class="a">+          rel=&quot;noopener noreferrer&quot;</span>
+<span class="a">+          href=&quot;https://pdfme.com/docs/template-contribution-guide&quot;</span>
+<span class="a">+          className=&quot;w-full relative flex items-center justify-center rounded-md bg-gradient-to-r from-green-400 to-green-600 px-8 py-3 text-sm font-semibold text-white hover:opacity-90 transition duration-300&quot;</span>
+<span class="a">+        &gt;</span>
+<span class="a">+          See Contribution Guide</span>
+<span class="a">+        &lt;/a&gt;</span>
+<span class="a">+      &lt;/div&gt;</span>
+<span class="a">+    &lt;/div&gt;</span>
+<span class="a">+  &lt;/div&gt;</span>
+<span class="a">+);</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ // Author link component to avoid duplication
+ const AuthorLink = ({ author }: { author: string }) =&gt; {
+   if (author === DEVIN_AI_AUTHOR) {
+<span class="h">@@ -75,7 +107,7 @@ const AuthorLink = ({ author }: { author: string }) =&gt; {</span>
+       &lt;/a&gt;
+     );
+   }
+<span class="d">-  </span>
+<span class="a">+</span>
+   return (
+     &lt;a
+       href={`https://github.com/${author}`}
+<span class="h">@@ -142,103 +174,6 @@ function TemplatesApp({ isEmbedded }: { isEmbedded: boolean }) {</span>
+     }
+   };
+ 
+<span class="d">-  // Template card component</span>
+<span class="d">-  const TemplateCard = ({ name, author, index }: TemplateData &amp; { index: number }) =&gt; {</span>
+<span class="d">-    return (</span>
+<span class="d">-      &lt;React.Fragment key={name}&gt;</span>
+<span class="d">-        {index === 3 &amp;&amp; (</span>
+<span class="d">-          &lt;div</span>
+<span class="d">-            data-ea-publisher=&quot;pdfmecom&quot;</span>
+<span class="d">-            data-ea-type=&quot;image&quot;</span>
+<span class="d">-            style={{ width: &#x27;100%&#x27;, display: &#x27;flex&#x27;, justifyContent: &#x27;center&#x27; }}</span>
+<span class="d">-          /&gt;</span>
+<span class="d">-        )}</span>
+<span class="d">-        &lt;div&gt;</span>
+<span class="d">-          &lt;div className=&quot;relative border border-gray-200 rounded-lg p-4 bg-white shadow-sm&quot;&gt;</span>
+<span class="d">-            &lt;div className=&quot;relative h-72 w-full overflow-hidden&quot;&gt;</span>
+<span class="d">-              &lt;img</span>
+<span class="d">-                id={`template-img-${name}`}</span>
+<span class="d">-                onClick={() =&gt; navigateTo(name, &#x27;designer&#x27;)}</span>
+<span class="d">-                alt={fromKebabCase(name)}</span>
+<span class="d">-                src={`/template-assets/${name}/thumbnail.png`}</span>
+<span class="d">-                className=&quot;border border-gray-100 size-full object-contain cursor-pointer&quot;</span>
+<span class="d">-              /&gt;</span>
+<span class="d">-            &lt;/div&gt;</span>
+<span class="d">-            &lt;div className=&quot;relative mt-4&quot;&gt;</span>
+<span class="d">-              &lt;h3 className=&quot;text-md font-bold text-green-600&quot;&gt;</span>
+<span class="d">-                {fromKebabCase(name)}</span>
+<span class="d">-              &lt;/h3&gt;</span>
+<span class="d">-              &lt;p className=&quot;mt-1 text-sm text-gray-600 flex items-center gap-2&quot;&gt;</span>
+<span class="d">-                by{&quot; &quot;}</span>
+<span class="d">-                {avatarUrlMap[author] &amp;&amp; (</span>
+<span class="d">-                  &lt;img</span>
+<span class="d">-                    src={avatarUrlMap[author]}</span>
+<span class="d">-                    alt={author}</span>
+<span class="d">-                    className=&quot;inline-block w-10 h-10 rounded-full bg-gray-100&quot;</span>
+<span class="d">-                  /&gt;</span>
+<span class="d">-                )}</span>
+<span class="d">-                &lt;AuthorLink author={author} /&gt;</span>
+<span class="d">-              &lt;/p&gt;</span>
+<span class="d">-            &lt;/div&gt;</span>
+<span class="d">-            &lt;div className=&quot;mt-6&quot;&gt;</span>
+<span class="d">-              &lt;div className=&quot;flex gap-1 items-center&quot;&gt;</span>
+<span class="d">-                &lt;button</span>
+<span class="d">-                  onClick={() =&gt; navigateTo(name, &#x27;designer&#x27;)}</span>
+<span class="d">-                  className=&quot;w-full relative flex items-center justify-center rounded-md border border-transparent bg-gray-100 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200&quot;</span>
+<span class="d">-                &gt;</span>
+<span class="d">-                  Go to Designer</span>
+<span class="d">-                &lt;/button&gt;</span>
+<span class="d">-                &lt;CopyButton ui=&quot;designer&quot; name={name} /&gt;</span>
+<span class="d">-              &lt;/div&gt;</span>
+<span class="d">-            &lt;/div&gt;</span>
+<span class="d">-            &lt;div className=&quot;mt-3&quot;&gt;</span>
+<span class="d">-              &lt;div className=&quot;flex gap-1 items-center&quot;&gt;</span>
+<span class="d">-                &lt;button</span>
+<span class="d">-                  onClick={() =&gt; navigateTo(name, &#x27;form-viewer&#x27;)}</span>
+<span class="d">-                  className=&quot;w-full relative flex items-center justify-center rounded-md border border-transparent bg-gray-100 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200&quot;</span>
+<span class="d">-                &gt;</span>
+<span class="d">-                  Go to Form/Viewer</span>
+<span class="d">-                &lt;/button&gt;</span>
+<span class="d">-                &lt;CopyButton ui=&quot;form-viewer&quot; name={name} /&gt;</span>
+<span class="d">-              &lt;/div&gt;</span>
+<span class="d">-            &lt;/div&gt;</span>
+<span class="d">-          &lt;/div&gt;</span>
+<span class="d">-        &lt;/div&gt;</span>
+<span class="d">-      &lt;/React.Fragment&gt;</span>
+<span class="d">-    );</span>
+<span class="d">-  };</span>
+<span class="d">-</span>
+<span class="d">-  // Contribution card component</span>
+<span class="d">-  const ContributionCard = () =&gt; (</span>
+<span class="d m">-    &lt;div className=&quot;flex items-center justify-center&quot;&gt;</span>
+<span class="d">-      &lt;div className=&quot;relative border-2 border-green-300 rounded-lg p-6 bg-green-50 shadow-md&quot;&gt;</span>
+<span class="d">-        &lt;div className=&quot;relative mt-4&quot;&gt;</span>
+<span class="d">-          &lt;a</span>
+<span class="d">-            target=&quot;_blank&quot;</span>
+<span class="d">-            rel=&quot;noopener noreferrer&quot;</span>
+<span class="d">-            href=&quot;https://pdfme.com/docs/template-contribution-guide&quot;</span>
+<span class="d">-            className=&quot;text-md font-extrabold text-green-700 underline decoration-green-400 hover:text-green-600 hover:decoration-green-500 transition duration-300&quot;</span>
+<span class="d">-          &gt;</span>
+<span class="d">-            Contribute Your Template ❤️</span>
+<span class="d">-          &lt;/a&gt;</span>
+<span class="d">-          &lt;p className=&quot;mt-2 text-sm text-green-800 flex items-center gap-2 font-medium&quot;&gt;</span>
+<span class="d">-            Share the templates you&#x27;ve created! Contributing your templates is extremely beneficial for other users.</span>
+<span class="d">-          &lt;/p&gt;</span>
+<span class="d">-        &lt;/div&gt;</span>
+<span class="d">-        &lt;div className=&quot;mt-6&quot;&gt;</span>
+<span class="d">-          &lt;a</span>
+<span class="d">-            target=&quot;_blank&quot;</span>
+<span class="d">-            rel=&quot;noopener noreferrer&quot;</span>
+<span class="d">-            href=&quot;https://pdfme.com/docs/template-contribution-guide&quot;</span>
+<span class="d">-            className=&quot;w-full relative flex items-center justify-center rounded-md bg-gradient-to-r from-green-400 to-green-600 px-8 py-3 text-sm font-semibold text-white hover:opacity-90 transition duration-300&quot;</span>
+<span class="d">-          &gt;</span>
+<span class="d">-            See Contribution Guide</span>
+<span class="d">-          &lt;/a&gt;</span>
+<span class="d">-        &lt;/div&gt;</span>
+<span class="d">-      &lt;/div&gt;</span>
+<span class="d">-    &lt;/div&gt;</span>
+<span class="d">-  );</span>
+<span class="d">-</span>
+   return (
+     &lt;div className=&quot;bg-white&quot;&gt;
+       &lt;div className=&quot;mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8&quot;&gt;
+<span class="h">@@ -255,8 +190,70 @@ function TemplatesApp({ isEmbedded }: { isEmbedded: boolean }) {</span>
+           &lt;/div&gt;
+         &lt;/div&gt;
+         &lt;div className=&quot;mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8&quot;&gt;
+<span class="d">-          {templates.map((template, index) =&gt; (</span>
+<span class="d">-            &lt;TemplateCard key={template.name} {...template} index={index} /&gt;</span>
+<span class="a">+          {templates.map(({</span>
+<span class="a">+            name,</span>
+<span class="a">+            author</span>
+<span class="a">+          }, index) =&gt; (</span>
+<span class="a">+            &lt;React.Fragment key={name}&gt;</span>
+<span class="a">+              {index === 3 &amp;&amp; (</span>
+<span class="a">+                &lt;div</span>
+<span class="a">+                  data-ea-publisher=&quot;pdfmecom&quot;</span>
+<span class="a">+                  data-ea-type=&quot;image&quot;</span>
+<span class="a">+                  style={{ width: &#x27;100%&#x27;, display: &#x27;flex&#x27;, justifyContent: &#x27;center&#x27; }}</span>
+<span class="a">+                /&gt;</span>
+<span class="a">+              )}</span>
+<span class="a">+              &lt;div&gt;</span>
+<span class="a">+                &lt;div className=&quot;relative border border-gray-200 rounded-lg p-4 bg-white shadow-sm&quot;&gt;</span>
+<span class="a">+                  &lt;div className=&quot;relative h-72 w-full overflow-hidden&quot;&gt;</span>
+<span class="a">+                    &lt;img</span>
+<span class="a">+                      id={`template-img-${name}`}</span>
+<span class="a">+                      onClick={() =&gt; navigateTo(name, &#x27;designer&#x27;)}</span>
+<span class="a">+                      alt={fromKebabCase(name)}</span>
+<span class="a">+                      src={`/template-assets/${name}/thumbnail.png`}</span>
+<span class="a">+                      className=&quot;border border-gray-100 size-full object-contain cursor-pointer&quot;</span>
+<span class="a">+                    /&gt;</span>
+<span class="a">+                  &lt;/div&gt;</span>
+<span class="a">+                  &lt;div className=&quot;relative mt-4&quot;&gt;</span>
+<span class="a">+                    &lt;h3 className=&quot;text-md font-bold text-green-600&quot;&gt;</span>
+<span class="a">+                      {fromKebabCase(name)}</span>
+<span class="a">+                    &lt;/h3&gt;</span>
+<span class="a">+                    &lt;p className=&quot;mt-1 text-sm text-gray-600 flex items-center gap-2&quot;&gt;</span>
+<span class="a">+                      by{&quot; &quot;}</span>
+<span class="a">+                      {avatarUrlMap[author] &amp;&amp; (</span>
+<span class="a">+                        &lt;img</span>
+<span class="a">+                          src={avatarUrlMap[author]}</span>
+<span class="a">+                          alt={author}</span>
+<span class="a">+                          className=&quot;inline-block w-10 h-10 rounded-full bg-gray-100&quot;</span>
+<span class="a">+                        /&gt;</span>
+<span class="a">+                      )}</span>
+<span class="a">+                      &lt;AuthorLink author={author} /&gt;</span>
+<span class="a">+                    &lt;/p&gt;</span>
+<span class="a">+                  &lt;/div&gt;</span>
+<span class="a">+                  &lt;div className=&quot;mt-6&quot;&gt;</span>
+<span class="a">+                    &lt;div className=&quot;flex gap-1 items-center&quot;&gt;</span>
+<span class="a">+                      &lt;button</span>
+<span class="a">+                        onClick={() =&gt; navigateTo(name, &#x27;designer&#x27;)}</span>
+<span class="a">+                        className=&quot;w-full relative flex items-center justify-center rounded-md border border-transparent bg-gray-100 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200&quot;</span>
+<span class="a">+                      &gt;</span>
+<span class="a">+                        Go to Designer</span>
+<span class="a">+                      &lt;/button&gt;</span>
+<span class="a">+                      &lt;CopyButton ui=&quot;designer&quot; name={name} /&gt;</span>
+<span class="a">+                    &lt;/div&gt;</span>
+<span class="a">+                  &lt;/div&gt;</span>
+<span class="a">+                  &lt;div className=&quot;mt-3&quot;&gt;</span>
+<span class="a">+                    &lt;div className=&quot;flex gap-1 items-center&quot;&gt;</span>
+<span class="a">+                      &lt;button</span>
+<span class="a">+                        onClick={() =&gt; navigateTo(name, &#x27;form-viewer&#x27;)}</span>
+<span class="a">+                        className=&quot;w-full relative flex items-center justify-center rounded-md border border-transparent bg-gray-100 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200&quot;</span>
+<span class="a">+                      &gt;</span>
+<span class="a">+                        Go to Form/Viewer</span>
+<span class="a">+                      &lt;/button&gt;</span>
+<span class="a">+                      &lt;CopyButton ui=&quot;form-viewer&quot; name={name} /&gt;</span>
+<span class="a">+                    &lt;/div&gt;</span>
+<span class="a">+                  &lt;/div&gt;</span>
+<span class="a">+                &lt;/div&gt;</span>
+<span class="a">+              &lt;/div&gt;</span>
+<span class="a">+            &lt;/React.Fragment&gt;</span>
+           ))}
+           &lt;ContributionCard /&gt;
+         &lt;/div&gt;</pre></body></html>

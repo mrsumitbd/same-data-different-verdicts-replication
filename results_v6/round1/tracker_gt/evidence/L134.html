@@ -1,0 +1,155 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L134</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L134</h1><p><b>Repository:</b> <a href="https://github.com/prebid/prebid.js">prebid/prebid.js</a><br><b>File at merge:</b> test/spec/modules/permutiveIdentityManagerIdSystem_spec.js, line 68<br><b>Merge commit (birth):</b> <a href="https://github.com/prebid/prebid.js/commit/13b7680f6e5f73dc6dbbad48ffa241463bdf58f3">13b7680f6e</a> (2025-06-06T12:18:00)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/prebid/prebid.js/tree/60baec61d09bdc52b09bde5de4ce4cc0f84f0953">60baec61d0</a>)</p><p><b>The line:</b></p><pre><span class="t">              &#x27;linkType&#x27;: 0,</span></pre><h2>File at the merge commit, lines 60 to 76</h2><pre>   60 |         expect(result.id).to.be.undefined
+   61 |         expect(result.callback).not.to.be.undefined
+   62 |         const expected = {
+   63 |           &#x27;id5id&#x27;: {
+   64 |             &#x27;uid&#x27;: &#x27;0&#x27;,
+   65 |             &#x27;linkType&#x27;: 0,
+   66 |             &#x27;ext&#x27;: {
+   67 |               &#x27;abTestingControlGroup&#x27;: false,
+<span class="t">   68 |               &#x27;linkType&#x27;: 0,</span>
+   69 |               &#x27;pba&#x27;: &#x27;EVqgf9vY0fSrsrqJZMOm+Q==&#x27;
+   70 |             }
+   71 |           }
+   72 |         }
+   73 |         const r = await new Promise(result.callback)
+   74 |         expect(r).to.deep.equal(expected)
+   75 |       } finally {
+   76 |         cleanup()</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/prebid/prebid.js/commit/0757cd83faaf104cb6fbc917f730324bcdb6c3f1">0757cd83fa</a> (2025-06-10T12:43:06-04:00)</h2><p class="k">Permutive RTD Module: fix duplicate ortb2 keywords (#13326)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: test/spec/modules/permutiveCombined_spec.js.</p><pre>diff --git a/test/spec/modules/permutiveIdentityManagerIdSystem_spec.js b/test/spec/modules/permutiveIdentityManagerIdSystem_spec.js
+deleted file mode 100644
+index c94914f2e..000000000
+<span class="d">--- a/test/spec/modules/permutiveIdentityManagerIdSystem_spec.js</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,129 +0,0 @@</span>
+<span class="d">-import { permutiveIdentityManagerIdSubmodule, storage } from &#x27;modules/permutiveIdentityManagerIdSystem&#x27;</span>
+<span class="d">-import { deepSetValue } from &#x27;src/utils.js&#x27;</span>
+<span class="d">-</span>
+<span class="d">-const STORAGE_KEY = &#x27;permutive-prebid-id&#x27;</span>
+<span class="d">-</span>
+<span class="d">-describe(&#x27;permutiveIdentityManagerIdSystem&#x27;, () =&gt; {</span>
+<span class="d">-  afterEach(() =&gt; {</span>
+<span class="d">-    storage.removeDataFromLocalStorage(STORAGE_KEY)</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  describe(&#x27;decode&#x27;, () =&gt; {</span>
+<span class="d">-    it(&#x27;returns the input unchanged&#x27;, () =&gt; {</span>
+<span class="d">-      const input = {</span>
+<span class="d">-        id5id: {</span>
+<span class="d">-          uid: &#x27;0&#x27;,</span>
+<span class="d">-          ext: {</span>
+<span class="d">-            abTestingControlGroup: false,</span>
+<span class="d">-            linkType: 2,</span>
+<span class="d">-            pba: &#x27;somepba&#x27;</span>
+<span class="d">-          }</span>
+<span class="d">-        }</span>
+<span class="d">-      }</span>
+<span class="d">-      const result = permutiveIdentityManagerIdSubmodule.decode(input)</span>
+<span class="d">-      expect(result).to.be.equal(input)</span>
+<span class="d">-    })</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  describe(&#x27;getId&#x27;, () =&gt; {</span>
+<span class="d">-    it(&#x27;returns relevant IDs from localStorage and does not return unexpected IDs&#x27;, () =&gt; {</span>
+<span class="d">-      const data = getUserIdData()</span>
+<span class="d">-      storage.setDataInLocalStorage(STORAGE_KEY, JSON.stringify(data))</span>
+<span class="d">-      const result = permutiveIdentityManagerIdSubmodule.getId({})</span>
+<span class="d">-      const expected = {</span>
+<span class="d">-        &#x27;id&#x27;: {</span>
+<span class="d">-          &#x27;id5id&#x27;: {</span>
+<span class="d">-            &#x27;uid&#x27;: &#x27;0&#x27;,</span>
+<span class="d m">-            &#x27;linkType&#x27;: 0,</span>
+<span class="d">-            &#x27;ext&#x27;: {</span>
+<span class="d">-              &#x27;abTestingControlGroup&#x27;: false,</span>
+<span class="d m">-              &#x27;linkType&#x27;: 0,</span>
+<span class="d">-              &#x27;pba&#x27;: &#x27;EVqgf9vY0fSrsrqJZMOm+Q==&#x27;</span>
+<span class="d">-            }</span>
+<span class="d">-          }</span>
+<span class="d">-        }</span>
+<span class="d">-      }</span>
+<span class="d">-      expect(result).to.deep.equal(expected)</span>
+<span class="d">-    })</span>
+<span class="d">-</span>
+<span class="d">-    it(&#x27;returns undefined if no relevant IDs are found in localStorage&#x27;, () =&gt; {</span>
+<span class="d">-      storage.setDataInLocalStorage(STORAGE_KEY, &#x27;{}&#x27;)</span>
+<span class="d">-      const result = permutiveIdentityManagerIdSubmodule.getId({})</span>
+<span class="d">-      expect(result).to.be.undefined</span>
+<span class="d">-    })</span>
+<span class="d">-</span>
+<span class="d">-    it(&#x27;will optionally wait for Permutive SDK if no identities are in local storage already&#x27;, async () =&gt; {</span>
+<span class="d">-      const cleanup = setWindowPermutive()</span>
+<span class="d">-      try {</span>
+<span class="d">-        const result = permutiveIdentityManagerIdSubmodule.getId({params: {ajaxTimeout: 50}})</span>
+<span class="d">-        expect(result).not.to.be.undefined</span>
+<span class="d">-        expect(result.id).to.be.undefined</span>
+<span class="d">-        expect(result.callback).not.to.be.undefined</span>
+<span class="d">-        const expected = {</span>
+<span class="d">-          &#x27;id5id&#x27;: {</span>
+<span class="d">-            &#x27;uid&#x27;: &#x27;0&#x27;,</span>
+<span class="d m">-            &#x27;linkType&#x27;: 0,</span>
+<span class="d">-            &#x27;ext&#x27;: {</span>
+<span class="d">-              &#x27;abTestingControlGroup&#x27;: false,</span>
+<span class="d m">-              &#x27;linkType&#x27;: 0,</span>
+<span class="d">-              &#x27;pba&#x27;: &#x27;EVqgf9vY0fSrsrqJZMOm+Q==&#x27;</span>
+<span class="d">-            }</span>
+<span class="d">-          }</span>
+<span class="d">-        }</span>
+<span class="d">-        const r = await new Promise(result.callback)</span>
+<span class="d">-        expect(r).to.deep.equal(expected)</span>
+<span class="d">-      } finally {</span>
+<span class="d">-        cleanup()</span>
+<span class="d">-      }</span>
+<span class="d">-    })</span>
+<span class="d">-  })</span>
+<span class="d">-})</span>
+<span class="d">-</span>
+<span class="d">-const setWindowPermutive = () =&gt; {</span>
+<span class="d">-  // Read from Permutive</span>
+<span class="d">-  const backup = window.permutive</span>
+<span class="d">-</span>
+<span class="d">-  deepSetValue(window, &#x27;permutive.ready&#x27;, (f) =&gt; {</span>
+<span class="d">-    setTimeout(() =&gt; f(), 5)</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  deepSetValue(window, &#x27;permutive.addons.identity_manager.prebid.onReady&#x27;, (f) =&gt; {</span>
+<span class="d">-    setTimeout(() =&gt; f(sdkUserIdData()), 5)</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  // Cleanup</span>
+<span class="d">-  return () =&gt; window.permutive = backup</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-const sdkUserIdData = () =&gt; ({</span>
+<span class="d">-  &#x27;id5id&#x27;: {</span>
+<span class="d">-    &#x27;uid&#x27;: &#x27;0&#x27;,</span>
+<span class="d m">-    &#x27;linkType&#x27;: 0,</span>
+<span class="d">-    &#x27;ext&#x27;: {</span>
+<span class="d">-      &#x27;abTestingControlGroup&#x27;: false,</span>
+<span class="d m">-      &#x27;linkType&#x27;: 0,</span>
+<span class="d">-      &#x27;pba&#x27;: &#x27;EVqgf9vY0fSrsrqJZMOm+Q==&#x27;</span>
+<span class="d">-    }</span>
+<span class="d">-  },</span>
+<span class="d">-})</span>
+<span class="d">-</span>
+<span class="d">-const getUserIdData = () =&gt; ({</span>
+<span class="d">-  &#x27;providers&#x27;: {</span>
+<span class="d">-    &#x27;id5id&#x27;: {</span>
+<span class="d">-      &#x27;userId&#x27;: {</span>
+<span class="d">-        &#x27;uid&#x27;: &#x27;0&#x27;,</span>
+<span class="d m">-        &#x27;linkType&#x27;: 0,</span>
+<span class="d">-        &#x27;ext&#x27;: {</span>
+<span class="d">-          &#x27;abTestingControlGroup&#x27;: false,</span>
+<span class="d m">-          &#x27;linkType&#x27;: 0,</span>
+<span class="d">-          &#x27;pba&#x27;: &#x27;EVqgf9vY0fSrsrqJZMOm+Q==&#x27;</span>
+<span class="d">-        }</span>
+<span class="d">-      }</span>
+<span class="d">-    },</span>
+<span class="d">-    &#x27;fooid&#x27;: {</span>
+<span class="d">-      &#x27;userId&#x27;: {</span>
+<span class="d">-        &#x27;id&#x27;: &#x27;1&#x27;</span>
+<span class="d">-      }</span>
+<span class="d">-    }</span>
+<span class="d">-  }</span>
+<span class="d">-})</span></pre></body></html>

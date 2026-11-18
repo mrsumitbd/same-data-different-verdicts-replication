@@ -1,0 +1,177 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L167</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L167</h1><p><b>Repository:</b> <a href="https://github.com/pdfme/pdfme">pdfme/pdfme</a><br><b>File at merge:</b> packages/generator/src/generate.ts, line 79<br><b>Merge commit (birth):</b> <a href="https://github.com/pdfme/pdfme/commit/2eff1734ca85e3068ffa78d14558e15b58b366a8">2eff1734ca</a> (2025-03-05T10:46:54)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/pdfme/pdfme/tree/69f6be160bc79b30cbdc1125e18f8a49d0e33929">69f6be160b</a>)</p><p><b>The line:</b></p><pre><span class="t">            const height = typeof args.schema.height === &#x27;number&#x27; ? args.schema.height : 0;</span></pre><h2>File at the merge commit, lines 71 to 87</h2><pre>   71 |         }
+   72 |         
+   73 |         switch (args.schema.type) {
+   74 |           case &#x27;table&#x27;:
+   75 |             // Use our safe implementation
+   76 |             return safeGetDynamicHeightsForTable(value, args);
+   77 |           default:
+   78 |             // Ensure height is a number or provide a safe default
+<span class="t">   79 |             const height = typeof args.schema.height === &#x27;number&#x27; ? args.schema.height : 0;</span>
+   80 |             return Promise.resolve([height]);
+   81 |         }
+   82 |       },
+   83 |     });
+   84 |     const { basePages, embedPdfBoxes } = await getEmbedPdfPages({
+   85 |       template: dynamicTemplate,
+   86 |       pdfDoc,
+   87 |     });</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/pdfme/pdfme/commit/9fa60cba14da09e817440c51a187c9a2b5afa02a">9fa60cba14</a> (2025-03-06T11:18:13+09:00)</h2><p class="k">Refactor type definitions and improve type safety in dynamic template handling (#816)<br>Path after this commit: packages/generator/src/generate.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/generator/src/generate.ts b/packages/generator/src/generate.ts
+index 5c0bb5ee..021de61a 100644
+<span class="d">--- a/packages/generator/src/generate.ts</span>
+<span class="a">+++ b/packages/generator/src/generate.ts</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import * as pdfLib from &#x27;@pdfme/pdf-lib&#x27;;
+<span class="d">-import type { GenerateProps, Schema, PDFRenderProps, Template, BasePdf, CommonOptions } from &#x27;@pdfme/common&#x27;;</span>
+<span class="a">+import type { GenerateProps, Schema, PDFRenderProps, Template } from &#x27;@pdfme/common&#x27;;</span>
+ import {
+   checkGenerateProps,
+   getDynamicTemplate,
+<span class="h">@@ -8,6 +8,7 @@ import {</span>
+   pt2mm,
+   cloneDeep,
+ } from &#x27;@pdfme/common&#x27;;
+<span class="a">+import { getDynamicHeightsForTable } from &#x27;@pdfme/schemas&#x27;;</span>
+ import {
+   insertPage,
+   preprocessing,
+<span class="h">@@ -16,26 +17,6 @@ import {</span>
+   validateRequiredFields,
+ } from &#x27;./helper.js&#x27;;
+ 
+<span class="d">-// Create a safe implementation of getDynamicHeightsForTable</span>
+<span class="d">-const safeGetDynamicHeightsForTable = (</span>
+<span class="d">-  value: string,</span>
+<span class="d">-  args: {</span>
+<span class="d">-    schema: Schema;</span>
+<span class="d">-    basePdf: BasePdf;</span>
+<span class="d">-    options: CommonOptions;</span>
+<span class="d">-    _cache: Map&lt;string | number, unknown&gt;;</span>
+<span class="d">-  }</span>
+<span class="d">-): Promise&lt;number[]&gt; =&gt; {</span>
+<span class="d">-  // If schema type is not table, return the height as a single-element array</span>
+<span class="d">-  if (args.schema.type !== &#x27;table&#x27;) {</span>
+<span class="d">-    return Promise.resolve([args.schema.height]);</span>
+<span class="d">-  }</span>
+<span class="d">-  </span>
+<span class="d">-  // For table type, we need to return an array of heights</span>
+<span class="d">-  // Since we can&#x27;t safely call the external function, we&#x27;ll return a default</span>
+<span class="d">-  return Promise.resolve([args.schema.height]);</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+ const generate = async (props: GenerateProps) =&gt; {
+   checkGenerateProps(props);
+   const { inputs, template: _template, options = {}, plugins: userPlugins = {} } = props;
+<span class="h">@@ -65,19 +46,11 @@ const generate = async (props: GenerateProps) =&gt; {</span>
+       options,
+       _cache,
+       getDynamicHeights: (value, args) =&gt; {
+<span class="d">-        // Add proper type checking and error handling</span>
+<span class="d">-        if (!args || !args.schema || typeof args.schema.type !== &#x27;string&#x27;) {</span>
+<span class="d">-          return Promise.resolve([0]); // Safe fallback if schema is invalid</span>
+<span class="d">-        }</span>
+<span class="d">-        </span>
+         switch (args.schema.type) {
+           case &#x27;table&#x27;:
+<span class="d">-            // Use our safe implementation</span>
+<span class="d">-            return safeGetDynamicHeightsForTable(value, args);</span>
+<span class="a">+            return getDynamicHeightsForTable(value, args);</span>
+           default:
+<span class="d">-            // Ensure height is a number or provide a safe default</span>
+<span class="d m">-            const height = typeof args.schema.height === &#x27;number&#x27; ? args.schema.height : 0;</span>
+<span class="d">-            return Promise.resolve([height]);</span>
+<span class="a">+            return Promise.resolve([args.schema.height]);</span>
+         }
+       },
+     });
+<span class="h">@@ -85,6 +58,7 @@ const generate = async (props: GenerateProps) =&gt; {</span>
+       template: dynamicTemplate,
+       pdfDoc,
+     });
+<span class="a">+</span>
+     // Add proper type assertion for dynamicTemplate.schemas
+     const schemas = dynamicTemplate.schemas as Schema[][];
+     // Create a type-safe array of schema names without using Set spread which requires downlevelIteration
+<span class="h">@@ -160,7 +134,7 @@ const generate = async (props: GenerateProps) =&gt; {</span>
+               variables: { ...input, totalPages: basePages.length, currentPage: j + 1 },
+               schemas: schemas, // Use the properly typed schemas variable
+             })
+<span class="d">-          : (input[name] || &#x27;&#x27;) as string;</span>
+<span class="a">+          : ((input[name] || &#x27;&#x27;) as string);</span>
+ 
+         schema.position = {
+           x: schema.position.x + boundingBoxLeft,</pre><h2>Commit #2: <a href="https://github.com/pdfme/pdfme/commit/9b37b6e2d3d7ac4814a9c1189feadc8c86b82e18">9b37b6e2d3</a> (2025-03-07T01:25:28+09:00)</h2><p class="k">Refactor cache handling to improve type inference in generator and PDF render functions<br>Path after this commit: packages/generator/src/generate.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/generator/src/generate.ts b/packages/generator/src/generate.ts
+index 021de61a..cc52174a 100644
+<span class="d">--- a/packages/generator/src/generate.ts</span>
+<span class="a">+++ b/packages/generator/src/generate.ts</span>
+<span class="h">@@ -110,7 +110,7 @@ const generate = async (props: GenerateProps) =&gt; {</span>
+             pdfDoc,
+             page,
+             options,
+<span class="d">-            _cache: _cache as Map&lt;string | number, unknown&gt;,</span>
+<span class="a">+            _cache,</span>
+           };
+           await render(staticRenderProps);
+         }
+<span class="h">@@ -150,7 +150,7 @@ const generate = async (props: GenerateProps) =&gt; {</span>
+           pdfDoc,
+           page,
+           options,
+<span class="d">-          _cache: _cache as Map&lt;string | number, unknown&gt;,</span>
+<span class="a">+          _cache,</span>
+         };
+         await render(renderProps);
+       }</pre><h2>Commit #3: <a href="https://github.com/pdfme/pdfme/commit/ef0efbbf2b419fe9e47c481e08d84bd15da6d182">ef0efbbf2b</a> (2025-05-20T10:41:54+09:00)</h2><p class="k">fix for using MVT in static schema (#1018)<br>Path after this commit: packages/generator/src/generate.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/generator/src/generate.ts b/packages/generator/src/generate.ts
+index cc52174a..b619aa00 100644
+<span class="d">--- a/packages/generator/src/generate.ts</span>
+<span class="a">+++ b/packages/generator/src/generate.ts</span>
+<span class="h">@@ -90,11 +90,11 @@ const generate = async (props: GenerateProps) =&gt; {</span>
+           if (!render) {
+             continue;
+           }
+<span class="d">-          const value = replacePlaceholders({</span>
+<span class="a">+          const value = staticSchema.readOnly ? replacePlaceholders({</span>
+             content: staticSchema.content || &#x27;&#x27;,
+             variables: { ...input, totalPages: basePages.length, currentPage: j + 1 },
+             schemas: schemas, // Use the properly typed schemas variable
+<span class="d">-          });</span>
+<span class="a">+          }) : staticSchema.content || &#x27;&#x27;;</span>
+ 
+           staticSchema.position = {
+             x: staticSchema.position.x + boundingBoxLeft,</pre><h2>Commit #4: <a href="https://github.com/pdfme/pdfme/commit/093f183d74eee856a5e3308cdb89f88386cb4fc3">093f183d74</a> (2025-07-02T15:21:54+09:00)</h2><p class="k">npm run prettier<br>Path after this commit: packages/generator/src/generate.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/generator/src/generate.ts b/packages/generator/src/generate.ts
+index b619aa00..a2036a44 100644
+<span class="d">--- a/packages/generator/src/generate.ts</span>
+<span class="a">+++ b/packages/generator/src/generate.ts</span>
+<span class="h">@@ -90,11 +90,13 @@ const generate = async (props: GenerateProps) =&gt; {</span>
+           if (!render) {
+             continue;
+           }
+<span class="d">-          const value = staticSchema.readOnly ? replacePlaceholders({</span>
+<span class="d">-            content: staticSchema.content || &#x27;&#x27;,</span>
+<span class="d">-            variables: { ...input, totalPages: basePages.length, currentPage: j + 1 },</span>
+<span class="d">-            schemas: schemas, // Use the properly typed schemas variable</span>
+<span class="d">-          }) : staticSchema.content || &#x27;&#x27;;</span>
+<span class="a">+          const value = staticSchema.readOnly</span>
+<span class="a">+            ? replacePlaceholders({</span>
+<span class="a">+                content: staticSchema.content || &#x27;&#x27;,</span>
+<span class="a">+                variables: { ...input, totalPages: basePages.length, currentPage: j + 1 },</span>
+<span class="a">+                schemas: schemas, // Use the properly typed schemas variable</span>
+<span class="a">+              })</span>
+<span class="a">+            : staticSchema.content || &#x27;&#x27;;</span>
+ 
+           staticSchema.position = {
+             x: staticSchema.position.x + boundingBoxLeft,</pre><h2>Commit #5: <a href="https://github.com/pdfme/pdfme/commit/968dddea634b066a89e32c9cf0fe99791ee4bf14">968dddea63</a> (2025-11-09T08:32:15+09:00)</h2><p class="k">build(deps-dev): bump typescript from 5.8.3 to 5.9.3 (#1211)<br>Path after this commit: packages/generator/src/generate.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/generator/src/generate.ts b/packages/generator/src/generate.ts
+index a2036a44..ddb4fd07 100644
+<span class="d">--- a/packages/generator/src/generate.ts</span>
+<span class="a">+++ b/packages/generator/src/generate.ts</span>
+<span class="h">@@ -17,7 +17,7 @@ import {</span>
+   validateRequiredFields,
+ } from &#x27;./helper.js&#x27;;
+ 
+<span class="d">-const generate = async (props: GenerateProps) =&gt; {</span>
+<span class="a">+const generate = async (props: GenerateProps): Promise&lt;Uint8Array&lt;ArrayBuffer&gt;&gt; =&gt; {</span>
+   checkGenerateProps(props);
+   const { inputs, template: _template, options = {}, plugins: userPlugins = {} } = props;
+   const template = cloneDeep(_template);</pre></body></html>

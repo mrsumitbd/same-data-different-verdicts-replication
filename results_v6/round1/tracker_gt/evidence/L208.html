@@ -1,0 +1,86 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L208</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L208</h1><p><b>Repository:</b> <a href="https://github.com/elsa-workflows/elsa-core">elsa-workflows/elsa-core</a><br><b>File at merge:</b> src/samples/IntegrationTestSample.cs, line 40<br><b>Merge commit (birth):</b> <a href="https://github.com/elsa-workflows/elsa-core/commit/239be9bf1c6646f81c7999d041f7690bbe421e04">239be9bf1c</a> (2025-05-24T21:25:37)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/elsa-workflows/elsa-core/tree/2c4aadff8b0345cb30e822c4986882b80ca335b8">2c4aadff8b</a>)</p><p><b>The line:</b></p><pre><span class="t">/// &lt;summary&gt;</span></pre><h2>File at the merge commit, lines 32 to 48</h2><pre>   32 |             await Factory.Server.Host.StopAsync();
+   33 |         }
+   34 |         
+   35 |         Factory.Dispose();
+   36 |         GC.SuppressFinalize(this);
+   37 |     }
+   38 | }
+   39 | 
+<span class="t">   40 | /// &lt;summary&gt;</span>
+   41 | /// Example test class inheriting from the base integration test class.
+   42 | /// &lt;/summary&gt;
+   43 | public class ExampleIntegrationTest : IntegrationTestBase&lt;TestStartup&gt;
+   44 | {
+   45 |     [Fact]
+   46 |     public async Task SampleTest()
+   47 |     {
+   48 |         // Test logic here</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/elsa-workflows/elsa-core/commit/bb321a8a498ef9ee45b4fd1b6aef24cf9816f504">bb321a8a49</a> (2025-12-02T13:30:24+01:00)</h2><p class="k">Remove `IntegrationTestSample.cs` and related README while updating package dependencies.<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/samples/IntegrationTestSample.cs b/src/samples/IntegrationTestSample.cs
+deleted file mode 100644
+index be626239f..000000000
+<span class="d">--- a/src/samples/IntegrationTestSample.cs</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,59 +0,0 @@</span>
+<span class="d">-using System;</span>
+<span class="d">-using System.Threading.Tasks;</span>
+<span class="d">-using Elsa.Testing.Extensions;</span>
+<span class="d">-using Microsoft.AspNetCore.Mvc.Testing;</span>
+<span class="d">-using Microsoft.Extensions.Hosting;</span>
+<span class="d">-using Xunit;</span>
+<span class="d">-</span>
+<span class="d">-namespace Sample;</span>
+<span class="d">-</span>
+<span class="d m">-/// &lt;summary&gt;</span>
+<span class="d">-/// Sample integration test showing how to properly shutdown Elsa background tasks.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-/// &lt;typeparam name=&quot;TStartup&quot;&gt;The startup class of your application.&lt;/typeparam&gt;</span>
+<span class="d">-public class IntegrationTestBase&lt;TStartup&gt; : IAsyncDisposable where TStartup : class</span>
+<span class="d">-{</span>
+<span class="d">-    protected readonly WebApplicationFactory&lt;TStartup&gt; Factory;</span>
+<span class="d">-</span>
+<span class="d">-    public IntegrationTestBase()</span>
+<span class="d">-    {</span>
+<span class="d">-        Factory = new WebApplicationFactory&lt;TStartup&gt;();</span>
+<span class="d">-        // ... other initialization code</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    public async ValueTask DisposeAsync()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Explicitly stop Elsa background tasks before disposing the factory</span>
+<span class="d">-        await Factory.ShutdownElsaAsync();</span>
+<span class="d">-        </span>
+<span class="d">-        // Then stop the server and host</span>
+<span class="d">-        if (Factory.Server?.Host != null)</span>
+<span class="d">-        {</span>
+<span class="d">-            await Factory.Server.Host.StopAsync();</span>
+<span class="d">-        }</span>
+<span class="d">-        </span>
+<span class="d">-        Factory.Dispose();</span>
+<span class="d">-        GC.SuppressFinalize(this);</span>
+<span class="d">-    }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d m">-/// &lt;summary&gt;</span>
+<span class="d">-/// Example test class inheriting from the base integration test class.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-public class ExampleIntegrationTest : IntegrationTestBase&lt;TestStartup&gt;</span>
+<span class="d">-{</span>
+<span class="d">-    [Fact]</span>
+<span class="d">-    public async Task SampleTest()</span>
+<span class="d">-    {</span>
+<span class="d">-        // Test logic here</span>
+<span class="d">-        await Task.CompletedTask;</span>
+<span class="d">-    }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d m">-/// &lt;summary&gt;</span>
+<span class="d">-/// Sample startup class for demonstration purposes.</span>
+<span class="d">-/// &lt;/summary&gt;</span>
+<span class="d">-public class TestStartup</span>
+<span class="d">-{</span>
+<span class="d">-    // This is just a placeholder class for the example</span>
+<span class="d">-}</span>
+\ No newline at end of file</pre></body></html>

@@ -1,0 +1,255 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L153</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L153</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/msquic">microsoft/msquic</a><br><b>File at merge:</b> src/inc/msquic.hpp, line 518<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/msquic/commit/2e4a9f04f7407392b9444aa06fffb612d210d717">2e4a9f04f7</a> (2025-05-28T18:34:21)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/msquic/tree/639e92f4f8c9bccf84cbfa3df96d303c3712a767">639e92f4f8</a>)</p><p><b>The line:</b></p><pre><span class="t">    MsQuicExecution(MsQuicExecution&amp;&amp;) = delete;</span></pre><h2>File at the merge commit, lines 510 to 526</h2><pre>  510 |                 Configs[i].EventQ = EventQ[i];
+  511 |             }
+  512 |             Initialize(Flags, PollingIdleTimeoutUs, Configs);
+  513 |             delete [] Configs;
+  514 |         }
+  515 |     }
+  516 |     MsQuicExecution(const MsQuicExecution&amp;) = delete;
+  517 |     MsQuicExecution&amp; operator=(const MsQuicExecution&amp;) = delete;
+<span class="t">  518 |     MsQuicExecution(MsQuicExecution&amp;&amp;) = delete;</span>
+  519 |     MsQuicExecution&amp; operator=(MsQuicExecution&amp;&amp;) = delete;
+  520 |     void Initialize(
+  521 |         _In_ QUIC_GLOBAL_EXECUTION_CONFIG_FLAGS Flags, // Used for datapath type
+  522 |         _In_ uint32_t PollingIdleTimeoutUs,
+  523 |         _In_reads_(this-&gt;Count) QUIC_EXECUTION_CONFIG* Configs
+  524 |         )
+  525 |     {
+  526 |         Executions = new(std::nothrow) QUIC_EXECUTION*[Count];</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/msquic/commit/c01ccbd202b15409b1f12079243e26bd79cb78d5">c01ccbd202</a> (2025-08-07T10:48:40-07:00)</h2><p class="k">Remove experimental RIO data path (#5328)<br>Path after this commit: src/inc/msquic.hpp. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/inc/msquic.hpp b/src/inc/msquic.hpp
+index b250c5201..f2ff819ae 100644
+<span class="d">--- a/src/inc/msquic.hpp</span>
+<span class="a">+++ b/src/inc/msquic.hpp</span>
+<span class="h">@@ -711,7 +711,6 @@ public:</span>
+     MsQuicSettings&amp; SetReliableResetEnabled(bool value) { ReliableResetEnabled = value; IsSet.ReliableResetEnabled = TRUE; return *this; }
+     MsQuicSettings&amp; SetXdpEnabled(bool value) { XdpEnabled = value; IsSet.XdpEnabled = TRUE; return *this; }
+     MsQuicSettings&amp; SetQtipEnabled(bool value) { QTIPEnabled = value; IsSet.QTIPEnabled = TRUE; return *this; }
+<span class="d">-    MsQuicSettings&amp; SetRioEnabled(bool value) { RioEnabled = value; IsSet.RioEnabled = TRUE; return *this; }</span>
+     MsQuicSettings&amp; SetOneWayDelayEnabled(bool value) { OneWayDelayEnabled = value; IsSet.OneWayDelayEnabled = TRUE; return *this; }
+     MsQuicSettings&amp; SetNetStatsEventEnabled(bool value) { NetStatsEventEnabled = value; IsSet.NetStatsEventEnabled = TRUE; return *this; }
+     MsQuicSettings&amp; SetStreamMultiReceiveEnabled(bool value) { StreamMultiReceiveEnabled = value; IsSet.StreamMultiReceiveEnabled = TRUE; return *this; }</pre><h2>Commit #2: <a href="https://github.com/microsoft/msquic/commit/b1e70ae3b78a4e2d024fcebd4633e89d5eb1c058">b1e70ae3b7</a> (2025-08-26T13:49:51-07:00)</h2><p class="k">add basic execution context test and fix (#5384)<br>Path after this commit: src/inc/msquic.hpp. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/inc/msquic.hpp b/src/inc/msquic.hpp
+index f2ff819ae..09efc9203 100644
+<span class="d">--- a/src/inc/msquic.hpp</span>
+<span class="a">+++ b/src/inc/msquic.hpp</span>
+<span class="h">@@ -513,6 +513,13 @@ struct MsQuicExecution {</span>
+             delete [] Configs;
+         }
+     }
+<span class="a">+    ~MsQuicExecution() noexcept {</span>
+<span class="a">+        if (Executions != nullptr) {</span>
+<span class="a">+            MsQuic-&gt;ExecutionDelete(Count, Executions);</span>
+<span class="a">+            Executions = nullptr;</span>
+<span class="a">+            Count = 0;</span>
+<span class="a">+        }</span>
+<span class="a">+    }</span>
+     MsQuicExecution(const MsQuicExecution&amp;) = delete;
+     MsQuicExecution&amp; operator=(const MsQuicExecution&amp;) = delete;
+<span class=" m">     MsQuicExecution(MsQuicExecution&amp;&amp;) = delete;</span></pre><h2>Commit #3: <a href="https://github.com/microsoft/msquic/commit/a17ff50705f60c4008213909f5dd143c3d2e2a79">a17ff50705</a> (2025-08-26T22:01:54+00:00)</h2><p class="k">Revert &quot;add basic execution context test and fix (#5384)&quot; (#5385)<br>Path after this commit: src/inc/msquic.hpp. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/inc/msquic.hpp b/src/inc/msquic.hpp
+index 09efc9203..f2ff819ae 100644
+<span class="d">--- a/src/inc/msquic.hpp</span>
+<span class="a">+++ b/src/inc/msquic.hpp</span>
+<span class="h">@@ -513,13 +513,6 @@ struct MsQuicExecution {</span>
+             delete [] Configs;
+         }
+     }
+<span class="d">-    ~MsQuicExecution() noexcept {</span>
+<span class="d">-        if (Executions != nullptr) {</span>
+<span class="d">-            MsQuic-&gt;ExecutionDelete(Count, Executions);</span>
+<span class="d">-            Executions = nullptr;</span>
+<span class="d">-            Count = 0;</span>
+<span class="d">-        }</span>
+<span class="d">-    }</span>
+     MsQuicExecution(const MsQuicExecution&amp;) = delete;
+     MsQuicExecution&amp; operator=(const MsQuicExecution&amp;) = delete;
+<span class=" m">     MsQuicExecution(MsQuicExecution&amp;&amp;) = delete;</span></pre><h2>Commit #4: <a href="https://github.com/microsoft/msquic/commit/ca5c05f3dfeead8abd0931b13446c867cec7b6b5">ca5c05f3df</a> (2025-09-04T16:17:19-07:00)</h2><p class="k">Add strong partitioning to listeners, connections, and streams (#5376)<br>Path after this commit: src/inc/msquic.hpp. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/inc/msquic.hpp b/src/inc/msquic.hpp
+index f2ff819ae..b3bce6b5a 100644
+<span class="d">--- a/src/inc/msquic.hpp</span>
+<span class="a">+++ b/src/inc/msquic.hpp</span>
+<span class="h">@@ -229,6 +229,7 @@ public:</span>
+     }
+     void Wait() noexcept {
+         if (Initialized) {
+<span class="a">+            WaitOnDelete = false;</span>
+             CxPlatThreadWait(&amp;Thread);
+         }
+     }
+<span class="h">@@ -513,6 +514,14 @@ struct MsQuicExecution {</span>
+             delete [] Configs;
+         }
+     }
+<span class="a">+    ~MsQuicExecution() noexcept {</span>
+<span class="a">+        if (Executions != nullptr) {</span>
+<span class="a">+            MsQuic-&gt;ExecutionDelete(Count, Executions);</span>
+<span class="a">+            delete[] Executions;</span>
+<span class="a">+            Executions = nullptr;</span>
+<span class="a">+            Count = 0;</span>
+<span class="a">+        }</span>
+<span class="a">+    }</span>
+     MsQuicExecution(const MsQuicExecution&amp;) = delete;
+     MsQuicExecution&amp; operator=(const MsQuicExecution&amp;) = delete;
+<span class=" m">     MsQuicExecution(MsQuicExecution&amp;&amp;) = delete;</span>
+<span class="h">@@ -589,6 +598,17 @@ struct MsQuicRegistration {</span>
+         ) noexcept {
+         MsQuic-&gt;RegistrationShutdown(Handle, Flags, ErrorCode);
+     }
+<span class="a">+#ifdef QUIC_API_ENABLE_PREVIEW_FEATURES</span>
+<span class="a">+    void CloseAsync(</span>
+<span class="a">+        _In_ QUIC_REGISTRATION_CLOSE_CALLBACK_HANDLER Handler,</span>
+<span class="a">+        _In_opt_ void* Context</span>
+<span class="a">+        ) noexcept {</span>
+<span class="a">+        if (Handle != nullptr) {</span>
+<span class="a">+            MsQuic-&gt;RegistrationClose2(Handle, Handler, Context);</span>
+<span class="a">+            Handle = nullptr;</span>
+<span class="a">+        }</span>
+<span class="a">+    }</span>
+<span class="a">+#endif</span>
+ };
+ 
+ class MsQuicAlpn {
+<span class="h">@@ -991,9 +1011,7 @@ struct MsQuicListener {</span>
+     }
+ 
+     ~MsQuicListener() noexcept {
+<span class="d">-        if (Handle) {</span>
+<span class="d">-            MsQuic-&gt;ListenerClose(Handle);</span>
+<span class="d">-        }</span>
+<span class="a">+        Close();</span>
+     }
+ 
+     QUIC_STATUS
+<span class="h">@@ -1004,6 +1022,19 @@ struct MsQuicListener {</span>
+         return MsQuic-&gt;ListenerStart(Handle, Alpns, Alpns.Length(), Address);
+     }
+ 
+<span class="a">+    void</span>
+<span class="a">+    Stop() noexcept {</span>
+<span class="a">+        MsQuic-&gt;ListenerStop(Handle);</span>
+<span class="a">+    }</span>
+<span class="a">+    void</span>
+<span class="a">+    Close()</span>
+<span class="a">+    {</span>
+<span class="a">+        if (Handle) {</span>
+<span class="a">+            MsQuic-&gt;ListenerClose(Handle);</span>
+<span class="a">+            Handle = nullptr;</span>
+<span class="a">+        }</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     QUIC_STATUS
+     SetParam(
+         _In_ uint32_t Param,
+<span class="h">@@ -1046,6 +1077,17 @@ struct MsQuicListener {</span>
+                 Length,
+                 Value);
+     }
+<span class="a">+</span>
+<span class="a">+    QUIC_STATUS</span>
+<span class="a">+    SetPartitionId(</span>
+<span class="a">+        _In_ const uint16_t Value) noexcept {</span>
+<span class="a">+        return</span>
+<span class="a">+            MsQuic-&gt;SetParam(</span>
+<span class="a">+                Handle,</span>
+<span class="a">+                QUIC_PARAM_LISTENER_PARTITION_INDEX,</span>
+<span class="a">+                sizeof(Value),</span>
+<span class="a">+                &amp;Value);</span>
+<span class="a">+    }</span>
+ #endif
+ 
+     QUIC_STATUS
+<span class="h">@@ -1107,11 +1149,13 @@ struct MsQuicConnection {</span>
+     QUIC_UINT62 AppShutdownErrorCode {0};
+     bool HandshakeComplete {false};
+     bool HandshakeResumed {false};
+<span class="a">+    bool CloseAsync {false};</span>
+     uint32_t ResumptionTicketLength {0};
+     uint8_t* ResumptionTicket {nullptr};
+ #ifdef CX_PLATFORM_TYPE
+     CxPlatEvent HandshakeCompleteEvent;
+     CxPlatEvent ResumptionTicketReceivedEvent;
+<span class="a">+    CxPlatEvent ShutdownCompleteEvent {true};</span>
+ #endif // CX_PLATFORM_TYPE
+ 
+     MsQuicConnection(
+<span class="h">@@ -1119,7 +1163,8 @@ struct MsQuicConnection {</span>
+         _In_ MsQuicCleanUpMode CleanUpMode = CleanUpManual,
+         _In_ MsQuicConnectionCallback* Callback = NoOpCallback,
+         _In_ void* Context = nullptr
+<span class="d">-        ) noexcept : CleanUpMode(CleanUpMode), Callback(Callback), Context(Context) {</span>
+<span class="a">+        ) noexcept : CleanUpMode(CleanUpMode), Callback(Callback), Context(Context)</span>
+<span class="a">+        {</span>
+         if (!Registration.IsValid()) {
+             InitStatus = Registration.GetInitStatus();
+             return;
+<span class="h">@@ -1171,6 +1216,11 @@ struct MsQuicConnection {</span>
+ 
+     ~MsQuicConnection() noexcept {
+         Close();
+<span class="a">+#ifdef CX_PLATFORM_TYPE</span>
+<span class="a">+        if (CloseAsync) {</span>
+<span class="a">+            ShutdownCompleteEvent.WaitForever();</span>
+<span class="a">+        }</span>
+<span class="a">+#endif // CX_PLATFORM_TYPE</span>
+         delete[] ResumptionTicket;
+     }
+ 
+<span class="h">@@ -1443,6 +1493,9 @@ private:</span>
+         _Inout_ QUIC_CONNECTION_EVENT* Event
+         ) noexcept {
+         CXPLAT_DBG_ASSERT(pThis);
+<span class="a">+        auto DeleteOnExit =</span>
+<span class="a">+            Event-&gt;Type == QUIC_CONNECTION_EVENT_SHUTDOWN_COMPLETE &amp;&amp;</span>
+<span class="a">+            pThis-&gt;CleanUpMode == CleanUpAutoDelete;</span>
+         if (Event-&gt;Type == QUIC_CONNECTION_EVENT_CONNECTED) {
+             pThis-&gt;HandshakeComplete = true;
+             pThis-&gt;HandshakeResumed = Event-&gt;CONNECTED.SessionResumed;
+<span class="h">@@ -1474,10 +1527,10 @@ private:</span>
+ #endif // CX_PLATFORM_TYPE
+             }
+         }
+<span class="d">-        auto DeleteOnExit =</span>
+<span class="d">-            Event-&gt;Type == QUIC_CONNECTION_EVENT_SHUTDOWN_COMPLETE &amp;&amp;</span>
+<span class="d">-            pThis-&gt;CleanUpMode == CleanUpAutoDelete;</span>
+         auto Status = pThis-&gt;Callback(pThis, pThis-&gt;Context, Event);
+<span class="a">+        if (Event-&gt;Type == QUIC_CONNECTION_EVENT_SHUTDOWN_COMPLETE) {</span>
+<span class="a">+            pThis-&gt;ShutdownCompleteEvent.Set();</span>
+<span class="a">+        }</span>
+         if (DeleteOnExit) {
+             delete pThis;
+         }</pre><h2>Commit #5: <a href="https://github.com/microsoft/msquic/commit/dc4d43fa49fafef2f9d053b91d4c7b5220c952f7">dc4d43fa49</a> (2025-09-29T17:29:01+00:00)</h2><p class="k">fix build (#5471)<br>Path after this commit: src/inc/msquic.hpp. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/inc/msquic.hpp b/src/inc/msquic.hpp
+index b3bce6b5a..aabb33958 100644
+<span class="d">--- a/src/inc/msquic.hpp</span>
+<span class="a">+++ b/src/inc/msquic.hpp</span>
+<span class="h">@@ -1528,9 +1528,11 @@ private:</span>
+             }
+         }
+         auto Status = pThis-&gt;Callback(pThis, pThis-&gt;Context, Event);
+<span class="a">+#ifdef CX_PLATFORM_TYPE</span>
+         if (Event-&gt;Type == QUIC_CONNECTION_EVENT_SHUTDOWN_COMPLETE) {
+             pThis-&gt;ShutdownCompleteEvent.Set();
+         }
+<span class="a">+#endif // CX_PLATFORM_TYPE</span>
+         if (DeleteOnExit) {
+             delete pThis;
+         }</pre><h2>Commit #6: <a href="https://github.com/microsoft/msquic/commit/71f0118f291e948ceec6eda98bb8be95ff8ff29f">71f0118f29</a> (2025-12-05T11:52:28-08:00)</h2><p class="k">Fix GCC multichar warning with push/pop pragma (#5632) (#5639)<br>Path after this commit: src/inc/msquic.hpp. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/inc/msquic.hpp b/src/inc/msquic.hpp
+index aabb33958..475a790a8 100644
+<span class="d">--- a/src/inc/msquic.hpp</span>
+<span class="a">+++ b/src/inc/msquic.hpp</span>
+<span class="h">@@ -138,6 +138,7 @@ constexpr _Ty&amp;&amp; CxPlatForward(</span>
+ }
+ 
+ #ifdef __GNUC__
+<span class="a">+#pragma GCC diagnostic push</span>
+ #pragma GCC diagnostic ignored &quot;-Wmultichar&quot; // Multi-character constant used intentionally for the tag
+ #endif
+ template&lt;typename T, uint32_t Tag = &#x27;lPxC&#x27;, bool Paged = false&gt;
+<span class="h">@@ -162,6 +163,9 @@ public:</span>
+         }
+     }
+ };
+<span class="a">+#ifdef __GNUC__</span>
+<span class="a">+#pragma GCC diagnostic pop</span>
+<span class="a">+#endif</span>
+ 
+ #ifdef CXPLAT_HASH_MIN_SIZE
+ </pre></body></html>

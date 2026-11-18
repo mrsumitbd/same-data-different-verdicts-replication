@@ -1,0 +1,1170 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L100</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L100</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> tests/tools/test_tool_usage.py, line 229<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/b8d07fee834f24686cd2fc5de65896c29c3d8fd7">b8d07fee83</a> (2025-01-10T22:16:46)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">    tool_input = &#x27;{&quot;message&quot;: &quot;Hello, world! \u263A&quot;, &quot;valid&quot;: True}&#x27;</span></pre><h2>File at the merge commit, lines 221 to 233</h2><pre>  221 |         tools_names=&quot;&quot;,
+  222 |         task=MagicMock(),
+  223 |         function_calling_llm=MagicMock(),
+  224 |         agent=MagicMock(),
+  225 |         action=MagicMock(),
+  226 |     )
+  227 | 
+  228 |     # Input with special characters
+<span class="t">  229 |     tool_input = &#x27;{&quot;message&quot;: &quot;Hello, world! \u263A&quot;, &quot;valid&quot;: True}&#x27;</span>
+  230 |     expected_arguments = {&quot;message&quot;: &quot;Hello, world! ☺&quot;, &quot;valid&quot;: True}
+  231 | 
+  232 |     arguments = tool_usage._validate_tool_input(tool_input)
+  233 |     assert arguments == expected_arguments</pre><p class="k">Below are all 9 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/dea6ed7ef0b4c1cc023fa0e91dfcc98b8d53d1ae">dea6ed7ef0</a> (2025-01-27T17:35:17-05:00)</h2><p class="k">fix issue pointed out by mike (#1986)<br>Path after this commit: tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/tools/test_tool_usage.py b/tests/tools/test_tool_usage.py
+index 952011339..7b2ccd416 100644
+<span class="d">--- a/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -231,3 +231,255 @@ def test_validate_tool_input_with_special_characters():</span>
+ 
+     arguments = tool_usage._validate_tool_input(tool_input)
+     assert arguments == expected_arguments
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_none_input():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(None)</span>
+<span class="a">+    assert arguments == {}</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_valid_json():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    tool_input = &#x27;{&quot;key&quot;: &quot;value&quot;, &quot;number&quot;: 42, &quot;flag&quot;: true}&#x27;</span>
+<span class="a">+    expected_arguments = {&quot;key&quot;: &quot;value&quot;, &quot;number&quot;: 42, &quot;flag&quot;: True}</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(tool_input)</span>
+<span class="a">+    assert arguments == expected_arguments</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_python_dict():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    tool_input = &quot;{&#x27;key&#x27;: &#x27;value&#x27;, &#x27;number&#x27;: 42, &#x27;flag&#x27;: True}&quot;</span>
+<span class="a">+    expected_arguments = {&quot;key&quot;: &quot;value&quot;, &quot;number&quot;: 42, &quot;flag&quot;: True}</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(tool_input)</span>
+<span class="a">+    assert arguments == expected_arguments</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_json5_unquoted_keys():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    tool_input = &quot;{key: &#x27;value&#x27;, number: 42, flag: true}&quot;</span>
+<span class="a">+    expected_arguments = {&quot;key&quot;: &quot;value&quot;, &quot;number&quot;: 42, &quot;flag&quot;: True}</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(tool_input)</span>
+<span class="a">+    assert arguments == expected_arguments</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_with_trailing_commas():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    tool_input = &#x27;{&quot;key&quot;: &quot;value&quot;, &quot;number&quot;: 42, &quot;flag&quot;: true,}&#x27;</span>
+<span class="a">+    expected_arguments = {&quot;key&quot;: &quot;value&quot;, &quot;number&quot;: 42, &quot;flag&quot;: True}</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(tool_input)</span>
+<span class="a">+    assert arguments == expected_arguments</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_invalid_input():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    invalid_inputs = [</span>
+<span class="a">+        &quot;Just a string&quot;,</span>
+<span class="a">+        &quot;[&#x27;list&#x27;, &#x27;of&#x27;, &#x27;values&#x27;]&quot;,</span>
+<span class="a">+        &quot;12345&quot;,</span>
+<span class="a">+        &quot;&quot;,</span>
+<span class="a">+    ]</span>
+<span class="a">+</span>
+<span class="a">+    for invalid_input in invalid_inputs:</span>
+<span class="a">+        with pytest.raises(Exception) as e_info:</span>
+<span class="a">+            tool_usage._validate_tool_input(invalid_input)</span>
+<span class="a">+        assert (</span>
+<span class="a">+            &quot;Tool input must be a valid dictionary in JSON or Python literal format&quot;</span>
+<span class="a">+            in str(e_info.value)</span>
+<span class="a">+        )</span>
+<span class="a">+</span>
+<span class="a">+    # Test for None input separately</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(None)</span>
+<span class="a">+    assert arguments == {}  # Expecting an empty dictionary</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_complex_structure():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    tool_input = &quot;&quot;&quot;</span>
+<span class="a">+    {</span>
+<span class="a">+        &quot;user&quot;: {</span>
+<span class="a">+            &quot;name&quot;: &quot;Alice&quot;,</span>
+<span class="a">+            &quot;age&quot;: 30</span>
+<span class="a">+        },</span>
+<span class="a">+        &quot;items&quot;: [</span>
+<span class="a">+            {&quot;id&quot;: 1, &quot;value&quot;: &quot;Item1&quot;},</span>
+<span class="a">+            {&quot;id&quot;: 2, &quot;value&quot;: &quot;Item2&quot;,}</span>
+<span class="a">+        ],</span>
+<span class="a">+        &quot;active&quot;: true,</span>
+<span class="a">+    }</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    expected_arguments = {</span>
+<span class="a">+        &quot;user&quot;: {&quot;name&quot;: &quot;Alice&quot;, &quot;age&quot;: 30},</span>
+<span class="a">+        &quot;items&quot;: [</span>
+<span class="a">+            {&quot;id&quot;: 1, &quot;value&quot;: &quot;Item1&quot;},</span>
+<span class="a">+            {&quot;id&quot;: 2, &quot;value&quot;: &quot;Item2&quot;},</span>
+<span class="a">+        ],</span>
+<span class="a">+        &quot;active&quot;: True,</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(tool_input)</span>
+<span class="a">+    assert arguments == expected_arguments</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_code_content():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    tool_input = &#x27;{&quot;filename&quot;: &quot;script.py&quot;, &quot;content&quot;: &quot;def hello():\\n    print(\&#x27;Hello, world!\&#x27;)&quot;}&#x27;</span>
+<span class="a">+    expected_arguments = {</span>
+<span class="a">+        &quot;filename&quot;: &quot;script.py&quot;,</span>
+<span class="a">+        &quot;content&quot;: &quot;def hello():\n    print(&#x27;Hello, world!&#x27;)&quot;,</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(tool_input)</span>
+<span class="a">+    assert arguments == expected_arguments</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_with_escaped_quotes():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    tool_input = &#x27;{&quot;text&quot;: &quot;He said, \\&quot;Hello, world!\\&quot;&quot;}&#x27;</span>
+<span class="a">+    expected_arguments = {&quot;text&quot;: &#x27;He said, &quot;Hello, world!&quot;&#x27;}</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(tool_input)</span>
+<span class="a">+    assert arguments == expected_arguments</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_large_json_content():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    # Simulate a large JSON content</span>
+<span class="a">+    tool_input = (</span>
+<span class="a">+        &#x27;{&quot;data&quot;: &#x27; + json.dumps([{&quot;id&quot;: i, &quot;value&quot;: i * 2} for i in range(1000)]) + &quot;}&quot;</span>
+<span class="a">+    )</span>
+<span class="a">+    expected_arguments = {&quot;data&quot;: [{&quot;id&quot;: i, &quot;value&quot;: i * 2} for i in range(1000)]}</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(tool_input)</span>
+<span class="a">+    assert arguments == expected_arguments</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_validate_tool_input_none_input():</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[],</span>
+<span class="a">+        original_tools=[],</span>
+<span class="a">+        tools_description=&quot;&quot;,</span>
+<span class="a">+        tools_names=&quot;&quot;,</span>
+<span class="a">+        task=MagicMock(),</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=MagicMock(),</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    arguments = tool_usage._validate_tool_input(None)</span>
+<span class="a">+    assert arguments == {}  # Expecting an empty dictionary</span></pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/00c2f5043e80be88dc3337d5e57a73358f5ca11a">00c2f5043e</a> (2025-02-19T13:52:47-08:00)</h2><p class="k">WIP crew events emitter (#2048)<br>Path after this commit: tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/tools/test_tool_usage.py b/tests/tools/test_tool_usage.py
+index 7b2ccd416..e09d4d537 100644
+<span class="d">--- a/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -1,6 +1,6 @@</span>
+ import json
+ import random
+<span class="d">-from unittest.mock import MagicMock</span>
+<span class="a">+from unittest.mock import MagicMock, patch</span>
+ 
+ import pytest
+ from pydantic import BaseModel, Field
+<span class="h">@@ -8,6 +8,11 @@ from pydantic import BaseModel, Field</span>
+ from crewai import Agent, Task
+ from crewai.tools import BaseTool
+ from crewai.tools.tool_usage import ToolUsage
+<span class="a">+from crewai.utilities.events import crewai_event_bus</span>
+<span class="a">+from crewai.utilities.events.tool_usage_events import (</span>
+<span class="a">+    ToolSelectionErrorEvent,</span>
+<span class="a">+    ToolValidateInputErrorEvent,</span>
+<span class="a">+)</span>
+ 
+ 
+ class RandomNumberToolInput(BaseModel):
+<span class="h">@@ -226,7 +231,7 @@ def test_validate_tool_input_with_special_characters():</span>
+     )
+ 
+     # Input with special characters
+<span class="d m">-    tool_input = &#x27;{&quot;message&quot;: &quot;Hello, world! \u263A&quot;, &quot;valid&quot;: True}&#x27;</span>
+<span class="a">+    tool_input = &#x27;{&quot;message&quot;: &quot;Hello, world! \u263a&quot;, &quot;valid&quot;: True}&#x27;</span>
+     expected_arguments = {&quot;message&quot;: &quot;Hello, world! ☺&quot;, &quot;valid&quot;: True}
+ 
+     arguments = tool_usage._validate_tool_input(tool_input)
+<span class="h">@@ -331,6 +336,19 @@ def test_validate_tool_input_with_trailing_commas():</span>
+ 
+ 
+ def test_validate_tool_input_invalid_input():
+<span class="a">+    # Create mock agent with proper string values</span>
+<span class="a">+    mock_agent = MagicMock()</span>
+<span class="a">+    mock_agent.key = &quot;test_agent_key&quot;  # Must be a string</span>
+<span class="a">+    mock_agent.role = &quot;test_agent_role&quot;  # Must be a string</span>
+<span class="a">+    mock_agent._original_role = &quot;test_agent_role&quot;  # Must be a string</span>
+<span class="a">+    mock_agent.i18n = MagicMock()</span>
+<span class="a">+    mock_agent.verbose = False</span>
+<span class="a">+</span>
+<span class="a">+    # Create mock action with proper string value</span>
+<span class="a">+    mock_action = MagicMock()</span>
+<span class="a">+    mock_action.tool = &quot;test_tool&quot;  # Must be a string</span>
+<span class="a">+    mock_action.tool_input = &quot;test_input&quot;  # Must be a string</span>
+<span class="a">+</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="h">@@ -339,8 +357,8 @@ def test_validate_tool_input_invalid_input():</span>
+         tools_names=&quot;&quot;,
+         task=MagicMock(),
+         function_calling_llm=None,
+<span class="d">-        agent=MagicMock(),</span>
+<span class="d">-        action=MagicMock(),</span>
+<span class="a">+        agent=mock_agent,</span>
+<span class="a">+        action=mock_action,</span>
+     )
+ 
+     invalid_inputs = [
+<span class="h">@@ -360,7 +378,7 @@ def test_validate_tool_input_invalid_input():</span>
+ 
+     # Test for None input separately
+     arguments = tool_usage._validate_tool_input(None)
+<span class="d">-    assert arguments == {}  # Expecting an empty dictionary</span>
+<span class="a">+    assert arguments == {}</span>
+ 
+ 
+ def test_validate_tool_input_complex_structure():
+<span class="h">@@ -468,18 +486,141 @@ def test_validate_tool_input_large_json_content():</span>
+     assert arguments == expected_arguments
+ 
+ 
+<span class="d">-def test_validate_tool_input_none_input():</span>
+<span class="a">+def test_tool_selection_error_event_direct():</span>
+<span class="a">+    &quot;&quot;&quot;Test tool selection error event emission directly from ToolUsage class.&quot;&quot;&quot;</span>
+<span class="a">+    mock_agent = MagicMock()</span>
+<span class="a">+    mock_agent.key = &quot;test_key&quot;</span>
+<span class="a">+    mock_agent.role = &quot;test_role&quot;</span>
+<span class="a">+    mock_agent.i18n = MagicMock()</span>
+<span class="a">+    mock_agent.verbose = False</span>
+<span class="a">+</span>
+<span class="a">+    mock_task = MagicMock()</span>
+<span class="a">+    mock_tools_handler = MagicMock()</span>
+<span class="a">+</span>
+<span class="a">+    class TestTool(BaseTool):</span>
+<span class="a">+        name: str = &quot;Test Tool&quot;</span>
+<span class="a">+        description: str = &quot;A test tool&quot;</span>
+<span class="a">+</span>
+<span class="a">+        def _run(self, input: dict) -&gt; str:</span>
+<span class="a">+            return &quot;test result&quot;</span>
+<span class="a">+</span>
+<span class="a">+    test_tool = TestTool()</span>
+<span class="a">+</span>
+     tool_usage = ToolUsage(
+<span class="d">-        tools_handler=MagicMock(),</span>
+<span class="d">-        tools=[],</span>
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+<span class="d">-        task=MagicMock(),</span>
+<span class="a">+        tools_handler=mock_tools_handler,</span>
+<span class="a">+        tools=[test_tool],</span>
+<span class="a">+        original_tools=[test_tool],</span>
+<span class="a">+        tools_description=&quot;Test Tool Description&quot;,</span>
+<span class="a">+        tools_names=&quot;Test Tool&quot;,</span>
+<span class="a">+        task=mock_task,</span>
+         function_calling_llm=None,
+<span class="d">-        agent=MagicMock(),</span>
+<span class="a">+        agent=mock_agent,</span>
+         action=MagicMock(),
+     )
+ 
+<span class="d">-    arguments = tool_usage._validate_tool_input(None)</span>
+<span class="d">-    assert arguments == {}  # Expecting an empty dictionary</span>
+<span class="a">+    received_events = []</span>
+<span class="a">+</span>
+<span class="a">+    @crewai_event_bus.on(ToolSelectionErrorEvent)</span>
+<span class="a">+    def event_handler(source, event):</span>
+<span class="a">+        received_events.append(event)</span>
+<span class="a">+</span>
+<span class="a">+    with pytest.raises(Exception) as exc_info:</span>
+<span class="a">+        tool_usage._select_tool(&quot;Non Existent Tool&quot;)</span>
+<span class="a">+    assert len(received_events) == 1</span>
+<span class="a">+    event = received_events[0]</span>
+<span class="a">+    assert isinstance(event, ToolSelectionErrorEvent)</span>
+<span class="a">+    assert event.agent_key == &quot;test_key&quot;</span>
+<span class="a">+    assert event.agent_role == &quot;test_role&quot;</span>
+<span class="a">+    assert event.tool_name == &quot;Non Existent Tool&quot;</span>
+<span class="a">+    assert event.tool_args == {}</span>
+<span class="a">+    assert event.tool_class == &quot;Test Tool Description&quot;</span>
+<span class="a">+    assert &quot;don&#x27;t exist&quot; in event.error</span>
+<span class="a">+</span>
+<span class="a">+    received_events.clear()</span>
+<span class="a">+    with pytest.raises(Exception) as exc_info:</span>
+<span class="a">+        tool_usage._select_tool(&quot;&quot;)</span>
+<span class="a">+</span>
+<span class="a">+    assert len(received_events) == 1</span>
+<span class="a">+    event = received_events[0]</span>
+<span class="a">+    assert isinstance(event, ToolSelectionErrorEvent)</span>
+<span class="a">+    assert event.agent_key == &quot;test_key&quot;</span>
+<span class="a">+    assert event.agent_role == &quot;test_role&quot;</span>
+<span class="a">+    assert event.tool_name == &quot;&quot;</span>
+<span class="a">+    assert event.tool_args == {}</span>
+<span class="a">+    assert event.tool_class == &quot;Test Tool Description&quot;</span>
+<span class="a">+    assert &quot;forgot the Action name&quot; in event.error</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_tool_validate_input_error_event():</span>
+<span class="a">+    &quot;&quot;&quot;Test tool validation input error event emission from ToolUsage class.&quot;&quot;&quot;</span>
+<span class="a">+    # Mock agent and required components</span>
+<span class="a">+    mock_agent = MagicMock()</span>
+<span class="a">+    mock_agent.key = &quot;test_key&quot;</span>
+<span class="a">+    mock_agent.role = &quot;test_role&quot;</span>
+<span class="a">+    mock_agent.verbose = False</span>
+<span class="a">+    mock_agent._original_role = &quot;test_role&quot;</span>
+<span class="a">+</span>
+<span class="a">+    # Mock i18n with error message</span>
+<span class="a">+    mock_i18n = MagicMock()</span>
+<span class="a">+    mock_i18n.errors.return_value = (</span>
+<span class="a">+        &quot;Tool input must be a valid dictionary in JSON or Python literal format&quot;</span>
+<span class="a">+    )</span>
+<span class="a">+    mock_agent.i18n = mock_i18n</span>
+<span class="a">+</span>
+<span class="a">+    # Mock task and tools handler</span>
+<span class="a">+    mock_task = MagicMock()</span>
+<span class="a">+    mock_tools_handler = MagicMock()</span>
+<span class="a">+</span>
+<span class="a">+    # Mock printer</span>
+<span class="a">+    mock_printer = MagicMock()</span>
+<span class="a">+</span>
+<span class="a">+    # Create test tool</span>
+<span class="a">+    class TestTool(BaseTool):</span>
+<span class="a">+        name: str = &quot;Test Tool&quot;</span>
+<span class="a">+        description: str = &quot;A test tool&quot;</span>
+<span class="a">+</span>
+<span class="a">+        def _run(self, input: dict) -&gt; str:</span>
+<span class="a">+            return &quot;test result&quot;</span>
+<span class="a">+</span>
+<span class="a">+    test_tool = TestTool()</span>
+<span class="a">+</span>
+<span class="a">+    # Create ToolUsage instance</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=mock_tools_handler,</span>
+<span class="a">+        tools=[test_tool],</span>
+<span class="a">+        original_tools=[test_tool],</span>
+<span class="a">+        tools_description=&quot;Test Tool Description&quot;,</span>
+<span class="a">+        tools_names=&quot;Test Tool&quot;,</span>
+<span class="a">+        task=mock_task,</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=mock_agent,</span>
+<span class="a">+        action=MagicMock(tool=&quot;test_tool&quot;),</span>
+<span class="a">+    )</span>
+<span class="a">+    tool_usage._printer = mock_printer</span>
+<span class="a">+</span>
+<span class="a">+    # Mock all parsing attempts to fail</span>
+<span class="a">+    with (</span>
+<span class="a">+        patch(&quot;json.loads&quot;, side_effect=json.JSONDecodeError(&quot;Test Error&quot;, &quot;&quot;, 0)),</span>
+<span class="a">+        patch(&quot;ast.literal_eval&quot;, side_effect=ValueError),</span>
+<span class="a">+        patch(&quot;json5.loads&quot;, side_effect=json.JSONDecodeError(&quot;Test Error&quot;, &quot;&quot;, 0)),</span>
+<span class="a">+        patch(&quot;json_repair.repair_json&quot;, side_effect=Exception(&quot;Failed to repair&quot;)),</span>
+<span class="a">+    ):</span>
+<span class="a">+        received_events = []</span>
+<span class="a">+</span>
+<span class="a">+        @crewai_event_bus.on(ToolValidateInputErrorEvent)</span>
+<span class="a">+        def event_handler(source, event):</span>
+<span class="a">+            received_events.append(event)</span>
+<span class="a">+</span>
+<span class="a">+        # Test invalid input</span>
+<span class="a">+        invalid_input = &quot;invalid json {[}&quot;</span>
+<span class="a">+        with pytest.raises(Exception) as exc_info:</span>
+<span class="a">+            tool_usage._validate_tool_input(invalid_input)</span>
+<span class="a">+</span>
+<span class="a">+        # Verify event was emitted</span>
+<span class="a">+        assert len(received_events) == 1, &quot;Expected one event to be emitted&quot;</span>
+<span class="a">+        event = received_events[0]</span>
+<span class="a">+        assert isinstance(event, ToolValidateInputErrorEvent)</span>
+<span class="a">+        assert event.agent_key == &quot;test_key&quot;</span>
+<span class="a">+        assert event.agent_role == &quot;test_role&quot;</span>
+<span class="a">+        assert event.tool_name == &quot;test_tool&quot;</span>
+<span class="a">+        assert &quot;must be a valid dictionary&quot; in event.error</span></pre><h2>Commit #3: <a href="https://github.com/crewaiinc/crewai/commit/48983773f5eaaf2875505a649a4fa7ef0d64314c">48983773f5</a> (2025-03-26T16:50:09-03:00)</h2><p class="k">feat: add output to ToolUsageFinishedEvent (#2477)<br>Path after this commit: tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/tools/test_tool_usage.py b/tests/tools/test_tool_usage.py
+index e09d4d537..9cf9ae1d4 100644
+<span class="d">--- a/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -1,5 +1,7 @@</span>
+<span class="a">+import datetime</span>
+ import json
+ import random
+<span class="a">+import time</span>
+ from unittest.mock import MagicMock, patch
+ 
+ import pytest
+<span class="h">@@ -11,6 +13,7 @@ from crewai.tools.tool_usage import ToolUsage</span>
+ from crewai.utilities.events import crewai_event_bus
+ from crewai.utilities.events.tool_usage_events import (
+     ToolSelectionErrorEvent,
+<span class="a">+    ToolUsageFinishedEvent,</span>
+     ToolValidateInputErrorEvent,
+ )
+ 
+<span class="h">@@ -624,3 +627,161 @@ def test_tool_validate_input_error_event():</span>
+         assert event.agent_role == &quot;test_role&quot;
+         assert event.tool_name == &quot;test_tool&quot;
+         assert &quot;must be a valid dictionary&quot; in event.error
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_tool_usage_finished_event_with_result():</span>
+<span class="a">+    &quot;&quot;&quot;Test that ToolUsageFinishedEvent is emitted with correct result attributes.&quot;&quot;&quot;</span>
+<span class="a">+    # Create mock agent with proper string values</span>
+<span class="a">+    mock_agent = MagicMock()</span>
+<span class="a">+    mock_agent.key = &quot;test_agent_key&quot;</span>
+<span class="a">+    mock_agent.role = &quot;test_agent_role&quot;</span>
+<span class="a">+    mock_agent._original_role = &quot;test_agent_role&quot;</span>
+<span class="a">+    mock_agent.i18n = MagicMock()</span>
+<span class="a">+    mock_agent.verbose = False</span>
+<span class="a">+</span>
+<span class="a">+    # Create mock task</span>
+<span class="a">+    mock_task = MagicMock()</span>
+<span class="a">+    mock_task.delegations = 0</span>
+<span class="a">+</span>
+<span class="a">+    # Create mock tool</span>
+<span class="a">+    class TestTool(BaseTool):</span>
+<span class="a">+        name: str = &quot;Test Tool&quot;</span>
+<span class="a">+        description: str = &quot;A test tool&quot;</span>
+<span class="a">+</span>
+<span class="a">+        def _run(self, input: dict) -&gt; str:</span>
+<span class="a">+            return &quot;test result&quot;</span>
+<span class="a">+</span>
+<span class="a">+    test_tool = TestTool()</span>
+<span class="a">+</span>
+<span class="a">+    # Create mock tool calling</span>
+<span class="a">+    mock_tool_calling = MagicMock()</span>
+<span class="a">+    mock_tool_calling.arguments = {&quot;arg1&quot;: &quot;value1&quot;}</span>
+<span class="a">+</span>
+<span class="a">+    # Create ToolUsage instance</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[test_tool],</span>
+<span class="a">+        original_tools=[test_tool],</span>
+<span class="a">+        tools_description=&quot;Test Tool Description&quot;,</span>
+<span class="a">+        tools_names=&quot;Test Tool&quot;,</span>
+<span class="a">+        task=mock_task,</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=mock_agent,</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    # Track received events</span>
+<span class="a">+    received_events = []</span>
+<span class="a">+</span>
+<span class="a">+    @crewai_event_bus.on(ToolUsageFinishedEvent)</span>
+<span class="a">+    def event_handler(source, event):</span>
+<span class="a">+        received_events.append(event)</span>
+<span class="a">+</span>
+<span class="a">+    # Call on_tool_use_finished with test data</span>
+<span class="a">+    started_at = time.time()</span>
+<span class="a">+    result = &quot;test output result&quot;</span>
+<span class="a">+    tool_usage.on_tool_use_finished(</span>
+<span class="a">+        tool=test_tool,</span>
+<span class="a">+        tool_calling=mock_tool_calling,</span>
+<span class="a">+        from_cache=False,</span>
+<span class="a">+        started_at=started_at,</span>
+<span class="a">+        result=result,</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    # Verify event was emitted</span>
+<span class="a">+    assert len(received_events) == 1, &quot;Expected one event to be emitted&quot;</span>
+<span class="a">+    event = received_events[0]</span>
+<span class="a">+    assert isinstance(event, ToolUsageFinishedEvent)</span>
+<span class="a">+</span>
+<span class="a">+    # Verify event attributes</span>
+<span class="a">+    assert event.agent_key == &quot;test_agent_key&quot;</span>
+<span class="a">+    assert event.agent_role == &quot;test_agent_role&quot;</span>
+<span class="a">+    assert event.tool_name == &quot;Test Tool&quot;</span>
+<span class="a">+    assert event.tool_args == {&quot;arg1&quot;: &quot;value1&quot;}</span>
+<span class="a">+    assert event.tool_class == &quot;TestTool&quot;</span>
+<span class="a">+    assert event.run_attempts == 1  # Default value from ToolUsage</span>
+<span class="a">+    assert event.delegations == 0</span>
+<span class="a">+    assert event.from_cache is False</span>
+<span class="a">+    assert event.output == &quot;test output result&quot;</span>
+<span class="a">+    assert isinstance(event.started_at, datetime.datetime)</span>
+<span class="a">+    assert isinstance(event.finished_at, datetime.datetime)</span>
+<span class="a">+    assert event.type == &quot;tool_usage_finished&quot;</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def test_tool_usage_finished_event_with_cached_result():</span>
+<span class="a">+    &quot;&quot;&quot;Test that ToolUsageFinishedEvent is emitted with correct result attributes when using cached result.&quot;&quot;&quot;</span>
+<span class="a">+    # Create mock agent with proper string values</span>
+<span class="a">+    mock_agent = MagicMock()</span>
+<span class="a">+    mock_agent.key = &quot;test_agent_key&quot;</span>
+<span class="a">+    mock_agent.role = &quot;test_agent_role&quot;</span>
+<span class="a">+    mock_agent._original_role = &quot;test_agent_role&quot;</span>
+<span class="a">+    mock_agent.i18n = MagicMock()</span>
+<span class="a">+    mock_agent.verbose = False</span>
+<span class="a">+</span>
+<span class="a">+    # Create mock task</span>
+<span class="a">+    mock_task = MagicMock()</span>
+<span class="a">+    mock_task.delegations = 0</span>
+<span class="a">+</span>
+<span class="a">+    # Create mock tool</span>
+<span class="a">+    class TestTool(BaseTool):</span>
+<span class="a">+        name: str = &quot;Test Tool&quot;</span>
+<span class="a">+        description: str = &quot;A test tool&quot;</span>
+<span class="a">+</span>
+<span class="a">+        def _run(self, input: dict) -&gt; str:</span>
+<span class="a">+            return &quot;test result&quot;</span>
+<span class="a">+</span>
+<span class="a">+    test_tool = TestTool()</span>
+<span class="a">+</span>
+<span class="a">+    # Create mock tool calling</span>
+<span class="a">+    mock_tool_calling = MagicMock()</span>
+<span class="a">+    mock_tool_calling.arguments = {&quot;arg1&quot;: &quot;value1&quot;}</span>
+<span class="a">+</span>
+<span class="a">+    # Create ToolUsage instance</span>
+<span class="a">+    tool_usage = ToolUsage(</span>
+<span class="a">+        tools_handler=MagicMock(),</span>
+<span class="a">+        tools=[test_tool],</span>
+<span class="a">+        original_tools=[test_tool],</span>
+<span class="a">+        tools_description=&quot;Test Tool Description&quot;,</span>
+<span class="a">+        tools_names=&quot;Test Tool&quot;,</span>
+<span class="a">+        task=mock_task,</span>
+<span class="a">+        function_calling_llm=None,</span>
+<span class="a">+        agent=mock_agent,</span>
+<span class="a">+        action=MagicMock(),</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    # Track received events</span>
+<span class="a">+    received_events = []</span>
+<span class="a">+</span>
+<span class="a">+    @crewai_event_bus.on(ToolUsageFinishedEvent)</span>
+<span class="a">+    def event_handler(source, event):</span>
+<span class="a">+        received_events.append(event)</span>
+<span class="a">+</span>
+<span class="a">+    # Call on_tool_use_finished with test data and from_cache=True</span>
+<span class="a">+    started_at = time.time()</span>
+<span class="a">+    result = &quot;cached test output result&quot;</span>
+<span class="a">+    tool_usage.on_tool_use_finished(</span>
+<span class="a">+        tool=test_tool,</span>
+<span class="a">+        tool_calling=mock_tool_calling,</span>
+<span class="a">+        from_cache=True,</span>
+<span class="a">+        started_at=started_at,</span>
+<span class="a">+        result=result,</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+    # Verify event was emitted</span>
+<span class="a">+    assert len(received_events) == 1, &quot;Expected one event to be emitted&quot;</span>
+<span class="a">+    event = received_events[0]</span>
+<span class="a">+    assert isinstance(event, ToolUsageFinishedEvent)</span>
+<span class="a">+</span>
+<span class="a">+    # Verify event attributes</span>
+<span class="a">+    assert event.agent_key == &quot;test_agent_key&quot;</span>
+<span class="a">+    assert event.agent_role == &quot;test_agent_role&quot;</span>
+<span class="a">+    assert event.tool_name == &quot;Test Tool&quot;</span>
+<span class="a">+    assert event.tool_args == {&quot;arg1&quot;: &quot;value1&quot;}</span>
+<span class="a">+    assert event.tool_class == &quot;TestTool&quot;</span>
+<span class="a">+    assert event.run_attempts == 1  # Default value from ToolUsage</span>
+<span class="a">+    assert event.delegations == 0</span>
+<span class="a">+    assert event.from_cache is True</span>
+<span class="a">+    assert event.output == &quot;cached test output result&quot;</span>
+<span class="a">+    assert isinstance(event.started_at, datetime.datetime)</span>
+<span class="a">+    assert isinstance(event.finished_at, datetime.datetime)</span>
+<span class="a">+    assert event.type == &quot;tool_usage_finished&quot;</span></pre><h2>Commit #4: <a href="https://github.com/crewaiinc/crewai/commit/efe27bd570d91f00af59f1d605d87e7b82c2bc88">efe27bd570</a> (2025-04-02T08:54:46-07:00)</h2><p class="k">Feat/individual react agent (#2483)<br>Path after this commit: tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/tools/test_tool_usage.py b/tests/tools/test_tool_usage.py
+index 9cf9ae1d4..a5cc94b2a 100644
+<span class="d">--- a/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -99,9 +99,6 @@ def test_tool_usage_render():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[tool],
+<span class="d">-        original_tools=[tool],</span>
+<span class="d">-        tools_description=&quot;Sample tool for testing&quot;,</span>
+<span class="d">-        tools_names=&quot;random_number_generator&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=MagicMock(),
+         agent=MagicMock(),
+<span class="h">@@ -136,9 +133,6 @@ def test_validate_tool_input_booleans_and_none():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=MagicMock(),
+         agent=MagicMock(),
+<span class="h">@@ -158,9 +152,6 @@ def test_validate_tool_input_mixed_types():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=MagicMock(),
+         agent=MagicMock(),
+<span class="h">@@ -180,9 +171,6 @@ def test_validate_tool_input_single_quotes():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=MagicMock(),
+         agent=MagicMock(),
+<span class="h">@@ -202,9 +190,6 @@ def test_validate_tool_input_invalid_json_repairable():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=MagicMock(),
+         agent=MagicMock(),
+<span class="h">@@ -224,9 +209,6 @@ def test_validate_tool_input_with_special_characters():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=MagicMock(),
+         agent=MagicMock(),
+<span class="h">@@ -245,9 +227,6 @@ def test_validate_tool_input_none_input():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -262,9 +241,6 @@ def test_validate_tool_input_valid_json():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -282,9 +258,6 @@ def test_validate_tool_input_python_dict():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -302,9 +275,6 @@ def test_validate_tool_input_json5_unquoted_keys():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -322,9 +292,6 @@ def test_validate_tool_input_with_trailing_commas():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -355,9 +322,6 @@ def test_validate_tool_input_invalid_input():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=mock_agent,
+<span class="h">@@ -388,9 +352,6 @@ def test_validate_tool_input_complex_structure():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -427,9 +388,6 @@ def test_validate_tool_input_code_content():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -450,9 +408,6 @@ def test_validate_tool_input_with_escaped_quotes():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -470,9 +425,6 @@ def test_validate_tool_input_large_json_content():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[],
+<span class="d">-        original_tools=[],</span>
+<span class="d">-        tools_description=&quot;&quot;,</span>
+<span class="d">-        tools_names=&quot;&quot;,</span>
+         task=MagicMock(),
+         function_calling_llm=None,
+         agent=MagicMock(),
+<span class="h">@@ -512,9 +464,6 @@ def test_tool_selection_error_event_direct():</span>
+     tool_usage = ToolUsage(
+         tools_handler=mock_tools_handler,
+         tools=[test_tool],
+<span class="d">-        original_tools=[test_tool],</span>
+<span class="d">-        tools_description=&quot;Test Tool Description&quot;,</span>
+<span class="d">-        tools_names=&quot;Test Tool&quot;,</span>
+         task=mock_task,
+         function_calling_llm=None,
+         agent=mock_agent,
+<span class="h">@@ -536,7 +485,8 @@ def test_tool_selection_error_event_direct():</span>
+     assert event.agent_role == &quot;test_role&quot;
+     assert event.tool_name == &quot;Non Existent Tool&quot;
+     assert event.tool_args == {}
+<span class="d">-    assert event.tool_class == &quot;Test Tool Description&quot;</span>
+<span class="a">+    assert &quot;Tool Name: Test Tool&quot; in event.tool_class</span>
+<span class="a">+    assert &quot;A test tool&quot; in event.tool_class</span>
+     assert &quot;don&#x27;t exist&quot; in event.error
+ 
+     received_events.clear()
+<span class="h">@@ -550,7 +500,7 @@ def test_tool_selection_error_event_direct():</span>
+     assert event.agent_role == &quot;test_role&quot;
+     assert event.tool_name == &quot;&quot;
+     assert event.tool_args == {}
+<span class="d">-    assert event.tool_class == &quot;Test Tool Description&quot;</span>
+<span class="a">+    assert &quot;Test Tool&quot; in event.tool_class</span>
+     assert &quot;forgot the Action name&quot; in event.error
+ 
+ 
+<span class="h">@@ -591,9 +541,6 @@ def test_tool_validate_input_error_event():</span>
+     tool_usage = ToolUsage(
+         tools_handler=mock_tools_handler,
+         tools=[test_tool],
+<span class="d">-        original_tools=[test_tool],</span>
+<span class="d">-        tools_description=&quot;Test Tool Description&quot;,</span>
+<span class="d">-        tools_names=&quot;Test Tool&quot;,</span>
+         task=mock_task,
+         function_calling_llm=None,
+         agent=mock_agent,
+<span class="h">@@ -661,9 +608,6 @@ def test_tool_usage_finished_event_with_result():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[test_tool],
+<span class="d">-        original_tools=[test_tool],</span>
+<span class="d">-        tools_description=&quot;Test Tool Description&quot;,</span>
+<span class="d">-        tools_names=&quot;Test Tool&quot;,</span>
+         task=mock_task,
+         function_calling_llm=None,
+         agent=mock_agent,
+<span class="h">@@ -740,9 +684,6 @@ def test_tool_usage_finished_event_with_cached_result():</span>
+     tool_usage = ToolUsage(
+         tools_handler=MagicMock(),
+         tools=[test_tool],
+<span class="d">-        original_tools=[test_tool],</span>
+<span class="d">-        tools_description=&quot;Test Tool Description&quot;,</span>
+<span class="d">-        tools_names=&quot;Test Tool&quot;,</span>
+         task=mock_task,
+         function_calling_llm=None,
+         agent=mock_agent,</pre><h2>Commit #5: <a href="https://github.com/crewaiinc/crewai/commit/7addda939829fa41e920d9254488d443a328c4e1">7addda9398</a> (2025-08-26T09:09:46-07:00)</h2><p class="k">Lorenze/better tracing events (#3382)<br>Path after this commit: tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/tools/test_tool_usage.py b/tests/tools/test_tool_usage.py
+index a5cc94b2a..101d805e5 100644
+<span class="d">--- a/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -476,7 +476,7 @@ def test_tool_selection_error_event_direct():</span>
+     def event_handler(source, event):
+         received_events.append(event)
+ 
+<span class="d">-    with pytest.raises(Exception) as exc_info:</span>
+<span class="a">+    with pytest.raises(Exception):</span>
+         tool_usage._select_tool(&quot;Non Existent Tool&quot;)
+     assert len(received_events) == 1
+     event = received_events[0]
+<span class="h">@@ -490,7 +490,7 @@ def test_tool_selection_error_event_direct():</span>
+     assert &quot;don&#x27;t exist&quot; in event.error
+ 
+     received_events.clear()
+<span class="d">-    with pytest.raises(Exception) as exc_info:</span>
+<span class="a">+    with pytest.raises(Exception):</span>
+         tool_usage._select_tool(&quot;&quot;)
+ 
+     assert len(received_events) == 1
+<span class="h">@@ -563,7 +563,7 @@ def test_tool_validate_input_error_event():</span>
+ 
+         # Test invalid input
+         invalid_input = &quot;invalid json {[}&quot;
+<span class="d">-        with pytest.raises(Exception) as exc_info:</span>
+<span class="a">+        with pytest.raises(Exception):</span>
+             tool_usage._validate_tool_input(invalid_input)
+ 
+         # Verify event was emitted
+<span class="h">@@ -589,6 +589,9 @@ def test_tool_usage_finished_event_with_result():</span>
+     # Create mock task
+     mock_task = MagicMock()
+     mock_task.delegations = 0
+<span class="a">+    mock_task.name = &quot;Test Task&quot;</span>
+<span class="a">+    mock_task.description = &quot;A test task for tool usage&quot;</span>
+<span class="a">+    mock_task.id = &quot;test-task-id&quot;</span>
+ 
+     # Create mock tool
+     class TestTool(BaseTool):
+<span class="h">@@ -665,6 +668,9 @@ def test_tool_usage_finished_event_with_cached_result():</span>
+     # Create mock task
+     mock_task = MagicMock()
+     mock_task.delegations = 0
+<span class="a">+    mock_task.name = &quot;Test Task&quot;</span>
+<span class="a">+    mock_task.description = &quot;A test task for tool usage&quot;</span>
+<span class="a">+    mock_task.id = &quot;test-task-id&quot;</span>
+ 
+     # Create mock tool
+     class TestTool(BaseTool):</pre><h2>Commit #6: <a href="https://github.com/crewaiinc/crewai/commit/878c1a649af98a0155bdba5f4c2e903c8b6a1d58">878c1a649a</a> (2025-09-02T10:06:42-04:00)</h2><p class="k">refactor: Move events module to crewai.events (#3425)<br>Path after this commit: tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/tools/test_tool_usage.py b/tests/tools/test_tool_usage.py
+index 101d805e5..66e2bb616 100644
+<span class="d">--- a/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -10,8 +10,8 @@ from pydantic import BaseModel, Field</span>
+ from crewai import Agent, Task
+ from crewai.tools import BaseTool
+ from crewai.tools.tool_usage import ToolUsage
+<span class="d">-from crewai.utilities.events import crewai_event_bus</span>
+<span class="d">-from crewai.utilities.events.tool_usage_events import (</span>
+<span class="a">+from crewai.events.event_bus import crewai_event_bus</span>
+<span class="a">+from crewai.events.types.tool_usage_events import (</span>
+     ToolSelectionErrorEvent,
+     ToolUsageFinishedEvent,
+     ToolValidateInputErrorEvent,</pre><h2>Commit #7: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: lib/crewai/tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/tools/test_tool_usage.py b/lib/crewai/tests/tools/test_tool_usage.py
+similarity index 95%
+rename from tests/tools/test_tool_usage.py
+rename to lib/crewai/tests/tools/test_tool_usage.py
+index 66e2bb616..927031302 100644
+<span class="d">--- a/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/lib/crewai/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -1,21 +1,21 @@</span>
+ import datetime
+ import json
+ import random
+<span class="a">+import threading</span>
+ import time
+ from unittest.mock import MagicMock, patch
+ 
+ import pytest
+<span class="d">-from pydantic import BaseModel, Field</span>
+<span class="d">-</span>
+ from crewai import Agent, Task
+<span class="d">-from crewai.tools import BaseTool</span>
+<span class="d">-from crewai.tools.tool_usage import ToolUsage</span>
+ from crewai.events.event_bus import crewai_event_bus
+ from crewai.events.types.tool_usage_events import (
+     ToolSelectionErrorEvent,
+     ToolUsageFinishedEvent,
+     ToolValidateInputErrorEvent,
+ )
+<span class="a">+from crewai.tools import BaseTool</span>
+<span class="a">+from crewai.tools.tool_usage import ToolUsage</span>
+<span class="a">+from pydantic import BaseModel, Field</span>
+ 
+ 
+ class RandomNumberToolInput(BaseModel):
+<span class="h">@@ -33,7 +33,7 @@ class RandomNumberTool(BaseTool):</span>
+     args_schema: type[BaseModel] = RandomNumberToolInput
+ 
+     def _run(self, min_value: int, max_value: int) -&gt; int:
+<span class="d">-        return random.randint(min_value, max_value)</span>
+<span class="a">+        return random.randint(min_value, max_value)  # noqa: S311</span>
+ 
+ 
+ # Example agent and task
+<span class="h">@@ -471,13 +471,21 @@ def test_tool_selection_error_event_direct():</span>
+     )
+ 
+     received_events = []
+<span class="a">+    first_event_received = threading.Event()</span>
+<span class="a">+    second_event_received = threading.Event()</span>
+ 
+     @crewai_event_bus.on(ToolSelectionErrorEvent)
+     def event_handler(source, event):
+         received_events.append(event)
+<span class="a">+        if event.tool_name == &quot;Non Existent Tool&quot;:</span>
+<span class="a">+            first_event_received.set()</span>
+<span class="a">+        elif event.tool_name == &quot;&quot;:</span>
+<span class="a">+            second_event_received.set()</span>
+ 
+<span class="d">-    with pytest.raises(Exception):</span>
+<span class="a">+    with pytest.raises(Exception):  # noqa: B017</span>
+         tool_usage._select_tool(&quot;Non Existent Tool&quot;)
+<span class="a">+</span>
+<span class="a">+    assert first_event_received.wait(timeout=5), &quot;Timeout waiting for first event&quot;</span>
+     assert len(received_events) == 1
+     event = received_events[0]
+     assert isinstance(event, ToolSelectionErrorEvent)
+<span class="h">@@ -489,12 +497,12 @@ def test_tool_selection_error_event_direct():</span>
+     assert &quot;A test tool&quot; in event.tool_class
+     assert &quot;don&#x27;t exist&quot; in event.error
+ 
+<span class="d">-    received_events.clear()</span>
+<span class="d">-    with pytest.raises(Exception):</span>
+<span class="a">+    with pytest.raises(Exception):  # noqa: B017</span>
+         tool_usage._select_tool(&quot;&quot;)
+ 
+<span class="d">-    assert len(received_events) == 1</span>
+<span class="d">-    event = received_events[0]</span>
+<span class="a">+    assert second_event_received.wait(timeout=5), &quot;Timeout waiting for second event&quot;</span>
+<span class="a">+    assert len(received_events) == 2</span>
+<span class="a">+    event = received_events[1]</span>
+     assert isinstance(event, ToolSelectionErrorEvent)
+     assert event.agent_key == &quot;test_key&quot;
+     assert event.agent_role == &quot;test_role&quot;
+<span class="h">@@ -563,7 +571,7 @@ def test_tool_validate_input_error_event():</span>
+ 
+         # Test invalid input
+         invalid_input = &quot;invalid json {[}&quot;
+<span class="d">-        with pytest.raises(Exception):</span>
+<span class="a">+        with pytest.raises(Exception):  # noqa: B017</span>
+             tool_usage._validate_tool_input(invalid_input)
+ 
+         # Verify event was emitted
+<span class="h">@@ -617,12 +625,13 @@ def test_tool_usage_finished_event_with_result():</span>
+         action=MagicMock(),
+     )
+ 
+<span class="d">-    # Track received events</span>
+     received_events = []
+<span class="a">+    event_received = threading.Event()</span>
+ 
+     @crewai_event_bus.on(ToolUsageFinishedEvent)
+     def event_handler(source, event):
+         received_events.append(event)
+<span class="a">+        event_received.set()</span>
+ 
+     # Call on_tool_use_finished with test data
+     started_at = time.time()
+<span class="h">@@ -635,7 +644,7 @@ def test_tool_usage_finished_event_with_result():</span>
+         result=result,
+     )
+ 
+<span class="d">-    # Verify event was emitted</span>
+<span class="a">+    assert event_received.wait(timeout=5), &quot;Timeout waiting for event&quot;</span>
+     assert len(received_events) == 1, &quot;Expected one event to be emitted&quot;
+     event = received_events[0]
+     assert isinstance(event, ToolUsageFinishedEvent)
+<span class="h">@@ -696,12 +705,13 @@ def test_tool_usage_finished_event_with_cached_result():</span>
+         action=MagicMock(),
+     )
+ 
+<span class="d">-    # Track received events</span>
+     received_events = []
+<span class="a">+    event_received = threading.Event()</span>
+ 
+     @crewai_event_bus.on(ToolUsageFinishedEvent)
+     def event_handler(source, event):
+         received_events.append(event)
+<span class="a">+        event_received.set()</span>
+ 
+     # Call on_tool_use_finished with test data and from_cache=True
+     started_at = time.time()
+<span class="h">@@ -714,7 +724,7 @@ def test_tool_usage_finished_event_with_cached_result():</span>
+         result=result,
+     )
+ 
+<span class="d">-    # Verify event was emitted</span>
+<span class="a">+    assert event_received.wait(timeout=5), &quot;Timeout waiting for event&quot;</span>
+     assert len(received_events) == 1, &quot;Expected one event to be emitted&quot;
+     event = received_events[0]
+     assert isinstance(event, ToolUsageFinishedEvent)</pre><h2>Commit #8: <a href="https://github.com/crewaiinc/crewai/commit/c925d2d519d5907230b001cf7948cb072c5bd7ae">c925d2d519</a> (2025-11-29T16:55:24-05:00)</h2><p class="k">chore: restructure test env, cassettes, and conftest; fix flaky tests<br>Path after this commit: lib/crewai/tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/lib/crewai/tests/tools/test_tool_usage.py b/lib/crewai/tests/tools/test_tool_usage.py
+index 927031302..bf65f9ec6 100644
+<span class="d">--- a/lib/crewai/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/lib/crewai/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -564,16 +564,23 @@ def test_tool_validate_input_error_event():</span>
+         patch(&quot;json_repair.repair_json&quot;, side_effect=Exception(&quot;Failed to repair&quot;)),
+     ):
+         received_events = []
+<span class="a">+        condition = threading.Condition()</span>
+ 
+         @crewai_event_bus.on(ToolValidateInputErrorEvent)
+         def event_handler(source, event):
+<span class="d">-            received_events.append(event)</span>
+<span class="a">+            with condition:</span>
+<span class="a">+                received_events.append(event)</span>
+<span class="a">+                condition.notify()</span>
+ 
+         # Test invalid input
+         invalid_input = &quot;invalid json {[}&quot;
+         with pytest.raises(Exception):  # noqa: B017
+             tool_usage._validate_tool_input(invalid_input)
+ 
+<span class="a">+        with condition:</span>
+<span class="a">+            if not received_events:</span>
+<span class="a">+                condition.wait(timeout=5)</span>
+<span class="a">+</span>
+         # Verify event was emitted
+         assert len(received_events) == 1, &quot;Expected one event to be emitted&quot;
+         event = received_events[0]</pre><h2>Commit #9: <a href="https://github.com/crewaiinc/crewai/commit/38b0b125d3b2cd1534f49b7e071a9540307df2f7">38b0b125d3</a> (2025-12-11T15:50:19-05:00)</h2><p class="k">feat: use json schema for tool argument serialization<br>Path after this commit: lib/crewai/tests/tools/test_tool_usage.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/lib/crewai/tests/tools/test_tool_usage.py b/lib/crewai/tests/tools/test_tool_usage.py
+index bf65f9ec6..83e40f099 100644
+<span class="d">--- a/lib/crewai/tests/tools/test_tool_usage.py</span>
+<span class="a">+++ b/lib/crewai/tests/tools/test_tool_usage.py</span>
+<span class="h">@@ -107,25 +107,20 @@ def test_tool_usage_render():</span>
+ 
+     rendered = tool_usage._render()
+ 
+<span class="d">-    # Updated checks to match the actual output</span>
+<span class="a">+    # Check that the rendered output contains the expected tool information</span>
+     assert &quot;Tool Name: Random Number Generator&quot; in rendered
+     assert &quot;Tool Arguments:&quot; in rendered
+<span class="d">-    assert (</span>
+<span class="d">-        &quot;&#x27;min_value&#x27;: {&#x27;description&#x27;: &#x27;The minimum value of the range (inclusive)&#x27;, &#x27;type&#x27;: &#x27;int&#x27;}&quot;</span>
+<span class="d">-        in rendered</span>
+<span class="d">-    )</span>
+<span class="d">-    assert (</span>
+<span class="d">-        &quot;&#x27;max_value&#x27;: {&#x27;description&#x27;: &#x27;The maximum value of the range (inclusive)&#x27;, &#x27;type&#x27;: &#x27;int&#x27;}&quot;</span>
+<span class="d">-        in rendered</span>
+<span class="d">-    )</span>
+     assert (
+         &quot;Tool Description: Generates a random number within a specified range&quot;
+         in rendered
+     )
+<span class="d">-    assert (</span>
+<span class="d">-        &quot;Tool Name: Random Number Generator\nTool Arguments: {&#x27;min_value&#x27;: {&#x27;description&#x27;: &#x27;The minimum value of the range (inclusive)&#x27;, &#x27;type&#x27;: &#x27;int&#x27;}, &#x27;max_value&#x27;: {&#x27;description&#x27;: &#x27;The maximum value of the range (inclusive)&#x27;, &#x27;type&#x27;: &#x27;int&#x27;}}\nTool Description: Generates a random number within a specified range&quot;</span>
+<span class="d">-        in rendered</span>
+<span class="d">-    )</span>
+<span class="a">+</span>
+<span class="a">+    # Check that the JSON schema format is used (proper JSON schema types)</span>
+<span class="a">+    assert &#x27;&quot;min_value&quot;&#x27; in rendered</span>
+<span class="a">+    assert &#x27;&quot;max_value&quot;&#x27; in rendered</span>
+<span class="a">+    assert &#x27;&quot;type&quot;: &quot;integer&quot;&#x27; in rendered</span>
+<span class="a">+    assert &#x27;&quot;description&quot;: &quot;The minimum value of the range (inclusive)&quot;&#x27; in rendered</span>
+<span class="a">+    assert &#x27;&quot;description&quot;: &quot;The maximum value of the range (inclusive)&quot;&#x27; in rendered</span>
+ 
+ 
+ def test_validate_tool_input_booleans_and_none():</pre></body></html>

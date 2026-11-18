@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L092</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L092</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/runtime">dotnet/runtime</a><br><b>File at merge:</b> src/libraries/System.Net.WebSockets.Client/src/System/Net/WebSockets/WebSocketHandle.Managed.cs, line 81<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/runtime/commit/0382bef54653be7fa54e3ddf116696e9069f4e55">0382bef546</a> (2025-06-25T15:54:43)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/runtime/tree/32fcc41afe5747cf674ca6c62de087ab5fd332eb">32fcc41afe</a>)</p><p><b>The line:</b></p><pre><span class="t">                            || (options.HttpVersion == HttpVersion.Version11 &amp;&amp; options.HttpVersionPolicy == HttpVersionPolicy.RequestVersionOrHigher &amp;&amp; uri.Scheme == UriScheme.Wss)))</span></pre><h2>File at the merge commit, lines 73 to 89</h2><pre>   73 |             {
+   74 | 
+   75 |                 while (true)
+   76 |                 {
+   77 |                     try
+   78 |                     {
+   79 |                         HttpRequestMessage request;
+   80 |                         if (!tryDowngrade &amp;&amp; (options.HttpVersion &gt;= HttpVersion.Version20
+<span class="t">   81 |                             || (options.HttpVersion == HttpVersion.Version11 &amp;&amp; options.HttpVersionPolicy == HttpVersionPolicy.RequestVersionOrHigher &amp;&amp; uri.Scheme == UriScheme.Wss)))</span>
+   82 |                         {
+   83 |                             if (options.HttpVersion &gt; HttpVersion.Version20 &amp;&amp; options.HttpVersionPolicy != HttpVersionPolicy.RequestVersionOrLower)
+   84 |                             {
+   85 |                                 throw new WebSocketException(WebSocketError.UnsupportedProtocol);
+   86 |                             }
+   87 |                             request = new HttpRequestMessage(HttpMethod.Connect, uri) { Version = HttpVersion.Version20 };
+   88 |                             tryDowngrade = true;
+   89 |                         }</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

@@ -1,0 +1,619 @@
+sample_id,human_label,notes,rationale,set
+S0269,corrective,,,sample385
+S0374,adaptive,,,sample385
+S0115,adaptive,,,sample385
+S0377,adaptive,Switches default LLM provider to OpenRouter in production.,,sample385
+S0246,preventive,,,sample385
+S0111,preventive,,,sample385
+S0176,adaptive,,,sample385
+S0153,adaptive,,,sample385
+S0361,adaptive,,,sample385
+S0043,perfective,,,sample385
+S0010,perfective,,,sample385
+S0001,corrective,Fixes name-thrashing found in stress testing; minor help-text/doc-link polish. Fix dominates.,,sample385
+S0301,perfective,,,sample385
+S0109,corrective,Changes previously merged stepdown API from GET to POST; API-verb correction.,,sample385
+S0026,adaptive,,,sample385
+S0079,perfective,,,sample385
+S0138,corrective,,,sample385
+S0328,corrective,README restructure + auth behavior change; the auth change is the code substance.,,sample385
+S0047,adaptive,,,sample385
+S0347,perfective,,,sample385
+S0297,adaptive,,,sample385
+S0159,adaptive,,,sample385
+S0023,preventive,,,sample385
+S0032,adaptive,,,sample385
+S0058,corrective,,,sample385
+S0031,adaptive,,,sample385
+S0127,adaptive,,,sample385
+S0211,adaptive,,,sample385
+S0074,adaptive,,,sample385
+S0046,perfective,,,sample385
+S0250,corrective,,,sample385
+S0077,corrective,,,sample385
+S0232,adaptive,,,sample385
+S0226,adaptive,,,sample385
+S0125,preventive,,,sample385
+S0382,adaptive,,,sample385
+S0019,corrective,,,sample385
+S0142,preventive,,,sample385
+S0064,adaptive,,,sample385
+S0234,adaptive,,,sample385
+S0166,perfective,,,sample385
+S0323,adaptive,,,sample385
+S0221,perfective,,,sample385
+S0095,adaptive,,,sample385
+S0233,corrective,,,sample385
+S0343,adaptive,,,sample385
+S0219,perfective,,,sample385
+S0230,preventive,,,sample385
+S0346,perfective,,,sample385
+S0225,adaptive,,,sample385
+S0076,adaptive,,,sample385
+S0017,preventive,,,sample385
+S0008,adaptive,,,sample385
+S0132,adaptive,,,sample385
+S0341,corrective,Adds aria-label props; fixes a11y violation (unlabeled buttons). Could read adaptive (new props).,,sample385
+S0335,preventive,,,sample385
+S0173,corrective,,,sample385
+S0267,adaptive,,,sample385
+S0372,corrective,,,sample385
+S0286,corrective,,,sample385
+S0061,corrective,,,sample385
+S0080,perfective,,,sample385
+S0338,preventive,,,sample385
+S0178,corrective,,,sample385
+S0322,adaptive,Dev-chores commit: Python 3.14 bump in CI + regenerated type hashes.,,sample385
+S0110,corrective,,,sample385
+S0174,adaptive,,,sample385
+S0254,adaptive,,,sample385
+S0154,perfective,,,sample385
+S0240,corrective,,,sample385
+S0381,adaptive,,,sample385
+S0209,corrective,,,sample385
+S0169,adaptive,,,sample385
+S0120,corrective,,,sample385
+S0164,adaptive,,,sample385
+S0037,perfective,,,sample385
+S0212,adaptive,,,sample385
+S0275,adaptive,,,sample385
+S0060,adaptive,,,sample385
+S0362,perfective,,,sample385
+S0330,adaptive,,,sample385
+S0011,adaptive,,,sample385
+S0104,preventive,,,sample385
+S0195,adaptive,,,sample385
+S0273,corrective,,,sample385
+S0197,perfective,Replaces PNG avatar with SVG generation; implementation swap improving an existing feature.,,sample385
+S0336,perfective,,,sample385
+S0299,corrective,,,sample385
+S0090,perfective,Client-storage cleanup: removes obsolete keys + docs update; cleanup of working code.,,sample385
+S0148,perfective,,,sample385
+S0278,corrective,,,sample385
+S0093,adaptive,,,sample385
+S0070,preventive,,,sample385
+S0097,corrective,,,sample385
+S0292,adaptive,,,sample385
+S0098,corrective,,,sample385
+S0069,perfective,,,sample385
+S0038,corrective,,,sample385
+S0145,adaptive,,,sample385
+S0068,adaptive,,,sample385
+S0384,preventive,Type-hint fixes (progress_bar made generic); type hints -> preventive.,,sample385
+S0203,adaptive,,,sample385
+S0266,perfective,,,sample385
+S0380,corrective,,,sample385
+S0126,preventive,,,sample385
+S0223,corrective,,,sample385
+S0324,perfective,,,sample385
+S0325,adaptive,,,sample385
+S0220,corrective,,,sample385
+S0245,corrective,,,sample385
+S0291,adaptive,,,sample385
+S0184,adaptive,,,sample385
+S0363,adaptive,,,sample385
+S0039,corrective,,,sample385
+S0012,corrective,,,sample385
+S0186,corrective,,,sample385
+S0210,adaptive,,,sample385
+S0180,adaptive,,,sample385
+S0354,adaptive,,,sample385
+S0370,perfective,Rewrites prompt to XML structure with references; internal prompt improvement.,,sample385
+S0348,perfective,,,sample385
+S0165,corrective,,,sample385
+S0137,perfective,Begins consolidating Copilot and PR notification systems; restructure of existing functionality.,,sample385
+S0155,adaptive,Replaces cost-analysis tool with new aws-pricing MCP server; new server dominates.,,sample385
+S0378,perfective,,,sample385
+S0003,adaptive,,,sample385
+S0205,adaptive,,,sample385
+S0315,adaptive,Removal 'as requested'; no defect rationale stated. Could be cleanup of incorrect f16/f32 pow.,,sample385
+S0224,adaptive,,,sample385
+S0295,adaptive,,,sample385
+S0128,perfective,,,sample385
+S0075,perfective,,,sample385
+S0321,perfective,,,sample385
+S0084,adaptive,,,sample385
+S0318,adaptive,,,sample385
+S0108,corrective,,,sample385
+S0134,preventive,,,sample385
+S0279,corrective,,,sample385
+S0045,perfective,,,sample385
+S0353,adaptive,,,sample385
+S0066,adaptive,,,sample385
+S0285,adaptive,,,sample385
+S0086,corrective,,,sample385
+S0187,corrective,,,sample385
+S0013,corrective,,,sample385
+S0029,adaptive,,,sample385
+S0143,perfective,,,sample385
+S0306,perfective,,,sample385
+S0288,adaptive,,,sample385
+S0229,perfective,,,sample385
+S0096,adaptive,"Mixed UX bundle (new loading state, error wrapper, CDN preload URL); leaned adaptive for the new loading behavior.",,sample385
+S0241,corrective,RFC-compliance improvement; treated as fixing non-compliant behavior. Could read perfective.,,sample385
+S0298,corrective,,,sample385
+S0255,corrective,,,sample385
+S0319,perfective,,,sample385
+S0005,corrective,,,sample385
+S0365,perfective,,,sample385
+S0227,adaptive,,,sample385
+S0340,adaptive,,,sample385
+S0214,preventive,,,sample385
+S0216,corrective,,,sample385
+S0062,preventive,,,sample385
+S0268,adaptive,,,sample385
+S0201,perfective,,,sample385
+S0342,preventive,Improves internal evaluator prompt/rules + adds eval questions; eval tooling -> preventive.,,sample385
+S0028,adaptive,,,sample385
+S0300,perfective,,,sample385
+S0139,preventive,,,sample385
+S0063,corrective,,,sample385
+S0129,perfective,,,sample385
+S0009,corrective,,,sample385
+S0015,adaptive,,,sample385
+S0157,corrective,,,sample385
+S0041,perfective,,,sample385
+S0352,adaptive,,,sample385
+S0311,adaptive,,,sample385
+S0280,corrective,,,sample385
+S0332,adaptive,,,sample385
+S0237,adaptive,,,sample385
+S0296,perfective,Prompt-text optimization; improving working agent behavior.,,sample385
+S0350,corrective,,,sample385
+S0252,perfective,,,sample385
+S0376,perfective,,,sample385
+S0351,adaptive,,,sample385
+S0304,adaptive,,,sample385
+S0270,preventive,,,sample385
+S0191,corrective,,,sample385
+S0310,adaptive,,,sample385
+S0054,perfective,,,sample385
+S0050,adaptive,,,sample385
+S0081,adaptive,,,sample385
+S0035,perfective,,,sample385
+S0264,adaptive,,,sample385
+S0092,perfective,,,sample385
+S0053,corrective,,,sample385
+S0265,perfective,,,sample385
+S0242,perfective,,,sample385
+S0014,corrective,,,sample385
+S0316,adaptive,,,sample385
+S0089,perfective,,,sample385
+S0379,adaptive,,,sample385
+S0307,adaptive,,,sample385
+S0320,adaptive,,,sample385
+S0055,corrective,,,sample385
+S0051,perfective,,,sample385
+S0190,perfective,,,sample385
+S0383,adaptive,Rearchitecture exposing a new unified state API; new API dominates.,,sample385
+S0188,corrective,,,sample385
+S0059,corrective,,,sample385
+S0049,perfective,,,sample385
+S0022,perfective,,,sample385
+S0314,perfective,,,sample385
+S0192,adaptive,,,sample385
+S0294,adaptive,,,sample385
+S0344,preventive,Mixed: SEO config additions + docs revamp; docs/config dominate. SEO 'fixes' read as additive.,,sample385
+S0150,adaptive,,,sample385
+S0152,perfective,,,sample385
+S0360,adaptive,,,sample385
+S0373,adaptive,,,sample385
+S0088,preventive,,,sample385
+S0215,perfective,,,sample385
+S0385,perfective,Perf fix of follow-up flow (removes redundant prompt content); perfective per taxonomy though 'fix:' framing suggests corrective.,,sample385
+S0107,adaptive,,,sample385
+S0103,adaptive,,,sample385
+T001,perfective,"Unify component storage refactor (managers -> LocalProvider); patch unavailable, decided from file list",,topup148
+T002,perfective,"Code-style fixes, no functional change; could read preventive (lint compliance)",,topup148
+T003,adaptive,New capability: AI image tools (view/upload) for project operations,,topup148
+T004,adaptive,New theming options/light-dark-system assets; feature addition,,topup148
+T005,adaptive,"Release-branch merge (3.5.0): resilience-strategies API, serializer options; merge of feature work",,topup148
+T006,corrective,Fixes #2945: env var ignored when set after import; singleton re-init fault,,topup148
+T007,perfective,Makes wandb optional via wandb_thin shim; decoupling cleanup; could read adaptive (packaging),,topup148
+T008,adaptive,Feature: explicit aggregation column selection in Group By; prevents nonsense aggregation,,topup148
+T009,adaptive,Release merge rc/3.4.0: removals + client/feature changes; merge of release work,,topup148
+T010,adaptive,Restores BlockAPI naming for celestia-core v0.38 parity; external-interface alignment; could read corrective,,topup148
+T011,corrective,Context-window handling fix in llm.py; typo'd commit message,,topup148
+T012,corrective,Type-issue fix in token counter callback,,topup148
+T013,perfective,Improves default ad hoc job name (project/env names over IDs),,topup148
+T014,corrective,Fixes #1869: Anthropic message formatting,,topup148
+T016,perfective,Single-line label switch (column_metadata for column name),,topup148
+T017,adaptive,New feature: AI chat settings context menu; minor fixes alongside,,topup148
+T018,adaptive,New capability: before/after LLM call hooks with contexts and tests,,topup148
+T019,adaptive,Adds Iceberg REST catalog endpoints/client; new integration capability,,topup148
+T020,adaptive,"New capability: i18n (react-i18next) for pricing page, ja translations",,topup148
+T021,corrective,Fixes benchmark panic: index out of range in Benchmark_MemoryLock,,topup148
+T022,perfective,"Refactor/simplify EventListener, TraceCollectionListener, ConsoleFormatter; large dead-code removal",,topup148
+T023,preventive,"Lint tooling migration (black->Ruff) + pre-commit hooks; mass reformat; patch unavailable, decided from file list",,topup148
+T024,perfective,Removes debug prints; cleanup,,topup148
+T026,corrective,Fixes exit-code handling from child processes,,topup148
+T027,adaptive,Extends TypeScript loader: nested fields and arrays support,,topup148
+T028,adaptive,Mixed: token-handling refactor + new merge modes (None/Converge/Stream/Race) + default change; capability changes dominate,,topup148
+T029,corrective,Fixes potential rtc deadlock,,topup148
+T030,preventive,Adds Func converter across serializers so delegates aren't serialized/rehydrated; robustness hardening; could read corrective,,topup148
+T031,perfective,"Store cleanup: removes unused token store, small additions",,topup148
+T032,corrective,"Fixes litellm issue handling in executor, broadened; could read preventive",,topup148
+T033,perfective,Improves generics on StateGraph etc; moves typing utils to private file,,topup148
+T034,adaptive,New feature: create project from prompt (UI + electron create flow),,topup148
+T035,perfective,Console formatter/logging improvements,,topup148
+T036,adaptive,New feature: DevTab editor panel with resizable UI,,topup148
+T037,adaptive,New capability: persistent/shareable Latte sessions with live streaming,,topup148
+T038,adaptive,Disables Bun runtime on Intel Macs; platform accommodation,,topup148
+T039,perfective,"Mixed: hosting fixes + performance work (memoize, callbacks); perf dominates",,topup148
+T040,perfective,Vendored shadcn component style updates; could read adaptive (upstream sync),,topup148
+T041,adaptive,Adds action/code error surfacing to chat (catch + toast); new error-display capability,,topup148
+T042,corrective,Supports HTTP(S)_PROXY env vars for k8s client; fix-framed env accommodation,,topup148
+T043,perfective,Removes unused param; cleanup,,topup148
+T044,corrective,Logger fix; terse message,,topup148
+T045,corrective,Fixes chat input responsiveness; fix-framed perf,,topup148
+T046,perfective,"Perf: lazy download batch, memory footprint, chunk streaming",,topup148
+T047,adaptive,New capability: OTEL support in JS SDK with tests,,topup148
+T048,perfective,Extracts asset methods into AssetMixin; organization/maintainability refactor,,topup148
+T049,perfective,"Enhances event listener visualization/logging, verbose flag; improvement of existing feature; could read adaptive",,topup148
+T050,perfective,"Parser/constants refactor, tools_handler improvement, test updates",,topup148
+T051,adaptive,"Editor QA batch: new File/Image nodes, parser rework, fixes; new capabilities present",,topup148
+T052,perfective,Small patches.py refactor,,topup148
+T053,corrective,Disables default max-turns cap in multiturn env; could read perfective (default tweak),,topup148
+T054,corrective,Fixes Japanese IME text input in ChatInput on macOS,,topup148
+T055,perfective,Static references for function sets in catalog entries; mechanical TODO-addressing refactor,,topup148
+T056,corrective,Fixes early row-ptr clearing in row scan; enables more debug SLTs alongside,,topup148
+T057,corrective,"Fixes Mem0 memory support: agent_id handling, OR-operator queries",,topup148
+T058,corrective,Fixes default brand color issue,,topup148
+T059,adaptive,"Web-version iteration: webframe, click, hover, scroll-refresh functionality",,topup148
+T060,perfective,Revamped prompt field for better autocompletion; improvement of existing feature,,topup148
+T061,corrective,Adds idx for task ordering in planning handler; fix-framed; could read perfective,,topup148
+T062,adaptive,"New capability: async support for tools and agent executor, with tests",,topup148
+T063,perfective,Downgrades preload errors to warnings across webview scripts; could read corrective (false-positive errors),,topup148
+T064,perfective,"Removes tokio from runtime interface, stubs DynIoRuntime; decoupling refactor",,topup148
+T065,adaptive,Enables LiveCode block interaction in table cells (pointerEvents wrapper); docs UI capability,,topup148
+T066,adaptive,"Uses islands as local asset server, working around broken quarto 0.14.7; env accommodation; could read corrective",,topup148
+T067,perfective,Codegen change: adds loads at the end; late-load restructure with test updates,,topup148
+T068,adaptive,Updates Bedrock model support/constants; provider lineup adaptation,,topup148
+T069,corrective,Fixes order-by ties logic; adds order_by_many SLT,,topup148
+T070,corrective,Unspecified fixes in llm.py/agent_utils; terse message,,topup148
+T071,corrective,Updates failing sandbox tests + adds locale messages; test fixes; could read preventive,,topup148
+T072,perfective,UI tweaks across modals + new button-group component; improvement work,,topup148
+T073,perfective,Moves free_memory into train flow; restructure,,topup148
+T074,perfective,Optimizes home view,,topup148
+T075,perfective,Mass rename BearerTokenCredentialPolicy -> BearerTokenAuthorizationPolicy,,topup148
+T076,adaptive,Implements DbtCloudJobRunResults.to_default_asset_events; new capability with tests,,topup148
+T077,adaptive,Branch merge: v2 testing + API fixes; mixed content,,topup148
+T078,adaptive,Introduces MemoryEvents to monitor memory usage; new capability with tests,,topup148
+T079,adaptive,Re-enables subscriptions page + version bump; functionality release; could read corrective (restore),,topup148
+T080,corrective,Fixes VerifySdist CI failure: dev-version tooling + classification update,,topup148
+T081,corrective,Fixes chat panel performance during streaming; also pins bun version to dodge bun 1.3 issues,,topup148
+T082,corrective,Fixes gpt-5 chat stuttering; message-list restructure,,topup148
+T083,adaptive,Disables mmap on CUDA; platform accommodation; could read corrective,,topup148
+T084,adaptive,Adds deepseek structured-output support in OpenAI online processor + examples,,topup148
+T085,perfective,ResourceContent canonical-type restructure + meta support; refactor dominates; could read adaptive,,topup148
+T086,adaptive,New feature: duplicate/delete web frame,,topup148
+T087,perfective,Consolidates execution method chains into single public API,,topup148
+T088,corrective,Fixes pages overflow (single line),,topup148
+T089,adaptive,"New capability: configurable search params (limit, score_threshold) for RAG/knowledge/memory",,topup148
+T090,corrective,Fixes chat context dependencies; terse message,,topup148
+T091,perfective,Release prep: mechanical version bumps across pyprojects/templates,,topup148
+T092,preventive,Enables noUncheckedIndexedAccess across TS configs + fixes fallout; type-safety hardening,,topup148
+T093,perfective,"Telemetry module refactor: utility functions, modern typing",,topup148
+T094,adaptive,go-square v3.0.0 upgrade (required bump); dependency adaptation,,topup148
+T095,corrective,Fixes tool name snake_case->camelCase conversion,,topup148
+T096,adaptive,Adds autosave (git commit) before applying code; new behavior with guards,,topup148
+T097,perfective,Cleanup to match enterprise edition; feedback prompting tweak,,topup148
+T098,perfective,Decouples telemetry from Crew; span tracking; test coverage; could read adaptive,,topup148
+T099,preventive,Removes TestShapeSpec (depends on removed ShapeTracker); test-suite maintenance,,topup148
+T100,corrective,Fixes sidebar load times; component restructure for perf,,topup148
+T101,adaptive,Adds guardrail support for direct kickoff calls; refactor + py3.10 fix alongside,,topup148
+T102,perfective,Non-generic Assert.ContainsSingle overload; test-framework API improvement,,topup148
+T103,corrective,Fixes drag issue: deadzone + correct termination,,topup148
+T104,preventive,Adds black format-enforcement CI to azure-sdk-tools; formats package; lint/CI hardening,,topup148
+T105,adaptive,New feature: browser task block flippable with code editor,,topup148
+T106,adaptive,Updates default chat model + settings chores; model lineup adaptation,,topup148
+T107,adaptive,New feature: image background support,,topup148
+T108,corrective,Fixes CI Analyze step + get_version_py bug,,topup148
+T109,adaptive,Adds stopping criteria + custom EOS tokens to generation,,topup148
+T110,adaptive,New features: border-radius controller + skip-build option,,topup148
+T111,perfective,"Adds ILoggerFactory to converters, better logging; consistency refactors; could read adaptive",,topup148
+T112,corrective,Fixes toJSONSchema exclusive-range numbers for openapi-3.0,,topup148
+T113,perfective,Updates import warning (UI); could read corrective,,topup148
+T114,perfective,Adds call-part size warning; observability improvement; could read preventive,,topup148
+T115,perfective,Type annotations + docstrings for langgraph adapters; code quality,,topup148
+T116,perfective,Removes deprecated settings import path + tests; deprecation cleanup,,topup148
+T117,perfective,Removes dead autocomplete subsystem; README privacy disclosure; cleanup dominates,,topup148
+T118,adaptive,Type-prefixed component keys for global uniqueness; API/behavior change with upgrade guide; could read perfective,,topup148
+T119,perfective,Consolidates server loading into FileSystemSource abstraction,,topup148
+T120,adaptive,"SEP-1577: sampling with tools; ctx.sample() tools/result_type, handlers, docs, examples",,topup148
+T121,preventive,Adds request body validation; hardening; could read adaptive,,topup148
+T122,perfective,Restructures/simplifies bun command API,,topup148
+T124,adaptive,Dependency bumps before prerelease; version pins,,topup148
+T125,adaptive,Mixed: WorkflowStateCommitted notification (new) + vuln-driven Proto.Cluster.Kubernetes removal + docker/CI changes,,topup148
+T126,perfective,Docs + logging/feedback improvements for CLI multi-org; quality/UX polish,,topup148
+T127,adaptive,Supports new ORT-extensions tokenizer options API; dependency-feature adaptation,,topup148
+T128,perfective,Disables multitenancy by default (simplify config) + trims publish workflow; could read preventive (CI),,topup148
+T129,perfective,Typing improvement on MethodExecutionFailedEvent.error; small,,topup148
+T130,adaptive,"Feature merge: workflow restart on interruption; migrations, stores, tests",,topup148
+T131,corrective,Fixes project list refetch on delete; carousel image max-height fix,,topup148
+T133,perfective,Perf: wires up new hash table (3/n),,topup148
+T134,perfective,Improves install message,,topup148
+T135,perfective,Auto-generates clint rule IDs via __init_subclass__; simplification refactor,,topup148
+T136,adaptive,Merge with main; substantial server/type additions,,topup148
+T137,corrective,"Reworks Mem0 storage metadata: drops message metadata, stores latest interaction directly; could read perfective",,topup148
+T138,corrective,Fixes expansion of collapsed cells,,topup148
+T139,perfective,Adds LLM tool-usage logging/console output; observability; could read adaptive (feat-framed),,topup148
+T140,adaptive,Release patch merge (3.5.2 -> 3.6.0): converter/trigger changes + tests,,topup148
+T141,adaptive,"Dependency + version bumps (crewai-tools 0.71, CrewAI 0.186, templates, uv.lock)",,topup148
+T142,perfective,"Mixed UI batch: drag refactor, editing UX improvements, misc updates; improvement work dominates",,topup148
+T143,adaptive,"New feature: feedback form + table (DB schema, API router, email, uploads)",,topup148
+T144,preventive,Adds missing function documentation (doc comments on scalar/table functions),,topup148
+T145,preventive,"Release prep for langgraph v0.6: docs sync, checkpoint cleanups, version pins; docs dominate; patch unavailable, decided from file list",,topup148
+T146,perfective,Incident creation refactor: NodeId context + dedup of LogExceptionAndTransition,,topup148
+T147,perfective,"Example/eval code tweaks: adds models list, removes o3-error script, cleanup; fix-framed but cleanup dominates",,topup148
+T148,adaptive,Adds hard_break line-break support to text editor; new capability resolving #2065,,topup148
+V001,perfective,,consolidate duplicate token.equals impls into base class (refactor of working code),topup_v6
+V002,perfective,,provisioner steps split into granular actions; behavior-preserving restructure (proto API surface changed but no new capability),topup_v6
+V003,corrective,,fix duplicate callback invocation in deep_research polling (only new activities/sources passed); SDK version bump included (verified via GitHub diff),topup_v6
+V004,adaptive,,new generator capability: DI extension methods; bulk is generated snapshots,topup_v6
+V005,adaptive,,new feature: download full results,topup_v6
+V006,adaptive,,new functionality: prompt playground experts/model selection/image attachments,topup_v6
+V007,perfective,,remove unnecessary ConfigureAwait from CLI; editorconfig rule relaxed,topup_v6
+V008,corrective,,fix incorrect property name,topup_v6
+V009,adaptive,,new feature: markdown report export,topup_v6
+V010,adaptive,,CSS grid -> Tailwind migration,topup_v6
+V011,corrective,,fix handling of APPLIED_LOCALLY state in cloud-fix UI,topup_v6
+V012,adaptive,,extend VMGS default-size handling to memory disks (moves logic into parse_memory),topup_v6
+V013,corrective,,make crawl-status work after redis flush; note: author used feat: prefix,topup_v6
+V014,corrective,,prevent RangeError crash in progress bar display,topup_v6
+V015,corrective,,fallback to execa when VSCode terminal integration fails (fixes broken command execution path),topup_v6
+V016,perfective,,mechanical sweep removing 'in' operator from terminalContrib; eslint rule removed,topup_v6
+V017,corrective,,fix video layout in walkthroughs,topup_v6
+V018,preventive,,add URL depth validation to crawl requests (new 400 rejection); note: could be corrective if ENG-2617 was a bug report,topup_v6
+V019,adaptive,,blog design pass (UI/visual changes + supporting model changes); note: could read as perfective improvement,topup_v6
+V020,adaptive,,new support for org-governed MCP registry endpoint and access restrictions,topup_v6
+V021,preventive,,introduce interface+fake to make port-listing tests safe; why = testing (some refactor of agent code),topup_v6
+V022,preventive,,migrate provider tests from Jest to Vitest (tests + jest.config only),topup_v6
+V023,adaptive,,new file-based state storage for local deploys (new IDeploymentStateManager),topup_v6
+V024,corrective,,"make container bindings work + conform to official wrangler spec; note: feat: prefix, could read adaptive",topup_v6
+V025,corrective,,fix validation generator to ignore FromServices/FromKeyedServices properties,topup_v6
+V026,perfective,,make backwards-crawling error message clearer (non-functional text quality change),topup_v6
+V027,preventive,,"feature spec -> system spec migration; test-infra modernization incl. selenium-webdriver bump, DatabaseCleaner removal",topup_v6
+V028,perfective,,reduce logging noise across API libs,topup_v6
+V029,preventive,,add unit test for pythonUtils (minor source tweak for testability),topup_v6
+V030,preventive,,add xmldocs to generated projects (documentation; bulk = mechanical test/config touches),topup_v6
+V031,preventive,,"add stylistic indentation lint rule + mechanical re-indentation (149 files, +N/-N whitespace bulk)",topup_v6
+V032,adaptive,,bump Azure.Generator/emitter versions; bulk = regenerated snapshots,topup_v6
+V033,perfective,,reroute/reorganize server routes; openapi regenerated; removed ActivityHeatmap component,topup_v6
+V034,adaptive,,new feature: stream LLM responses,topup_v6
+V035,adaptive,,implement remote-generation env var controls (new capability); note: fix: prefix suggests deficiency-driven,topup_v6
+V036,preventive,,skip daily product limit validation in test env so tests run; prod behavior unchanged; why = testing,topup_v6
+V037,perfective,,"rename isApprovalRequired field (pure rename, 3 one-line changes); note: feat: prefix but no new behavior",topup_v6
+V038,adaptive,,new editor option: code overlay for inline suggestions,topup_v6
+V039,corrective,,fix non-integer Android API level handling causing javac/build errors,topup_v6
+V040,perfective,,polish chat status after move (restructure/cleanup following reorganization),topup_v6
+V041,adaptive,,header metadata gains target language id; also refactors auto-include logic; note: mixed intent,topup_v6
+V042,corrective,,fix CLI crash on Spectre markup characters in user input,topup_v6
+V043,perfective,,cleanup/restructure before upcoming sync migration,topup_v6
+V044,adaptive,,add verbose parameter to recognize_vosk() (API extension),topup_v6
+V045,perfective,,remove obsolete find polyfill imports across modules,topup_v6
+V046,adaptive,,"integrate PostHog analytics client; note: chore: prefix misleading, adds new telemetry functionality",topup_v6
+V047,corrective,,make listing tools respect auto-approve settings outside workspace (permission gap); note: could read adaptive,topup_v6
+V048,corrective,,fix mac traffic-light overlap in console sidebar,topup_v6
+V050,adaptive,,migrate Kyber APIs to ML-KEM (standard rename across 98 files),topup_v6
+V051,adaptive,,new feature: context menu on resource graph + improved console log actions,topup_v6
+V052,perfective,,"switch TUI to tokio+EventStream ""to make it easier to factorize"" (explicit refactor)",topup_v6
+V053,adaptive,,rework + extend reasoning model support incl. new hybrid reasoning models,topup_v6
+V054,perfective,,remove deprecated experimental inlining feature; note: breaking change ships user migration,topup_v6
+V057,adaptive,,revamp HTTP provider setup with new tabs/test section (feat:); note: could read perfective redesign,topup_v6
+V058,corrective,,prevent GradingResult.assertion being overridden in select grading cases (defective grading behavior); note: chore: prefix,topup_v6
+V059,perfective,,use eye-closed icon to mark invisible agents (UI polish); includes visibility configure option,topup_v6
+V060,perfective,,remove ACA role assignment workaround that is no longer necessary,topup_v6
+V061,corrective,,fix simple suggest details height,topup_v6
+V062,perfective,,"""Next camp refactor live"": UI/BaseChat restructure, component removals/renames; note: includes session API additions",topup_v6
+V063,adaptive,,new feature: slider for context condense threshold + enforcement,topup_v6
+V064,adaptive,,mgmt dataprotection SDK release (version bump + regenerated code/changelogs); bulk mechanical,topup_v6
+V065,corrective,,"fallback XML parsing for unresolvable AppHost SDKs (fixes update-command failure mode); note: ""enhance resilience"" could read perfective",topup_v6
+V066,preventive,,set up UPSTASH_API_KEY in workflow/env config (CI/config chore),topup_v6
+V067,adaptive,,new interpreter capability: shared generics support,topup_v6
+V068,adaptive,,add PublishWithStaticFiles method (new API); also refactors YarpResource,topup_v6
+V069,adaptive,,new layer strategy configuration UI,topup_v6
+V070,corrective,,fix user secrets duplication by flattening to colon-separated keys,topup_v6
+V071,adaptive,,new Azure AI Foundry integration,topup_v6
+V073,adaptive,,branding/version references 9.x -> 13.0 (mechanical version bump bulk),topup_v6
+V074,adaptive,,obsolete AddAzureRedis / stabilize Enterprise (adapting to Azure service retirement),topup_v6
+V075,corrective,,fix logging: correct eval ID instead of description,topup_v6
+V076,corrective,,generator fix: Create operation must always be named CreateOrUpdate,topup_v6
+V077,adaptive,,new mapping: OpenRTB adomain -> meta.advertiserDomains (enables hb_adomain),topup_v6
+V078,perfective,,remove waitForReady machinery (no longer needed since edit sessions are sync); note: resolves #247484,topup_v6
+V079,adaptive,,red team strategies use trace context (new capability + docs/examples),topup_v6
+V080,perfective,,"merge commit, pure deletions: remove scrapingbee engine integration + trims; note: could be corrective if revert",topup_v6
+V081,preventive,,run biome linter across repo (mechanical bulk + lint config),topup_v6
+V082,corrective,,prevent redteam run hanging with mcp client,topup_v6
+V083,adaptive,,[Grida WEST] UX improvements across campaign pages (merge commit),topup_v6
+V084,preventive,,move examples into XML doc remarks for VS visibility (docs),topup_v6
+V085,adaptive,,new feature: guards (guard command + proxy + README),topup_v6
+V086,corrective,,correct sample header/summary comment positions (defect in generated samples); note: could read preventive docs,topup_v6
+V087,corrective,,fix userIdAsEids,topup_v6
+V088,perfective,,JIT perf: template EH-specific checks to skip when no EH regions,topup_v6
+V089,adaptive,,new capability: configure YARP with environment variables,topup_v6
+V090,adaptive,,new model-scan command,topup_v6
+V091,adaptive,,propagate api_key_id to billing function (new functional flow),topup_v6
+V092,adaptive,,Azure provisioning command handling + settings configuration (new feature),topup_v6
+V093,adaptive,,"migrate followers page to Inertia (explicit migration, no visual change)",topup_v6
+V094,adaptive,,new feature: tool sets support,topup_v6
+V095,perfective,,big refactor of run command into separate classes,topup_v6
+V096,adaptive,,improvements to notebook attachment UX; note: could read perfective if internal-only,topup_v6
+V097,adaptive,,new CLI self-update prompts in aspire update,topup_v6
+V098,adaptive,,new aspire add command,topup_v6
+V099,adaptive,,"increase workbench border radius for macOS Tahoe (adapt to new OS look); note: fix: prefix, could read corrective",topup_v6
+V100,adaptive,,"dump full files into context, better onboarding/nav (new capabilities)",topup_v6
+V101,adaptive,,update GeneratedRegex analyzer/fixer to support partial properties (new language construct support),topup_v6
+V102,adaptive,,AgentManager: foundation for unified execution (new architecture),topup_v6
+V103,adaptive,,allow KV namespace binding by UUID,topup_v6
+V104,adaptive,,interpreter: implement ldftn and calli (previously unsupported instructions),topup_v6
+V105,adaptive,,new canvas Recorder Plugin,topup_v6
+V106,adaptive,,use new minimal default size in aux windows; note: could be corrective if #246202 was a sizing bug,topup_v6
+V107,adaptive,,GDPR preset mappings for red team testing + docs,topup_v6
+V108,adaptive,,new parser capability: unquoted string values in prompt headers,topup_v6
+V109,preventive,,fix NRT (nullable) annotations per repo guidelines (type annotations sweep),topup_v6
+V110,corrective,,force en-US culture for template install (locale-dependent install bug),topup_v6
+V111,adaptive,,new setting to choose active terminal suggest providers,topup_v6
+V112,corrective,,fix in-memory bundle; update aws/Function API to accept bundle instead of zipPath; note: mixed with API change,topup_v6
+V113,adaptive,,new option/API to disable event loop block detection (sentry node-native),topup_v6
+V114,corrective,,fix: pipe exec stdout and stderr,topup_v6
+V115,adaptive,,switch mcp_core::Role to rmcp::model::Role (type/API migration),topup_v6
+V116,corrective,,html-transformer: never panic (minimize unwraps; includes revert-revert of URL handling fix),topup_v6
+V117,corrective,,make WithHttpHealthCheck work like WithHttpCommand; fixes #8765,topup_v6
+V118,adaptive,,new feature: edit schedule,topup_v6
+V119,corrective,,fix discard and repository-not-found exceptions,topup_v6
+V120,corrective,,fix MCP tool schema transformation for OpenAI compatibility,topup_v6
+V121,adaptive,,new feature: copy-paste from Figma (import pipeline + docs),topup_v6
+V122,adaptive,,"make PermissionGroups a function + improve error handling (API restructure); note: chore: prefix, could read perfective",topup_v6
+V123,preventive,,reduce template tests run on PR validation (CI/test-load optimization),topup_v6
+V124,perfective,,rename IResourceContainerImageBuilder -> IResourceContainerImageManager (pure rename),topup_v6
+V125,preventive,,add unit test for aegis redteam plugin (tests only),topup_v6
+V126,adaptive,,"css-based PDF-optimized report + browser save-as-pdf flow (implementation switch, dep removed); note: chore: prefix, could read perfective reimplementation",topup_v6
+V127,perfective,,new IFileSystemService abstraction to simplify temp file management (refactor across 60 files),topup_v6
+V128,adaptive,,new health column in Aspire CLI resources table,topup_v6
+V129,perfective,,"rename HvLite -> OpenVMM across repo (mechanical rename, no behavior change intended)",topup_v6
+V130,adaptive,,vulnerability report table UX improvements; note: refactor: prefix but user-facing changes,topup_v6
+V131,perfective,,EFCore code cleanup (part of #35884),topup_v6
+V132,adaptive,,support .fsproj/.vbproj project files (new capability),topup_v6
+V133,adaptive,,multi-modal layer strategy support for audio/image attacks,topup_v6
+V134,corrective,,fix ESM imports: .js suffixes + node:* externals for website build (mechanical 110-file bulk),topup_v6
+V135,adaptive,,new feature: Cosmos DB client-side encryption support,topup_v6
+V136,adaptive,,support cross-binding to Workflow (cloudflare),topup_v6
+V137,perfective,,remove unused tutorialkit code + unused landing components (never public; also clears security alerts),topup_v6
+V138,adaptive,,admin option to generate discover sales reports + accounting docs examples,topup_v6
+V139,adaptive,,reports table UX improvements; note: refactor: prefix but user-facing changes,topup_v6
+V140,adaptive,,Grida Canvas scene graph & CRDT (large feature/architecture change),topup_v6
+V141,preventive,,new waitFor validation rule (waitFor <= timeout/2); parallel to V018 convention,topup_v6
+V142,corrective,,restore dark mode cell highlighting without breaking status pill visibility,topup_v6
+V143,adaptive,,new chain-of-thought panel above assistant messages,topup_v6
+V144,adaptive,,new WithForwardedHeaders method for Aspire dashboard config,topup_v6
+V145,adaptive,,new feature: Custom GraphQL Actions for GraphQL integrations,topup_v6
+V146,perfective,,break GenerateJavaStubs into smaller tasks (explicit refactor decomposition),topup_v6
+V147,adaptive,,remove React.FC annotations for React 19 compatibility (framework adaptation prep); note: could read perfective type cleanup,topup_v6
+V148,adaptive,,migrate LLM extraction stack to AI-SDK (explicit migration; adds ollama support),topup_v6
+V149,corrective,,add missing numRequests tracking across provider tokenUsage objects (completes existing mechanism); note: could read adaptive,topup_v6
+V150,adaptive,,new feature: approved review videos streaming on product page,topup_v6
+V151,adaptive,,new feature: voice dictation (Whisper & ElevenLabs),topup_v6
+V152,adaptive,,make unblock call optional for multi-turn strategies (behavior option),topup_v6
+V153,perfective,,SingleLineEdit -> LineReplacement (pure rename),topup_v6
+V154,corrective,,fix: stop prepending fail reasons to output text,topup_v6
+V155,perfective,,library speed optimization + infinite scrolling; note: infinite scrolling could read adaptive,topup_v6
+V157,corrective,,fix outdated Azure OpenAI provider data sources,topup_v6
+V158,preventive,,"cleanup of FunctionalTests (test files only); note: cleanup-style, could read perfective",topup_v6
+V159,adaptive,,implement webhook signatures (new verification feature),topup_v6
+V160,perfective,,restructure OpenAI provider into modular files (explicit refactor),topup_v6
+V161,adaptive,,new feature: flex layout in Grida Canvas engine,topup_v6
+V162,adaptive,,allow overriding base URL for Google provider,topup_v6
+V163,adaptive,,emitter support for ListBySubscription operations (+ some refactor),topup_v6
+V164,adaptive,,Quasar + new onboarding feature + misc fixes before 1.0.3 (merge),topup_v6
+V165,adaptive,,new feature: stream model responses,topup_v6
+V166,corrective,,bug(#4016): ensure package-info files are in jar,topup_v6
+V167,perfective,,remove debug log line from pythonUtils,topup_v6
+V168,perfective,,move ACW map JLO scanning to FindJavaObjectsStep (build-step restructure); note: includes JCW serialization format expansion,topup_v6
+V169,adaptive,,fetch: new domain-specific approval logic,topup_v6
+V170,adaptive,,new CRM project customers page + APIs + CSV docs,topup_v6
+V171,adaptive,,"regenerate Search SDK with 2025-08-01-preview spec (spec/version update, mechanical bulk)",topup_v6
+V172,perfective,,refactor port allocation/endpoint resolution (IPortAllocator abstraction); note: endpoint resolution behavior enhanced,topup_v6
+V173,perfective,,simplify category loaded subscriber (explicit refactor),topup_v6
+V174,adaptive,,new File Sink properties serialization/deserialization (config feature groundwork),topup_v6
+V175,adaptive,,allow disabling detail orientation + add north rendering (new capabilities),topup_v6
+V176,corrective,,fix pagination scrolling and layout issues in ResultsTable,topup_v6
+V177,corrective,,fix FileBlob OAuth failing,topup_v6
+V178,corrective,,fix progress bars incrementing beyond max values,topup_v6
+V179,preventive,,enhance test diagnostics + quarantined-tests documentation (tests/docs),topup_v6
+V180,perfective,,"migrated resume/credential code into azcopy package (internal restructure); note: ""migration"" here is code layout",topup_v6
+V181,corrective,,reduce redis connections to BullMQ (connection bloat defect); note: could read perfective resource optimization,topup_v6
+V182,adaptive,,new feature: paste summarization in Codex TUI,topup_v6
+V183,perfective,,remove Inline Edit accept-partial flow (removal of unneeded experimental flow),topup_v6
+V184,adaptive,,update to latest MTG to adopt service methods (dependency update),topup_v6
+V185,adaptive,,update application definition flow to collect better info (feat: UX flow change),topup_v6
+V186,perfective,,share package-checking code between CLI and app host (dedup refactor),topup_v6
+V188,adaptive,,enable NES first-user experience (feature flip),topup_v6
+V189,adaptive,,bring back admin functionality (restored feature set; fixes #150),topup_v6
+V190,adaptive,,new docker plugin (build/run/release targets),topup_v6
+V191,corrective,,"hide loading animations during result streaming (misleading indicator); note: chore: prefix, could read adaptive UX change",topup_v6
+V192,adaptive,,new feature: fuzzy file search,topup_v6
+V193,perfective,,separate marshal method storage from classifier (decoupling restructure),topup_v6
+V194,corrective,,remove misbehaving stall check,topup_v6
+V195,adaptive,,"new logging capabilities in publishing pipeline (--log-level, provider)",topup_v6
+V196,perfective,,"petri: generics instead of Box (explicit refactor, reduce duplication)",topup_v6
+V197,perfective,,extract turborepo-shim crate (modularization refactor),topup_v6
+V198,perfective,,"linting fixes across media services; note: some hunks sizable, could hide behavior changes",topup_v6
+V199,perfective,,cleanup first-time-experience code (restructure),topup_v6
+V200,adaptive,,redesigned task header (UI redesign); note: could read perfective visual polish,topup_v6
+V201,corrective,,fix border radius on purpose example (tiny visual defect),topup_v6
+V202,preventive,,vscode format-on-save config + AGENTS.md/justfile dev tooling,topup_v6
+V203,adaptive,,"add ChangeTrackingOptions class + change_tracking_options param to SDK scrape API (new capability, v2.5.0; verified via GitHub diff)",topup_v6
+V204,adaptive,,implements copilot issue #18482 in core (new inline-completions API),topup_v6
+V205,perfective,,idiomatic refactor + localize strings,topup_v6
+V206,preventive,,test-only: align scrape test with schema change,topup_v6
+V207,perfective,,more health-check service logging (observability); note: could read adaptive,topup_v6
+V208,adaptive,,"UI makeover for TaskHeader/ChatView/HistoryPreview; note: bundles other PRs (xAI support, slash-command fix, version bump)",topup_v6
+V209,corrective,,"fix ""Stopping Aspire."" message formatting (visual defect)",topup_v6
+V210,adaptive,,"adapt to Helper SDK changes (widget URL + config key casing, paired PR)",topup_v6
+V211,preventive,,test WebApplicationBuilder with WebApplicationFactory (tests),topup_v6
+V212,adaptive,,update KubernetesClient to v18.0.5 + adapt to breaking changes,topup_v6
+V213,preventive,,increase timeout on flaky test + tracing details (test stability),topup_v6
+V214,adaptive,,new feature: prompt for missing required template variables,topup_v6
+V215,corrective,,revert incrementalization change (undo problematic perf change),topup_v6
+V216,adaptive,,show final prompt in table for prompt-mutating attacks (new display capability); chore: prefix,topup_v6
+V217,adaptive,,allow HostUrl to remap both address and port,topup_v6
+V218,adaptive,,Hyper-V guest reset support in petri (+related refactors),topup_v6
+V219,adaptive,,bump dependency for Azure Mgmt Generator,topup_v6
+V220,adaptive,,support quadratic SVG commands in vector network importer,topup_v6
+V221,adaptive,,update to Microsoft.OpenApi v2.0.0-preview.17 + adaptations,topup_v6
+V222,adaptive,,logging migration: log => slog everywhere,topup_v6
+V223,corrective,,fix inconsistent footer layout (outdated footer component used),topup_v6
+V224,perfective,,optimize map/crawler performance,topup_v6
+V225,preventive,,NRT annotation fixes part 3 (removes null-forgiving ops); note: adds explicit null-check throws (slight hardening),topup_v6
+V226,preventive,,temp: disable webhook tests (test enablement management),topup_v6
+V227,preventive,,quarantine two flaky tests (test infra),topup_v6
+V228,adaptive,,"Target Purpose Discovery updates: reworked flow, new components + server routes; note: chore: prefix understates scope",topup_v6
+V229,corrective,,confirm file URLs in fetch tool (confirmation gap); note: could read adaptive behavior extension,topup_v6
+V230,corrective,,llmstxt: limit cached full text to requested maxUrls + separator cleanup (cached path previously ignored maxUrls; verified via GitHub diff); note: could read perfective quality pass,topup_v6
+V231,adaptive,,python-SDK rework adding async support + types (major SDK 2.0 work),topup_v6
+V232,adaptive,,version bump 1.16.0 -> 1.17.0 only (verified via GitHub diff),topup_v6
+V233,adaptive,,analytics events: workspaceId instead of orgId (data model migration),topup_v6
+V234,perfective,,debt: adopt $ over createElement (style/debt cleanup),topup_v6
+V235,adaptive,,rework patch/exec approval UI (new scenario layouts),topup_v6
+V236,adaptive,,support optional parameters in proxy mode,topup_v6
+V237,perfective,,JIT: replace fgMoveHotJumps with 3-opt utility (phase consolidation refactor),topup_v6
+V238,adaptive,,build out terminal editor menus; note: includes unlock-new-terminal-windows fix,topup_v6
+V239,adaptive,,T-SQL CREATE PROCEDURE parsing support (new dialect capability),topup_v6
+V240,perfective,,move shared blue/bms adapter code to utility (dedup refactor),topup_v6
+V241,corrective,,omit reasoning params for non-reasoning models (wrong param inclusion),topup_v6
+V242,perfective,,move action update into recorder app (restructure),topup_v6
+V243,preventive,,enforce no-global-assign lint rule in tests (+mock fix),topup_v6
+V244,corrective,,remove duplicate memory poisoning entry,topup_v6
+V245,adaptive,,new feature: TLS termination config for supported resources,topup_v6
+V246,corrective,,fix incorrect exception in array allocation path,topup_v6
+V247,preventive,,organize imports + prettier import-order config (style enforcement),topup_v6
+V248,corrective,,better keyboard handling of attachments (focus defect fixes); note: could read perfective enhancement,topup_v6
+V249,corrective,,TestShop: add IsRunMode check for database key (review-fix in sample),topup_v6
+V250,preventive,,use a Conversation type across 90 files (type-safety cleanup); note: could read perfective refactor,topup_v6
+V251,adaptive,,new feature: d1 import (cloudflare),topup_v6
+V252,perfective,,make CosmosDB resource names/namespace consistent (rename cleanup),topup_v6
+V253,adaptive,,new capability: OS default broker auth in DefaultAzureCredential,topup_v6
+V254,adaptive,,load arbitrary files in nested python provider configs (new capability),topup_v6
+V255,perfective,,redraw debounce (rendering perf),topup_v6
+V256,corrective,,handle undefined outputs in DownloadMenu,topup_v6

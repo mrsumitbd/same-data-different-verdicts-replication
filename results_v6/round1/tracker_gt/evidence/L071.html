@@ -1,0 +1,103 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L071</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L071</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/sdk">dotnet/sdk</a><br><b>File at merge:</b> src/Tasks/Microsoft.NET.Build.Tasks.UnitTests/GivenAGenerateRuntimeConfigurationFiles.cs, line 275<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/sdk/commit/11c28b26b19e02e65a0c9092e6467f072437291d">11c28b26b1</a> (2025-06-27T00:02:00)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/sdk/tree/56e5364b4c3ed9093cb5dec2e6e8dac3544472fa">56e5364b4c</a>)</p><p><b>The line:</b></p><pre><span class="t">                        &quot;Microsoft.NETCore.App&quot;,</span></pre><h2>File at the merge commit, lines 267 to 283</h2><pre>  267 |             return new TestableGenerateRuntimeConfigurationFiles
+  268 |             {
+  269 |                 BuildEngine = new MockNeverCacheBuildEngine4(),
+  270 |                 TargetFrameworkMoniker = $&quot;.NETCoreApp,Version=v{ToolsetInfo.CurrentTargetFrameworkVersion}&quot;,
+  271 |                 RuntimeConfigPath = _runtimeConfigPath,
+  272 |                 RuntimeFrameworks = new[]
+  273 |                 {
+  274 |                     new MockTaskItem(
+<span class="t">  275 |                         &quot;Microsoft.NETCore.App&quot;,</span>
+  276 |                         new Dictionary&lt;string, string&gt;
+  277 |                         {
+  278 |                             {&quot;FrameworkName&quot;, &quot;Microsoft.NETCore.App&quot;}, {&quot;Version&quot;, $&quot;{ToolsetInfo.CurrentTargetFrameworkVersion}.0&quot;}
+  279 |                         }
+  280 |                     )
+  281 |                 },
+  282 |                 RollForward = &quot;LatestMinor&quot;
+  283 |             };</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/sdk/commit/2819cf0742d63d9451423ee9e890f631553089d2">2819cf0742</a> (2025-07-25T12:51:57-05:00)</h2><p class="k">Revert &quot;Make GenerateDepsFile and GenerateRuntimeConfigurationFiles tasks internally-incremental&quot; (#49938)<br>Path after this commit: src/Tasks/Microsoft.NET.Build.Tasks.UnitTests/GivenAGenerateRuntimeConfigurationFiles.cs. Lines with exactly this text in the file after the commit: 4.</p><pre>diff --git a/src/Tasks/Microsoft.NET.Build.Tasks.UnitTests/GivenAGenerateRuntimeConfigurationFiles.cs b/src/Tasks/Microsoft.NET.Build.Tasks.UnitTests/GivenAGenerateRuntimeConfigurationFiles.cs
+index 7c298a7e4e..6da7349172 100644
+<span class="d">--- a/src/Tasks/Microsoft.NET.Build.Tasks.UnitTests/GivenAGenerateRuntimeConfigurationFiles.cs</span>
+<span class="a">+++ b/src/Tasks/Microsoft.NET.Build.Tasks.UnitTests/GivenAGenerateRuntimeConfigurationFiles.cs</span>
+<span class="h">@@ -2,7 +2,6 @@</span>
+ // The .NET Foundation licenses this file to you under the MIT license.
+ 
+ using FluentAssertions;
+<span class="d">-using Microsoft.Build.Utilities;</span>
+ using Microsoft.NET.TestFramework;
+ using Xunit;
+ 
+<span class="h">@@ -219,70 +218,6 @@ namespace Microsoft.NET.Build.Tasks.UnitTests</span>
+ }}&quot;);
+         }
+ 
+<span class="d">-        [Fact]</span>
+<span class="d">-        public void ItDoesNotOverwriteFileWithSameContent()</span>
+<span class="d">-        {</span>
+<span class="d">-            // Execute task first time</span>
+<span class="d">-            var task = CreateBasicTestTask();</span>
+<span class="d">-            task.PublicExecuteCore();</span>
+<span class="d">-            var firstWriteTime = File.GetLastWriteTimeUtc(_runtimeConfigPath);</span>
+<span class="d">-</span>
+<span class="d">-            // Wait a bit to ensure timestamp would change if file is rewritten</span>
+<span class="d">-            Thread.Sleep(100);</span>
+<span class="d">-</span>
+<span class="d">-            // Execute task again with same configuration</span>
+<span class="d">-            var task2 = CreateBasicTestTask();</span>
+<span class="d">-            task2.PublicExecuteCore();</span>
+<span class="d">-            var secondWriteTime = File.GetLastWriteTimeUtc(_runtimeConfigPath);</span>
+<span class="d">-</span>
+<span class="d">-            // File should not have been rewritten when content is the same</span>
+<span class="d">-            secondWriteTime.Should().Be(firstWriteTime, &quot;file should not be rewritten when content is unchanged&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        [Fact]</span>
+<span class="d">-        public void GivenDifferentRuntimeHostOptionsItWritesNewConfig()</span>
+<span class="d">-        {</span>
+<span class="d">-            // Execute task first time</span>
+<span class="d">-            var task = CreateBasicTestTask();</span>
+<span class="d">-            task.PublicExecuteCore();</span>
+<span class="d">-            var firstWriteTime = File.GetLastWriteTimeUtc(_runtimeConfigPath);</span>
+<span class="d">-</span>
+<span class="d">-            // Wait a bit to ensure timestamp would change if file is rewritten</span>
+<span class="d">-            Thread.Sleep(100);</span>
+<span class="d">-</span>
+<span class="d">-            // Execute task again with different host options</span>
+<span class="d">-            var task2 = CreateBasicTestTask();</span>
+<span class="d">-            task2.HostConfigurationOptions = [</span>
+<span class="d">-                new TaskItem(&quot;System.Runtime.TieredCompilation&quot;, new Dictionary&lt;string, string&gt;{{&quot;Value&quot;, &quot;false&quot;}}),</span>
+<span class="d">-                new TaskItem(&quot;System.GC.Concurrent&quot;, new Dictionary&lt;string, string&gt;{{&quot;Value&quot;, &quot;false&quot;}}),</span>
+<span class="d">-            ];</span>
+<span class="d">-            task2.PublicExecuteCore();</span>
+<span class="d">-            var secondWriteTime = File.GetLastWriteTimeUtc(_runtimeConfigPath);</span>
+<span class="d">-            // File should have been rewritten when content is different</span>
+<span class="d">-            secondWriteTime.Should().BeAfter(firstWriteTime, &quot;file should be rewritten when content is different&quot;);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        private TestableGenerateRuntimeConfigurationFiles CreateBasicTestTask()</span>
+<span class="d">-        {</span>
+<span class="d">-            return new TestableGenerateRuntimeConfigurationFiles</span>
+<span class="d">-            {</span>
+<span class="d">-                BuildEngine = new MockNeverCacheBuildEngine4(),</span>
+<span class="d">-                TargetFrameworkMoniker = $&quot;.NETCoreApp,Version=v{ToolsetInfo.CurrentTargetFrameworkVersion}&quot;,</span>
+<span class="d">-                RuntimeConfigPath = _runtimeConfigPath,</span>
+<span class="d">-                RuntimeFrameworks = new[]</span>
+<span class="d">-                {</span>
+<span class="d">-                    new MockTaskItem(</span>
+<span class="d m">-                        &quot;Microsoft.NETCore.App&quot;,</span>
+<span class="d">-                        new Dictionary&lt;string, string&gt;</span>
+<span class="d">-                        {</span>
+<span class="d">-                            {&quot;FrameworkName&quot;, &quot;Microsoft.NETCore.App&quot;}, {&quot;Version&quot;, $&quot;{ToolsetInfo.CurrentTargetFrameworkVersion}.0&quot;}</span>
+<span class="d">-                        }</span>
+<span class="d">-                    )</span>
+<span class="d">-                },</span>
+<span class="d">-                RollForward = &quot;LatestMinor&quot;</span>
+<span class="d">-            };</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+         private class TestableGenerateRuntimeConfigurationFiles : GenerateRuntimeConfigurationFiles
+         {
+             public void PublicExecuteCore()</pre></body></html>

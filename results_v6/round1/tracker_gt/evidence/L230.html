@@ -1,0 +1,166 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L230</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L230</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>File at merge:</b> editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx, line 87<br><b>Merge commit (birth):</b> <a href="https://github.com/gridaco/grida/commit/e3757d3d6d8d7a8cddc9095b1a7bd91757963046">e3757d3d6d</a> (2025-04-16T04:00:01)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t">  children,</span></pre><h2>File at the merge commit, lines 79 to 95</h2><pre>   79 |     // openGraph: {
+   80 |     //   images: og_images,
+   81 |     // },
+   82 |   };
+   83 | }
+   84 | 
+   85 | export default async function Layout({
+   86 |   params,
+<span class="t">   87 |   children,</span>
+   88 | }: Readonly&lt;{
+   89 |   children: React.ReactNode;
+   90 |   params: Promise&lt;Params&gt;;
+   91 | }&gt;) {
+   92 |   const { route, campaign, template } = await fetchCampaign({
+   93 |     params: await params,
+   94 |   });
+   95 | </pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gridaco/grida/commit/0a6bc5a11c310d23e97b8c955838a7b1abb2a070">0a6bc5a11c</a> (2025-04-16T09:48:03+00:00)</h2><p class="k">Merge pull request #293 from gridaco/supabase/rr<br>Path after this commit: editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx b/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx
+index fda501d65..c8ac0711a 100644
+<span class="d">--- a/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx</span>
+<span class="a">+++ b/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx</span>
+<span class="h">@@ -1,9 +1,6 @@</span>
+<span class="d">-import {</span>
+<span class="d">-  createRouteHandlerWestReferralClient,</span>
+<span class="d">-  createRouteHandlerWWWClient,</span>
+<span class="d">-} from &quot;@/lib/supabase/server&quot;;</span>
+<span class="a">+import { sb } from &quot;@/lib/supabase/server&quot;;</span>
+ import { Metadata } from &quot;next&quot;;
+<span class="d">-import { cookies } from &quot;next/headers&quot;;</span>
+<span class="a">+import { cookies, headers } from &quot;next/headers&quot;;</span>
+ import { notFound } from &quot;next/navigation&quot;;
+ import { CampaignAgentProvider } from &quot;./store&quot;;
+ import { TenantLayoutProvider } from &quot;@/scaffolds/tenant&quot;;
+<span class="h">@@ -17,12 +14,21 @@ async function fetchCampaign({ params }: { params: Params }) {</span>
+   const { slug } = params;
+   const route_path = &quot;/r/&quot; + slug;
+   const cookieStore = cookies();
+<span class="d">-  const routing_client = createRouteHandlerWWWClient(cookieStore);</span>
+<span class="d">-  const west_client = createRouteHandlerWestReferralClient(cookieStore);</span>
+<span class="a">+  const headersList = headers();</span>
+<span class="a">+</span>
+<span class="a">+  const rrwww = sb.rr.www.createRouteHandlerClient({</span>
+<span class="a">+    headers: headersList,</span>
+<span class="a">+    cookies: cookieStore,</span>
+<span class="a">+  });</span>
+<span class="a">+</span>
+<span class="a">+  const rrwest = sb.rr.west_referral.createRouteHandlerClient({</span>
+<span class="a">+    headers: headersList,</span>
+<span class="a">+    cookies: cookieStore,</span>
+<span class="a">+  });</span>
+ 
+   // TODO: optimize query
+ 
+<span class="d">-  const { data: routing, error: routing_err } = await routing_client</span>
+<span class="a">+  const { data: routing, error: routing_err } = await rrwww</span>
+     .from(&quot;public_route&quot;)
+     .select(
+       `
+<span class="h">@@ -41,7 +47,7 @@ async function fetchCampaign({ params }: { params: Params }) {</span>
+ 
+   const { document_id, template, ...route } = routing;
+ 
+<span class="d">-  const { data: campaign, error: campaign_err } = await west_client</span>
+<span class="a">+  const { data: campaign, error: campaign_err } = await rrwest</span>
+     .from(&quot;campaign_public&quot;)
+     .select()
+     .eq(&quot;id&quot;, document_id)</pre><h2>Commit #2: <a href="https://github.com/gridaco/grida/commit/33cee0e5cede8772e179c33528dfc9ced98d7c0a">33cee0e5ce</a> (2025-04-20T08:35:50+00:00)</h2><p class="k">Merge pull request #301 from gridaco/supabase/ssr<br>Path after this commit: editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx b/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx
+index c8ac0711a..0ba7e237d 100644
+<span class="d">--- a/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx</span>
+<span class="a">+++ b/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx</span>
+<span class="h">@@ -1,6 +1,8 @@</span>
+<span class="d">-import { sb } from &quot;@/lib/supabase/server&quot;;</span>
+<span class="a">+import {</span>
+<span class="a">+  createWestReferralClient,</span>
+<span class="a">+  createWWWClient,</span>
+<span class="a">+} from &quot;@/lib/supabase/server&quot;;</span>
+ import { Metadata } from &quot;next&quot;;
+<span class="d">-import { cookies, headers } from &quot;next/headers&quot;;</span>
+ import { notFound } from &quot;next/navigation&quot;;
+ import { CampaignAgentProvider } from &quot;./store&quot;;
+ import { TenantLayoutProvider } from &quot;@/scaffolds/tenant&quot;;
+<span class="h">@@ -13,22 +15,14 @@ type Params = {</span>
+ async function fetchCampaign({ params }: { params: Params }) {
+   const { slug } = params;
+   const route_path = &quot;/r/&quot; + slug;
+<span class="d">-  const cookieStore = cookies();</span>
+<span class="d">-  const headersList = headers();</span>
+ 
+<span class="d">-  const rrwww = sb.rr.www.createRouteHandlerClient({</span>
+<span class="d">-    headers: headersList,</span>
+<span class="d">-    cookies: cookieStore,</span>
+<span class="d">-  });</span>
+<span class="a">+  const wwwClient = await createWWWClient();</span>
+ 
+<span class="d">-  const rrwest = sb.rr.west_referral.createRouteHandlerClient({</span>
+<span class="d">-    headers: headersList,</span>
+<span class="d">-    cookies: cookieStore,</span>
+<span class="d">-  });</span>
+<span class="a">+  const westClient = await createWestReferralClient();</span>
+ 
+   // TODO: optimize query
+ 
+<span class="d">-  const { data: routing, error: routing_err } = await rrwww</span>
+<span class="a">+  const { data: routing, error: routing_err } = await wwwClient</span>
+     .from(&quot;public_route&quot;)
+     .select(
+       `
+<span class="h">@@ -47,7 +41,7 @@ async function fetchCampaign({ params }: { params: Params }) {</span>
+ 
+   const { document_id, template, ...route } = routing;
+ 
+<span class="d">-  const { data: campaign, error: campaign_err } = await rrwest</span>
+<span class="a">+  const { data: campaign, error: campaign_err } = await westClient</span>
+     .from(&quot;campaign_public&quot;)
+     .select()
+     .eq(&quot;id&quot;, document_id)</pre><h2>Commit #3: <a href="https://github.com/gridaco/grida/commit/e9edd3648afa78052c00e46ac18310caf296a144">e9edd3648a</a> (2025-05-09T12:52:45+00:00)</h2><p class="k">Merge pull request #322 from gridaco/next15<br>Path after this commit: editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx b/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx
+index 0ba7e237d..1bc9178ed 100644
+<span class="d">--- a/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx</span>
+<span class="a">+++ b/editor/app/(tenant)/~/[tenant]/(r)/r/[slug]/layout.tsx</span>
+<span class="h">@@ -59,11 +59,12 @@ async function fetchCampaign({ params }: { params: Params }) {</span>
+   };
+ }
+ 
+<span class="d">-export async function generateMetadata({</span>
+<span class="d">-  params,</span>
+<span class="d">-}: {</span>
+<span class="d">-  params: Promise&lt;Params&gt;;</span>
+<span class="d">-}): Promise&lt;Metadata&gt; {</span>
+<span class="a">+export async function generateMetadata(</span>
+<span class="a">+  props: {</span>
+<span class="a">+    params: Promise&lt;Params&gt;;</span>
+<span class="a">+  }</span>
+<span class="a">+): Promise&lt;Metadata&gt; {</span>
+<span class="a">+  const params = await props.params;</span>
+   const { campaign } = await fetchCampaign({ params: await params });
+ 
+   // const og_image = data?.og_image
+<span class="h">@@ -82,13 +83,18 @@ export async function generateMetadata({</span>
+   };
+ }
+ 
+<span class="d">-export default async function Layout({</span>
+<span class="d">-  params,</span>
+<span class="d m">-  children,</span>
+<span class="d">-}: Readonly&lt;{</span>
+<span class="d">-  children: React.ReactNode;</span>
+<span class="d">-  params: Promise&lt;Params&gt;;</span>
+<span class="d">-}&gt;) {</span>
+<span class="a">+export default async function Layout(</span>
+<span class="a">+  props: Readonly&lt;{</span>
+<span class="a">+    children: React.ReactNode;</span>
+<span class="a">+    params: Promise&lt;Params&gt;;</span>
+<span class="a">+  }&gt;</span>
+<span class="a">+) {</span>
+<span class="a">+  const params = await props.params;</span>
+<span class="a">+</span>
+<span class="a">+  const {</span>
+<span class="a">+    children</span>
+<span class="a">+  } = props;</span>
+<span class="a">+</span>
+   const { route, campaign, template } = await fetchCampaign({
+     params: await params,
+   });</pre></body></html>

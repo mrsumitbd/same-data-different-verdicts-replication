@@ -1,0 +1,42 @@
+======================================================================
+Early churn: modifications within 7 days of merge
+======================================================================
+Early modifications as % of units: fully_autonomous 8.9%, human 4.5%, human_supervised 7.9%
+
+Who made them (% of early modifications):
+who               another agent  another human  same author as the PR
+two_tier                                                             
+fully_autonomous            0.0           88.6                   11.4
+human                       0.2           36.4                   63.3
+human_supervised            0.8           13.6                   85.6
+
+Whitespace-only (% of early modifications): fully_autonomous 13.9%, human 9.1%, human_supervised 15.4%
+Event types (% of early modifications):
+event_type        content_modified  file_deleted  line_deleted
+two_tier                                                      
+fully_autonomous              76.7          11.4          11.9
+human                         63.7          20.7          15.6
+human_supervised              65.0          15.6          19.4
+
+Concentration: share of early modifications in the 5 PRs with the most early modifications:
+  fully_autonomous  42.7% (PRs with early modifications: 151)
+  human             33.1% (PRs with early modifications: 383)
+  human_supervised  73.0% (PRs with early modifications: 213)
+
+Intent of early modifications (LLM majority vote, % by tier):
+intent            adaptive  corrective  perfective  preventive  undecided
+two_tier                                                                 
+fully_autonomous      19.3        28.4        49.5         1.6        1.2
+human                 59.8        23.6        14.9         1.6        0.0
+human_supervised      30.2        12.7        53.2         2.2        1.8
+
+0-7 day HR vs human:
+  all modifications:
+    human_supervised  unadjusted HR=1.784 [1.745, 1.824] p=0 | repo-stratified HR=1.677 [0.531, 5.298] p=0.38
+    fully_autonomous  unadjusted HR=1.986 [1.933, 2.039] p=0 | repo-stratified HR=1.719 [1.157, 2.555] p=0.0073
+  self-modifications treated as non-events:
+    human_supervised  unadjusted HR=1.396 [1.362, 1.432] p=1.3e-152 | repo-stratified HR=1.520 [0.601, 3.841] p=0.38
+    fully_autonomous  unadjusted HR=1.906 [1.853, 1.961] p=0 | repo-stratified HR=1.611 [1.106, 2.345] p=0.013
+  whitespace-only changes treated as non-events:
+    human_supervised  unadjusted HR=1.660 [1.621, 1.700] p=0 | repo-stratified HR=1.601 [0.499, 5.143] p=0.43
+    fully_autonomous  unadjusted HR=1.881 [1.828, 1.936] p=0 | repo-stratified HR=1.599 [1.003, 2.550] p=0.049

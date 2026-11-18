@@ -1,0 +1,8 @@
+Task 5: hunk-size Cox (unadjusted), repo-clustered 95% CIs; input data/survival_events_hunk_v6confnv.csv (60,034 hunks)
+
+human_supervised  single_line  n=10,657 vs 21,051  HR 0.7760 (results file 0.7760, reproduces)  repo-cl [0.545, 1.104] p=0.159  | model-based [0.742, 0.812] p=9.3e-28
+human_supervised  small_block  n= 5,384 vs 11,646  HR 0.8930 (results file 0.8930, reproduces)  repo-cl [0.574, 1.390] p=0.616  | model-based [0.843, 0.945] p=0.0001
+human_supervised  large_block  n= 1,867 vs  3,934  HR 0.9630 (results file 0.9630, reproduces)  repo-cl [0.641, 1.447] p=0.856  | model-based [0.893, 1.039] p=0.33
+fully_autonomous  single_line  n= 2,932 vs 21,051  HR 1.3846 (results file 1.3846, reproduces)  repo-cl [0.862, 2.223] p=0.178  | model-based [1.303, 1.472] p=1.1e-25
+fully_autonomous  small_block  n= 1,595 vs 11,646  HR 1.7358 (results file 1.7358, reproduces)  repo-cl [1.114, 2.705] p=0.0148  | model-based [1.613, 1.868] p=8.7e-49
+fully_autonomous  large_block  n=   968 vs  3,934  HR 1.4403 (results file 1.4403, reproduces)  repo-cl [1.011, 2.051] p=0.0431  | model-based [1.321, 1.571] p=1.4e-16

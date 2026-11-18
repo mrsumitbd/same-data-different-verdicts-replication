@@ -1,0 +1,706 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L055</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L055</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> tests/Aspire.Hosting.Tests/ExternalServiceTests.cs, line 83<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/3ec9e5a35631de2b45ee723ef71fbaeaa4578779">3ec9e5a356</a> (2025-07-02T08:52:21)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">        Assert.Contains(&quot;absolute path must be \&quot;/\&quot;&quot;, ex.Message);</span></pre><h2>File at the merge commit, lines 75 to 91</h2><pre>   75 | 
+   76 |     [Fact]
+   77 |     public void AddExternalServiceThrowsWithUriWithPath()
+   78 |     {
+   79 |         using var builder = TestDistributedApplicationBuilder.Create();
+   80 | 
+   81 |         var uriWithPath = new Uri(&quot;https://api.example.com/api/v1&quot;);
+   82 |         var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt; builder.AddExternalService(&quot;nuget&quot;, uriWithPath));
+<span class="t">   83 |         Assert.Contains(&quot;absolute path must be \&quot;/\&quot;&quot;, ex.Message);</span>
+   84 |     }
+   85 | 
+   86 |     [Theory]
+   87 |     [InlineData(&quot;https://nuget.org/&quot;)]
+   88 |     [InlineData(&quot;http://localhost/&quot;)]
+   89 |     [InlineData(&quot;https://example.com:8080/&quot;)]
+   90 |     public void AddExternalServiceAcceptsValidUrls(string validUrl)
+   91 |     {</pre><p class="k">Below are all 8 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/8fef2f824b0a9ac3f79398f68b2d05334d276a49">8fef2f824b</a> (2025-07-12T10:35:32-07:00)</h2><p class="k">Made changes to how parameter.Value works (#10354)<br>Path after this commit: tests/Aspire.Hosting.Tests/ExternalServiceTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs
+index 0e8c40259d..8bd3dade85 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="h">@@ -289,6 +289,87 @@ public class ExternalServiceTests</span>
+         Assert.Contains(&quot;absolute path must be \&quot;/\&quot;&quot;, pathMessage);
+     }
+ 
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ExternalServiceWithParameterGetValueAsyncErrorMarksAsFailedToStart()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        // Create a parameter with a broken value callback</span>
+<span class="a">+        var urlParam = builder.AddParameter(&quot;failing-url&quot;, () =&gt; throw new InvalidOperationException(&quot;Parameter resolution failed&quot;));</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;external&quot;, urlParam);</span>
+<span class="a">+</span>
+<span class="a">+        using var app = builder.Build();</span>
+<span class="a">+</span>
+<span class="a">+        // Start the app to trigger InitializeResourceEvent</span>
+<span class="a">+        var appStartTask = app.StartAsync();</span>
+<span class="a">+</span>
+<span class="a">+        // Wait for the resource to be marked as FailedToStart</span>
+<span class="a">+        var resourceEvent = await app.ResourceNotifications.WaitForResourceAsync(</span>
+<span class="a">+            externalService.Resource.Name,</span>
+<span class="a">+            e =&gt; e.Snapshot.State?.Text == KnownResourceStates.FailedToStart</span>
+<span class="a">+        ).DefaultTimeout();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify the resource is in the correct state</span>
+<span class="a">+        Assert.Equal(KnownResourceStates.FailedToStart, resourceEvent.Snapshot.State?.Text);</span>
+<span class="a">+</span>
+<span class="a">+        await app.StopAsync();</span>
+<span class="a">+        await appStartTask; // Ensure start completes</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ExternalServiceWithParameterInvalidUrlMarksAsFailedToStart()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        // Create a parameter that returns an invalid URL</span>
+<span class="a">+        var urlParam = builder.AddParameter(&quot;invalid-url&quot;, () =&gt; &quot;invalid-url-not-absolute&quot;);</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;external&quot;, urlParam);</span>
+<span class="a">+</span>
+<span class="a">+        using var app = builder.Build();</span>
+<span class="a">+</span>
+<span class="a">+        // Start the app to trigger InitializeResourceEvent</span>
+<span class="a">+        var appStartTask = app.StartAsync();</span>
+<span class="a">+</span>
+<span class="a">+        // Wait for the resource to be marked as FailedToStart</span>
+<span class="a">+        var resourceEvent = await app.ResourceNotifications.WaitForResourceAsync(</span>
+<span class="a">+            externalService.Resource.Name,</span>
+<span class="a">+            e =&gt; e.Snapshot.State?.Text == KnownResourceStates.FailedToStart</span>
+<span class="a">+        ).DefaultTimeout();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify the resource is in the correct state</span>
+<span class="a">+        Assert.Equal(KnownResourceStates.FailedToStart, resourceEvent.Snapshot.State?.Text);</span>
+<span class="a">+</span>
+<span class="a">+        await app.StopAsync();</span>
+<span class="a">+        await appStartTask; // Ensure start completes</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ExternalServiceWithValidParameterMarksAsRunning()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        // Create a parameter that returns a valid URL</span>
+<span class="a">+        var urlParam = builder.AddParameter(&quot;valid-url&quot;, () =&gt; &quot;https://example.com/&quot;);</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;external&quot;, urlParam);</span>
+<span class="a">+</span>
+<span class="a">+        using var app = builder.Build();</span>
+<span class="a">+</span>
+<span class="a">+        // Start the app to trigger InitializeResourceEvent</span>
+<span class="a">+        var appStartTask = app.StartAsync();</span>
+<span class="a">+</span>
+<span class="a">+        // Wait for the resource to be marked as Running</span>
+<span class="a">+        var resourceEvent = await app.ResourceNotifications.WaitForResourceAsync(</span>
+<span class="a">+            externalService.Resource.Name,</span>
+<span class="a">+            e =&gt; e.Snapshot.State?.Text == KnownResourceStates.Running</span>
+<span class="a">+        ).DefaultTimeout();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify the resource is in the correct state</span>
+<span class="a">+        Assert.Equal(KnownResourceStates.Running, resourceEvent.Snapshot.State?.Text);</span>
+<span class="a">+</span>
+<span class="a">+        await app.StopAsync();</span>
+<span class="a">+        await appStartTask; // Ensure start completes</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     private sealed class TestProject : IProjectMetadata
+     {
+         public string ProjectPath =&gt; &quot;testproject&quot;;</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/7c8b37c473b5a6aa1c0403e8580546793535bb51">7c8b37c473</a> (2025-07-14T16:42:47+00:00)</h2><p class="k">Add xmldocs to generated metadata projects (#9868)<br>Path after this commit: tests/Aspire.Hosting.Tests/ExternalServiceTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs
+index 8bd3dade85..36f5546dc0 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="h">@@ -4,7 +4,6 @@</span>
+ using Aspire.Hosting.Tests.Utils;
+ using Aspire.Hosting.Utils;
+ using Microsoft.AspNetCore.InternalTesting;
+<span class="d">-using Xunit;</span>
+ 
+ namespace Aspire.Hosting.Tests;
+ </pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/7c20a6d61fa4ea5069dea1c9a5ec8ec665978d5c">7c20a6d61f</a> (2025-07-17T00:40:57-07:00)</h2><p class="k">Fix WithHealthCheck method for ExternalServiceResource to access parameter values asynchronously (#10469)<br>Path after this commit: tests/Aspire.Hosting.Tests/ExternalServiceTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs
+index 36f5546dc0..9cdc3652d5 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="h">@@ -4,6 +4,8 @@</span>
+ using Aspire.Hosting.Tests.Utils;
+ using Aspire.Hosting.Utils;
+ using Microsoft.AspNetCore.InternalTesting;
+<span class="a">+using Microsoft.Extensions.DependencyInjection;</span>
+<span class="a">+using Microsoft.Extensions.Diagnostics.HealthChecks;</span>
+ 
+ namespace Aspire.Hosting.Tests;
+ 
+<span class="h">@@ -153,7 +155,7 @@ public class ExternalServiceTests</span>
+     public async Task ExternalServiceWithParameterCanBeReferencedInPublishMode()
+     {
+         using var builder = TestDistributedApplicationBuilder.Create(DistributedApplicationOperation.Publish);
+<span class="d">-        </span>
+<span class="a">+</span>
+         var urlParam = builder.AddParameter(&quot;nuget-url&quot;);
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, urlParam);
+         var project = builder.AddProject&lt;TestProject&gt;(&quot;project&quot;)
+<span class="h">@@ -369,6 +371,78 @@ public class ExternalServiceTests</span>
+         await appStartTask; // Ensure start completes
+     }
+ 
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ExternalServiceWithParameterHttpHealthCheckRegistersCustomHealthCheck()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var urlParam = builder.AddParameter(&quot;external-url&quot;);</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;external&quot;, urlParam)</span>
+<span class="a">+                                     .WithHttpHealthCheck();</span>
+<span class="a">+</span>
+<span class="a">+        // Build the app to register health checks</span>
+<span class="a">+        using var app = builder.Build();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify that health check was registered</span>
+<span class="a">+        Assert.True(externalService.Resource.TryGetAnnotationsOfType&lt;HealthCheckAnnotation&gt;(out var healthCheckAnnotations));</span>
+<span class="a">+        var healthCheckAnnotation = healthCheckAnnotations.FirstOrDefault(hc =&gt; hc.Key.StartsWith($&quot;{externalService.Resource.Name}_external&quot;));</span>
+<span class="a">+        Assert.NotNull(healthCheckAnnotation);</span>
+<span class="a">+</span>
+<span class="a">+        // Verify that the custom health check is registered in DI</span>
+<span class="a">+        var healthCheckService = app.Services.GetService&lt;HealthCheckService&gt;();</span>
+<span class="a">+        Assert.NotNull(healthCheckService);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void ExternalServiceWithStaticUrlHttpHealthCheckUsesUrlGroup()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;external&quot;, &quot;https://example.com/&quot;)</span>
+<span class="a">+                                     .WithHttpHealthCheck();</span>
+<span class="a">+</span>
+<span class="a">+        // Build the app to register health checks</span>
+<span class="a">+        using var app = builder.Build();</span>
+<span class="a">+</span>
+<span class="a">+        // Verify that health check was registered</span>
+<span class="a">+        Assert.True(externalService.Resource.TryGetAnnotationsOfType&lt;HealthCheckAnnotation&gt;(out var healthCheckAnnotations));</span>
+<span class="a">+        var healthCheckAnnotation = healthCheckAnnotations.FirstOrDefault(hc =&gt; hc.Key.StartsWith($&quot;{externalService.Resource.Name}_external&quot;));</span>
+<span class="a">+        Assert.NotNull(healthCheckAnnotation);</span>
+<span class="a">+</span>
+<span class="a">+        // Verify that health check service is available</span>
+<span class="a">+        var healthCheckService = app.Services.GetService&lt;HealthCheckService&gt;();</span>
+<span class="a">+        Assert.NotNull(healthCheckService);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ExternalServiceWithParameterHttpHealthCheckResolvesUrlAsync()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        builder.Configuration[&quot;Parameters:external-url&quot;] = &quot;https://example.com/&quot;;</span>
+<span class="a">+</span>
+<span class="a">+        var urlParam = builder.AddParameter(&quot;external-url&quot;);</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;external&quot;, urlParam)</span>
+<span class="a">+                                     .WithHttpHealthCheck(&quot;/status/200&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        using var app = builder.Build();</span>
+<span class="a">+</span>
+<span class="a">+        // Get the health check service and run health checks</span>
+<span class="a">+        var healthCheckService = app.Services.GetRequiredService&lt;HealthCheckService&gt;();</span>
+<span class="a">+</span>
+<span class="a">+        // Find our specific health check key</span>
+<span class="a">+        Assert.True(externalService.Resource.TryGetAnnotationsOfType&lt;HealthCheckAnnotation&gt;(out var healthCheckAnnotations));</span>
+<span class="a">+        var healthCheckKey = healthCheckAnnotations.First(hc =&gt; hc.Key.StartsWith($&quot;{externalService.Resource.Name}_external&quot;)).Key;</span>
+<span class="a">+</span>
+<span class="a">+        // Run the health check</span>
+<span class="a">+        var result = await healthCheckService.CheckHealthAsync(</span>
+<span class="a">+            registration =&gt; registration.Name == healthCheckKey,</span>
+<span class="a">+            CancellationToken.None).DefaultTimeout();</span>
+<span class="a">+</span>
+<span class="a">+        // The result should be healthy since we&#x27;re using httpbin.org which should be accessible</span>
+<span class="a">+        // However, in a test environment this might fail due to network issues, so we just check that it ran</span>
+<span class="a">+        Assert.Contains(healthCheckKey, result.Entries.Keys);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     private sealed class TestProject : IProjectMetadata
+     {
+         public string ProjectPath =&gt; &quot;testproject&quot;;</pre><h2>Commit #4: <a href="https://github.com/dotnet/aspire/commit/bc97b3342f1748efaf90cb043d5931f5debaf6dd">bc97b3342f</a> (2025-07-31T17:59:44-07:00)</h2><p class="k">External Services with URL Parameter fails to generate manifests (#10790)<br>Path after this commit: tests/Aspire.Hosting.Tests/ExternalServiceTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs
+index 9cdc3652d5..aae26da913 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="h">@@ -443,6 +443,23 @@ public class ExternalServiceTests</span>
+         Assert.Contains(healthCheckKey, result.Entries.Keys);
+     }
+ 
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ExternalServiceWithParameterPublishManifest()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(DistributedApplicationOperation.Publish);</span>
+<span class="a">+</span>
+<span class="a">+        var urlParam = builder.AddParameter(&quot;external-url&quot;);</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;external&quot;, urlParam);</span>
+<span class="a">+</span>
+<span class="a">+        var project = builder.AddProject&lt;TestProject&gt;(&quot;project&quot;)</span>
+<span class="a">+                     .WithReference(externalService)</span>
+<span class="a">+                     .WithEnvironment(&quot;EXTERNAL_SERVICE&quot;, externalService);</span>
+<span class="a">+</span>
+<span class="a">+        var manifest = await ManifestUtils.GetManifest(project.Resource);</span>
+<span class="a">+</span>
+<span class="a">+        await Verify(manifest.ToString(), extension: &quot;json&quot;);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     private sealed class TestProject : IProjectMetadata
+     {
+         public string ProjectPath =&gt; &quot;testproject&quot;;</pre><h2>Commit #5: <a href="https://github.com/dotnet/aspire/commit/a32c0b12f3e3a6d72780755358e6c23df8a18c5c">a32c0b12f3</a> (2025-08-20T09:01:50-07:00)</h2><p class="k">Remove IResourceWithoutLifetime on everything (#10851)<br>Path after this commit: tests/Aspire.Hosting.Tests/ExternalServiceTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs
+index aae26da913..d121b8f8aa 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="h">@@ -246,17 +246,6 @@ public class ExternalServiceTests</span>
+         Assert.Equal(&quot;ExternalService&quot;, snapshot.InitialSnapshot.ResourceType);
+     }
+ 
+<span class="d">-    [Fact]</span>
+<span class="d">-    public void ExternalServiceResourceImplementsExpectedInterfaces()</span>
+<span class="d">-    {</span>
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="d">-</span>
+<span class="d">-        var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;https://nuget.org/&quot;);</span>
+<span class="d">-</span>
+<span class="d">-        // Verify the resource implements the expected interfaces</span>
+<span class="d">-        Assert.IsAssignableFrom&lt;IResourceWithoutLifetime&gt;(externalService.Resource);</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     [Fact]
+     public void ExternalServiceResourceIsExcludedFromPublishingManifest()
+     {</pre><h2>Commit #6: <a href="https://github.com/dotnet/aspire/commit/6a43c5e4149456d8c12a2e65b9ebb40845bde899">6a43c5e414</a> (2025-10-20T20:16:17+00:00)</h2><p class="k">Support simplified service url ENV format (#12141)<br>Path after this commit: tests/Aspire.Hosting.Tests/ExternalServiceTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs
+index d121b8f8aa..0accb9ff94 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="h">@@ -112,6 +112,7 @@ public class ExternalServiceTests</span>
+ 
+         // Check that service discovery information was injected with https scheme
+         Assert.Contains(config, kvp =&gt; kvp.Key == &quot;services__nuget__https__0&quot; &amp;&amp; kvp.Value == &quot;https://nuget.org/&quot;);
+<span class="a">+        Assert.Contains(config, kvp =&gt; kvp.Key == &quot;NUGET&quot; &amp;&amp; kvp.Value == &quot;https://nuget.org/&quot;);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -128,6 +129,7 @@ public class ExternalServiceTests</span>
+ 
+         // Check that service discovery information was injected with http scheme
+         Assert.Contains(config, kvp =&gt; kvp.Key == &quot;services__nuget__http__0&quot; &amp;&amp; kvp.Value == &quot;http://nuget.org/&quot;);
+<span class="a">+        Assert.Contains(config, kvp =&gt; kvp.Key == &quot;NUGET&quot; &amp;&amp; kvp.Value == &quot;http://nuget.org/&quot;);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -145,10 +147,8 @@ public class ExternalServiceTests</span>
+         var config = await EnvironmentVariableEvaluator.GetEnvironmentVariablesAsync(project.Resource, DistributedApplicationOperation.Run, TestServiceProvider.Instance).DefaultTimeout();
+ 
+         // Check that service discovery information was injected with the correct scheme from parameter value
+<span class="d">-        Assert.Contains(config, kvp =&gt; kvp.Key == &quot;services__nuget__https__0&quot;);</span>
+<span class="d">-        // The value should be the URL value from the parameter</span>
+<span class="d">-        var urlValue = config[&quot;services__nuget__https__0&quot;];</span>
+<span class="d">-        Assert.Equal(&quot;https://nuget.org/&quot;, urlValue);</span>
+<span class="a">+        Assert.Contains(config, kvp =&gt; kvp.Key == &quot;services__nuget__https__0&quot; &amp;&amp; kvp.Value == &quot;https://nuget.org/&quot;);</span>
+<span class="a">+        Assert.Contains(config, kvp =&gt; kvp.Key == &quot;NUGET_HTTPS&quot; &amp;&amp; kvp.Value == &quot;https://nuget.org/&quot;);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -170,6 +170,7 @@ public class ExternalServiceTests</span>
+         Assert.Contains(config, kvp =&gt; kvp.Key == &quot;services__nuget__default__0&quot;);
+         var urlValue = config[&quot;services__nuget__default__0&quot;];
+         Assert.Equal(urlParam.Resource.ValueExpression, urlValue);
+<span class="a">+        Assert.Contains(config, kvp =&gt; kvp.Key == &quot;NUGET&quot; &amp;&amp; kvp.Value == urlValue);</span>
+     }
+ 
+     [Fact]</pre><h2>Commit #7: <a href="https://github.com/dotnet/aspire/commit/fd8596cea02dd9f40397e5226388abab7164dc84">fd8596cea0</a> (2025-11-25T16:18:10-08:00)</h2><p class="k">Improve Aspire.Hosting test reliability and diagnostics for investigating hang issues (#13158)<br>Path after this commit: tests/Aspire.Hosting.Tests/ExternalServiceTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs
+index 0accb9ff94..31fbe9731f 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="h">@@ -9,12 +9,12 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;</span>
+ 
+ namespace Aspire.Hosting.Tests;
+ 
+<span class="d">-public class ExternalServiceTests</span>
+<span class="a">+public class ExternalServiceTests(ITestOutputHelper testOutputHelper)</span>
+ {
+     [Fact]
+     public void AddExternalServiceWithString()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;https://nuget.org/&quot;);
+ 
+<span class="h">@@ -26,7 +26,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void AddExternalServiceWithUri()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var uri = new Uri(&quot;https://nuget.org/&quot;);
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, uri);
+<span class="h">@@ -39,7 +39,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void AddExternalServiceWithParameter()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var urlParam = builder.AddParameter(&quot;nuget-url&quot;);
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, urlParam);
+<span class="h">@@ -58,7 +58,7 @@ public class ExternalServiceTests</span>
+     [InlineData(&quot;https://example.com#fragment&quot;)]
+     public void AddExternalServiceThrowsWithInvalidUrl(string invalidUrl)
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt; builder.AddExternalService(&quot;nuget&quot;, invalidUrl));
+         Assert.Contains(&quot;invalid&quot;, ex.Message, StringComparison.OrdinalIgnoreCase);
+<span class="h">@@ -67,7 +67,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void AddExternalServiceThrowsWithRelativeUri()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var relativeUri = new Uri(&quot;/relative&quot;, UriKind.Relative);
+         var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt; builder.AddExternalService(&quot;nuget&quot;, relativeUri));
+<span class="h">@@ -77,7 +77,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void AddExternalServiceThrowsWithUriWithPath()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var uriWithPath = new Uri(&quot;https://api.example.com/api/v1&quot;);
+         var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt; builder.AddExternalService(&quot;nuget&quot;, uriWithPath));
+<span class="h">@@ -90,7 +90,7 @@ public class ExternalServiceTests</span>
+     [InlineData(&quot;https://example.com:8080/&quot;)]
+     public void AddExternalServiceAcceptsValidUrls(string validUrl)
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, validUrl);
+ 
+<span class="h">@@ -101,7 +101,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithHttpsCanBeReferenced()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;https://nuget.org/&quot;);
+         var project = builder.AddProject&lt;TestProject&gt;(&quot;project&quot;)
+<span class="h">@@ -118,7 +118,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithHttpCanBeReferenced()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;http://nuget.org/&quot;);
+         var project = builder.AddProject&lt;TestProject&gt;(&quot;project&quot;)
+<span class="h">@@ -135,7 +135,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithParameterCanBeReferencedInRunMode()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+         builder.Configuration[&quot;Parameters:nuget-url&quot;] = &quot;https://nuget.org/&quot;;
+ 
+         var urlParam = builder.AddParameter(&quot;nuget-url&quot;);
+<span class="h">@@ -154,7 +154,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithParameterCanBeReferencedInPublishMode()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create(DistributedApplicationOperation.Publish);</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(DistributedApplicationOperation.Publish).WithTestAndResourceLogging(testOutputHelper);</span>
+ 
+         var urlParam = builder.AddParameter(&quot;nuget-url&quot;);
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, urlParam);
+<span class="h">@@ -176,7 +176,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithInvalidParameterThrowsInRunMode()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+         builder.Configuration[&quot;Parameters:nuget-url&quot;] = &quot;invalid-url&quot;;
+ 
+         var urlParam = builder.AddParameter(&quot;nuget-url&quot;);
+<span class="h">@@ -194,7 +194,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void ExternalServiceWithHttpHealthCheck()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;https://nuget.org/&quot;)
+                                      .WithHttpHealthCheck();
+<span class="h">@@ -210,7 +210,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void ExternalServiceWithHttpHealthCheckCustomPath()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;https://nuget.org/&quot;)
+                                      .WithHttpHealthCheck(&quot;/health&quot;, 200);
+<span class="h">@@ -226,7 +226,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void ExternalServiceWithHttpHealthCheckInvalidPath()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;https://nuget.org/&quot;);
+ 
+<span class="h">@@ -237,7 +237,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void ExternalServiceResourceHasExpectedInitialState()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;https://nuget.org/&quot;);
+ 
+<span class="h">@@ -251,7 +251,7 @@ public class ExternalServiceTests</span>
+     public void ExternalServiceResourceIsExcludedFromPublishingManifest()
+     {
+         //ManifestPublishingCallbackAnnotation
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;nuget&quot;, &quot;https://nuget.org/&quot;);
+ 
+<span class="h">@@ -283,7 +283,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithParameterGetValueAsyncErrorMarksAsFailedToStart()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         // Create a parameter with a broken value callback
+         var urlParam = builder.AddParameter(&quot;failing-url&quot;, () =&gt; throw new InvalidOperationException(&quot;Parameter resolution failed&quot;));
+<span class="h">@@ -310,7 +310,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithParameterInvalidUrlMarksAsFailedToStart()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         // Create a parameter that returns an invalid URL
+         var urlParam = builder.AddParameter(&quot;invalid-url&quot;, () =&gt; &quot;invalid-url-not-absolute&quot;);
+<span class="h">@@ -337,7 +337,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithValidParameterMarksAsRunning()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         // Create a parameter that returns a valid URL
+         var urlParam = builder.AddParameter(&quot;valid-url&quot;, () =&gt; &quot;https://example.com/&quot;);
+<span class="h">@@ -364,7 +364,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void ExternalServiceWithParameterHttpHealthCheckRegistersCustomHealthCheck()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var urlParam = builder.AddParameter(&quot;external-url&quot;);
+         var externalService = builder.AddExternalService(&quot;external&quot;, urlParam)
+<span class="h">@@ -386,7 +386,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public void ExternalServiceWithStaticUrlHttpHealthCheckUsesUrlGroup()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+ 
+         var externalService = builder.AddExternalService(&quot;external&quot;, &quot;https://example.com/&quot;)
+                                      .WithHttpHealthCheck();
+<span class="h">@@ -407,7 +407,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithParameterHttpHealthCheckResolvesUrlAsync()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);</span>
+         builder.Configuration[&quot;Parameters:external-url&quot;] = &quot;https://example.com/&quot;;
+ 
+         var urlParam = builder.AddParameter(&quot;external-url&quot;);
+<span class="h">@@ -436,7 +436,7 @@ public class ExternalServiceTests</span>
+     [Fact]
+     public async Task ExternalServiceWithParameterPublishManifest()
+     {
+<span class="d">-        using var builder = TestDistributedApplicationBuilder.Create(DistributedApplicationOperation.Publish);</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create(DistributedApplicationOperation.Publish).WithTestAndResourceLogging(testOutputHelper);</span>
+ 
+         var urlParam = builder.AddParameter(&quot;external-url&quot;);
+         var externalService = builder.AddExternalService(&quot;external&quot;, urlParam);</pre><h2>Commit #8: <a href="https://github.com/dotnet/aspire/commit/2fefb069bcbd960a16015072a10265cc74613597">2fefb069bc</a> (2025-12-04T14:35:25+11:00)</h2><p class="k">Improve path validation for ExternalServiceResource to support reverse proxy scenarios (#13036)<br>Path after this commit: tests/Aspire.Hosting.Tests/ExternalServiceTests.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs
+index 31fbe9731f..b3c8643fef 100644
+<span class="d">--- a/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Tests/ExternalServiceTests.cs</span>
+<span class="h">@@ -53,9 +53,12 @@ public class ExternalServiceTests(ITestOutputHelper testOutputHelper)</span>
+     [Theory]
+     [InlineData(&quot;not-a-url&quot;)]
+     [InlineData(&quot;&quot;)]
+<span class="d">-    [InlineData(&quot;https://example.com/path&quot;)]</span>
+<span class="d">-    [InlineData(&quot;https://example.com/path?query=value&quot;)]</span>
+<span class="d">-    [InlineData(&quot;https://example.com#fragment&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://example.com/path&quot;)]  // Invalid: missing trailing slash</span>
+<span class="a">+    [InlineData(&quot;https://example.com/path?query=value&quot;)]  // Invalid: has query string</span>
+<span class="a">+    [InlineData(&quot;https://example.com#fragment&quot;)]  // Invalid: has fragment</span>
+<span class="a">+    [InlineData(&quot;https://example.com/service&quot;)]  // Invalid: missing trailing slash</span>
+<span class="a">+    [InlineData(&quot;https://example.com/service/sub&quot;)]  // Invalid: missing trailing slash</span>
+<span class="a">+    [InlineData(&quot;https://example.com/?query=1&quot;)]  // Invalid: has query string</span>
+     public void AddExternalServiceThrowsWithInvalidUrl(string invalidUrl)
+     {
+         using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);
+<span class="h">@@ -75,19 +78,21 @@ public class ExternalServiceTests(ITestOutputHelper testOutputHelper)</span>
+     }
+ 
+     [Fact]
+<span class="d">-    public void AddExternalServiceThrowsWithUriWithPath()</span>
+<span class="a">+    public void AddExternalServiceThrowsWithUriWithoutTrailingSlash()</span>
+     {
+         using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);
+ 
+         var uriWithPath = new Uri(&quot;https://api.example.com/api/v1&quot;);
+         var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt; builder.AddExternalService(&quot;nuget&quot;, uriWithPath));
+<span class="d m">-        Assert.Contains(&quot;absolute path must be \&quot;/\&quot;&quot;, ex.Message);</span>
+<span class="a">+        Assert.Contains(&quot;absolute path must end with &#x27;/&#x27;&quot;, ex.Message);</span>
+     }
+ 
+     [Theory]
+     [InlineData(&quot;https://nuget.org/&quot;)]
+     [InlineData(&quot;http://localhost/&quot;)]
+     [InlineData(&quot;https://example.com:8080/&quot;)]
+<span class="a">+    [InlineData(&quot;https://gateway/orders-service/&quot;)]  // Path with trailing slash</span>
+<span class="a">+    [InlineData(&quot;https://gateway/api/v1/&quot;)]  // Nested path with trailing slash</span>
+     public void AddExternalServiceAcceptsValidUrls(string validUrl)
+     {
+         using var builder = TestDistributedApplicationBuilder.Create(testOutputHelper);
+<span class="h">@@ -277,7 +282,24 @@ public class ExternalServiceTests(ITestOutputHelper testOutputHelper)</span>
+         Assert.False(ExternalServiceResource.UrlIsValidForExternalService(&quot;https://nuget.org/path&quot;, out var pathUri, out var pathMessage));
+         Assert.Null(pathUri);
+         Assert.NotNull(pathMessage);
+<span class="d">-        Assert.Contains(&quot;absolute path must be \&quot;/\&quot;&quot;, pathMessage);</span>
+<span class="a">+        Assert.Contains(&quot;absolute path must end with &#x27;/&#x27;&quot;, pathMessage);</span>
+<span class="a">+</span>
+<span class="a">+        // Test valid paths with trailing slash</span>
+<span class="a">+        Assert.True(ExternalServiceResource.UrlIsValidForExternalService(&quot;https://gateway/orders-service/&quot;, out var validPathUri, out var validPathMessage));</span>
+<span class="a">+        Assert.Equal(&quot;https://gateway/orders-service/&quot;, validPathUri!.ToString());</span>
+<span class="a">+        Assert.Null(validPathMessage);</span>
+<span class="a">+</span>
+<span class="a">+        // Test fragment rejection</span>
+<span class="a">+        Assert.False(ExternalServiceResource.UrlIsValidForExternalService(&quot;https://nuget.org/#fragment&quot;, out var fragmentUri, out var fragmentMessage));</span>
+<span class="a">+        Assert.Null(fragmentUri);</span>
+<span class="a">+        Assert.NotNull(fragmentMessage);</span>
+<span class="a">+        Assert.Contains(&quot;fragment&quot;, fragmentMessage);</span>
+<span class="a">+</span>
+<span class="a">+        // Test query string rejection</span>
+<span class="a">+        Assert.False(ExternalServiceResource.UrlIsValidForExternalService(&quot;https://nuget.org/?query=1&quot;, out var queryUri, out var queryMessage));</span>
+<span class="a">+        Assert.Null(queryUri);</span>
+<span class="a">+        Assert.NotNull(queryMessage);</span>
+<span class="a">+        Assert.Contains(&quot;query&quot;, queryMessage);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -450,6 +472,100 @@ public class ExternalServiceTests(ITestOutputHelper testOutputHelper)</span>
+         await Verify(manifest.ToString(), extension: &quot;json&quot;);
+     }
+ 
+<span class="a">+    [Theory]</span>
+<span class="a">+    [InlineData(&quot;https://host/&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/service/&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/service/sub/&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/service/sub/deep/&quot;)]</span>
+<span class="a">+    [InlineData(&quot;http://gateway:8080/api/v1/&quot;)]</span>
+<span class="a">+    public void ExternalServiceAcceptsPathsWithTrailingSlash(string validUrl)</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;service&quot;, validUrl);</span>
+<span class="a">+</span>
+<span class="a">+        Assert.Equal(&quot;service&quot;, externalService.Resource.Name);</span>
+<span class="a">+        Assert.Equal(validUrl, externalService.Resource.Uri?.ToString());</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Theory]</span>
+<span class="a">+    [InlineData(&quot;https://host/service&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/service/sub&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/api&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/service?query=1&quot;)]</span>
+<span class="a">+    public void ExternalServiceRejectsPathsWithoutTrailingSlash(string invalidUrl)</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt; builder.AddExternalService(&quot;service&quot;, invalidUrl));</span>
+<span class="a">+        Assert.Contains(&quot;absolute path must end with &#x27;/&#x27;&quot;, ex.Message);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Theory]</span>
+<span class="a">+    [InlineData(&quot;https://host/service/#frag&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/#fragment&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/service/#&quot;)]</span>
+<span class="a">+    public void ExternalServiceRejectsUrisWithFragment(string invalidUrl)</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt; builder.AddExternalService(&quot;service&quot;, invalidUrl));</span>
+<span class="a">+        Assert.Contains(&quot;fragment&quot;, ex.Message, StringComparison.OrdinalIgnoreCase);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Theory]</span>
+<span class="a">+    [InlineData(&quot;https://host/service/?query=1&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/?query=value&quot;)]</span>
+<span class="a">+    [InlineData(&quot;https://host/service/?key=value&amp;other=data&quot;)]</span>
+<span class="a">+    public void ExternalServiceRejectsUrisWithQueryString(string invalidUrl)</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt; builder.AddExternalService(&quot;service&quot;, invalidUrl));</span>
+<span class="a">+        Assert.Contains(&quot;query&quot;, ex.Message, StringComparison.OrdinalIgnoreCase);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task ExternalServiceWithPathCanBeReferenced()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var externalService = builder.AddExternalService(&quot;gateway&quot;, &quot;https://gateway.example.com/orders-service/&quot;);</span>
+<span class="a">+        var project = builder.AddProject&lt;TestProject&gt;(&quot;project&quot;)</span>
+<span class="a">+                             .WithReference(externalService);</span>
+<span class="a">+</span>
+<span class="a">+        // Call environment variable callbacks.</span>
+<span class="a">+        var config = await EnvironmentVariableEvaluator.GetEnvironmentVariablesAsync(project.Resource, DistributedApplicationOperation.Run, TestServiceProvider.Instance).DefaultTimeout();</span>
+<span class="a">+</span>
+<span class="a">+        // Check that service discovery information was injected with the full URL including path</span>
+<span class="a">+        Assert.Contains(config, kvp =&gt; kvp.Key == &quot;services__gateway__https__0&quot; &amp;&amp; kvp.Value == &quot;https://gateway.example.com/orders-service/&quot;);</span>
+<span class="a">+        Assert.Contains(config, kvp =&gt; kvp.Key == &quot;GATEWAY&quot; &amp;&amp; kvp.Value == &quot;https://gateway.example.com/orders-service/&quot;);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void WithReferenceThrowsForUriWithoutTrailingSlash()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var project = builder.AddProject&lt;TestProject&gt;(&quot;project&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        var uri = new Uri(&quot;https://api.example.com/service&quot;);</span>
+<span class="a">+        var ex = Assert.Throws&lt;InvalidOperationException&gt;(() =&gt; project.WithReference(&quot;api&quot;, uri));</span>
+<span class="a">+        Assert.Contains(&quot;absolute path must end with &#x27;/&#x27;&quot;, ex.Message);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public void WithReferenceAcceptsUriWithPathAndTrailingSlash()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var project = builder.AddProject&lt;TestProject&gt;(&quot;project&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        var uri = new Uri(&quot;https://api.example.com/service/&quot;);</span>
+<span class="a">+        // Should not throw</span>
+<span class="a">+        project.WithReference(&quot;api&quot;, uri);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     private sealed class TestProject : IProjectMetadata
+     {
+         public string ProjectPath =&gt; &quot;testproject&quot;;</pre></body></html>

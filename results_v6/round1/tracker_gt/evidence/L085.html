@@ -1,0 +1,101 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L085</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L085</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/runtime">dotnet/runtime</a><br><b>File at merge:</b> src/tests/JIT/Regression/JitBlue/Runtime_113832/Runtime_113832.cs, line 59<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/runtime/commit/cd115dd8d39c9ef50279eb653f98c1bcbceca135">cd115dd8d3</a> (2025-03-31T22:08:42)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/runtime/tree/32fcc41afe5747cf674ca6c62de087ab5fd332eb">32fcc41afe</a>)</p><p><b>The line:</b></p><pre><span class="t">            var vr22 = Vector128.Create&lt;ulong&gt;(0);</span></pre><h2>File at the merge commit, lines 51 to 66</h2><pre>   51 |             Vector256&lt;short&gt; vr14 = default;
+   52 |             var vr15 = s_26++;
+   53 |             var vr16 = Vector128.CreateScalar(vr15);
+   54 |             var vr17 = Avx2.BroadcastScalarToVector128(vr16);
+   55 |             var vr18 = Vector128.Create&lt;ulong&gt;(0);
+   56 |             var vr19 = Vector128.Create&lt;ulong&gt;(0);
+   57 |             var vr20 = Sse2.ShiftRightLogical128BitLane(vr19, 0);
+   58 |             var vr21 = Avx512F.VL.PermuteVar2x64x2(vr17, vr18, vr20);
+<span class="t">   59 |             var vr22 = Vector128.Create&lt;ulong&gt;(0);</span>
+   60 |             if (Sse41.TestZ(vr21, vr22))
+   61 |             {
+   62 |                 Console.WriteLine(vr14);
+   63 |             }
+   64 |         }
+   65 |     }
+   66 | }</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/runtime/commit/4f905a80b28cc0dee618ee87f99e2fa076bf7aee">4f905a80b2</a> (2025-11-07T00:47:08+00:00)</h2><p class="k">Merge JIT/Regression tests into merged wrapper assemblies (#121078)<br>Path after this commit: src/tests/JIT/Regression/JitBlue/Runtime_113832/Runtime_113832.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/tests/JIT/Regression/JitBlue/Runtime_113832/Runtime_113832.cs b/src/tests/JIT/Regression/JitBlue/Runtime_113832/Runtime_113832.cs
+index f3b580c14c8..bdae4c4bb95 100644
+<span class="d">--- a/src/tests/JIT/Regression/JitBlue/Runtime_113832/Runtime_113832.cs</span>
+<span class="a">+++ b/src/tests/JIT/Regression/JitBlue/Runtime_113832/Runtime_113832.cs</span>
+<span class="h">@@ -14,6 +14,9 @@</span>
+ // Reduced from 151.7 KiB to 0.8 KiB in 00:02:43
+ // Problem2() Hits JIT assert in Release:
+ // Assertion failed &#x27;hwintrinsicChild-&gt;isContained()&#x27; in &#x27;Program:Main(Fuzzlyn.ExecutionServer.IRuntime)&#x27; during &#x27;Generate code&#x27; (IL size 94; hash 0xade6b36b; FullOpts)
+<span class="a">+</span>
+<span class="a">+namespace Runtime_113832;</span>
+<span class="a">+</span>
+ using System;
+ using System.Runtime.Intrinsics;
+ using System.Runtime.Intrinsics.X86;
+<span class="h">@@ -23,44 +26,38 @@ public class Runtime_113832</span>
+ {
+     public static byte s_4;
+ 
+<span class="d">-    [Fact]</span>
+<span class="a">+    [ConditionalFact(typeof(Avx512F.VL), nameof(Avx512F.VL.IsSupported))]</span>
+     public static void Problem()
+     {
+<span class="d">-        if (Avx512F.VL.IsSupported)</span>
+<span class="d">-        {</span>
+<span class="d">-            var vr9 = Vector128.Create&lt;ulong&gt;(0);</span>
+<span class="d">-            var vr10 = (ulong)s_4;</span>
+<span class="d">-            var vr11 = Vector128.CreateScalar(vr10);</span>
+<span class="d">-            var vr12 = Avx2.BroadcastScalarToVector128(vr11);</span>
+<span class="d">-            var vr13 = (byte)0;</span>
+<span class="d">-            var vr14 = Vector256.CreateScalar(vr13);</span>
+<span class="d">-            var vr15 = (ulong)Avx2.MoveMask(vr14);</span>
+<span class="d">-            var vr16 = Vector128.Create&lt;ulong&gt;(vr15);</span>
+<span class="d">-            var vr17 = Avx512F.VL.TernaryLogic(vr9, vr12, vr16, 1);</span>
+<span class="d">-            Console.WriteLine(vr17);</span>
+<span class="d">-        }</span>
+<span class="a">+        var vr9 = Vector128.Create&lt;ulong&gt;(0);</span>
+<span class="a">+        var vr10 = (ulong)s_4;</span>
+<span class="a">+        var vr11 = Vector128.CreateScalar(vr10);</span>
+<span class="a">+        var vr12 = Avx2.BroadcastScalarToVector128(vr11);</span>
+<span class="a">+        var vr13 = (byte)0;</span>
+<span class="a">+        var vr14 = Vector256.CreateScalar(vr13);</span>
+<span class="a">+        var vr15 = (ulong)Avx2.MoveMask(vr14);</span>
+<span class="a">+        var vr16 = Vector128.Create&lt;ulong&gt;(vr15);</span>
+<span class="a">+        var vr17 = Avx512F.VL.TernaryLogic(vr9, vr12, vr16, 1);</span>
+<span class="a">+        Console.WriteLine(vr17);</span>
+     }
+ 
+     public static ulong s_26;
+ 
+<span class="d">-    [Fact]</span>
+<span class="a">+    [ConditionalFact(typeof(Avx512BW.VL), nameof(Avx512BW.VL.IsSupported))]</span>
+     public static void Problem2()
+     {
+<span class="d">-        if (Avx512F.VL.IsSupported)</span>
+<span class="a">+        Vector256&lt;short&gt; vr14 = default;</span>
+<span class="a">+        var vr15 = s_26++;</span>
+<span class="a">+        var vr16 = Vector128.CreateScalar(vr15);</span>
+<span class="a">+        var vr17 = Avx2.BroadcastScalarToVector128(vr16);</span>
+<span class="a">+        var vr18 = Vector128.Create&lt;ulong&gt;(0);</span>
+<span class="a">+        var vr19 = Vector128.Create&lt;ulong&gt;(0);</span>
+<span class="a">+        var vr20 = Sse2.ShiftRightLogical128BitLane(vr19, 0);</span>
+<span class="a">+        var vr21 = Avx512F.VL.PermuteVar2x64x2(vr17, vr18, vr20);</span>
+<span class="a m">+        var vr22 = Vector128.Create&lt;ulong&gt;(0);</span>
+<span class="a">+        if (Sse41.TestZ(vr21, vr22))</span>
+         {
+<span class="d">-            Vector256&lt;short&gt; vr14 = default;</span>
+<span class="d">-            var vr15 = s_26++;</span>
+<span class="d">-            var vr16 = Vector128.CreateScalar(vr15);</span>
+<span class="d">-            var vr17 = Avx2.BroadcastScalarToVector128(vr16);</span>
+<span class="d">-            var vr18 = Vector128.Create&lt;ulong&gt;(0);</span>
+<span class="d">-            var vr19 = Vector128.Create&lt;ulong&gt;(0);</span>
+<span class="d">-            var vr20 = Sse2.ShiftRightLogical128BitLane(vr19, 0);</span>
+<span class="d">-            var vr21 = Avx512F.VL.PermuteVar2x64x2(vr17, vr18, vr20);</span>
+<span class="d m">-            var vr22 = Vector128.Create&lt;ulong&gt;(0);</span>
+<span class="d">-            if (Sse41.TestZ(vr21, vr22))</span>
+<span class="d">-            {</span>
+<span class="d">-                Console.WriteLine(vr14);</span>
+<span class="d">-            }</span>
+<span class="a">+            Console.WriteLine(vr14);</span>
+         }
+     }
+ }</pre></body></html>

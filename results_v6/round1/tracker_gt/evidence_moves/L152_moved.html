@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L152 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L152: after the move</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>Original file:</b> apps/web/client/src/server/api/routers/canvas.ts (see L152.html)<br><b>Move commit:</b> <a href="https://github.com/onlook-dev/onlook/commit/b328ead2f2e2afa7bed9281ba29817ed5b36f8e5">b328ead2f2</a> (commit #4 on L152.html)<br><b>Destination file (your label):</b> apps/web/client/src/server/api/routers/user/user-canvas.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">                where: eq(canvases.projectId, input.projectId),</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 46).</p><h2>Destination file at the move commit, lines 38 to 54</h2><pre>   38 |     getWithFrames: protectedProcedure
+   39 |         .input(
+   40 |             z.object({
+   41 |                 projectId: z.string(),
+   42 |             }),
+   43 |         )
+   44 |         .query(async ({ ctx, input }) =&gt; {
+   45 |             const dbCanvas = await ctx.db.query.canvases.findFirst({
+<span class="t">   46 |                 where: eq(canvases.projectId, input.projectId),</span>
+   47 |                 with: {
+   48 |                     frames: true,
+   49 |                     userCanvases: {
+   50 |                         where: eq(userCanvases.userId, ctx.user.id),
+   51 |                     },
+   52 |                 },
+   53 |             });
+   54 |             if (!dbCanvas) {</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/891ac13c7d15eadf4c7f08e73dc5b183f0b9c69b">891ac13c7d</a> (2025-09-07T16:36:00-07:00)</h2><p class="k">feat: add branching  (#2763)<br>Path after this commit: apps/web/client/src/server/api/routers/user/user-canvas.ts. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: apps/web/client/src/server/api/routers/project/branch.ts.</p><pre>diff --git a/apps/web/client/src/server/api/routers/user/user-canvas.ts b/apps/web/client/src/server/api/routers/user/user-canvas.ts
+index 5ce3a6b6..d80f227f 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/user/user-canvas.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/user/user-canvas.ts</span>
+<span class="h">@@ -2,8 +2,8 @@ import {</span>
+     canvases,
+     createDefaultUserCanvas,
+     projects,
+<span class="d">-    toCanvas,</span>
+<span class="d">-    toFrame,</span>
+<span class="a">+    fromDbCanvas,</span>
+<span class="a">+    fromDbFrame,</span>
+     userCanvases,
+     userCanvasUpdateSchema,
+     type UserCanvas
+<span class="h">@@ -33,7 +33,7 @@ export const userCanvasRouter = createTRPCRouter({</span>
+             if (!userCanvas) {
+                 throw new Error(&#x27;User canvas not found&#x27;);
+             }
+<span class="d">-            return toCanvas(userCanvas);</span>
+<span class="a">+            return fromDbCanvas(userCanvas);</span>
+         }),
+     getWithFrames: protectedProcedure
+         .input(
+<span class="h">@@ -56,8 +56,8 @@ export const userCanvasRouter = createTRPCRouter({</span>
+             }
+             const userCanvas: UserCanvas = dbCanvas.userCanvases[0] ?? createDefaultUserCanvas(ctx.user.id, dbCanvas.id);
+             return {
+<span class="d">-                userCanvas: toCanvas(userCanvas),</span>
+<span class="d">-                frames: dbCanvas.frames.map(toFrame),</span>
+<span class="a">+                userCanvas: fromDbCanvas(userCanvas),</span>
+<span class="a">+                frames: dbCanvas.frames.map(fromDbFrame),</span>
+             };
+         }),
+     update: protectedProcedure.input(</pre></body></html>

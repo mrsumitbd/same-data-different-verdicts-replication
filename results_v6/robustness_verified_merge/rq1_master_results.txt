@@ -1,0 +1,38 @@
+
+======================================================================
+SECTION: step1
+======================================================================
+            label  n_agent  n_human  mod_rate_agent  mod_rate_human  median_agent  median_human     hr  ci_low  ci_high    p_cox logrank_p
+pooled_all_agents   265421   378756            20.6            25.0           inf           inf 0.8959  0.8865   0.9055 1.82e-91  1.13e-91
+
+======================================================================
+SECTION: step2
+======================================================================
+           label  n_agent  n_human  mod_rate_agent  mod_rate_human  median_agent  median_human     hr  ci_low  ci_high    p_cox logrank_p
+human_supervised   177787   378756            20.1            25.0           inf           inf 0.8884  0.8775   0.8994 2.06e-79  5.61e-80
+fully_autonomous    87634   378756            21.5            25.0           inf           inf 0.8960  0.8821   0.9102 5.98e-43  1.33e-42
+
+======================================================================
+SECTION: step3
+======================================================================
+               label  n_agent  n_human  mod_rate_agent  mod_rate_human  median_agent  median_human     hr  ci_low  ci_high    p_cox logrank_p
+human_supervised_ast   177787   378756            15.7            18.9           inf           inf 0.9188  0.9060   0.9317 1.60e-32  5.39e-33
+fully_autonomous_ast    87634   378756            15.3            18.9           inf           inf 0.8469  0.8314   0.8627 1.19e-69  1.77e-69
+
+======================================================================
+SECTION: step4
+======================================================================
+           label  n_contributing_strata  n_total_strata  hr_analytic  ci_low_analytic  ci_high_analytic p_analytic  boot_median_hr  boot_ci_low  boot_ci_high  boot_n_valid  boot_failures
+human_supervised                    128             215       0.8066           0.6000            1.0844   1.55e-01          0.7946       0.5440        1.0324           500              0
+fully_autonomous                     31             193       1.0588           0.5055            2.2177   8.80e-01          1.1162       0.4089        2.0759           500              0
+
+======================================================================
+SECTION: hunk_size
+======================================================================
+            tier  size_group  n_agent  n_human     hr  ci_low  ci_high        p
+human_supervised single_line    10657    21051 0.7760  0.7415   0.8122 9.25e-28
+human_supervised small_block     5384    11646 0.8930  0.8435   0.9454 1.00e-04
+human_supervised large_block     1867     3934 0.9630  0.8930   1.0386 3.29e-01
+fully_autonomous single_line     2932    21051 1.3846  1.3028   1.4716 1.13e-25
+fully_autonomous small_block     1595    11646 1.7358  1.6126   1.8684 8.67e-49
+fully_autonomous large_block      968     3934 1.4403  1.3210   1.5705 1.38e-16

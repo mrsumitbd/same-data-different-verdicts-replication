@@ -1,0 +1,56 @@
+======================================================================
+FULL CORPUS: 5,303 modification commits; 5,300 mapped to a tier via data/survival_events_line_v6confnv_analysis.csv (window applied)
+By tier: human=3,230, human_supervised=1,453, fully_autonomous=617
+Weights / tie order from kappa on the 618 human labels: minimax=0.712, deepseek=0.704, gpt_oss=0.691
+======================================================================
+
+SECTION A: RQ2 per approach. Shares (%) corrective/perfective/adaptive/preventive[/unknown]
+
+keyword        k=0.376  HS 36.2/12.8/30.6/10.3/10.0u  FA 30.6/15.6/36.0/13.5/4.4u  Hu 34.2/13.7/28.7/11.2/12.2u  | HS p=1.02e-01 V=0.041  | FA p=8.52e-09 V=0.106
+deepseek       k=0.704  HS 22.7/22.2/49.6/5.4  FA 22.4/25.8/47.3/4.5  Hu 22.1/23.7/49.4/4.8  | HS p=6.18e-01 V=0.020  | FA p=6.74e-01 V=0.020
+gpt_oss        k=0.691  HS 21.2/22.4/51.5/4.9  FA 22.2/24.0/48.6/5.2  Hu 20.9/23.2/51.8/4.1  | HS p=5.86e-01 V=0.020  | FA p=3.69e-01 V=0.029
+minimax        k=0.712  HS 24.8/21.6/48.2/5.4  FA 24.5/22.7/48.5/4.4  Hu 24.3/22.6/48.8/4.2  | HS p=3.36e-01 V=0.027  | FA p=9.98e-01 V=0.003
+mv3_undecided  k=0.714  HS 23.1/21.7/50.0/5.3  FA 23.3/23.7/48.8/4.2  Hu 22.5/23.0/50.1/4.4  | HS p=4.30e-01 V=0.024  | FA p=9.26e-01 V=0.011  [37 undecided, 0 missing]
+mv3_tiebest    k=0.714  HS 23.3/21.8/49.6/5.4  FA 23.3/23.7/48.6/4.4  Hu 22.7/23.0/49.9/4.4  | HS p=3.99e-01 V=0.025  | FA p=9.46e-01 V=0.010
+wv3            k=0.714  HS 23.3/21.8/49.6/5.4  FA 23.3/23.7/48.6/4.4  Hu 22.7/23.0/49.9/4.4  | HS p=3.99e-01 V=0.025  | FA p=9.46e-01 V=0.010
+ds3            k=0.718  HS 22.9/21.7/49.7/5.6  FA 23.2/23.7/48.6/4.5  Hu 22.3/23.1/50.0/4.5  | HS p=3.06e-01 V=0.028  | FA p=9.32e-01 V=0.011
+ds3kw          k=0.716  HS 23.0/22.0/49.5/5.6  FA 23.2/23.8/48.6/4.4  Hu 22.4/23.3/49.7/4.5  | HS p=3.30e-01 V=0.027  | FA p=9.57e-01 V=0.009
+
+SECTION B: RQ4 per approach. Intent shares (%) by modifier type (corrective/perfective/adaptive/preventive); chi-square agent vs human modifier
+
+keyword        human-modified 33.4/13.7/30.2/11.6  agent-modified 46.9/13.8/27.7/6.5  | p=1.91e-07 V=0.083 (n=5,300)
+deepseek       human-modified 22.5/23.6/49.2/4.7  agent-modified 19.5/22.3/49.2/9.0  | p=2.55e-03 V=0.052 (n=5,300)
+gpt_oss        human-modified 21.3/23.2/51.4/4.2  agent-modified 19.2/22.3/51.1/7.3  | p=4.32e-02 V=0.039 (n=5,300)
+minimax        human-modified 24.8/22.5/48.5/4.2  agent-modified 19.8/20.3/50.6/9.3  | p=3.66e-05 V=0.066 (n=5,300)
+mv3_undecided  human-modified 23.0/22.8/49.9/4.3  agent-modified 19.4/21.1/50.4/9.1  | p=2.68e-04 V=0.060 (n=5,263)
+mv3_tiebest    human-modified 23.2/22.9/49.7/4.3  agent-modified 19.5/21.2/50.0/9.3  | p=1.49e-04 V=0.062 (n=5,300)
+wv3            human-modified 23.2/22.9/49.7/4.3  agent-modified 19.5/21.2/50.0/9.3  | p=1.49e-04 V=0.062 (n=5,300)
+ds3            human-modified 22.8/22.9/49.7/4.5  agent-modified 19.2/21.2/50.3/9.3  | p=3.96e-04 V=0.059 (n=5,300)
+ds3kw          human-modified 22.9/23.2/49.5/4.4  agent-modified 19.5/21.2/50.0/9.3  | p=3.14e-04 V=0.059 (n=5,300)
+
+SECTION C: Misclassification-corrected tier shares (confusion from the 618 human labels; bootstrap 95% CI over the 618 and the corpus)
+
+  deepseek  [1/1000 draws clipped]
+    human_supervised  corr  23.6 [ 19.4,  27.4]  perf  21.8 [ 16.1,  27.2]  adap  41.7 [ 35.8,  47.2]  prev  12.9 [  7.6,  20.6]
+    fully_autonomous  corr  23.4 [ 18.4,  28.5]  perf  27.7 [ 20.9,  35.0]  adap  39.1 [ 31.9,  45.4]  prev   9.9 [  4.3,  17.7]
+    human             corr  23.0 [ 19.6,  26.1]  perf  24.3 [ 19.6,  28.9]  adap  41.7 [ 36.4,  46.3]  prev  10.9 [  6.9,  17.0]
+  gpt_oss  [1/1000 draws clipped]
+    human_supervised  corr  25.6 [ 22.1,  29.0]  perf  22.4 [ 16.8,  28.0]  adap  43.1 [ 37.2,  48.1]  prev   9.0 [  5.0,  14.9]
+    fully_autonomous  corr  26.8 [ 21.7,  31.8]  perf  24.7 [ 17.3,  32.4]  adap  39.0 [ 32.2,  45.5]  prev   9.5 [  4.0,  16.4]
+    human             corr  25.2 [ 22.6,  28.4]  perf  24.2 [ 19.3,  29.5]  adap  43.8 [ 38.6,  48.4]  prev   6.7 [  3.3,  10.8]
+  minimax  [0/1000 draws clipped]
+    human_supervised  corr  23.7 [ 19.4,  27.5]  perf  21.2 [ 15.5,  26.7]  adap  42.2 [ 36.5,  47.5]  prev  12.9 [  8.2,  20.2]
+    fully_autonomous  corr  23.6 [ 19.0,  28.7]  perf  23.4 [ 16.8,  30.6]  adap  42.9 [ 36.1,  49.1]  prev  10.1 [  4.9,  17.3]
+    human             corr  23.5 [ 20.7,  26.4]  perf  23.4 [ 18.8,  28.0]  adap  43.4 [ 38.3,  47.7]  prev   9.7 [  6.4,  14.9]
+  mv3_tiebest  [0/1000 draws clipped]
+    human_supervised  corr  24.0 [ 19.8,  27.6]  perf  20.4 [ 15.0,  25.7]  adap  42.7 [ 37.1,  47.8]  prev  13.0 [  8.4,  20.2]
+    fully_autonomous  corr  24.4 [ 19.5,  29.3]  perf  23.7 [ 17.4,  30.6]  adap  41.9 [ 34.9,  48.1]  prev  10.1 [  4.9,  17.2]
+    human             corr  23.6 [ 20.6,  26.7]  perf  22.7 [ 18.0,  27.1]  adap  43.6 [ 38.9,  48.2]  prev  10.1 [  6.6,  15.7]
+  wv3  [0/1000 draws clipped]
+    human_supervised  corr  24.0 [ 19.8,  27.6]  perf  20.4 [ 15.0,  25.7]  adap  42.7 [ 37.1,  47.8]  prev  13.0 [  8.4,  20.2]
+    fully_autonomous  corr  24.4 [ 19.5,  29.3]  perf  23.7 [ 17.4,  30.6]  adap  41.9 [ 34.9,  48.1]  prev  10.1 [  4.9,  17.2]
+    human             corr  23.6 [ 20.6,  26.7]  perf  22.7 [ 18.0,  27.1]  adap  43.6 [ 38.9,  48.2]  prev  10.1 [  6.6,  15.7]
+  ds3  [0/1000 draws clipped]
+    human_supervised  corr  23.8 [ 19.5,  27.4]  perf  19.9 [ 14.4,  25.1]  adap  42.5 [ 36.8,  47.8]  prev  13.8 [  8.9,  21.6]
+    fully_autonomous  corr  24.5 [ 19.7,  29.3]  perf  23.4 [ 17.1,  30.4]  adap  41.6 [ 34.8,  47.8]  prev  10.5 [  5.3,  18.1]
+    human             corr  23.5 [ 20.6,  26.5]  perf  22.6 [ 18.1,  27.1]  adap  43.4 [ 38.5,  47.9]  prev  10.5 [  7.0,  16.4]

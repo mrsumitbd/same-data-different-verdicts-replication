@@ -1,0 +1,152 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L086</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L086</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/typespec">microsoft/typespec</a><br><b>File at merge:</b> packages/compiler/src/core/scanner.ts, line 532<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/typespec/commit/9a4463b25a89de874c9771318945cefbc2734bf4">9a4463b25a</a> (2025-03-13T22:26:50)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/typespec/tree/07aae1a44ec732b819744f106ae6d8d5e49f5ebf">07aae1a44e</a>)</p><p><b>The line:</b></p><pre><span class="t">  return token &gt;= Token.__StartReservedKeyword &amp;&amp; token &lt; Token.__EndReservedKeyword;</span></pre><h2>File at the merge commit, lines 524 to 540</h2><pre>  524 | }
+  525 | 
+  526 | export function isKeyword(token: Token) {
+  527 |   return token &gt;= Token.__StartKeyword &amp;&amp; token &lt; Token.__EndKeyword;
+  528 | }
+  529 | 
+  530 | /** If is a keyword with no actual use right now but will be in the future. */
+  531 | export function isReservedKeyword(token: Token) {
+<span class="t">  532 |   return token &gt;= Token.__StartReservedKeyword &amp;&amp; token &lt; Token.__EndReservedKeyword;</span>
+  533 | }
+  534 | 
+  535 | export function isPunctuation(token: Token) {
+  536 |   return token &gt;= Token.__StartPunctuation &amp;&amp; token &lt; Token.__EndPunctuation;
+  537 | }
+  538 | 
+  539 | export function isModifier(token: Token) {
+  540 |   return token &gt;= Token.__StartModifierKeyword &amp;&amp; token &lt; Token.__EndModifierKeyword;</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/typespec/commit/76a3459f4e1502dedbbadf949589d3ad28f93b24">76a3459f4e</a> (2025-03-17T19:06:33+00:00)</h2><p class="k">Reseve additional keywords (#6494)<br>Path after this commit: packages/compiler/src/core/scanner.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/compiler/src/core/scanner.ts b/packages/compiler/src/core/scanner.ts
+index 5158b23e1..2f587db5f 100644
+<span class="d">--- a/packages/compiler/src/core/scanner.ts</span>
+<span class="a">+++ b/packages/compiler/src/core/scanner.ts</span>
+<span class="h">@@ -174,6 +174,10 @@ export enum Token {</span>
+   StructKeyword,
+   RecordKeyword,
+   ModuleKeyword,
+<span class="a">+  ModKeyword,</span>
+<span class="a">+  PubKeyword,</span>
+<span class="a">+  SubKeyword,</span>
+<span class="a">+  TypeRefKeyword,</span>
+   TraitKeyword,
+   ThisKeyword,
+   SelfKeyword,
+<span class="h">@@ -314,6 +318,10 @@ export const TokenDisplay = getTokenDisplayTable([</span>
+   [Token.StructKeyword, &quot;&#x27;struct&#x27;&quot;],
+   [Token.RecordKeyword, &quot;&#x27;record&#x27;&quot;],
+   [Token.ModuleKeyword, &quot;&#x27;module&#x27;&quot;],
+<span class="a">+  [Token.ModKeyword, &quot;&#x27;mod&#x27;&quot;],</span>
+<span class="a">+  [Token.PubKeyword, &quot;&#x27;pub&#x27;&quot;],</span>
+<span class="a">+  [Token.SubKeyword, &quot;&#x27;sub&#x27;&quot;],</span>
+<span class="a">+  [Token.TypeRefKeyword, &quot;&#x27;typeref&#x27;&quot;],</span>
+   [Token.TraitKeyword, &quot;&#x27;trait&#x27;&quot;],
+   [Token.ThisKeyword, &quot;&#x27;this&#x27;&quot;],
+   [Token.SelfKeyword, &quot;&#x27;self&#x27;&quot;],
+<span class="h">@@ -378,6 +386,10 @@ export const Keywords: ReadonlyMap&lt;string, Token&gt; = new Map([</span>
+   [&quot;struct&quot;, Token.StructKeyword],
+   [&quot;record&quot;, Token.RecordKeyword],
+   [&quot;module&quot;, Token.ModuleKeyword],
+<span class="a">+  [&quot;mod&quot;, Token.ModKeyword],</span>
+<span class="a">+  [&quot;pub&quot;, Token.PubKeyword],</span>
+<span class="a">+  [&quot;sub&quot;, Token.SubKeyword],</span>
+<span class="a">+  [&quot;typeref&quot;, Token.TypeRefKeyword],</span>
+   [&quot;trait&quot;, Token.TraitKeyword],
+   [&quot;this&quot;, Token.ThisKeyword],
+   [&quot;self&quot;, Token.SelfKeyword],</pre><h2>Commit #2: <a href="https://github.com/microsoft/typespec/commit/e0c6481fc57bfbf50df22fcfef66186d98b5d373">e0c6481fc5</a> (2025-03-28T23:19:20+00:00)</h2><p class="k">Reserve sym and context keyword (#6754)<br>Path after this commit: packages/compiler/src/core/scanner.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/compiler/src/core/scanner.ts b/packages/compiler/src/core/scanner.ts
+index 2f587db5f..554f9fef2 100644
+<span class="d">--- a/packages/compiler/src/core/scanner.ts</span>
+<span class="a">+++ b/packages/compiler/src/core/scanner.ts</span>
+<span class="h">@@ -175,6 +175,8 @@ export enum Token {</span>
+   RecordKeyword,
+   ModuleKeyword,
+   ModKeyword,
+<span class="a">+  SymKeyword,</span>
+<span class="a">+  ContextKeyword,</span>
+   PubKeyword,
+   SubKeyword,
+   TypeRefKeyword,
+<span class="h">@@ -319,6 +321,8 @@ export const TokenDisplay = getTokenDisplayTable([</span>
+   [Token.RecordKeyword, &quot;&#x27;record&#x27;&quot;],
+   [Token.ModuleKeyword, &quot;&#x27;module&#x27;&quot;],
+   [Token.ModKeyword, &quot;&#x27;mod&#x27;&quot;],
+<span class="a">+  [Token.SymKeyword, &quot;&#x27;sym&#x27;&quot;],</span>
+<span class="a">+  [Token.ContextKeyword, &quot;&#x27;context&#x27;&quot;],</span>
+   [Token.PubKeyword, &quot;&#x27;pub&#x27;&quot;],
+   [Token.SubKeyword, &quot;&#x27;sub&#x27;&quot;],
+   [Token.TypeRefKeyword, &quot;&#x27;typeref&#x27;&quot;],
+<span class="h">@@ -387,6 +391,8 @@ export const Keywords: ReadonlyMap&lt;string, Token&gt; = new Map([</span>
+   [&quot;record&quot;, Token.RecordKeyword],
+   [&quot;module&quot;, Token.ModuleKeyword],
+   [&quot;mod&quot;, Token.ModKeyword],
+<span class="a">+  [&quot;sym&quot;, Token.SymKeyword],</span>
+<span class="a">+  [&quot;context&quot;, Token.ContextKeyword],</span>
+   [&quot;pub&quot;, Token.PubKeyword],
+   [&quot;sub&quot;, Token.SubKeyword],
+   [&quot;typeref&quot;, Token.TypeRefKeyword],
+<span class="h">@@ -424,6 +430,9 @@ export const ReservedKeywords: ReadonlyMap&lt;string, Token&gt; = new Map([</span>
+   [&quot;struct&quot;, Token.StructKeyword],
+   [&quot;record&quot;, Token.RecordKeyword],
+   [&quot;module&quot;, Token.ModuleKeyword],
+<span class="a">+  [&quot;mod&quot;, Token.ModuleKeyword],</span>
+<span class="a">+  [&quot;sym&quot;, Token.SymKeyword],</span>
+<span class="a">+  [&quot;context&quot;, Token.ContextKeyword],</span>
+   [&quot;trait&quot;, Token.TraitKeyword],
+   [&quot;this&quot;, Token.ThisKeyword],
+   [&quot;self&quot;, Token.SelfKeyword],</pre><h2>Commit #3: <a href="https://github.com/microsoft/typespec/commit/065ff93ae7864b2733a1b199e312c53134016fd5">065ff93ae7</a> (2025-04-01T16:11:03+00:00)</h2><p class="k">Additional keywords (#6794)<br>Path after this commit: packages/compiler/src/core/scanner.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/compiler/src/core/scanner.ts b/packages/compiler/src/core/scanner.ts
+index 554f9fef2..178003562 100644
+<span class="d">--- a/packages/compiler/src/core/scanner.ts</span>
+<span class="a">+++ b/packages/compiler/src/core/scanner.ts</span>
+<span class="h">@@ -177,6 +177,9 @@ export enum Token {</span>
+   ModKeyword,
+   SymKeyword,
+   ContextKeyword,
+<span class="a">+  PropKeyword,</span>
+<span class="a">+  PropertyKeyword,</span>
+<span class="a">+  ScenarioKeyword,</span>
+   PubKeyword,
+   SubKeyword,
+   TypeRefKeyword,
+<span class="h">@@ -323,6 +326,9 @@ export const TokenDisplay = getTokenDisplayTable([</span>
+   [Token.ModKeyword, &quot;&#x27;mod&#x27;&quot;],
+   [Token.SymKeyword, &quot;&#x27;sym&#x27;&quot;],
+   [Token.ContextKeyword, &quot;&#x27;context&#x27;&quot;],
+<span class="a">+  [Token.PropKeyword, &quot;&#x27;prop&#x27;&quot;],</span>
+<span class="a">+  [Token.PropertyKeyword, &quot;&#x27;property&#x27;&quot;],</span>
+<span class="a">+  [Token.ScenarioKeyword, &quot;&#x27;scenario&#x27;&quot;],</span>
+   [Token.PubKeyword, &quot;&#x27;pub&#x27;&quot;],
+   [Token.SubKeyword, &quot;&#x27;sub&#x27;&quot;],
+   [Token.TypeRefKeyword, &quot;&#x27;typeref&#x27;&quot;],
+<span class="h">@@ -393,6 +399,9 @@ export const Keywords: ReadonlyMap&lt;string, Token&gt; = new Map([</span>
+   [&quot;mod&quot;, Token.ModKeyword],
+   [&quot;sym&quot;, Token.SymKeyword],
+   [&quot;context&quot;, Token.ContextKeyword],
+<span class="a">+  [&quot;prop&quot;, Token.PropKeyword],</span>
+<span class="a">+  [&quot;property&quot;, Token.PropertyKeyword],</span>
+<span class="a">+  [&quot;scenario&quot;, Token.ScenarioKeyword],</span>
+   [&quot;pub&quot;, Token.PubKeyword],
+   [&quot;sub&quot;, Token.SubKeyword],
+   [&quot;typeref&quot;, Token.TypeRefKeyword],
+<span class="h">@@ -433,6 +442,9 @@ export const ReservedKeywords: ReadonlyMap&lt;string, Token&gt; = new Map([</span>
+   [&quot;mod&quot;, Token.ModuleKeyword],
+   [&quot;sym&quot;, Token.SymKeyword],
+   [&quot;context&quot;, Token.ContextKeyword],
+<span class="a">+  [&quot;prop&quot;, Token.PropKeyword],</span>
+<span class="a">+  [&quot;property&quot;, Token.PropertyKeyword],</span>
+<span class="a">+  [&quot;scenario&quot;, Token.ScenarioKeyword],</span>
+   [&quot;trait&quot;, Token.TraitKeyword],
+   [&quot;this&quot;, Token.ThisKeyword],
+   [&quot;self&quot;, Token.SelfKeyword],</pre><h2>Commit #4: <a href="https://github.com/microsoft/typespec/commit/caa8ff99771e45d7e2adcd13224367283d7136d7">caa8ff9977</a> (2025-10-10T20:30:18+00:00)</h2><p class="k">Fix playground crashing when auto completing (#8714)<br>Path after this commit: packages/compiler/src/core/scanner.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/packages/compiler/src/core/scanner.ts b/packages/compiler/src/core/scanner.ts
+index 178003562..ebbd4db61 100644
+<span class="d">--- a/packages/compiler/src/core/scanner.ts</span>
+<span class="a">+++ b/packages/compiler/src/core/scanner.ts</span>
+<span class="h">@@ -1622,7 +1622,7 @@ export function skipTriviaBackward(</span>
+     // it&#x27;s possible if the pos is at the end of the file, just treat it as trivia
+     position--;
+   } else if (position &gt; input.length) {
+<span class="d">-    compilerAssert(false, &quot;position out of range&quot;);</span>
+<span class="a">+    compilerAssert(false, `position out of range: ${position}, text length: ${input.length}`);</span>
+   }
+ 
+   while (position &gt; endPosition) {</pre></body></html>

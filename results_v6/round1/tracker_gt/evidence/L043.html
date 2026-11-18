@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L043</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L043</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/applicationinsights-js">microsoft/applicationinsights-js</a><br><b>File at merge:</b> AISKU/Tests/Unit/src/IAnalyticsConfig.Tests.ts, line 7<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/applicationinsights-js/commit/2c31bab2f22215fefedeb7df1a7fa652f739aba7">2c31bab2f2</a> (2025-07-07T21:16:46)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/applicationinsights-js/tree/c46c683dd5cb6de509417eb8997693e1254279d6">c46c683dd5</a>)</p><p><b>The line:</b></p><pre><span class="t">const TestInstrumentationKey = &#x27;b7170927-2d1c-44f1-acec-59f4e1751c11&#x27;;</span></pre><h2>File at the merge commit, lines 1 to 15</h2><pre>    1 | import { ApplicationInsights, IAnalyticsConfig, IAppInsights, IConfig, ApplicationAnalytics } from &quot;../../../src/applicationinsights-web&quot;;
+    2 | import { AITestClass, Assert } from &quot;@microsoft/ai-test-framework&quot;;
+    3 | import { AnalyticsPluginIdentifier, utlRemoveSessionStorage } from &quot;@microsoft/applicationinsights-common&quot;;
+    4 | import { AppInsightsCore, IConfiguration, isFunction, onConfigChange } from &quot;@microsoft/applicationinsights-core-js&quot;;
+    5 | import { Sender } from &quot;@microsoft/applicationinsights-channel-js&quot;;
+    6 | 
+<span class="t">    7 | const TestInstrumentationKey = &#x27;b7170927-2d1c-44f1-acec-59f4e1751c11&#x27;;</span>
+    8 | 
+    9 | export class IAnalyticsConfigTests extends AITestClass {
+   10 | 
+   11 |     public testInitialize() {
+   12 |         this._disableDynProtoBaseFuncs();
+   13 |     }
+   14 | 
+   15 |     public testCleanup() {</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

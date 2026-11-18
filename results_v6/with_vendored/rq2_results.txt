@@ -1,0 +1,38 @@
+
+======================================================================
+SECTION A: Modification definition (Def1 syntactic vs Def2 structural)
+NOTE: HRs computed by analyze_rq1_master.py (Steps 2 and 3)
+======================================================================
+
+Def 1 (syntactic, unadjusted):
+  human_supervised: HR=0.3763 [0.3723, 0.3804], p=0.00e+00
+  fully_autonomous: HR=0.3892 [0.3835, 0.3949], p=0.00e+00
+
+Def 2 (AST structural, unadjusted):
+  human_supervised: HR=0.3300 [0.3260, 0.3341], p=0.00e+00
+  fully_autonomous: HR=0.3195 [0.3141, 0.3251], p=0.00e+00
+
+Def 1 modification rates:
+  human_supervised: 20.4%  |  fully_autonomous: 21.7%  |  human: 46.5%
+
+Def 2 modification rates:
+  human_supervised: 15.5%  |  fully_autonomous: 15.4%  |  human: 40.6%
+
+======================================================================
+SECTION D: Def 2 composition and null-AST sensitivity
+(line-level, two-tier mapping as in analyze_rq1_master.py)
+======================================================================
+
+Leaf-only share of modified lines with known AST status (ast_death==0 among event==1, ast_death non-null):
+  human_supervised: 2109/30882 (6.8%)
+  fully_autonomous: 2319/15879 (14.6%)
+  human: 8167/242082 (3.4%)
+
+Modified lines with null ast_death (event==1):
+  human_supervised: 6992/37874 (18.5%)
+  fully_autonomous: 3193/19072 (16.7%)
+  human: 25332/267414 (9.5%)
+
+Def 2 sensitivity (unadjusted Cox, event==1 & null ast_death dropped):
+  human_supervised (n_agent=179058, n_human=550223): HR=0.3272 [0.3232, 0.3313], p=0.00e+00
+  fully_autonomous (n_agent=84817, n_human=550223): HR=0.3143 [0.3089, 0.3198], p=0.00e+00

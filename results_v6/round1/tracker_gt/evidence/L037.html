@@ -1,0 +1,115 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L037</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L037</h1><p><b>Repository:</b> <a href="https://github.com/kanisterio/kanister">kanisterio/kanister</a><br><b>File at merge:</b> pkg/function/restore_data.go, line 86<br><b>Merge commit (birth):</b> <a href="https://github.com/kanisterio/kanister/commit/d8f57c577c07098ded3ae06e831015a552457e2a">d8f57c577c</a> (2025-07-18T15:26:21)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/kanisterio/kanister/tree/2948c6ad8a65f4a3c9f8e516af23d4f2be1c2774">2948c6ad8a</a>)</p><p><b>The line:</b></p><pre><span class="t">		return restorePath, encryptionKey, pod, vols, tag, id, backupPath, insecureTLS, podOverride, err</span></pre><h2>File at the merge commit, lines 78 to 94</h2><pre>   78 | func validateAndGetOptArgs(args map[string]interface{}, tp param.TemplateParams) (string, string, string, map[string]string, string, string, string, bool, crv1alpha1.JSONMap, error) {
+   79 | 	var restorePath, encryptionKey, pod, tag, id, backupPath string
+   80 | 	var vols map[string]string
+   81 | 	var podOverride crv1alpha1.JSONMap
+   82 | 	var err error
+   83 | 	var insecureTLS bool
+   84 | 
+   85 | 	if err = OptArg(args, RestoreDataRestorePathArg, &amp;restorePath, &quot;/&quot;); err != nil {
+<span class="t">   86 | 		return restorePath, encryptionKey, pod, vols, tag, id, backupPath, insecureTLS, podOverride, err</span>
+   87 | 	}
+   88 | 	if err = OptArg(args, RestoreDataEncryptionKeyArg, &amp;encryptionKey, restic.GeneratePassword()); err != nil {
+   89 | 		return restorePath, encryptionKey, pod, vols, tag, id, backupPath, insecureTLS, podOverride, err
+   90 | 	}
+   91 | 	if err = OptArg(args, RestoreDataPodArg, &amp;pod, &quot;&quot;); err != nil {
+   92 | 		return restorePath, encryptionKey, pod, vols, tag, id, backupPath, insecureTLS, podOverride, err
+   93 | 	}
+   94 | 	if err = OptArg(args, RestoreDataVolsArg, &amp;vols, nil); err != nil {</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/kanisterio/kanister/commit/4f2e87105de543614b6f6d8f3edd67eb7fe47079">4f2e87105d</a> (2025-08-19T15:57:53+00:00)</h2><p class="k">Add support for NetworkPolicy, Service, PVC, and Pod to `pkg/ephemeral` appliers (#3576)<br>Path after this commit: pkg/function/restore_data.go. Lines with exactly this text in the file after the commit: 9.</p><pre>diff --git a/pkg/function/restore_data.go b/pkg/function/restore_data.go
+index b48efc72..4209a621 100644
+<span class="d">--- a/pkg/function/restore_data.go</span>
+<span class="a">+++ b/pkg/function/restore_data.go</span>
+<span class="h">@@ -25,7 +25,6 @@ import (</span>
+ 
+ 	kanister &quot;github.com/kanisterio/kanister/pkg&quot;
+ 	crv1alpha1 &quot;github.com/kanisterio/kanister/pkg/apis/cr/v1alpha1&quot;
+<span class="d">-	&quot;github.com/kanisterio/kanister/pkg/ephemeral&quot;</span>
+ 	&quot;github.com/kanisterio/kanister/pkg/kube&quot;
+ 	&quot;github.com/kanisterio/kanister/pkg/param&quot;
+ 	&quot;github.com/kanisterio/kanister/pkg/progress&quot;
+<span class="h">@@ -140,38 +139,21 @@ func restoreData(</span>
+ 	podOverride crv1alpha1.JSONMap,
+ 	annotations,
+ 	labels map[string]string,
+<span class="d">-) (map[string]interface{}, error) {</span>
+<span class="d">-	// Validate volumes</span>
+<span class="d">-	validatedVols := make(map[string]kube.VolumeMountOptions)</span>
+<span class="d">-	for pvcName, mountPoint := range vols {</span>
+<span class="d">-		pvc, err := cli.CoreV1().PersistentVolumeClaims(namespace).Get(ctx, pvcName, metav1.GetOptions{})</span>
+<span class="d">-		if err != nil {</span>
+<span class="d">-			return nil, errkit.Wrap(err, &quot;Failed to retrieve PVC.&quot;, &quot;namespace&quot;, namespace, &quot;name&quot;, pvcName)</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		validatedVols[pvcName] = kube.VolumeMountOptions{</span>
+<span class="d">-			MountPath: mountPoint,</span>
+<span class="d">-			ReadOnly:  kube.PVCContainsReadOnlyAccessMode(pvc),</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	options := &amp;kube.PodOptions{</span>
+<span class="d">-		Namespace:    namespace,</span>
+<span class="d">-		GenerateName: jobPrefix,</span>
+<span class="d">-		Image:        image,</span>
+<span class="d">-		Command:      []string{&quot;sh&quot;, &quot;-c&quot;, &quot;tail -f /dev/null&quot;},</span>
+<span class="d">-		Volumes:      validatedVols,</span>
+<span class="d">-		PodOverride:  podOverride,</span>
+<span class="d">-		Annotations:  annotations,</span>
+<span class="d">-		Labels:       labels,</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// Apply the registered ephemeral pod changes.</span>
+<span class="d">-	ephemeral.PodOptions.Apply(options)</span>
+<span class="d">-</span>
+<span class="d">-	pr := kube.NewPodRunner(cli, options)</span>
+<span class="a">+) (map[string]any, error) {</span>
+ 	podFunc := restoreDataPodFunc(tp, encryptionKey, backupArtifactPrefix, restorePath, backupTag, backupID, backupPath, insecureTLS)
+<span class="d">-	return pr.Run(ctx, podFunc)</span>
+<span class="a">+	return PrepareAndRunPod(</span>
+<span class="a">+		ctx,</span>
+<span class="a">+		cli,</span>
+<span class="a">+		namespace,</span>
+<span class="a">+		jobPrefix,</span>
+<span class="a">+		image,</span>
+<span class="a">+		[]string{&quot;sh&quot;, &quot;-c&quot;, &quot;tail -f /dev/null&quot;},</span>
+<span class="a">+		vols,</span>
+<span class="a">+		podOverride,</span>
+<span class="a">+		annotations,</span>
+<span class="a">+		labels,</span>
+<span class="a">+		podFunc,</span>
+<span class="a">+	)</span>
+ }
+ 
+ func restoreDataPodFunc(</pre><h2>Commit #2: <a href="https://github.com/kanisterio/kanister/commit/42a54ba7e8e5fbe3aa36c7fc9e3e123cf2f55504">42a54ba7e8</a> (2025-09-12T21:01:02+00:00)</h2><p class="k">fix: make sure podOverride arg is in the validation args for all functions which use it (#3623)<br>Path after this commit: pkg/function/restore_data.go. Lines with exactly this text in the file after the commit: 9.</p><pre>diff --git a/pkg/function/restore_data.go b/pkg/function/restore_data.go
+index 4209a621..1d8324e3 100644
+<span class="d">--- a/pkg/function/restore_data.go</span>
+<span class="a">+++ b/pkg/function/restore_data.go</span>
+<span class="h">@@ -54,8 +54,6 @@ const (</span>
+ 	RestoreDataEncryptionKeyArg = &quot;encryptionKey&quot;
+ 	// RestoreDataBackupTagArg provides a unique tag added to the backup artifacts
+ 	RestoreDataBackupTagArg = &quot;backupTag&quot;
+<span class="d">-	// RestoreDataPodOverrideArg contains pod specs which overrides default pod specs</span>
+<span class="d">-	RestoreDataPodOverrideArg = &quot;podOverride&quot;</span>
+ 	// RestoreDataBackupPathArg provides the source path within the backup to restore from
+ 	RestoreDataBackupPathArg = &quot;backupPath&quot;
+ )
+<span class="h">@@ -113,7 +111,7 @@ func validateAndGetOptArgs(args map[string]interface{}, tp param.TemplateParams)</span>
+ 		return restorePath, encryptionKey, pod, vols, tag, id, backupPath, insecureTLS, podOverride,
+ 			errkit.New(fmt.Sprintf(&quot;Require one argument: %s or %s&quot;, RestoreDataBackupTagArg, RestoreDataBackupIdentifierArg))
+ 	}
+<span class="d">-	podOverride, err = GetPodSpecOverride(tp, args, RestoreDataPodOverrideArg)</span>
+<span class="a">+	podOverride, err = GetPodSpecOverride(tp, args, PodOverrideArg)</span>
+ 	if err != nil {
+<span class=" m"> 		return restorePath, encryptionKey, pod, vols, tag, id, backupPath, insecureTLS, podOverride, err</span>
+ 	}
+<span class="h">@@ -321,7 +319,7 @@ func (*restoreDataFunc) Arguments() []string {</span>
+ 		RestoreDataBackupTagArg,
+ 		RestoreDataBackupIdentifierArg,
+ 		RestoreDataBackupPathArg,
+<span class="d">-		RestoreDataPodOverrideArg,</span>
+<span class="a">+		PodOverrideArg,</span>
+ 		InsecureTLS,
+ 		PodAnnotationsArg,
+ 		PodLabelsArg,</pre></body></html>

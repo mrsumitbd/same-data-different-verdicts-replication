@@ -1,0 +1,246 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L067</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L067</h1><p><b>Repository:</b> <a href="https://github.com/katspaugh/wavesurfer.js">katspaugh/wavesurfer.js</a><br><b>File at merge:</b> src/plugins/envelope.ts, line 263<br><b>Merge commit (birth):</b> <a href="https://github.com/katspaugh/wavesurfer.js/commit/aace78971d9ce0db26c85e386396a8431cbf4198">aace78971d</a> (2025-07-21T09:10:08)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/katspaugh/wavesurfer.js/tree/bf2f42fac8c4596bb0cb4fda462b3388b1cf4e50">bf2f42fac8</a>)</p><p><b>The line:</b></p><pre><span class="t">    const { clientWidth, clientHeight } = svg</span></pre><h2>File at the merge commit, lines 255 to 271</h2><pre>  255 |       // Emit the event passing the point and new relative coordinates
+  256 |       this.emit(&#x27;point-move&#x27;, refPoint, newX / width, newY / height)
+  257 |     })
+  258 |   }
+  259 | 
+  260 |   update() {
+  261 |     const { svg } = this
+  262 |     // Skip the update if the container is hidden
+<span class="t">  263 |     const { clientWidth, clientHeight } = svg</span>
+  264 |     if (!clientWidth || !clientHeight) {
+  265 |       return
+  266 |     }
+  267 | 
+  268 |     const aspectRatioX = svg.viewBox.baseVal.width / clientWidth
+  269 |     const aspectRatioY = svg.viewBox.baseVal.height / clientHeight
+  270 |     const circles = svg.querySelectorAll(&#x27;ellipse&#x27;)
+  271 | </pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/katspaugh/wavesurfer.js/commit/6727a80ad2f7358f1ed71b87c3fb0ab11a37ba35">6727a80ad2</a> (2025-10-01T15:47:37+02:00)</h2><p class="k">Fix: Additional memory leaks and performance issues in plugins (#4211)<br>Path after this commit: src/plugins/envelope.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/plugins/envelope.ts b/src/plugins/envelope.ts
+index 471bb4f..a5125bb 100644
+<span class="d">--- a/src/plugins/envelope.ts</span>
+<span class="a">+++ b/src/plugins/envelope.ts</span>
+<span class="h">@@ -56,6 +56,11 @@ class Polyline extends EventEmitter&lt;{</span>
+     }
+   &gt;
+   private subscriptions: (() =&gt; void)[] = []
+<span class="a">+  private dblClickListener?: (e: MouseEvent) =&gt; void</span>
+<span class="a">+  private touchStartListener?: (e: TouchEvent) =&gt; void</span>
+<span class="a">+  private touchMoveListener?: () =&gt; void</span>
+<span class="a">+  private touchEndListener?: () =&gt; void</span>
+<span class="a">+  private pressTimer?: number</span>
+ 
+   constructor(options: Options, wrapper: HTMLElement) {
+     super()
+<span class="h">@@ -131,37 +136,42 @@ class Polyline extends EventEmitter&lt;{</span>
+     }
+ 
+     // Listen to double click to add a new point
+<span class="d">-    svg.addEventListener(&#x27;dblclick&#x27;, (e) =&gt; {</span>
+<span class="a">+    this.dblClickListener = (e) =&gt; {</span>
+       const rect = svg.getBoundingClientRect()
+       const x = e.clientX - rect.left
+       const y = e.clientY - rect.top
+       this.emit(&#x27;point-create&#x27;, x / rect.width, y / rect.height)
+<span class="d">-    })</span>
+<span class="a">+    }</span>
+<span class="a">+    svg.addEventListener(&#x27;dblclick&#x27;, this.dblClickListener)</span>
+ 
+     // Long press on touch devices
+<span class="d">-    {</span>
+<span class="d">-      let pressTimer: number</span>
+<span class="d">-</span>
+<span class="d">-      const clearTimer = () =&gt; clearTimeout(pressTimer)</span>
+<span class="d">-</span>
+<span class="d">-      svg.addEventListener(&#x27;touchstart&#x27;, (e) =&gt; {</span>
+<span class="d">-        if (e.touches.length === 1) {</span>
+<span class="d">-          pressTimer = window.setTimeout(() =&gt; {</span>
+<span class="d">-            e.preventDefault()</span>
+<span class="d">-            const rect = svg.getBoundingClientRect()</span>
+<span class="d">-            const x = e.touches[0].clientX - rect.left</span>
+<span class="d">-            const y = e.touches[0].clientY - rect.top</span>
+<span class="d">-            this.emit(&#x27;point-create&#x27;, x / rect.width, y / rect.height)</span>
+<span class="d">-          }, 500)</span>
+<span class="d">-        } else {</span>
+<span class="d">-          clearTimer()</span>
+<span class="d">-        }</span>
+<span class="d">-      })</span>
+<span class="d">-</span>
+<span class="d">-      svg.addEventListener(&#x27;touchmove&#x27;, clearTimer)</span>
+<span class="d">-</span>
+<span class="d">-      svg.addEventListener(&#x27;touchend&#x27;, clearTimer)</span>
+<span class="a">+    const clearTimer = () =&gt; {</span>
+<span class="a">+      if (this.pressTimer !== undefined) {</span>
+<span class="a">+        clearTimeout(this.pressTimer)</span>
+<span class="a">+        this.pressTimer = undefined</span>
+<span class="a">+      }</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    this.touchStartListener = (e) =&gt; {</span>
+<span class="a">+      if (e.touches.length === 1) {</span>
+<span class="a">+        this.pressTimer = window.setTimeout(() =&gt; {</span>
+<span class="a">+          e.preventDefault()</span>
+<span class="a">+          const rect = svg.getBoundingClientRect()</span>
+<span class="a">+          const x = e.touches[0].clientX - rect.left</span>
+<span class="a">+          const y = e.touches[0].clientY - rect.top</span>
+<span class="a">+          this.emit(&#x27;point-create&#x27;, x / rect.width, y / rect.height)</span>
+<span class="a">+        }, 500)</span>
+<span class="a">+      } else {</span>
+<span class="a">+        clearTimer()</span>
+<span class="a">+      }</span>
+     }
+<span class="a">+</span>
+<span class="a">+    this.touchMoveListener = clearTimer</span>
+<span class="a">+    this.touchEndListener = clearTimer</span>
+<span class="a">+</span>
+<span class="a">+    svg.addEventListener(&#x27;touchstart&#x27;, this.touchStartListener)</span>
+<span class="a">+    svg.addEventListener(&#x27;touchmove&#x27;, this.touchMoveListener)</span>
+<span class="a">+    svg.addEventListener(&#x27;touchend&#x27;, this.touchEndListener)</span>
+   }
+ 
+   private makeDraggable(draggable: SVGElement, onDrag: (x: number, y: number) =&gt; void) {
+<span class="h">@@ -279,6 +289,30 @@ class Polyline extends EventEmitter&lt;{</span>
+   }
+ 
+   destroy() {
+<span class="a">+    // Clear pending press timer</span>
+<span class="a">+    if (this.pressTimer !== undefined) {</span>
+<span class="a">+      clearTimeout(this.pressTimer)</span>
+<span class="a">+      this.pressTimer = undefined</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    // Remove event listeners</span>
+<span class="a">+    if (this.dblClickListener) {</span>
+<span class="a">+      this.svg.removeEventListener(&#x27;dblclick&#x27;, this.dblClickListener)</span>
+<span class="a">+      this.dblClickListener = undefined</span>
+<span class="a">+    }</span>
+<span class="a">+    if (this.touchStartListener) {</span>
+<span class="a">+      this.svg.removeEventListener(&#x27;touchstart&#x27;, this.touchStartListener)</span>
+<span class="a">+      this.touchStartListener = undefined</span>
+<span class="a">+    }</span>
+<span class="a">+    if (this.touchMoveListener) {</span>
+<span class="a">+      this.svg.removeEventListener(&#x27;touchmove&#x27;, this.touchMoveListener)</span>
+<span class="a">+      this.touchMoveListener = undefined</span>
+<span class="a">+    }</span>
+<span class="a">+    if (this.touchEndListener) {</span>
+<span class="a">+      this.svg.removeEventListener(&#x27;touchend&#x27;, this.touchEndListener)</span>
+<span class="a">+      this.touchEndListener = undefined</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     this.subscriptions.forEach((unsubscribe) =&gt; unsubscribe())
+     this.polyPoints.clear()
+     this.svg.remove()
+<span class="h">@@ -363,6 +397,12 @@ class EnvelopePlugin extends BasePlugin&lt;EnvelopePluginEvents, EnvelopePluginOpti</span>
+    * Destroy the plugin instance.
+    */
+   public destroy() {
+<span class="a">+    // Clear pending throttle timeout</span>
+<span class="a">+    if (this.throttleTimeout) {</span>
+<span class="a">+      clearTimeout(this.throttleTimeout)</span>
+<span class="a">+      this.throttleTimeout = null</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     this.polyline?.destroy()
+     super.destroy()
+   }</pre><h2>Commit #2: <a href="https://github.com/katspaugh/wavesurfer.js/commit/2dc084543faced9ffc35b80e4eab95b30e380800">2dc084543f</a> (2025-11-27T15:16:27+01:00)</h2><p class="k">refactor: Migrate codebase to use reactive streams (#4253)<br>Path after this commit: src/plugins/envelope.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/plugins/envelope.ts b/src/plugins/envelope.ts
+index a5125bb..adc8d67 100644
+<span class="d">--- a/src/plugins/envelope.ts</span>
+<span class="a">+++ b/src/plugins/envelope.ts</span>
+<span class="h">@@ -3,9 +3,10 @@</span>
+  */
+ 
+ import BasePlugin, { type BasePluginEvents } from &#x27;../base-plugin.js&#x27;
+<span class="d">-import { makeDraggable } from &#x27;../draggable.js&#x27;</span>
+ import EventEmitter from &#x27;../event-emitter.js&#x27;
+ import createElement from &#x27;../dom.js&#x27;
+<span class="a">+import { createDragStream } from &#x27;../reactive/drag-stream.js&#x27;</span>
+<span class="a">+import { effect } from &#x27;../reactive/store.js&#x27;</span>
+ 
+ export type EnvelopePoint = {
+   id?: string
+<span class="h">@@ -116,23 +117,31 @@ class Polyline extends EventEmitter&lt;{</span>
+ 
+     // Make the polyline draggable along the Y axis
+     if (options.dragLine) {
+<span class="d">-      this.subscriptions.push(</span>
+<span class="d">-        makeDraggable(polyline as unknown as HTMLElement, (_, dy) =&gt; {</span>
+<span class="d">-          const { height } = svg.viewBox.baseVal</span>
+<span class="d">-          const { points } = polyline</span>
+<span class="d">-          for (let i = 1; i &lt; points.numberOfItems - 1; i++) {</span>
+<span class="d">-            const point = points.getItem(i)</span>
+<span class="d">-            point.y = Math.min(height, Math.max(0, point.y + dy))</span>
+<span class="d">-          }</span>
+<span class="d">-          const circles = svg.querySelectorAll(&#x27;ellipse&#x27;)</span>
+<span class="d">-          Array.from(circles).forEach((circle) =&gt; {</span>
+<span class="d">-            const newY = Math.min(height, Math.max(0, Number(circle.getAttribute(&#x27;cy&#x27;)) + dy))</span>
+<span class="d">-            circle.setAttribute(&#x27;cy&#x27;, newY.toString())</span>
+<span class="d">-          })</span>
+<span class="d">-</span>
+<span class="d">-          this.emit(&#x27;line-move&#x27;, dy / height)</span>
+<span class="d">-        }),</span>
+<span class="d">-      )</span>
+<span class="a">+      const dragStream = createDragStream(polyline as unknown as HTMLElement)</span>
+<span class="a">+      const unsubscribe = effect(() =&gt; {</span>
+<span class="a">+        const drag = dragStream.signal.value</span>
+<span class="a">+        if (!drag || drag.type !== &#x27;move&#x27; || drag.deltaY === undefined) return</span>
+<span class="a">+</span>
+<span class="a">+        const deltaY = drag.deltaY</span>
+<span class="a">+        const { height } = svg.viewBox.baseVal</span>
+<span class="a">+        const { points } = polyline</span>
+<span class="a">+        for (let i = 1; i &lt; points.numberOfItems - 1; i++) {</span>
+<span class="a">+          const point = points.getItem(i)</span>
+<span class="a">+          point.y = Math.min(height, Math.max(0, point.y + deltaY))</span>
+<span class="a">+        }</span>
+<span class="a">+        const circles = svg.querySelectorAll(&#x27;ellipse&#x27;)</span>
+<span class="a">+        Array.from(circles).forEach((circle) =&gt; {</span>
+<span class="a">+          const newY = Math.min(height, Math.max(0, Number(circle.getAttribute(&#x27;cy&#x27;)) + deltaY))</span>
+<span class="a">+          circle.setAttribute(&#x27;cy&#x27;, newY.toString())</span>
+<span class="a">+        })</span>
+<span class="a">+</span>
+<span class="a">+        this.emit(&#x27;line-move&#x27;, deltaY / height)</span>
+<span class="a">+      }, [dragStream.signal])</span>
+<span class="a">+</span>
+<span class="a">+      this.subscriptions.push(() =&gt; {</span>
+<span class="a">+        unsubscribe()</span>
+<span class="a">+        dragStream.cleanup()</span>
+<span class="a">+      })</span>
+     }
+ 
+     // Listen to double click to add a new point
+<span class="h">@@ -175,15 +184,25 @@ class Polyline extends EventEmitter&lt;{</span>
+   }
+ 
+   private makeDraggable(draggable: SVGElement, onDrag: (x: number, y: number) =&gt; void) {
+<span class="d">-    this.subscriptions.push(</span>
+<span class="d">-      makeDraggable(</span>
+<span class="d">-        draggable as unknown as HTMLElement,</span>
+<span class="d">-        onDrag,</span>
+<span class="d">-        () =&gt; (draggable.style.cursor = &#x27;grabbing&#x27;),</span>
+<span class="d">-        () =&gt; (draggable.style.cursor = &#x27;grab&#x27;),</span>
+<span class="d">-        1,</span>
+<span class="d">-      ),</span>
+<span class="d">-    )</span>
+<span class="a">+    const dragStream = createDragStream(draggable as unknown as HTMLElement, { threshold: 1 })</span>
+<span class="a">+</span>
+<span class="a">+    const unsubscribe = effect(() =&gt; {</span>
+<span class="a">+      const drag = dragStream.signal.value</span>
+<span class="a">+      if (!drag) return</span>
+<span class="a">+</span>
+<span class="a">+      if (drag.type === &#x27;start&#x27;) {</span>
+<span class="a">+        draggable.style.cursor = &#x27;grabbing&#x27;</span>
+<span class="a">+      } else if (drag.type === &#x27;move&#x27; &amp;&amp; drag.deltaX !== undefined &amp;&amp; drag.deltaY !== undefined) {</span>
+<span class="a">+        onDrag(drag.deltaX, drag.deltaY)</span>
+<span class="a">+      } else if (drag.type === &#x27;end&#x27;) {</span>
+<span class="a">+        draggable.style.cursor = &#x27;grab&#x27;</span>
+<span class="a">+      }</span>
+<span class="a">+    }, [dragStream.signal])</span>
+<span class="a">+</span>
+<span class="a">+    this.subscriptions.push(() =&gt; {</span>
+<span class="a">+      unsubscribe()</span>
+<span class="a">+      dragStream.cleanup()</span>
+<span class="a">+    })</span>
+   }
+ 
+   private createCircle(x: number, y: number) {</pre></body></html>

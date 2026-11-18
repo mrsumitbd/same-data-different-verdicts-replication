@@ -1,0 +1,610 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L056</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L056</h1><p><b>Repository:</b> <a href="https://github.com/appsmithorg/appsmith">appsmithorg/appsmith</a><br><b>File at merge:</b> app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx, line 58<br><b>Merge commit (birth):</b> <a href="https://github.com/appsmithorg/appsmith/commit/e40564d7392c554aa5ad2729fb5cc481479daea0">e40564d739</a> (2025-02-17T11:59:38)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/appsmithorg/appsmith/tree/8f2592704d8b6627387c1608a0545812bcbf95b5">8f2592704d</a>)</p><p><b>The line:</b></p><pre><span class="t">          &lt;/Text&gt;</span></pre><h2>File at the merge commit, lines 50 to 66</h2><pre>   50 |     &lt;&gt;
+   51 |       &lt;Header&gt;
+   52 |         &lt;div&gt;
+   53 |           &lt;Text isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;
+   54 |             Function Calls
+   55 |           &lt;/Text&gt;
+   56 |           &lt;Text renderAs=&quot;p&quot;&gt;
+   57 |             Add functions for the model to execute dynamically.
+<span class="t">   58 |           &lt;/Text&gt;</span>
+   59 |         &lt;/div&gt;
+   60 | 
+   61 |         &lt;Button
+   62 |           kind=&quot;secondary&quot;
+   63 |           onClick={handleAddFunctionButtonClick}
+   64 |           startIcon=&quot;plus&quot;
+   65 |         &gt;
+   66 |           Add Function</pre><p class="k">Below are all 10 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/appsmithorg/appsmith/commit/f5b5df8eaea6bbc49b1c4d8e2b5adabfb3d7b010">f5b5df8eae</a> (2025-02-24T15:32:06+01:00)</h2><p class="k">feat: rename isApprovalRequired field (#39422)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index caff261689..26a7cf0e05 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -34,7 +34,7 @@ export const FunctionCallingConfigForm = ({</span>
+       id: uuid(),
+       description: &quot;&quot;,
+       entityId: &quot;&quot;,
+<span class="d">-      requiresApproval: false,</span>
+<span class="a">+      isApprovalRequired: false,</span>
+       entityType: &quot;Query&quot;,
+     });
+   }, [fields]);</pre><h2>Commit #2: <a href="https://github.com/appsmithorg/appsmith/commit/db25d123da29da72c4d28610c9163ceb604cb0a1">db25d123da</a> (2025-03-21T13:23:44+05:30)</h2><p class="k">chore: Add datasource link control (#39841)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index 26a7cf0e05..20054d4c3a 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -59,6 +59,7 @@ export const FunctionCallingConfigForm = ({</span>
+         &lt;/div&gt;
+ 
+         &lt;Button
+<span class="a">+          UNSAFE_width=&quot;110px&quot;</span>
+           kind=&quot;secondary&quot;
+           onClick={handleAddFunctionButtonClick}
+           startIcon=&quot;plus&quot;</pre><h2>Commit #3: <a href="https://github.com/appsmithorg/appsmith/commit/5a6d755980671b4406b9b175c3061626c6defd78">5a6d755980</a> (2025-03-27T09:58:20+05:30)</h2><p class="k">chore: Improve the UX of Function Calling form (#39916)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index 20054d4c3a..4083d71d6d 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import { Button, Text } from &quot;@appsmith/ads&quot;;
+<span class="d">-import { default as React, useCallback } from &quot;react&quot;;</span>
+<span class="a">+import { default as React, useCallback, useRef, useEffect } from &quot;react&quot;;</span>
+ import type { FieldArrayFieldsProps } from &quot;redux-form&quot;;
+ import styled from &quot;styled-components&quot;;
+ import { v4 as uuid } from &quot;uuid&quot;;
+<span class="h">@@ -29,6 +29,9 @@ export const FunctionCallingConfigForm = ({</span>
+   fields,
+   formName,
+ }: FunctionCallingConfigFormProps) =&gt; {
+<span class="a">+  const latestFieldRef = useRef&lt;HTMLDivElement&gt;(null);</span>
+<span class="a">+  const previousFieldsLength = useRef(fields.length);</span>
+<span class="a">+</span>
+   const handleAddFunctionButtonClick = useCallback(() =&gt; {
+     fields.push({
+       id: uuid(),
+<span class="h">@@ -46,6 +49,38 @@ export const FunctionCallingConfigForm = ({</span>
+     [fields],
+   );
+ 
+<span class="a">+  useEffect(</span>
+<span class="a">+    function handleAddFunction() {</span>
+<span class="a">+      // Only scroll and focus if a new field was added (length increased)</span>
+<span class="a">+      if (</span>
+<span class="a">+        fields.length &gt; previousFieldsLength.current &amp;&amp;</span>
+<span class="a">+        latestFieldRef.current</span>
+<span class="a">+      ) {</span>
+<span class="a">+        // Scroll the new field into view</span>
+<span class="a">+        latestFieldRef.current.scrollIntoView({</span>
+<span class="a">+          behavior: &quot;smooth&quot;,</span>
+<span class="a">+          block: &quot;center&quot;,</span>
+<span class="a">+        });</span>
+<span class="a">+</span>
+<span class="a">+        // Focus the menu button in the latest field</span>
+<span class="a">+        // The menu button is rendered by the Menu component from @appsmith/ads</span>
+<span class="a">+        const menuButton = latestFieldRef.current.querySelector(</span>
+<span class="a">+          &quot;button.rc-select-selector&quot;,</span>
+<span class="a">+        );</span>
+<span class="a">+</span>
+<span class="a">+        if (menuButton) {</span>
+<span class="a">+          // Use setTimeout to ensure the button is fully rendered</span>
+<span class="a">+          setTimeout(() =&gt; {</span>
+<span class="a">+            (menuButton as HTMLButtonElement).focus();</span>
+<span class="a">+          }, 100);</span>
+<span class="a">+        }</span>
+<span class="a">+      }</span>
+<span class="a">+</span>
+<span class="a">+      previousFieldsLength.current = fields.length;</span>
+<span class="a">+    },</span>
+<span class="a">+    [fields.length],</span>
+<span class="a">+  );</span>
+<span class="a">+</span>
+   return (
+     &lt;&gt;
+       &lt;Header&gt;
+<span class="h">@@ -73,14 +108,17 @@ export const FunctionCallingConfigForm = ({</span>
+       ) : (
+         &lt;ConfigItems&gt;
+           {fields.map((field, index) =&gt; {
+<span class="a">+            const isLastField = index === fields.length - 1;</span>
+<span class="a">+</span>
+             return (
+<span class="d">-              &lt;FunctionCallingConfigToolField</span>
+<span class="d">-                fieldPath={field}</span>
+<span class="d">-                formName={formName}</span>
+<span class="d">-                index={index}</span>
+<span class="d">-                key={field}</span>
+<span class="d">-                onRemove={handleRemoveToolButtonClick}</span>
+<span class="d">-              /&gt;</span>
+<span class="a">+              &lt;div key={field} ref={isLastField ? latestFieldRef : undefined}&gt;</span>
+<span class="a">+                &lt;FunctionCallingConfigToolField</span>
+<span class="a">+                  fieldPath={field}</span>
+<span class="a">+                  formName={formName}</span>
+<span class="a">+                  index={index}</span>
+<span class="a">+                  onRemove={handleRemoveToolButtonClick}</span>
+<span class="a">+                /&gt;</span>
+<span class="a">+              &lt;/div&gt;</span>
+             );
+           })}
+         &lt;/ConfigItems&gt;</pre><h2>Commit #4: <a href="https://github.com/appsmithorg/appsmith/commit/3f696facefa7f1192e9e6c320a124a905cb90107">3f696facef</a> (2025-03-27T09:58:30+03:00)</h2><p class="k">chore: Simpler autofocus of function call (#39946)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index 4083d71d6d..3a4c5bfba2 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ import { Button, Text } from &quot;@appsmith/ads&quot;;
+<span class="d">-import { default as React, useCallback, useRef, useEffect } from &quot;react&quot;;</span>
+<span class="a">+import React, { useCallback, useState } from &quot;react&quot;;</span>
+ import type { FieldArrayFieldsProps } from &quot;redux-form&quot;;
+ import styled from &quot;styled-components&quot;;
+ import { v4 as uuid } from &quot;uuid&quot;;
+<span class="h">@@ -29,17 +29,19 @@ export const FunctionCallingConfigForm = ({</span>
+   fields,
+   formName,
+ }: FunctionCallingConfigFormProps) =&gt; {
+<span class="d">-  const latestFieldRef = useRef&lt;HTMLDivElement&gt;(null);</span>
+<span class="d">-  const previousFieldsLength = useRef(fields.length);</span>
+<span class="a">+  const [newlyAddedId, setNewlyAddedId] = useState&lt;string | null&gt;(null);</span>
+ 
+   const handleAddFunctionButtonClick = useCallback(() =&gt; {
+<span class="a">+    const id = uuid();</span>
+<span class="a">+</span>
+     fields.push({
+<span class="d">-      id: uuid(),</span>
+<span class="a">+      id,</span>
+       description: &quot;&quot;,
+       entityId: &quot;&quot;,
+       isApprovalRequired: false,
+       entityType: &quot;Query&quot;,
+     });
+<span class="a">+    setNewlyAddedId(id);</span>
+   }, [fields]);
+ 
+   const handleRemoveToolButtonClick = useCallback(
+<span class="h">@@ -49,38 +51,6 @@ export const FunctionCallingConfigForm = ({</span>
+     [fields],
+   );
+ 
+<span class="d">-  useEffect(</span>
+<span class="d">-    function handleAddFunction() {</span>
+<span class="d">-      // Only scroll and focus if a new field was added (length increased)</span>
+<span class="d">-      if (</span>
+<span class="d">-        fields.length &gt; previousFieldsLength.current &amp;&amp;</span>
+<span class="d">-        latestFieldRef.current</span>
+<span class="d">-      ) {</span>
+<span class="d">-        // Scroll the new field into view</span>
+<span class="d">-        latestFieldRef.current.scrollIntoView({</span>
+<span class="d">-          behavior: &quot;smooth&quot;,</span>
+<span class="d">-          block: &quot;center&quot;,</span>
+<span class="d">-        });</span>
+<span class="d">-</span>
+<span class="d">-        // Focus the menu button in the latest field</span>
+<span class="d">-        // The menu button is rendered by the Menu component from @appsmith/ads</span>
+<span class="d">-        const menuButton = latestFieldRef.current.querySelector(</span>
+<span class="d">-          &quot;button.rc-select-selector&quot;,</span>
+<span class="d">-        );</span>
+<span class="d">-</span>
+<span class="d">-        if (menuButton) {</span>
+<span class="d">-          // Use setTimeout to ensure the button is fully rendered</span>
+<span class="d">-          setTimeout(() =&gt; {</span>
+<span class="d">-            (menuButton as HTMLButtonElement).focus();</span>
+<span class="d">-          }, 100);</span>
+<span class="d">-        }</span>
+<span class="d">-      }</span>
+<span class="d">-</span>
+<span class="d">-      previousFieldsLength.current = fields.length;</span>
+<span class="d">-    },</span>
+<span class="d">-    [fields.length],</span>
+<span class="d">-  );</span>
+<span class="d">-</span>
+   return (
+     &lt;&gt;
+       &lt;Header&gt;
+<span class="h">@@ -108,14 +78,21 @@ export const FunctionCallingConfigForm = ({</span>
+       ) : (
+         &lt;ConfigItems&gt;
+           {fields.map((field, index) =&gt; {
+<span class="d">-            const isLastField = index === fields.length - 1;</span>
+<span class="a">+            const fieldValue = fields.get(index);</span>
+<span class="a">+            const isNewlyAdded = fieldValue.id === newlyAddedId;</span>
+<span class="a">+</span>
+<span class="a">+            // Reset the newly added ID after rendering to ensure focus only happens once</span>
+<span class="a">+            if (isNewlyAdded) {</span>
+<span class="a">+              setTimeout(() =&gt; setNewlyAddedId(null), 100);</span>
+<span class="a">+            }</span>
+ 
+             return (
+<span class="d">-              &lt;div key={field} ref={isLastField ? latestFieldRef : undefined}&gt;</span>
+<span class="a">+              &lt;div key={field}&gt;</span>
+                 &lt;FunctionCallingConfigToolField
+                   fieldPath={field}
+                   formName={formName}
+                   index={index}
+<span class="a">+                  isLastAdded={isNewlyAdded}</span>
+                   onRemove={handleRemoveToolButtonClick}
+                 /&gt;
+               &lt;/div&gt;</pre><h2>Commit #5: <a href="https://github.com/appsmithorg/appsmith/commit/88707970cc5add9e63e76947d10aee564ac04a1e">88707970cc</a> (2025-04-04T19:12:36+05:30)</h2><p class="k">chore: Add custom System Instructions control (#40096)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: app/client/src/components/formControls/AIChatSystemInstructionsControl.tsx.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index 3a4c5bfba2..472c39a5a3 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -5,7 +5,6 @@ import styled from &quot;styled-components&quot;;</span>
+ import { v4 as uuid } from &quot;uuid&quot;;
+ import type { FunctionCallingConfigFormToolField } from &quot;../types&quot;;
+ import { FunctionCallingConfigToolField } from &quot;./FunctionCallingConfigToolField&quot;;
+<span class="d">-import { FunctionCallingEmpty } from &quot;./FunctionCallingEmpty&quot;;</span>
+ 
+ export interface FunctionCallingConfigFormProps {
+   formName: string;
+<span class="h">@@ -16,13 +15,13 @@ const Header = styled.div`</span>
+   display: flex;
+   gap: var(--ads-v2-spaces-4);
+   justify-content: space-between;
+<span class="d">-  margin-bottom: var(--ads-v2-spaces-4);</span>
+ `;
+ 
+ const ConfigItems = styled.div`
+   display: flex;
+   flex-direction: column;
+   gap: var(--ads-v2-spaces-4);
+<span class="a">+  margin-top: var(--ads-v2-spaces-4);</span>
+ `;
+ 
+ export const FunctionCallingConfigForm = ({
+<span class="h">@@ -54,14 +53,9 @@ export const FunctionCallingConfigForm = ({</span>
+   return (
+     &lt;&gt;
+       &lt;Header&gt;
+<span class="d">-        &lt;div&gt;</span>
+<span class="d">-          &lt;Text isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;</span>
+<span class="d">-            Function Calls</span>
+<span class="d m">-          &lt;/Text&gt;</span>
+<span class="d">-          &lt;Text renderAs=&quot;p&quot;&gt;</span>
+<span class="d">-            Add functions for the model to execute dynamically.</span>
+<span class="d m">-          &lt;/Text&gt;</span>
+<span class="d">-        &lt;/div&gt;</span>
+<span class="a">+        &lt;Text isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;</span>
+<span class="a">+          Function Calls</span>
+<span class="a m">+        &lt;/Text&gt;</span>
+ 
+         &lt;Button
+           UNSAFE_width=&quot;110px&quot;
+<span class="h">@@ -73,9 +67,7 @@ export const FunctionCallingConfigForm = ({</span>
+         &lt;/Button&gt;
+       &lt;/Header&gt;
+ 
+<span class="d">-      {fields.length === 0 ? (</span>
+<span class="d">-        &lt;FunctionCallingEmpty /&gt;</span>
+<span class="d">-      ) : (</span>
+<span class="a">+      {fields.length &gt; 0 &amp;&amp; (</span>
+         &lt;ConfigItems&gt;
+           {fields.map((field, index) =&gt; {
+             const fieldValue = fields.get(index);</pre><h2>Commit #6: <a href="https://github.com/appsmithorg/appsmith/commit/df34a10205b9a37ab51ce7adaf91bf565a02f22b">df34a10205</a> (2025-04-07T18:27:26+05:30)</h2><p class="k">chore: Update the AI chat Query controls (#40137)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: app/client/src/PluginActionEditor/components/PluginActionForm/components/ActionForm/Zone/index.tsx.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index 472c39a5a3..382af7eb85 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -54,7 +54,7 @@ export const FunctionCallingConfigForm = ({</span>
+     &lt;&gt;
+       &lt;Header&gt;
+         &lt;Text isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;
+<span class="d">-          Function Calls</span>
+<span class="a">+          Function calls</span>
+<span class=" m">         &lt;/Text&gt;</span>
+ 
+         &lt;Button</pre><h2>Commit #7: <a href="https://github.com/appsmithorg/appsmith/commit/326023d0ab4610f5d041abc634a37c2c5f085679">326023d0ab</a> (2025-04-07T18:48:31+05:30)</h2><p class="k">chore: Update function calling add menu (#40139)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index 382af7eb85..6499bb8055 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -1,10 +1,34 @@</span>
+<span class="d">-import { Button, Text } from &quot;@appsmith/ads&quot;;</span>
+<span class="d">-import React, { useCallback, useState } from &quot;react&quot;;</span>
+<span class="a">+import {</span>
+<span class="a">+  Button,</span>
+<span class="a">+  Flex,</span>
+<span class="a">+  Icon,</span>
+<span class="a">+  Menu,</span>
+<span class="a">+  MenuContent,</span>
+<span class="a">+  MenuGroup,</span>
+<span class="a">+  MenuItem,</span>
+<span class="a">+  MenuSub,</span>
+<span class="a">+  MenuSubContent,</span>
+<span class="a">+  MenuSubTrigger,</span>
+<span class="a">+  MenuTrigger,</span>
+<span class="a">+  Text,</span>
+<span class="a">+} from &quot;@appsmith/ads&quot;;</span>
+<span class="a">+import React, { useCallback, useMemo, useState } from &quot;react&quot;;</span>
+ import type { FieldArrayFieldsProps } from &quot;redux-form&quot;;
+ import styled from &quot;styled-components&quot;;
+ import { v4 as uuid } from &quot;uuid&quot;;
+<span class="d">-import type { FunctionCallingConfigFormToolField } from &quot;../types&quot;;</span>
+<span class="a">+import type {</span>
+<span class="a">+  FunctionCallingConfigFormToolField,</span>
+<span class="a">+  FunctionCallingEntityType,</span>
+<span class="a">+  FunctionCallingEntityTypeOption,</span>
+<span class="a">+} from &quot;../types&quot;;</span>
+ import { FunctionCallingConfigToolField } from &quot;./FunctionCallingConfigToolField&quot;;
+<span class="a">+import { useSelector } from &quot;react-redux&quot;;</span>
+<span class="a">+import { selectEntityOptions } from &quot;./selectors&quot;;</span>
+<span class="a">+import { createNewJSCollection } from &quot;actions/jsPaneActions&quot;;</span>
+<span class="a">+import { queryAddURL } from &quot;ee/RouteBuilder&quot;;</span>
+<span class="a">+import history from &quot;utils/history&quot;;</span>
+<span class="a">+import { useDispatch } from &quot;react-redux&quot;;</span>
+<span class="a">+import { getCurrentPageId } from &quot;selectors/editorSelectors&quot;;</span>
+ 
+ export interface FunctionCallingConfigFormProps {
+   formName: string;
+<span class="h">@@ -29,19 +53,48 @@ export const FunctionCallingConfigForm = ({</span>
+   formName,
+ }: FunctionCallingConfigFormProps) =&gt; {
+   const [newlyAddedId, setNewlyAddedId] = useState&lt;string | null&gt;(null);
+<span class="a">+  const options = useSelector(selectEntityOptions);</span>
+<span class="a">+  const dispatch = useDispatch();</span>
+<span class="a">+  const pageId = useSelector(getCurrentPageId);</span>
+ 
+<span class="d">-  const handleAddFunctionButtonClick = useCallback(() =&gt; {</span>
+<span class="d">-    const id = uuid();</span>
+<span class="a">+  // Get existing entity IDs from the agentFunctions, excluding the currently selected value</span>
+<span class="a">+  const existingEntityIds = useMemo(() =&gt; {</span>
+<span class="a">+    const agentFunctionIds = new Set(Object.keys(options.agentFunctions));</span>
+ 
+<span class="d">-    fields.push({</span>
+<span class="d">-      id,</span>
+<span class="d">-      description: &quot;&quot;,</span>
+<span class="d">-      entityId: &quot;&quot;,</span>
+<span class="d">-      isApprovalRequired: false,</span>
+<span class="d">-      entityType: &quot;Query&quot;,</span>
+<span class="d">-    });</span>
+<span class="d">-    setNewlyAddedId(id);</span>
+<span class="d">-  }, [fields]);</span>
+<span class="a">+    return agentFunctionIds;</span>
+<span class="a">+  }, [options.agentFunctions]);</span>
+<span class="a">+</span>
+<span class="a">+  // Filter query items to exclude existing entities</span>
+<span class="a">+  const filteredQueryItems = useMemo(() =&gt; {</span>
+<span class="a">+    return options.Query.filter((item) =&gt; !existingEntityIds.has(item.value));</span>
+<span class="a">+  }, [options.Query, existingEntityIds]);</span>
+<span class="a">+</span>
+<span class="a">+  // Filter JS collection items</span>
+<span class="a">+  const filteredJSCollections = useMemo(() =&gt; {</span>
+<span class="a">+    return options.JSCollections.map((collection) =&gt; ({</span>
+<span class="a">+      ...collection,</span>
+<span class="a">+      // Filter out functions that are already used</span>
+<span class="a">+      functions: collection.functions.filter(</span>
+<span class="a">+        (func) =&gt; !existingEntityIds.has(func.value),</span>
+<span class="a">+      ),</span>
+<span class="a">+    })).filter((collection) =&gt; collection.functions.length &gt; 0);</span>
+<span class="a">+  }, [options.JSCollections, existingEntityIds]);</span>
+<span class="a">+</span>
+<span class="a">+  const handleAddFunctionButtonClick = useCallback(</span>
+<span class="a">+    (option: FunctionCallingEntityTypeOption) =&gt; {</span>
+<span class="a">+      const id = uuid();</span>
+<span class="a">+</span>
+<span class="a">+      fields.push({</span>
+<span class="a">+        id,</span>
+<span class="a">+        description: &quot;&quot;,</span>
+<span class="a">+        entityId: option.value,</span>
+<span class="a">+        isApprovalRequired: false,</span>
+<span class="a">+        entityType: option.optionGroupType as FunctionCallingEntityType,</span>
+<span class="a">+      });</span>
+<span class="a">+      setNewlyAddedId(id);</span>
+<span class="a">+    },</span>
+<span class="a">+    [fields],</span>
+<span class="a">+  );</span>
+ 
+   const handleRemoveToolButtonClick = useCallback(
+     (index: number) =&gt; {
+<span class="h">@@ -54,17 +107,100 @@ export const FunctionCallingConfigForm = ({</span>
+     &lt;&gt;
+       &lt;Header&gt;
+         &lt;Text isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;
+<span class="d">-          Function calls</span>
+<span class="a">+          Function Calls</span>
+<span class=" m">         &lt;/Text&gt;</span>
+ 
+<span class="d">-        &lt;Button</span>
+<span class="d">-          UNSAFE_width=&quot;110px&quot;</span>
+<span class="d">-          kind=&quot;secondary&quot;</span>
+<span class="d">-          onClick={handleAddFunctionButtonClick}</span>
+<span class="d">-          startIcon=&quot;plus&quot;</span>
+<span class="d">-        &gt;</span>
+<span class="d">-          Add Function</span>
+<span class="d">-        &lt;/Button&gt;</span>
+<span class="a">+        &lt;Menu&gt;</span>
+<span class="a">+          &lt;MenuTrigger&gt;</span>
+<span class="a">+            &lt;Button UNSAFE_width=&quot;110px&quot; kind=&quot;secondary&quot; startIcon=&quot;plus&quot;&gt;</span>
+<span class="a">+              Add Function</span>
+<span class="a">+            &lt;/Button&gt;</span>
+<span class="a">+          &lt;/MenuTrigger&gt;</span>
+<span class="a">+          &lt;MenuContent align=&quot;end&quot; loop width=&quot;235px&quot;&gt;</span>
+<span class="a">+            {/* Create new options */}</span>
+<span class="a">+            &lt;MenuGroup&gt;</span>
+<span class="a">+              &lt;MenuItem onSelect={() =&gt; history.push(queryAddURL({}))}&gt;</span>
+<span class="a">+                &lt;Flex alignItems=&quot;center&quot; gap=&quot;spaces-2&quot;&gt;</span>
+<span class="a">+                  &lt;Icon name=&quot;plus&quot; size=&quot;md&quot; /&gt;</span>
+<span class="a">+                  New Query</span>
+<span class="a">+                &lt;/Flex&gt;</span>
+<span class="a">+              &lt;/MenuItem&gt;</span>
+<span class="a">+              &lt;MenuItem</span>
+<span class="a">+                onSelect={() =&gt;</span>
+<span class="a">+                  dispatch(</span>
+<span class="a">+                    createNewJSCollection(</span>
+<span class="a">+                      pageId,</span>
+<span class="a">+                      &quot;AI_QUERY_FUNCTION_CALLING_CONFIG&quot;,</span>
+<span class="a">+                      &quot;onToolCall&quot;,</span>
+<span class="a">+                    ),</span>
+<span class="a">+                  )</span>
+<span class="a">+                }</span>
+<span class="a">+              &gt;</span>
+<span class="a">+                &lt;Flex alignItems=&quot;center&quot; gap=&quot;spaces-2&quot;&gt;</span>
+<span class="a">+                  &lt;Icon name=&quot;plus&quot; size=&quot;md&quot; /&gt;</span>
+<span class="a">+                  New JS Object</span>
+<span class="a">+                &lt;/Flex&gt;</span>
+<span class="a">+              &lt;/MenuItem&gt;</span>
+<span class="a">+            &lt;/MenuGroup&gt;</span>
+<span class="a">+</span>
+<span class="a">+            {/* Query options group */}</span>
+<span class="a">+            {options.Query.length &gt; 0 &amp;&amp; (</span>
+<span class="a">+              &lt;MenuGroup&gt;</span>
+<span class="a">+                {filteredQueryItems.map((option) =&gt; (</span>
+<span class="a">+                  &lt;MenuItem</span>
+<span class="a">+                    key={option.value}</span>
+<span class="a">+                    onSelect={() =&gt; handleAddFunctionButtonClick(option)}</span>
+<span class="a">+                  &gt;</span>
+<span class="a">+                    &lt;Flex alignItems=&quot;center&quot; gap=&quot;spaces-2&quot;&gt;</span>
+<span class="a">+                      {option.icon &amp;&amp;</span>
+<span class="a">+                        (typeof option.icon === &quot;string&quot; ? (</span>
+<span class="a">+                          &lt;Icon name={option.icon} size=&quot;md&quot; /&gt;</span>
+<span class="a">+                        ) : (</span>
+<span class="a">+                          option.icon</span>
+<span class="a">+                        ))}</span>
+<span class="a">+                      {option.label}</span>
+<span class="a">+                    &lt;/Flex&gt;</span>
+<span class="a">+                  &lt;/MenuItem&gt;</span>
+<span class="a">+                ))}</span>
+<span class="a">+              &lt;/MenuGroup&gt;</span>
+<span class="a">+            )}</span>
+<span class="a">+</span>
+<span class="a">+            {/* JS Collections group with nested functions */}</span>
+<span class="a">+            {options.JSCollections.length &gt; 0 &amp;&amp; (</span>
+<span class="a">+              &lt;MenuGroup&gt;</span>
+<span class="a">+                &lt;MenuGroup&gt;</span>
+<span class="a">+                  {filteredJSCollections.map((collection) =&gt; (</span>
+<span class="a">+                    &lt;MenuSub key={collection.id}&gt;</span>
+<span class="a">+                      &lt;MenuSubTrigger&gt;</span>
+<span class="a">+                        &lt;Flex alignItems=&quot;center&quot; gap=&quot;spaces-2&quot;&gt;</span>
+<span class="a">+                          {collection.icon &amp;&amp;</span>
+<span class="a">+                            (typeof collection.icon === &quot;string&quot; ? (</span>
+<span class="a">+                              &lt;Icon name={collection.icon} size=&quot;md&quot; /&gt;</span>
+<span class="a">+                            ) : (</span>
+<span class="a">+                              collection.icon</span>
+<span class="a">+                            ))}</span>
+<span class="a">+                          {collection.name}</span>
+<span class="a">+                        &lt;/Flex&gt;</span>
+<span class="a">+                      &lt;/MenuSubTrigger&gt;</span>
+<span class="a">+                      &lt;MenuSubContent&gt;</span>
+<span class="a">+                        {collection.functions.map((jsFunction) =&gt; (</span>
+<span class="a">+                          &lt;MenuItem</span>
+<span class="a">+                            key={jsFunction.value}</span>
+<span class="a">+                            onSelect={() =&gt;</span>
+<span class="a">+                              handleAddFunctionButtonClick(jsFunction)</span>
+<span class="a">+                            }</span>
+<span class="a">+                          &gt;</span>
+<span class="a">+                            {jsFunction.label}</span>
+<span class="a">+                          &lt;/MenuItem&gt;</span>
+<span class="a">+                        ))}</span>
+<span class="a">+                      &lt;/MenuSubContent&gt;</span>
+<span class="a">+                    &lt;/MenuSub&gt;</span>
+<span class="a">+                  ))}</span>
+<span class="a">+                &lt;/MenuGroup&gt;</span>
+<span class="a">+              &lt;/MenuGroup&gt;</span>
+<span class="a">+            )}</span>
+<span class="a">+          &lt;/MenuContent&gt;</span>
+<span class="a">+        &lt;/Menu&gt;</span>
+       &lt;/Header&gt;
+ 
+       {fields.length &gt; 0 &amp;&amp; (</pre><h2>Commit #8: <a href="https://github.com/appsmithorg/appsmith/commit/507bb90307af26ee0d27989c433ed7dfc58ba9f5">507bb90307</a> (2025-04-08T15:43:03+05:30)</h2><p class="k">chore: Add additional chat option (#40166)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index 6499bb8055..c5a310e91c 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -11,6 +11,7 @@ import {</span>
+   MenuSubTrigger,
+   MenuTrigger,
+   Text,
+<span class="a">+  Tooltip,</span>
+ } from &quot;@appsmith/ads&quot;;
+ import React, { useCallback, useMemo, useState } from &quot;react&quot;;
+ import type { FieldArrayFieldsProps } from &quot;redux-form&quot;;
+<span class="h">@@ -106,14 +107,25 @@ export const FunctionCallingConfigForm = ({</span>
+   return (
+     &lt;&gt;
+       &lt;Header&gt;
+<span class="d">-        &lt;Text isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;</span>
+<span class="d">-          Function Calls</span>
+<span class="d m">-        &lt;/Text&gt;</span>
+<span class="a">+        &lt;Tooltip</span>
+<span class="a">+          align={{</span>
+<span class="a">+            points: [&quot;cr&quot;, &quot;cl&quot;],</span>
+<span class="a">+            offset: [0, 2],</span>
+<span class="a">+          }}</span>
+<span class="a">+          content=&quot;Function calling allows the agent to intelligently fetch data, perform actions, and generate accurate, real-time responses.&quot;</span>
+<span class="a">+        &gt;</span>
+<span class="a">+          &lt;Flex alignItems=&quot;center&quot; flexDirection=&quot;row&quot; gap=&quot;spaces-2&quot;&gt;</span>
+<span class="a">+            &lt;Text isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;</span>
+<span class="a">+              Functions</span>
+<span class="a m">+            &lt;/Text&gt;</span>
+<span class="a">+            &lt;Icon name=&quot;info&quot; size=&quot;md&quot; /&gt;</span>
+<span class="a">+          &lt;/Flex&gt;</span>
+<span class="a">+        &lt;/Tooltip&gt;</span>
+ 
+         &lt;Menu&gt;
+           &lt;MenuTrigger&gt;
+             &lt;Button UNSAFE_width=&quot;110px&quot; kind=&quot;secondary&quot; startIcon=&quot;plus&quot;&gt;
+<span class="d">-              Add Function</span>
+<span class="a">+              Add function</span>
+             &lt;/Button&gt;
+           &lt;/MenuTrigger&gt;
+           &lt;MenuContent align=&quot;end&quot; loop width=&quot;235px&quot;&gt;
+<span class="h">@@ -122,7 +134,7 @@ export const FunctionCallingConfigForm = ({</span>
+               &lt;MenuItem onSelect={() =&gt; history.push(queryAddURL({}))}&gt;
+                 &lt;Flex alignItems=&quot;center&quot; gap=&quot;spaces-2&quot;&gt;
+                   &lt;Icon name=&quot;plus&quot; size=&quot;md&quot; /&gt;
+<span class="d">-                  New Query</span>
+<span class="a">+                  New query</span>
+                 &lt;/Flex&gt;
+               &lt;/MenuItem&gt;
+               &lt;MenuItem
+<span class="h">@@ -138,7 +150,7 @@ export const FunctionCallingConfigForm = ({</span>
+               &gt;
+                 &lt;Flex alignItems=&quot;center&quot; gap=&quot;spaces-2&quot;&gt;
+                   &lt;Icon name=&quot;plus&quot; size=&quot;md&quot; /&gt;
+<span class="d">-                  New JS Object</span>
+<span class="a">+                  New JS object</span>
+                 &lt;/Flex&gt;
+               &lt;/MenuItem&gt;
+             &lt;/MenuGroup&gt;</pre><h2>Commit #9: <a href="https://github.com/appsmithorg/appsmith/commit/12c4cbbe0126788decbca16ff97a105da1c08f21">12c4cbbe01</a> (2025-04-09T10:34:17+05:30)</h2><p class="k">chore: Add chrome extension link in embed (#40179)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index c5a310e91c..d3679eeac4 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -143,14 +143,14 @@ export const FunctionCallingConfigForm = ({</span>
+                     createNewJSCollection(
+                       pageId,
+                       &quot;AI_QUERY_FUNCTION_CALLING_CONFIG&quot;,
+<span class="d">-                      &quot;onToolCall&quot;,</span>
+<span class="a">+                      &quot;onFunctionCall&quot;,</span>
+                     ),
+                   )
+                 }
+               &gt;
+                 &lt;Flex alignItems=&quot;center&quot; gap=&quot;spaces-2&quot;&gt;
+                   &lt;Icon name=&quot;plus&quot; size=&quot;md&quot; /&gt;
+<span class="d">-                  New JS object</span>
+<span class="a">+                  New JS function</span>
+                 &lt;/Flex&gt;
+               &lt;/MenuItem&gt;
+             &lt;/MenuGroup&gt;</pre><h2>Commit #10: <a href="https://github.com/appsmithorg/appsmith/commit/4783df3c376cba5e40da45948860a75cad4bb282">4783df3c37</a> (2025-04-14T18:58:29+05:30)</h2><p class="k">chore: Agent chat annotated label in query pane (#40237)<br>Path after this commit: app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx
+index d3679eeac4..05d678ad10 100644
+<span class="d">--- a/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="a">+++ b/app/client/src/components/formControls/FunctionCallingConfigControl/components/FunctionCallingConfigForm.tsx</span>
+<span class="h">@@ -42,6 +42,13 @@ const Header = styled.div`</span>
+   justify-content: space-between;
+ `;
+ 
+<span class="a">+const AnnotatedLabel = styled(Text)`</span>
+<span class="a">+  text-decoration-line: underline;</span>
+<span class="a">+  text-decoration-style: dotted;</span>
+<span class="a">+  text-decoration-color: var(--ads-v2-color-border-emphasis);</span>
+<span class="a">+  text-underline-offset: var(--ads-v2-spaces-1);</span>
+<span class="a">+`;</span>
+<span class="a">+</span>
+ const ConfigItems = styled.div`
+   display: flex;
+   flex-direction: column;
+<span class="h">@@ -115,9 +122,9 @@ export const FunctionCallingConfigForm = ({</span>
+           content=&quot;Function calling allows the agent to intelligently fetch data, perform actions, and generate accurate, real-time responses.&quot;
+         &gt;
+           &lt;Flex alignItems=&quot;center&quot; flexDirection=&quot;row&quot; gap=&quot;spaces-2&quot;&gt;
+<span class="d">-            &lt;Text isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;</span>
+<span class="a">+            &lt;AnnotatedLabel isBold kind=&quot;heading-s&quot; renderAs=&quot;p&quot;&gt;</span>
+               Functions
+<span class="d m">-            &lt;/Text&gt;</span>
+<span class="a">+            &lt;/AnnotatedLabel&gt;</span>
+             &lt;Icon name=&quot;info&quot; size=&quot;md&quot; /&gt;
+           &lt;/Flex&gt;
+         &lt;/Tooltip&gt;</pre></body></html>

@@ -1,0 +1,7 @@
+commits: 5,373
+unanimous LLM label: 4,384
+keyword corrective, all three LLMs adaptive or perfective: 590
+keyword adaptive or perfective, all three LLMs corrective: 59
+
+examples (keyword corrective, LLMs not):
+  lingodotdev/lingo.dev ccd6f315f0: 'fix: update PHP SDK code style to fix failing workflow (#689)' keyword=corrective deepseek=perfective gpt_oss=corrective minimax=perfective

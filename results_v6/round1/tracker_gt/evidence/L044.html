@@ -1,0 +1,184 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L044</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L044</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-storage-azcopy">azure/azure-storage-azcopy</a><br><b>File at merge:</b> cmd/constants.go, line 58<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-storage-azcopy/commit/159928f6f21f04af1bba17f570927ab9e146ce6b">159928f6f2</a> (2025-06-11T19:08:39)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-storage-azcopy/tree/ffcdb9e082d96f5ce020c3019963c80e1acbfd00">ffcdb9e082</a>)</p><p><b>The line:</b></p><pre><span class="t">const (</span></pre><h2>File at the merge commit, lines 50 to 66</h2><pre>   50 | 	// we give the best correspondence to the sizing of the user&#x27;s network pipes.
+   51 | 	// See https://networkengineering.stackexchange.com/questions/3628/iec-or-si-units-binary-prefixes-used-for-network-measurement
+   52 | 	// NOTE that for everything else in the app (e.g. sizes of files) we use the base 2 units (i.e. 1024 * 1024) because
+   53 | 	// for RAM and disk file sizes, it is conventional to use the power-of-two-based units.
+   54 | 	base10Mega = 1000 * 1000
+   55 | )
+   56 | 
+   57 | // credentials related consts
+<span class="t">   58 | const (</span>
+   59 | 	oauthLoginSessionCacheKeyName     = &quot;AzCopyOAuthTokenCache&quot;
+   60 | 	oauthLoginSessionCacheServiceName = &quot;AzCopyV10&quot;
+   61 | 	oauthLoginSessionCacheAccountName = &quot;AzCopyOAuthTokenCache&quot;
+   62 | 	trustedSuffixesNameAAD            = &quot;trusted-microsoft-suffixes&quot;
+   63 | 	trustedSuffixesAAD                = &quot;*.core.windows.net;*.core.chinacloudapi.cn;*.core.cloudapi.de;*.core.usgovcloudapi.net;*.storage.azure.net&quot;
+   64 | )
+   65 | 
+   66 | const MAX_SYMLINKS_TO_FOLLOW = 40</pre><p class="k">Below are all 9 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-storage-azcopy/commit/9ab0c5ad757bb131926cc9f75c12b760f534d38f">9ab0c5ad75</a> (2025-06-18T13:52:58-07:00)</h2><p class="k">Copy command code refactor (#3090)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 5.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index e8519896..f8cd4c15 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -24,17 +24,18 @@ const (</span>
+ 	PreservePOSIXPropertiesIncompatibilityMsg = &quot;to use the --preserve-posix-properties flag, both the source and destination must be POSIX-aware. Valid combinations are: Linux -&gt; Blob, Blob -&gt; Linux, or Blob -&gt; Blob&quot;
+ 	PreservePermissionsDisabledMsg            = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy SMB ACLs between the source and destination. For more information, visit: https://aka.ms/AzCopyandAzureFiles.&quot;
+ 
+<span class="d">-	PreserveNFSPermissionsDisabledMsg = &quot;Note: The preserve-nfs-permissions flag is set to false. As a result, AzCopy will not copy NFS permissions between the source and destination.&quot;</span>
+<span class="a">+	PreserveNFSPermissionsDisabledMsg = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy NFS permissions between the source and destination.&quot;</span>
+ 	InvalidFlagsForNFSMsg             = &quot;nfs copy cannot be used with SMB-related flags. Please use the --preserve-info or --preserve-permissions flags instead&quot;
+ )
+ 
+ // Flags associated with copy and sync commands
+<span class=" m"> const (</span>
+<span class="d">-	PreserveSMBInfoFlag     = &quot;preserve-smb-info&quot;</span>
+<span class="d">-	PreservePermissionsFlag = &quot;preserve-permissions&quot;</span>
+<span class="d">-	PreserveInfoFlag        = &quot;preserve-info&quot;</span>
+<span class="d">-	IsNFSProtocolFlag       = &quot;nfs&quot;</span>
+<span class="d">-	HardlinksFlag           = &quot;hardlinks&quot;</span>
+<span class="a">+	PreserveSMBInfoFlag        = &quot;preserve-smb-info&quot;</span>
+<span class="a">+	PreserveSMBPermissionsFlag = &quot;preserve-smb-permissions&quot;</span>
+<span class="a">+	PreservePermissionsFlag    = &quot;preserve-permissions&quot;</span>
+<span class="a">+	PreserveInfoFlag           = &quot;preserve-info&quot;</span>
+<span class="a">+	IsNFSProtocolFlag          = &quot;nfs&quot;</span>
+<span class="a">+	HardlinksFlag              = &quot;hardlinks&quot;</span>
+ )
+ 
+<span class=" m"> const (</span></pre><h2>Commit #2: <a href="https://github.com/azure/azure-storage-azcopy/commit/c6e1fcbce69adea7a75dfdbc620ff41aa624df1c">c6e1fcbce6</a> (2025-07-28T11:51:58-07:00)</h2><p class="k">NFS Phase 1 changes (#3130)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 5.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index f8cd4c15..26c29dc3 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -26,6 +26,7 @@ const (</span>
+ 
+ 	PreserveNFSPermissionsDisabledMsg = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy NFS permissions between the source and destination.&quot;
+ 	InvalidFlagsForNFSMsg             = &quot;nfs copy cannot be used with SMB-related flags. Please use the --preserve-info or --preserve-permissions flags instead&quot;
+<span class="a">+	DstShareDoesNotExists             = &quot;the destination file share does not exist; please create it manually with the required quota and settings before running the copy —refer to https://learn.microsoft.com/en-us/azure/storage/files/storage-how-to-create-file-share?tabs=azure-portal for SMB or https://learn.microsoft.com/en-us/azure/storage/files/storage-files-quick-create-use-linux for NFS.&quot;</span>
+ )
+ 
+ // Flags associated with copy and sync commands</pre><h2>Commit #3: <a href="https://github.com/azure/azure-storage-azcopy/commit/01b2ad7eb956212ea7c0adafa25e4f539cb1192a">01b2ad7eb9</a> (2025-09-24T10:55:08-07:00)</h2><p class="k">Implement request priority policy (#3162)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 5. Identical text added in other files in this commit: ste/request_priority_policy.go, ste/xferVersionPolicy.go.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index 26c29dc3..10532ad2 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -31,6 +31,7 @@ const (</span>
+ 
+ // Flags associated with copy and sync commands
+<span class=" m"> const (</span>
+<span class="a">+	RequestPriorityFlag        = &quot;request-priority&quot;</span>
+ 	PreserveSMBInfoFlag        = &quot;preserve-smb-info&quot;
+ 	PreserveSMBPermissionsFlag = &quot;preserve-smb-permissions&quot;
+ 	PreservePermissionsFlag    = &quot;preserve-permissions&quot;</pre><h2>Commit #4: <a href="https://github.com/azure/azure-storage-azcopy/commit/fd70daa3db382ee393d4c9f04b8592b2fcbd1168">fd70daa3db</a> (2025-10-15T09:35:20-07:00)</h2><p class="k">Refactored and reorganized traverser code (#3251)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 5.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index 10532ad2..111e32d3 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -66,5 +66,4 @@ const (</span>
+ 	trustedSuffixesAAD                = &quot;*.core.windows.net;*.core.chinacloudapi.cn;*.core.cloudapi.de;*.core.usgovcloudapi.net;*.storage.azure.net&quot;
+ )
+ 
+<span class="d">-const MAX_SYMLINKS_TO_FOLLOW = 40</span>
+ const NumOfFilesPerDispatchJobPart = 10000</pre><h2>Commit #5: <a href="https://github.com/azure/azure-storage-azcopy/commit/6f078bca8311712c7cb382bc6d3221842e45307f">6f078bca83</a> (2025-11-18T12:40:44-08:00)</h2><p class="k">Migrated resume code (#3289)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 3. Identical text added in other files in this commit: azcopy/client.go, azcopy/credentialUtil.go.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index 111e32d3..6d41c535 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -46,24 +46,4 @@ const (</span>
+ 	pipeLocation            = &quot;~pipe~&quot;
+ )
+ 
+<span class="d m">-const (</span>
+<span class="d">-	// For networking throughput in Mbps, (and only for networking), we divide by 1000*1000 (not 1024 * 1024) because</span>
+<span class="d">-	// networking is traditionally done in base 10 units (not base 2).</span>
+<span class="d">-	// E.g. &quot;gigabit ethernet&quot; means 10^9 bits/sec, not 2^30. So by using base 10 units</span>
+<span class="d">-	// we give the best correspondence to the sizing of the user&#x27;s network pipes.</span>
+<span class="d">-	// See https://networkengineering.stackexchange.com/questions/3628/iec-or-si-units-binary-prefixes-used-for-network-measurement</span>
+<span class="d">-	// NOTE that for everything else in the app (e.g. sizes of files) we use the base 2 units (i.e. 1024 * 1024) because</span>
+<span class="d">-	// for RAM and disk file sizes, it is conventional to use the power-of-two-based units.</span>
+<span class="d">-	base10Mega = 1000 * 1000</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-// credentials related consts</span>
+<span class="d m">-const (</span>
+<span class="d">-	oauthLoginSessionCacheKeyName     = &quot;AzCopyOAuthTokenCache&quot;</span>
+<span class="d">-	oauthLoginSessionCacheServiceName = &quot;AzCopyV10&quot;</span>
+<span class="d">-	oauthLoginSessionCacheAccountName = &quot;AzCopyOAuthTokenCache&quot;</span>
+<span class="d">-	trustedSuffixesNameAAD            = &quot;trusted-microsoft-suffixes&quot;</span>
+<span class="d">-	trustedSuffixesAAD                = &quot;*.core.windows.net;*.core.chinacloudapi.cn;*.core.cloudapi.de;*.core.usgovcloudapi.net;*.storage.azure.net&quot;</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+ const NumOfFilesPerDispatchJobPart = 10000</pre><h2>Commit #6: <a href="https://github.com/azure/azure-storage-azcopy/commit/a0712a65c1acf86d5043a67640d2e9dff222512a">a0712a65c1</a> (2025-11-20T08:54:20-08:00)</h2><p class="k">Cleanup before sync migration (#3292)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 3. Identical text added in other files in this commit: azcopy/validationUtil.go.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index 6d41c535..8aec70ec 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -21,8 +21,7 @@ package cmd</span>
+ 
+ // Common Error and Info messages
+<span class=" m"> const (</span>
+<span class="d">-	PreservePOSIXPropertiesIncompatibilityMsg = &quot;to use the --preserve-posix-properties flag, both the source and destination must be POSIX-aware. Valid combinations are: Linux -&gt; Blob, Blob -&gt; Linux, or Blob -&gt; Blob&quot;</span>
+<span class="d">-	PreservePermissionsDisabledMsg            = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy SMB ACLs between the source and destination. For more information, visit: https://aka.ms/AzCopyandAzureFiles.&quot;</span>
+<span class="a">+	PreservePermissionsDisabledMsg = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy SMB ACLs between the source and destination. For more information, visit: https://aka.ms/AzCopyandAzureFiles.&quot;</span>
+ 
+ 	PreserveNFSPermissionsDisabledMsg = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy NFS permissions between the source and destination.&quot;
+ 	InvalidFlagsForNFSMsg             = &quot;nfs copy cannot be used with SMB-related flags. Please use the --preserve-info or --preserve-permissions flags instead&quot;
+<span class="h">@@ -31,13 +30,10 @@ const (</span>
+ 
+ // Flags associated with copy and sync commands
+<span class=" m"> const (</span>
+<span class="d">-	RequestPriorityFlag        = &quot;request-priority&quot;</span>
+<span class="d">-	PreserveSMBInfoFlag        = &quot;preserve-smb-info&quot;</span>
+<span class="d">-	PreserveSMBPermissionsFlag = &quot;preserve-smb-permissions&quot;</span>
+<span class="d">-	PreservePermissionsFlag    = &quot;preserve-permissions&quot;</span>
+<span class="d">-	PreserveInfoFlag           = &quot;preserve-info&quot;</span>
+<span class="d">-	IsNFSProtocolFlag          = &quot;nfs&quot;</span>
+<span class="d">-	HardlinksFlag              = &quot;hardlinks&quot;</span>
+<span class="a">+	RequestPriorityFlag = &quot;request-priority&quot;</span>
+<span class="a">+	PreserveSMBInfoFlag = &quot;preserve-smb-info&quot;</span>
+<span class="a">+</span>
+<span class="a">+	HardlinksFlag = &quot;hardlinks&quot;</span>
+ )
+ 
+<span class=" m"> const (</span></pre><h2>Commit #7: <a href="https://github.com/azure/azure-storage-azcopy/commit/d083a610bc75450e7dad9d4878a9b01cb5435729">d083a610bc</a> (2025-11-24T12:51:12-08:00)</h2><p class="k">Migrated sync code (#3293)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index 8aec70ec..d09a0b98 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -25,7 +25,6 @@ const (</span>
+ 
+ 	PreserveNFSPermissionsDisabledMsg = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy NFS permissions between the source and destination.&quot;
+ 	InvalidFlagsForNFSMsg             = &quot;nfs copy cannot be used with SMB-related flags. Please use the --preserve-info or --preserve-permissions flags instead&quot;
+<span class="d">-	DstShareDoesNotExists             = &quot;the destination file share does not exist; please create it manually with the required quota and settings before running the copy —refer to https://learn.microsoft.com/en-us/azure/storage/files/storage-how-to-create-file-share?tabs=azure-portal for SMB or https://learn.microsoft.com/en-us/azure/storage/files/storage-files-quick-create-use-linux for NFS.&quot;</span>
+ )
+ 
+ // Flags associated with copy and sync commands
+<span class="h">@@ -41,5 +40,3 @@ const (</span>
+ 	pipingDefaultBlockSize  = 8 * 1024 * 1024
+ 	pipeLocation            = &quot;~pipe~&quot;
+ )
+<span class="d">-</span>
+<span class="d">-const NumOfFilesPerDispatchJobPart = 10000</span></pre><h2>Commit #8: <a href="https://github.com/azure/azure-storage-azcopy/commit/a7f6c745214360ba39b4566946937c38a4f119f0">a7f6c74521</a> (2025-11-25T11:12:15-08:00)</h2><p class="k">Cleanup before copy migration (#3301)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 3. Identical text added in other files in this commit: azcopy/transferOptions.go.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index d09a0b98..dcde31a5 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -21,10 +21,7 @@ package cmd</span>
+ 
+ // Common Error and Info messages
+<span class=" m"> const (</span>
+<span class="d">-	PreservePermissionsDisabledMsg = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy SMB ACLs between the source and destination. For more information, visit: https://aka.ms/AzCopyandAzureFiles.&quot;</span>
+<span class="d">-</span>
+<span class="d">-	PreserveNFSPermissionsDisabledMsg = &quot;Note: The preserve-permissions flag is set to false. As a result, AzCopy will not copy NFS permissions between the source and destination.&quot;</span>
+<span class="d">-	InvalidFlagsForNFSMsg             = &quot;nfs copy cannot be used with SMB-related flags. Please use the --preserve-info or --preserve-permissions flags instead&quot;</span>
+<span class="a">+	InvalidFlagsForNFSMsg = &quot;nfs copy cannot be used with SMB-related flags. Please use the --preserve-info or --preserve-permissions flags instead&quot;</span>
+ )
+ 
+ // Flags associated with copy and sync commands</pre><h2>Commit #9: <a href="https://github.com/azure/azure-storage-azcopy/commit/ffcdb9e082d96f5ce020c3019963c80e1acbfd00">ffcdb9e082</a> (2025-12-04T12:03:13-08:00)</h2><p class="k">Migrated copy code (#3310)<br>Path after this commit: cmd/constants.go. Lines with exactly this text in the file after the commit: 2. Identical text added in other files in this commit: azcopy/copyRedirection.go.</p><pre>diff --git a/cmd/constants.go b/cmd/constants.go
+index dcde31a5..8d7c58c7 100644
+<span class="d">--- a/cmd/constants.go</span>
+<span class="a">+++ b/cmd/constants.go</span>
+<span class="h">@@ -31,9 +31,3 @@ const (</span>
+ 
+ 	HardlinksFlag = &quot;hardlinks&quot;
+ )
+<span class="d">-</span>
+<span class="d m">-const (</span>
+<span class="d">-	pipingUploadParallelism = 5</span>
+<span class="d">-	pipingDefaultBlockSize  = 8 * 1024 * 1024</span>
+<span class="d">-	pipeLocation            = &quot;~pipe~&quot;</span>
+<span class="d">-)</span></pre></body></html>

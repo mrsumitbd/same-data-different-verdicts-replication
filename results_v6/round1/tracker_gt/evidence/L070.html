@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L070</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L070</h1><p><b>Repository:</b> <a href="https://github.com/pdfme/pdfme">pdfme/pdfme</a><br><b>File at merge:</b> website/src/pages/index.tsx, line 152<br><b>Merge commit (birth):</b> <a href="https://github.com/pdfme/pdfme/commit/86789ee6887b55e8a13b8229ff9d8bb883011f42">86789ee688</a> (2025-03-14T01:06:17)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/pdfme/pdfme/tree/69f6be160bc79b30cbdc1125e18f8a49d0e33929">69f6be160b</a>)</p><p><b>The line:</b></p><pre><span class="t">                      id: &#x27;homepage.cards.designer.body.description&#x27;,</span></pre><h2>File at the merge commit, lines 144 to 160</h2><pre>  144 |                     })
+  145 |                   },
+  146 |                   body: {
+  147 |                     title: translate({
+  148 |                       id: &#x27;homepage.cards.designer.body.title&#x27;,
+  149 |                       message: &#x27;Easily create templates with a WYSIWYG editor&#x27;
+  150 |                     }),
+  151 |                     description: translate({
+<span class="t">  152 |                       id: &#x27;homepage.cards.designer.body.description&#x27;,</span>
+  153 |                       message: &#x27;The Designer can be integrated into your application. It is written in vanilla JavaScript, making integration effortless regardless of the framework.&#x27;
+  154 |                     })
+  155 |                   },
+  156 |                   link: {
+  157 |                     to: &#x27;/docs/getting-started#designer&#x27;,
+  158 |                     text: translate({
+  159 |                       id: &#x27;homepage.cards.designer.link.text&#x27;,
+  160 |                       message: &#x27;Learn more about the Designer&#x27;</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/pdfme/pdfme/commit/63335feab74adeb42c3907288604a27d7a36ed9e">63335feab7</a> (2025-10-21T13:18:02+09:00)</h2><p class="k">feat: Add YouTube video embed to homepage for enhanced user engagement<br>Path after this commit: website/src/pages/index.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/website/src/pages/index.tsx b/website/src/pages/index.tsx
+index 1057835e..0cbbd570 100644
+<span class="d">--- a/website/src/pages/index.tsx</span>
+<span class="a">+++ b/website/src/pages/index.tsx</span>
+<span class="h">@@ -87,6 +87,25 @@ export default function Home() {</span>
+                   message: &quot;Simple. Yet a powerful PDF generation library.&quot;
+                 })}
+               &lt;/h2&gt;
+<span class="a">+              &lt;div style={{ width: &#x27;100%&#x27;, maxWidth: 900, margin: &#x27;0 auto&#x27; }}&gt;</span>
+<span class="a">+                &lt;div</span>
+<span class="a">+                  style={{</span>
+<span class="a">+                    width: &#x27;100%&#x27;,</span>
+<span class="a">+                    aspectRatio: &#x27;16/9&#x27;,</span>
+<span class="a">+                    display: &#x27;block&#x27;,</span>
+<span class="a">+                  }}</span>
+<span class="a">+                &gt;</span>
+<span class="a">+                  &lt;iframe</span>
+<span class="a">+                    src=&quot;https://www.youtube.com/embed/cmdlOHdrVBk?si=vTMjYcyUqhQ9usBY&quot;</span>
+<span class="a">+                    title=&quot;YouTube video player&quot;</span>
+<span class="a">+                    style={{ width: &#x27;100%&#x27;, height: &#x27;100%&#x27;, border: 0, display: &#x27;block&#x27; }}</span>
+<span class="a">+                    frameBorder=&quot;0&quot;</span>
+<span class="a">+                    allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot;</span>
+<span class="a">+                    referrerPolicy=&quot;strict-origin-when-cross-origin&quot;</span>
+<span class="a">+                    allowFullScreen</span>
+<span class="a">+                  /&gt;</span>
+<span class="a">+                &lt;/div&gt;</span>
+<span class="a">+              &lt;/div&gt;</span>
+               &lt;p&gt;
+                 {translate({
+                   id: &quot;homepage.main.description.part1&quot;,</pre></body></html>

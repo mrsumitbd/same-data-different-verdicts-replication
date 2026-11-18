@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L041</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L041</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/msbuild">dotnet/msbuild</a><br><b>File at merge:</b> src/Build.UnitTests/Construction/SolutionFile_OldParser_Tests.cs, line 2558<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/msbuild/commit/9db5ff815630ee1e4a0f94c1069df7a034911ee9">9db5ff8156</a> (2025-06-23T15:24:54)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/msbuild/tree/0784a9116ea762117c4cc19194364f97d2b1b2cd">0784a9116e</a>)</p><p><b>The line:</b></p><pre><span class="t">        /// FileUtilities.FixFilePath integration in AbsolutePath.</span></pre><h2>File at the merge commit, lines 2550 to 2566</h2><pre> 2550 |             if (project.AbsolutePath.Contains(&quot;\\&quot;))
+ 2551 |             {
+ 2552 |                 project.AbsolutePath.ShouldNotContain(&quot;\\&quot;);
+ 2553 |             }
+ 2554 |         }
+ 2555 |         
+ 2556 |         /// &lt;summary&gt;
+ 2557 |         /// Test to verify that the fix for issue #1769 works by directly testing
+<span class="t"> 2558 |         /// FileUtilities.FixFilePath integration in AbsolutePath.</span>
+ 2559 |         /// This test simulates scenarios where intermediate path processing might
+ 2560 |         /// leave backslashes in the AbsolutePath on Unix systems.
+ 2561 |         /// &lt;/summary&gt;
+ 2562 |         [Fact]
+ 2563 |         [SkipOnPlatform(TestPlatforms.Windows, &quot;Unix-specific test&quot;)]
+ 2564 |         public void AbsolutePathFixFilePathIntegrationTest()
+ 2565 |         {
+ 2566 |             </pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

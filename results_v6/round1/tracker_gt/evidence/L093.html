@@ -1,0 +1,44 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L093</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L093</h1><p><b>Repository:</b> <a href="https://github.com/bespokelabsai/curator">bespokelabsai/curator</a><br><b>File at merge:</b> examples/code-execution/math-animation/generate_script.py, line 240<br><b>Merge commit (birth):</b> <a href="https://github.com/bespokelabsai/curator/commit/692ebf5af1f6588cce17082ed970da2608e727cb">692ebf5af1</a> (2025-02-26T17:23:28)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/bespokelabsai/curator/tree/4b41961db08c0c0beebeb4fa7b15cc6d032cf99d">4b41961db0</a>)</p><p><b>The line:</b></p><pre><span class="t">                &quot;topic_description&quot;: topic.description,</span></pre><h2>File at the merge commit, lines 232 to 248</h2><pre>  232 |         &quot;&quot;&quot;
+  233 | 
+  234 |     def parse(self, input: Dict, response: Topics) -&gt; Dict:
+  235 |         return [
+  236 |             {
+  237 |                 &quot;subject_name&quot;: input[&quot;subject_name&quot;],
+  238 |                 &quot;subject_description&quot;: input[&quot;subject_description&quot;],
+  239 |                 &quot;topic_name&quot;: topic.name,
+<span class="t">  240 |                 &quot;topic_description&quot;: topic.description,</span>
+  241 |                 &quot;topic_index&quot;: topic.index,
+  242 |             }
+  243 |             for topic in response.topics
+  244 |         ]
+  245 | 
+  246 | 
+  247 | class QuestionGenerator(curator.LLM):
+  248 |     &quot;&quot;&quot;Generates interesting questions about mathematical topics&quot;&quot;&quot;</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/bespokelabsai/curator/commit/4edbf12f4a2b0d79c9a1c26bd362f579af029a6b">4edbf12f4a</a> (2025-03-11T13:31:06+05:30)</h2><p class="k">fix: use model name from config in  cost processor<br>Path after this commit: examples/code-execution/math-animation/generate_script.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/examples/code-execution/math-animation/generate_script.py b/examples/code-execution/math-animation/generate_script.py
+index c0fc3db..e9dc98a 100644
+<span class="d">--- a/examples/code-execution/math-animation/generate_script.py</span>
+<span class="a">+++ b/examples/code-execution/math-animation/generate_script.py</span>
+<span class="h">@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field</span>
+ 
+ from bespokelabs import curator
+ 
+<span class="d">-</span>
+ # ruff: noqa
+ # Set up logging
+ logging.basicConfig(</pre><h2>Commit #2: <a href="https://github.com/bespokelabsai/curator/commit/00ce9759ad69a1442ccc0b90bbaaa871dd78d255">00ce9759ad</a> (2025-05-06T15:11:38-07:00)</h2><p class="k">Feat/openai/deepseek api (#640)<br>Path after this commit: examples/code-execution/math-animation/generate_script.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/examples/code-execution/math-animation/generate_script.py b/examples/code-execution/math-animation/generate_script.py
+index e9dc98a..a22d6bd 100644
+<span class="d">--- a/examples/code-execution/math-animation/generate_script.py</span>
+<span class="a">+++ b/examples/code-execution/math-animation/generate_script.py</span>
+<span class="h">@@ -334,7 +334,7 @@ def generate_hierarchical_math_content(num_subjects=20, topics_per_subject=5, qu</span>
+ 
+     # Step 5: Save the final dataset
+     # push to hub
+<span class="d">-    subjects_dataset.push_to_hub(output_dataset_name, private=True)</span>
+<span class="a">+    scripts_dataset.push_to_hub(output_dataset_name, private=True)</span>
+ 
+     # Return the path to the dataset
+     return dataset_path</pre></body></html>

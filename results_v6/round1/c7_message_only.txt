@@ -1,0 +1,12 @@
+==============================================================================
+C7. Message-only LLM classification of the 618 labelled commits (no diff, no file list)
+prompt: classify_intent_full_corpus.TAXONOMY_PROMPT without the "Diff:" block; temperature 0; Together AI
+==============================================================================
+
+keyword rules (full corpus labels)           kappa 0.376 [0.327, 0.423]
+MiniMaxAI/MiniMax-M3.1-Flash                  message only kappa 0.704 [0.657, 0.751]   full input kappa 0.712 [0.666, 0.755]   same label as full input 87.9%   unparseable/api_error 3
+                                              tokens in 383,307 out 178,128; cost $0.164 (Together list price 0.15/0.6 USD per 1M); calls 2026-11-06T18:22:34.204830+00:00 to 2026-11-06T18:29:37.733788+00:00 UTC
+deepseek-ai/DeepSeek-V4.1-Flash               message only kappa 0.740 [0.699, 0.784]   full input kappa 0.704 [0.658, 0.748]   same label as full input 87.2%   unparseable/api_error 0
+                                              tokens in 296,539 out 151,184; cost $0.270 (Together list price 0.3/1.2 USD per 1M); calls 2026-11-06T18:30:49.013882+00:00 to 2026-11-06T18:32:28.078553+00:00 UTC
+openai/gpt-oss-120b                           message only kappa 0.678 [0.627, 0.727]   full input kappa 0.691 [0.641, 0.738]   same label as full input 85.0%   unparseable/api_error 0
+                                              tokens in 316,998 out 77,372; cost $0.094 (Together list price 0.15/0.6 USD per 1M); calls 2026-11-06T18:32:46.780466+00:00 to 2026-11-06T18:34:41.313953+00:00 UTC

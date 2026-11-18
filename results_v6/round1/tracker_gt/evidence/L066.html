@@ -1,0 +1,162 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L066</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L066</h1><p><b>Repository:</b> <a href="https://github.com/neondatabase/neon">neondatabase/neon</a><br><b>File at merge:</b> control_plane/src/safekeeper.rs, line 128<br><b>Merge commit (birth):</b> <a href="https://github.com/neondatabase/neon/commit/84bc3380cc82a27b06717d2f239ac1fea74880fc">84bc3380cc</a> (2025-04-28T15:34:47)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/neondatabase/neon/tree/015b1c7cb3259a6fcd5039bc2bd46a462e163ae8">015b1c7cb3</a>)</p><p><b>The line:</b></p><pre><span class="t">                .generate_auth_token(&amp;Claims::new(None, Scope::SafekeeperData))?;</span></pre><h2>File at the merge commit, lines 120 to 136</h2><pre>  120 |                 &amp;self.datadir_path().join(&quot;server.key&quot;),
+  121 |             )?;
+  122 |         }
+  123 | 
+  124 |         // Generate a token file for authentication with other safekeepers
+  125 |         if self.conf.auth_enabled {
+  126 |             let token = self
+  127 |                 .env
+<span class="t">  128 |                 .generate_auth_token(&amp;Claims::new(None, Scope::SafekeeperData))?;</span>
+  129 | 
+  130 |             let token_path = self.datadir_path().join(&quot;peer_jwt_token&quot;);
+  131 |             std::fs::write(token_path, token)?;
+  132 |         }
+  133 | 
+  134 |         Ok(())
+  135 |     }
+  136 | </pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/neondatabase/neon/commit/24d7c37e6ee7b730f983487351721f40922a9745">24d7c37e6e</a> (2025-06-05T18:53:14+00:00)</h2><p class="k">neon_local timeline import: create timelines on safekeepers (#12138)<br>Path after this commit: control_plane/src/safekeeper.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/control_plane/src/safekeeper.rs b/control_plane/src/safekeeper.rs
+index eec2c997e..28d369a31 100644
+<span class="d">--- a/control_plane/src/safekeeper.rs</span>
+<span class="a">+++ b/control_plane/src/safekeeper.rs</span>
+<span class="h">@@ -6,7 +6,6 @@</span>
+ //!   .neon/safekeepers/&lt;safekeeper id&gt;
+ //! ```
+ use std::error::Error as _;
+<span class="d">-use std::future::Future;</span>
+ use std::io::Write;
+ use std::path::PathBuf;
+ use std::time::Duration;
+<span class="h">@@ -14,9 +13,9 @@ use std::{io, result};</span>
+ 
+ use anyhow::Context;
+ use camino::Utf8PathBuf;
+<span class="d">-use http_utils::error::HttpErrorBody;</span>
+ use postgres_connection::PgConnectionConfig;
+<span class="d">-use reqwest::{IntoUrl, Method};</span>
+<span class="a">+use safekeeper_api::models::TimelineCreateRequest;</span>
+<span class="a">+use safekeeper_client::mgmt_api;</span>
+ use thiserror::Error;
+ use utils::auth::{Claims, Scope};
+ use utils::id::NodeId;
+<span class="h">@@ -35,25 +34,14 @@ pub enum SafekeeperHttpError {</span>
+ 
+ type Result&lt;T&gt; = result::Result&lt;T, SafekeeperHttpError&gt;;
+ 
+<span class="d">-pub(crate) trait ResponseErrorMessageExt: Sized {</span>
+<span class="d">-    fn error_from_body(self) -&gt; impl Future&lt;Output = Result&lt;Self&gt;&gt; + Send;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-impl ResponseErrorMessageExt for reqwest::Response {</span>
+<span class="d">-    async fn error_from_body(self) -&gt; Result&lt;Self&gt; {</span>
+<span class="d">-        let status = self.status();</span>
+<span class="d">-        if !(status.is_client_error() || status.is_server_error()) {</span>
+<span class="d">-            return Ok(self);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        // reqwest does not export its error construction utility functions, so let&#x27;s craft the message ourselves</span>
+<span class="d">-        let url = self.url().to_owned();</span>
+<span class="d">-        Err(SafekeeperHttpError::Response(</span>
+<span class="d">-            match self.json::&lt;HttpErrorBody&gt;().await {</span>
+<span class="d">-                Ok(err_body) =&gt; format!(&quot;Error: {}&quot;, err_body.msg),</span>
+<span class="d">-                Err(_) =&gt; format!(&quot;Http error ({}) at {}.&quot;, status.as_u16(), url),</span>
+<span class="d">-            },</span>
+<span class="d">-        ))</span>
+<span class="a">+fn err_from_client_err(err: mgmt_api::Error) -&gt; SafekeeperHttpError {</span>
+<span class="a">+    use mgmt_api::Error::*;</span>
+<span class="a">+    match err {</span>
+<span class="a">+        ApiError(_, str) =&gt; SafekeeperHttpError::Response(str),</span>
+<span class="a">+        Cancelled =&gt; SafekeeperHttpError::Response(&quot;Cancelled&quot;.to_owned()),</span>
+<span class="a">+        ReceiveBody(err) =&gt; SafekeeperHttpError::Transport(err),</span>
+<span class="a">+        ReceiveErrorBody(err) =&gt; SafekeeperHttpError::Response(err),</span>
+<span class="a">+        Timeout(str) =&gt; SafekeeperHttpError::Response(format!(&quot;timeout: {str}&quot;)),</span>
+     }
+ }
+ 
+<span class="h">@@ -70,9 +58,8 @@ pub struct SafekeeperNode {</span>
+ 
+     pub pg_connection_config: PgConnectionConfig,
+     pub env: LocalEnv,
+<span class="d">-    pub http_client: reqwest::Client,</span>
+<span class="a">+    pub http_client: mgmt_api::Client,</span>
+     pub listen_addr: String,
+<span class="d">-    pub http_base_url: String,</span>
+ }
+ 
+ impl SafekeeperNode {
+<span class="h">@@ -82,13 +69,14 @@ impl SafekeeperNode {</span>
+         } else {
+             &quot;127.0.0.1&quot;.to_string()
+         };
+<span class="a">+        let jwt = None;</span>
+<span class="a">+        let http_base_url = format!(&quot;http://{}:{}&quot;, listen_addr, conf.http_port);</span>
+         SafekeeperNode {
+             id: conf.id,
+             conf: conf.clone(),
+             pg_connection_config: Self::safekeeper_connection_config(&amp;listen_addr, conf.pg_port),
+             env: env.clone(),
+<span class="d">-            http_client: env.create_http_client(),</span>
+<span class="d">-            http_base_url: format!(&quot;http://{}:{}/v1&quot;, listen_addr, conf.http_port),</span>
+<span class="a">+            http_client: mgmt_api::Client::new(env.create_http_client(), http_base_url, jwt),</span>
+             listen_addr,
+         }
+     }
+<span class="h">@@ -278,20 +266,19 @@ impl SafekeeperNode {</span>
+         )
+     }
+ 
+<span class="d">-    fn http_request&lt;U: IntoUrl&gt;(&amp;self, method: Method, url: U) -&gt; reqwest::RequestBuilder {</span>
+<span class="d">-        // TODO: authentication</span>
+<span class="d">-        //if self.env.auth_type == AuthType::NeonJWT {</span>
+<span class="d">-        //    builder = builder.bearer_auth(&amp;self.env.safekeeper_auth_token)</span>
+<span class="d">-        //}</span>
+<span class="d">-        self.http_client.request(method, url)</span>
+<span class="a">+    pub async fn check_status(&amp;self) -&gt; Result&lt;()&gt; {</span>
+<span class="a">+        self.http_client</span>
+<span class="a">+            .status()</span>
+<span class="a">+            .await</span>
+<span class="a">+            .map_err(err_from_client_err)?;</span>
+<span class="a">+        Ok(())</span>
+     }
+ 
+<span class="d">-    pub async fn check_status(&amp;self) -&gt; Result&lt;()&gt; {</span>
+<span class="d">-        self.http_request(Method::GET, format!(&quot;{}/{}&quot;, self.http_base_url, &quot;status&quot;))</span>
+<span class="d">-            .send()</span>
+<span class="d">-            .await?</span>
+<span class="d">-            .error_from_body()</span>
+<span class="d">-            .await?;</span>
+<span class="a">+    pub async fn create_timeline(&amp;self, req: &amp;TimelineCreateRequest) -&gt; Result&lt;()&gt; {</span>
+<span class="a">+        self.http_client</span>
+<span class="a">+            .create_timeline(req)</span>
+<span class="a">+            .await</span>
+<span class="a">+            .map_err(err_from_client_err)?;</span>
+         Ok(())
+     }
+ }</pre><h2>Commit #2: <a href="https://github.com/neondatabase/neon/commit/552249607da32a4c1c25a65339ce3b4533f6a728">552249607d</a> (2025-06-24T10:12:42+00:00)</h2><p class="k">apply clippy fixes for 1.88.0 beta (#12331)<br>Path after this commit: control_plane/src/safekeeper.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/control_plane/src/safekeeper.rs b/control_plane/src/safekeeper.rs
+index 28d369a31..da9dafd8e 100644
+<span class="d">--- a/control_plane/src/safekeeper.rs</span>
+<span class="a">+++ b/control_plane/src/safekeeper.rs</span>
+<span class="h">@@ -143,7 +143,7 @@ impl SafekeeperNode {</span>
+         let id_string = id.to_string();
+         // TODO: add availability_zone to the config.
+         // Right now we just specify any value here and use it to check metrics in tests.
+<span class="d">-        let availability_zone = format!(&quot;sk-{}&quot;, id_string);</span>
+<span class="a">+        let availability_zone = format!(&quot;sk-{id_string}&quot;);</span>
+ 
+         let mut args = vec![
+             &quot;-D&quot;.to_owned(),</pre><h2>Commit #3: <a href="https://github.com/neondatabase/neon/commit/c34d36d8a270b9a4910d4d26210e7c608288f079">c34d36d8a2</a> (2025-07-11T10:49:37+00:00)</h2><p class="k">storcon_cli: timeline-safekeeper-migrate and timeline-locate subcommands (#12548)<br>Path after this commit: control_plane/src/safekeeper.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/control_plane/src/safekeeper.rs b/control_plane/src/safekeeper.rs
+index da9dafd8e..2ba2f3ebe 100644
+<span class="d">--- a/control_plane/src/safekeeper.rs</span>
+<span class="a">+++ b/control_plane/src/safekeeper.rs</span>
+<span class="h">@@ -127,7 +127,7 @@ impl SafekeeperNode {</span>
+         extra_opts: &amp;[String],
+         retry_timeout: &amp;Duration,
+     ) -&gt; anyhow::Result&lt;()&gt; {
+<span class="d">-        print!(</span>
+<span class="a">+        println!(</span>
+             &quot;Starting safekeeper at &#x27;{}&#x27; in &#x27;{}&#x27;, retrying for {:?}&quot;,
+             self.pg_connection_config.raw_address(),
+             self.datadir_path().display(),</pre></body></html>

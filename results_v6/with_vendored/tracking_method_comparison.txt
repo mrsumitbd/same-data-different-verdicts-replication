@@ -1,0 +1,38 @@
+======================================================================
+Tracking method on the same v4 birth units
+======================================================================
+v2 units 279,416; v3 units 279,153 (unverified excluded: 265)
+conference units 279,416
+
+--- v2 (line number)
+  modification rate %: fully_autonomous 63.8, human 64.7, human_supervised 46.9
+  human_supervised  unadjusted HR=0.766 [0.757, 0.775] p=0
+  human_supervised  repo-stratified (analytic, cluster-robust SE by repo) HR=0.888 [0.753, 1.048] p=0.16
+  fully_autonomous  unadjusted HR=0.984 [0.971, 0.999] p=0.03
+  fully_autonomous  repo-stratified (analytic, cluster-robust SE by repo) HR=0.837 [0.587, 1.195] p=0.33
+
+--- v3 (identity)
+  modification rate %: fully_autonomous 34.9, human 29.0, human_supervised 18.6
+  human_supervised  unadjusted HR=0.688 [0.676, 0.700] p=0
+  human_supervised  repo-stratified (analytic, cluster-robust SE by repo) HR=0.774 [0.598, 1.003] p=0.052
+  fully_autonomous  unadjusted HR=1.296 [1.271, 1.321] p=2e-148
+  fully_autonomous  repo-stratified (analytic, cluster-robust SE by repo) HR=1.239 [0.949, 1.617] p=0.12
+
+--- conference (blame --reverse, file touch)
+  modification rate %: fully_autonomous 37.7, human 32.5, human_supervised 21.7
+  human_supervised  unadjusted HR=0.718 [0.706, 0.730] p=0
+  human_supervised  repo-stratified (analytic, cluster-robust SE by repo) HR=0.799 [0.629, 1.014] p=0.065
+  fully_autonomous  unadjusted HR=1.257 [1.234, 1.281] p=6.8e-127
+  fully_autonomous  repo-stratified (analytic, cluster-robust SE by repo) HR=1.236 [0.948, 1.611] p=0.12
+
+Pairwise agreement on modified vs not, units observed by all three (279,153):
+  v2 vs v3: 62.0%  (modified: v2 58.6%, v3 26.3%)
+  v2 vs conf: 64.4%  (modified: v2 58.6%, conf 29.5%)
+  v3 vs conf: 96.8%  (modified: v3 26.3%, conf 29.5%)
+
+v3 event_type mix by tier (%):
+event_type        censored  content_modified  file_deleted  line_deleted
+two_tier                                                                
+fully_autonomous      65.1              20.0          10.6           4.3
+human                 71.0              17.0           7.8           4.2
+human_supervised      81.4              11.9           3.1           3.6

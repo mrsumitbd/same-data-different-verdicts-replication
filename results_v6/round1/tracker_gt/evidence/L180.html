@@ -1,0 +1,359 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L180</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L180</h1><p><b>Repository:</b> <a href="https://github.com/marimo-team/marimo">marimo-team/marimo</a><br><b>File at merge:</b> marimo/_data/preview_column.py, line 100<br><b>Merge commit (birth):</b> <a href="https://github.com/marimo-team/marimo/commit/695454f740a4fcbf98c2e57876a66b2b914d2127">695454f740</a> (2025-06-10T14:39:40)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/marimo-team/marimo/tree/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a>)</p><p><b>The line:</b></p><pre><span class="t">                    chart_spec,</span></pre><h2>File at the merge commit, lines 92 to 108</h2><pre>   92 | 
+   93 |         # Get the chart for the column
+   94 |         chart_spec = None
+   95 |         chart_code = None
+   96 | 
+   97 |         if error is None:
+   98 |             try:
+   99 |                 (
+<span class="t">  100 |                     chart_spec,</span>
+  101 |                     chart_code,
+  102 |                     error,
+  103 |                     missing_packages,
+  104 |                 ) = _get_altair_chart(
+  105 |                     table_name, column_name, table, stats, table_rows
+  106 |                 )
+  107 |             except Exception as e:
+  108 |                 error = str(e)</pre><p class="k">Below are all 9 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/marimo-team/marimo/commit/7fa7808aca4a11a39eff0bea485e4759e91dacee">7fa7808aca</a> (2025-07-27T23:27:08+08:00)</h2><p class="k">fix: altair&#x27;s code gen with comment (#5767)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index 5b2065f05..e9bff8f05 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -258,7 +258,9 @@ def _get_altair_chart(</span>
+         should_limit_to_10_items = True
+ 
+     chart_builder = get_chart_builder(column_type, should_limit_to_10_items)
+<span class="d">-    code = chart_builder.altair_code(table_name, column_name, simple=True)</span>
+<span class="a">+    code = chart_builder.altair_code_with_comment(</span>
+<span class="a">+        table_name, column_name, simple=True</span>
+<span class="a">+    )</span>
+ 
+     # Filter the data to the column we want
+     column_data = table.select_columns([column_name]).data</pre><h2>Commit #2: <a href="https://github.com/marimo-team/marimo/commit/5c96ce49617e94feb6f1e0e037591ad5b7135540">5c96ce4961</a> (2025-07-31T21:35:14+08:00)</h2><p class="k">fix: use svg renderer and support enum charts (#5846)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index e9bff8f05..6e1fb3a3e 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -336,7 +336,7 @@ def _sanitize_dtypes(</span>
+     &quot;&quot;&quot;Sanitize dtypes for vegafusion&quot;&quot;&quot;
+     try:
+         dtype = column_data.schema[column_name]
+<span class="d">-        if dtype == nw.Categorical:</span>
+<span class="a">+        if dtype == nw.Categorical or dtype == nw.Enum:</span>
+             column_data = column_data.with_columns(
+                 nw.col(column_name).cast(nw.String)
+             )</pre><h2>Commit #3: <a href="https://github.com/marimo-team/marimo/commit/c099b46035b7e07cf1d3d2794b75fa4692b45cf4">c099b46035</a> (2025-08-11T11:21:35-06:00)</h2><p class="k">fix: pandas convert non-string columns to string columns (#6000)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index 6e1fb3a3e..cc4d9493f 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -350,5 +350,5 @@ def _sanitize_dtypes(</span>
+                 nw.col(column_name).cast(nw.UInt64)
+             )
+     except Exception as e:
+<span class="d">-        LOGGER.warning(f&quot;Failed to sanitize dtypes: {str(e)}&quot;)</span>
+<span class="a">+        LOGGER.warning(f&quot;Failed to sanitize dtypes: {e}&quot;)</span>
+     return column_data</pre><h2>Commit #4: <a href="https://github.com/marimo-team/marimo/commit/50fb6609a9116c7f23eab42aa49c93014fa44be7">50fb6609a9</a> (2025-08-21T08:49:10-06:00)</h2><p class="k">fix: convert time duration to numeric for column explorer (#6087)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index cc4d9493f..957e11c25 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -264,11 +264,10 @@ def _get_altair_chart(</span>
+ 
+     # Filter the data to the column we want
+     column_data = table.select_columns([column_name]).data
+<span class="a">+    column_data = _sanitize_data(column_data, column_name)</span>
+     if isinstance(column_data, nw.LazyFrame):
+         column_data = column_data.collect()
+ 
+<span class="d">-    column_data = _sanitize_dtypes(column_data, column_name)</span>
+<span class="d">-</span>
+     error: Optional[str] = None
+     missing_packages: Optional[list[str]] = None
+ 
+<span class="h">@@ -330,25 +329,87 @@ def _get_chart_spec(</span>
+         )
+ 
+ 
+<span class="d">-def _sanitize_dtypes(</span>
+<span class="d">-    column_data: nw.DataFrame[Any] | Any, column_name: str</span>
+<span class="d">-) -&gt; nw.DataFrame[Any] | Any:</span>
+<span class="d">-    &quot;&quot;&quot;Sanitize dtypes for vegafusion&quot;&quot;&quot;</span>
+<span class="a">+def _sanitize_data(</span>
+<span class="a">+    column_data: nw.DataFrame[Any] | nw.LazyFrame[Any] | Any, column_name: str</span>
+<span class="a">+) -&gt; nw.DataFrame[Any] | nw.LazyFrame[Any] | Any:</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+    Sanitize data for vegafusion.</span>
+<span class="a">+    Vegafusion doesn&#x27;t support all data types so we convert them to supported types.</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+     try:
+<span class="d">-        dtype = column_data.schema[column_name]</span>
+<span class="a">+        frame = column_data.lazy()</span>
+<span class="a">+        col = nw.col(column_name)</span>
+<span class="a">+        dtype = column_data.collect_schema()[column_name]</span>
+<span class="a">+</span>
+         if dtype == nw.Categorical or dtype == nw.Enum:
+<span class="d">-            column_data = column_data.with_columns(</span>
+<span class="d">-                nw.col(column_name).cast(nw.String)</span>
+<span class="d">-            )</span>
+<span class="a">+            column_data = frame.with_columns(col.cast(nw.String))</span>
+         # Int128 and UInt128 are not supported by datafusion
+         elif dtype == nw.Int128:
+<span class="d">-            column_data = column_data.with_columns(</span>
+<span class="d">-                nw.col(column_name).cast(nw.Int64)</span>
+<span class="d">-            )</span>
+<span class="a">+            column_data = frame.with_columns(col.cast(nw.Int64))</span>
+         elif dtype == nw.UInt128:
+<span class="d">-            column_data = column_data.with_columns(</span>
+<span class="d">-                nw.col(column_name).cast(nw.UInt64)</span>
+<span class="d">-            )</span>
+<span class="a">+            column_data = frame.with_columns(col.cast(nw.UInt64))</span>
+<span class="a">+        elif dtype == nw.Duration:</span>
+<span class="a">+            # Convert Duration to numeric values for better charting support</span>
+<span class="a">+            try:</span>
+<span class="a">+                result = (</span>
+<span class="a">+                    frame.select(</span>
+<span class="a">+                        col.min().alias(&quot;min&quot;), col.max().alias(&quot;max&quot;)</span>
+<span class="a">+                    )</span>
+<span class="a">+                    .collect()</span>
+<span class="a">+                    .rows(named=True)[0]</span>
+<span class="a">+                )</span>
+<span class="a">+                min_value = result[&quot;min&quot;]</span>
+<span class="a">+                max_value = result[&quot;max&quot;]</span>
+<span class="a">+                if min_value is not None and max_value is not None:</span>
+<span class="a">+                    diff = max_value - min_value</span>
+<span class="a">+                    total_seconds = diff.total_seconds()</span>
+<span class="a">+                    if total_seconds &gt;= 604800:</span>
+<span class="a">+                        # Use weeks if range is at least a week</span>
+<span class="a">+                        column_data = column_data.with_columns(</span>
+<span class="a">+                            (col.dt.total_seconds() / 604800).alias(</span>
+<span class="a">+                                column_name</span>
+<span class="a">+                            )</span>
+<span class="a">+                        )</span>
+<span class="a">+                    elif total_seconds &gt;= 86400:</span>
+<span class="a">+                        # Use days if range is at least a day</span>
+<span class="a">+                        column_data = column_data.with_columns(</span>
+<span class="a">+                            (col.dt.total_seconds() / 86400).alias(column_name)</span>
+<span class="a">+                        )</span>
+<span class="a">+                    elif total_seconds &gt;= 3600:</span>
+<span class="a">+                        # Use hours if range is at least an hour</span>
+<span class="a">+                        column_data = column_data.with_columns(</span>
+<span class="a">+                            (col.dt.total_seconds() / 3600).alias(column_name)</span>
+<span class="a">+                        )</span>
+<span class="a">+                    elif total_seconds &gt;= 60:</span>
+<span class="a">+                        # Use minutes if range is at least a minute</span>
+<span class="a">+                        column_data = column_data.with_columns(</span>
+<span class="a">+                            col.dt.total_minutes().alias(column_name)</span>
+<span class="a">+                        )</span>
+<span class="a">+                    elif total_seconds &gt;= 1:</span>
+<span class="a">+                        # Use seconds if range is at least a second</span>
+<span class="a">+                        column_data = column_data.with_columns(</span>
+<span class="a">+                            col.dt.total_seconds().alias(column_name)</span>
+<span class="a">+                        )</span>
+<span class="a">+                    elif total_seconds &gt;= 0.001:</span>
+<span class="a">+                        # Use milliseconds if range is at least a millisecond</span>
+<span class="a">+                        column_data = column_data.with_columns(</span>
+<span class="a">+                            col.dt.total_milliseconds().alias(column_name)</span>
+<span class="a">+                        )</span>
+<span class="a">+                    elif total_seconds &gt;= 0.000001:</span>
+<span class="a">+                        # Use microseconds if range is at least a microsecond</span>
+<span class="a">+                        column_data = column_data.with_columns(</span>
+<span class="a">+                            col.dt.total_microseconds().alias(column_name)</span>
+<span class="a">+                        )</span>
+<span class="a">+                    elif total_seconds &gt;= 0.000000001:</span>
+<span class="a">+                        # Use nanoseconds if range is at least a nanosecond</span>
+<span class="a">+                        column_data = column_data.with_columns(</span>
+<span class="a">+                            col.dt.total_nanoseconds().alias(column_name)</span>
+<span class="a">+                        )</span>
+<span class="a">+            except Exception as e:</span>
+<span class="a">+                LOGGER.warning(&quot;Failed to infer duration precision: %s&quot;, e)</span>
+<span class="a">+                column_data = column_data.with_columns(</span>
+<span class="a">+                    col.dt.total_seconds().alias(column_name)</span>
+<span class="a">+                )</span>
+     except Exception as e:
+         LOGGER.warning(f&quot;Failed to sanitize dtypes: {e}&quot;)
+     return column_data</pre><h2>Commit #5: <a href="https://github.com/marimo-team/marimo/commit/28d3ffb6ecf76fd9e26c35d716bde70b040c8445">28d3ffb6ec</a> (2025-09-30T09:15:31-04:00)</h2><p class="k">improvement: narwhals v2 (#6546)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index 957e11c25..6a6ed7c45 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -3,7 +3,7 @@ from __future__ import annotations</span>
+ 
+ from typing import Any, Optional
+ 
+<span class="d">-import narwhals.stable.v1 as nw</span>
+<span class="a">+import narwhals.stable.v2 as nw</span>
+ 
+ from marimo import _loggers
+ from marimo._data.charts import get_chart_builder
+<span class="h">@@ -21,6 +21,7 @@ from marimo._plugins.ui._impl.tables.table_manager import (</span>
+ from marimo._plugins.ui._impl.tables.utils import get_table_manager_or_none
+ from marimo._runtime.requests import PreviewDatasetColumnRequest
+ from marimo._sql.utils import wrapped_sql
+<span class="a">+from marimo._utils.narwhals_utils import downgrade_narwhals_df_to_v1</span>
+ 
+ LOGGER = _loggers.marimo_logger()
+ 
+<span class="h">@@ -274,7 +275,10 @@ def _get_altair_chart(</span>
+     # We may not know number of rows, so we can check for max rows error
+     try:
+         chart_spec = _get_chart_spec(
+<span class="d">-            column_data=column_data,</span>
+<span class="a">+            # Downgrade to v1 since altair doesn&#x27;t support v2 yet</span>
+<span class="a">+            # This is valiadted with our tests, so if the tests pass with this</span>
+<span class="a">+            # removed, we can remove the downgrade.</span>
+<span class="a">+            column_data=downgrade_narwhals_df_to_v1(column_data),</span>
+             column_type=column_type,
+             column_name=column_name,
+             should_limit_to_10_items=should_limit_to_10_items,</pre><h2>Commit #6: <a href="https://github.com/marimo-team/marimo/commit/091c8f95a59058d73af18c7f4eea82c7e55d1631">091c8f95a5</a> (2025-09-30T11:44:28-04:00)</h2><p class="k">improvement: use lazy-frames for multi-step processing, include more tests (#6608)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index 6a6ed7c45..c77c3407a 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -276,7 +276,7 @@ def _get_altair_chart(</span>
+     try:
+         chart_spec = _get_chart_spec(
+             # Downgrade to v1 since altair doesn&#x27;t support v2 yet
+<span class="d">-            # This is valiadted with our tests, so if the tests pass with this</span>
+<span class="a">+            # This is validated with our tests, so if the tests pass with this</span>
+             # removed, we can remove the downgrade.
+             column_data=downgrade_narwhals_df_to_v1(column_data),
+             column_type=column_type,
+<span class="h">@@ -369,49 +369,49 @@ def _sanitize_data(</span>
+                     total_seconds = diff.total_seconds()
+                     if total_seconds &gt;= 604800:
+                         # Use weeks if range is at least a week
+<span class="d">-                        column_data = column_data.with_columns(</span>
+<span class="a">+                        column_data = frame.with_columns(</span>
+                             (col.dt.total_seconds() / 604800).alias(
+                                 column_name
+                             )
+                         )
+                     elif total_seconds &gt;= 86400:
+                         # Use days if range is at least a day
+<span class="d">-                        column_data = column_data.with_columns(</span>
+<span class="a">+                        column_data = frame.with_columns(</span>
+                             (col.dt.total_seconds() / 86400).alias(column_name)
+                         )
+                     elif total_seconds &gt;= 3600:
+                         # Use hours if range is at least an hour
+<span class="d">-                        column_data = column_data.with_columns(</span>
+<span class="a">+                        column_data = frame.with_columns(</span>
+                             (col.dt.total_seconds() / 3600).alias(column_name)
+                         )
+                     elif total_seconds &gt;= 60:
+                         # Use minutes if range is at least a minute
+<span class="d">-                        column_data = column_data.with_columns(</span>
+<span class="a">+                        column_data = frame.with_columns(</span>
+                             col.dt.total_minutes().alias(column_name)
+                         )
+                     elif total_seconds &gt;= 1:
+                         # Use seconds if range is at least a second
+<span class="d">-                        column_data = column_data.with_columns(</span>
+<span class="a">+                        column_data = frame.with_columns(</span>
+                             col.dt.total_seconds().alias(column_name)
+                         )
+                     elif total_seconds &gt;= 0.001:
+                         # Use milliseconds if range is at least a millisecond
+<span class="d">-                        column_data = column_data.with_columns(</span>
+<span class="a">+                        column_data = frame.with_columns(</span>
+                             col.dt.total_milliseconds().alias(column_name)
+                         )
+                     elif total_seconds &gt;= 0.000001:
+                         # Use microseconds if range is at least a microsecond
+<span class="d">-                        column_data = column_data.with_columns(</span>
+<span class="a">+                        column_data = frame.with_columns(</span>
+                             col.dt.total_microseconds().alias(column_name)
+                         )
+                     elif total_seconds &gt;= 0.000000001:
+                         # Use nanoseconds if range is at least a nanosecond
+<span class="d">-                        column_data = column_data.with_columns(</span>
+<span class="a">+                        column_data = frame.with_columns(</span>
+                             col.dt.total_nanoseconds().alias(column_name)
+                         )
+             except Exception as e:
+                 LOGGER.warning(&quot;Failed to infer duration precision: %s&quot;, e)
+<span class="d">-                column_data = column_data.with_columns(</span>
+<span class="a">+                column_data = frame.with_columns(</span>
+                     col.dt.total_seconds().alias(column_name)
+                 )
+     except Exception as e:</pre><h2>Commit #7: <a href="https://github.com/marimo-team/marimo/commit/10633697a72ee14cc4c837e0a5d960d3cc42dfe7">10633697a7</a> (2025-12-22T18:33:47-05:00)</h2><p class="k">refactor: Rename Op to Notification (#7590)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index c77c3407a..6ca47318c 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -13,7 +13,10 @@ from marimo._data.sql_summaries import (</span>
+     get_sql_stats,
+ )
+ from marimo._dependencies.dependencies import DependencyManager
+<span class="d">-from marimo._messaging.ops import ColumnPreview, DataColumnPreview</span>
+<span class="a">+from marimo._messaging.notification import (</span>
+<span class="a">+    ColumnPreview,</span>
+<span class="a">+    DataColumnPreviewNotification,</span>
+<span class="a">+)</span>
+ from marimo._plugins.ui._impl.tables.table_manager import (
+     FieldType,
+     TableManager,
+<span class="h">@@ -136,7 +139,7 @@ def get_column_preview_dataset(</span>
+ def get_column_preview_for_dataframe(
+     item: object,
+     request: PreviewDatasetColumnRequest,
+<span class="d">-) -&gt; DataColumnPreview | None:</span>
+<span class="a">+) -&gt; DataColumnPreviewNotification | None:</span>
+     &quot;&quot;&quot;
+     Finds the table manager for the item and gets the column preview.
+     &quot;&quot;&quot;
+<span class="h">@@ -148,7 +151,7 @@ def get_column_preview_for_dataframe(</span>
+         return None
+ 
+     column_preview = get_column_preview_dataset(table, table_name, column_name)
+<span class="d">-    return DataColumnPreview(</span>
+<span class="a">+    return DataColumnPreviewNotification(</span>
+         table_name=table_name,
+         column_name=column_name,
+         chart_spec=column_preview.chart_spec,
+<span class="h">@@ -163,7 +166,7 @@ def get_column_preview_for_duckdb(</span>
+     *,
+     fully_qualified_table_name: str,
+     column_name: str,
+<span class="d">-) -&gt; Optional[DataColumnPreview]:</span>
+<span class="a">+) -&gt; Optional[DataColumnPreviewNotification]:</span>
+     DependencyManager.duckdb.require(why=&quot;previewing DuckDB columns&quot;)
+ 
+     column_type = get_column_type(fully_qualified_table_name, column_name)
+<span class="h">@@ -202,7 +205,7 @@ def get_column_preview_for_duckdb(</span>
+         except Exception as e:
+             LOGGER.warning(f&quot;Failed to generate Altair chart: {str(e)}&quot;)
+ 
+<span class="d">-    return DataColumnPreview(</span>
+<span class="a">+    return DataColumnPreviewNotification(</span>
+         table_name=fully_qualified_table_name,
+         column_name=column_name,
+         chart_spec=chart_spec,</pre><h2>Commit #8: <a href="https://github.com/marimo-team/marimo/commit/39968449d3be000e1232ac7f19b8fdba1a69e1e9">39968449d3</a> (2025-12-23T10:35:56-05:00)</h2><p class="k">refactor: rename kernel Requests to Command (#7593)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index 6ca47318c..92b02bb80 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -22,7 +22,7 @@ from marimo._plugins.ui._impl.tables.table_manager import (</span>
+     TableManager,
+ )
+ from marimo._plugins.ui._impl.tables.utils import get_table_manager_or_none
+<span class="d">-from marimo._runtime.requests import PreviewDatasetColumnRequest</span>
+<span class="a">+from marimo._runtime.commands import PreviewDatasetColumnCommand</span>
+ from marimo._sql.utils import wrapped_sql
+ from marimo._utils.narwhals_utils import downgrade_narwhals_df_to_v1
+ 
+<span class="h">@@ -138,7 +138,7 @@ def get_column_preview_dataset(</span>
+ 
+ def get_column_preview_for_dataframe(
+     item: object,
+<span class="d">-    request: PreviewDatasetColumnRequest,</span>
+<span class="a">+    request: PreviewDatasetColumnCommand,</span>
+ ) -&gt; DataColumnPreviewNotification | None:
+     &quot;&quot;&quot;
+     Finds the table manager for the item and gets the column preview.</pre><h2>Commit #9: <a href="https://github.com/marimo-team/marimo/commit/adebb475066ed8d1d5bdf5006472b9750c8faaa9">adebb47506</a> (2025-12-26T09:56:49-05:00)</h2><p class="k">Change copyright to 2026 including scripts (#7606)<br>Path after this commit: marimo/_data/preview_column.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/marimo/_data/preview_column.py b/marimo/_data/preview_column.py
+index 92b02bb80..b12c077a1 100644
+<span class="d">--- a/marimo/_data/preview_column.py</span>
+<span class="a">+++ b/marimo/_data/preview_column.py</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-# Copyright 2024 Marimo. All rights reserved.</span>
+<span class="a">+# Copyright 2026 Marimo. All rights reserved.</span>
+ from __future__ import annotations
+ 
+ from typing import Any, Optional</pre></body></html>

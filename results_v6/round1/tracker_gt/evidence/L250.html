@@ -1,0 +1,526 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L250</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L250</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> tests/cli/test_create_crew.py, line 144<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/e0b46492fa1a84cb007736d67e5dc986c614e72b">e0b46492fa</a> (2025-06-26T14:11:16)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">        folder_path, folder_name, class_name = create_folder_structure(&quot;My Cool-Project/&quot;, parent_folder=temp_dir)</span></pre><h2>File at the merge commit, lines 136 to 152</h2><pre>  136 |             
+  137 |             create_crew(&quot;normal-project&quot;, skip_provider=True)
+  138 |             
+  139 |             mock_create_folder.assert_called_once_with(&quot;normal-project&quot;, None)
+  140 | 
+  141 | 
+  142 | def test_create_folder_structure_handles_spaces_and_dashes_with_slash():
+  143 |     with tempfile.TemporaryDirectory() as temp_dir:
+<span class="t">  144 |         folder_path, folder_name, class_name = create_folder_structure(&quot;My Cool-Project/&quot;, parent_folder=temp_dir)</span>
+  145 |         
+  146 |         assert folder_name == &quot;my_cool_project&quot;
+  147 |         assert class_name == &quot;MyCoolProject&quot;
+  148 |         assert folder_path.name == &quot;my_cool_project&quot;
+  149 |         assert folder_path.exists()
+  150 |         assert folder_path.parent == Path(temp_dir)
+  151 | 
+  152 | </pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/b35c3e802492f03b81e07b43420fa42b10584f11">b35c3e8024</a> (2025-06-26T12:29:06-04:00)</h2><p class="k">fix: ensure env-vars are written in upper case (#3072)<br>Path after this commit: tests/cli/test_create_crew.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/cli/test_create_crew.py b/tests/cli/test_create_crew.py
+index b645d8522..323b7aa18 100644
+<span class="d">--- a/tests/cli/test_create_crew.py</span>
+<span class="a">+++ b/tests/cli/test_create_crew.py</span>
+<span class="h">@@ -9,7 +9,6 @@ from click.testing import CliRunner</span>
+ 
+ from crewai.cli.create_crew import create_crew, create_folder_structure
+ 
+<span class="d">-</span>
+ @pytest.fixture
+ def runner():
+     return CliRunner()
+<span class="h">@@ -25,7 +24,7 @@ def temp_dir():</span>
+ def test_create_folder_structure_strips_single_trailing_slash():
+     with tempfile.TemporaryDirectory() as temp_dir:
+         folder_path, folder_name, class_name = create_folder_structure(&quot;hello/&quot;, parent_folder=temp_dir)
+<span class="d">-        </span>
+<span class="a">+</span>
+         assert folder_name == &quot;hello&quot;
+         assert class_name == &quot;Hello&quot;
+         assert folder_path.name == &quot;hello&quot;
+<span class="h">@@ -36,7 +35,7 @@ def test_create_folder_structure_strips_single_trailing_slash():</span>
+ def test_create_folder_structure_strips_multiple_trailing_slashes():
+     with tempfile.TemporaryDirectory() as temp_dir:
+         folder_path, folder_name, class_name = create_folder_structure(&quot;hello///&quot;, parent_folder=temp_dir)
+<span class="d">-        </span>
+<span class="a">+</span>
+         assert folder_name == &quot;hello&quot;
+         assert class_name == &quot;Hello&quot;
+         assert folder_path.name == &quot;hello&quot;
+<span class="h">@@ -47,7 +46,7 @@ def test_create_folder_structure_strips_multiple_trailing_slashes():</span>
+ def test_create_folder_structure_handles_complex_name_with_trailing_slash():
+     with tempfile.TemporaryDirectory() as temp_dir:
+         folder_path, folder_name, class_name = create_folder_structure(&quot;my-awesome_project/&quot;, parent_folder=temp_dir)
+<span class="d">-        </span>
+<span class="a">+</span>
+         assert folder_name == &quot;my_awesome_project&quot;
+         assert class_name == &quot;MyAwesomeProject&quot;
+         assert folder_path.name == &quot;my_awesome_project&quot;
+<span class="h">@@ -58,7 +57,7 @@ def test_create_folder_structure_handles_complex_name_with_trailing_slash():</span>
+ def test_create_folder_structure_normal_name_unchanged():
+     with tempfile.TemporaryDirectory() as temp_dir:
+         folder_path, folder_name, class_name = create_folder_structure(&quot;hello&quot;, parent_folder=temp_dir)
+<span class="d">-        </span>
+<span class="a">+</span>
+         assert folder_name == &quot;hello&quot;
+         assert class_name == &quot;Hello&quot;
+         assert folder_path.name == &quot;hello&quot;
+<span class="h">@@ -73,9 +72,9 @@ def test_create_folder_structure_with_parent_folder():</span>
+     with tempfile.TemporaryDirectory() as temp_dir:
+         parent_path = Path(temp_dir) / &quot;parent&quot;
+         parent_path.mkdir()
+<span class="d">-        </span>
+<span class="a">+</span>
+         folder_path, folder_name, class_name = create_folder_structure(&quot;child/&quot;, parent_folder=parent_path)
+<span class="d">-        </span>
+<span class="a">+</span>
+         assert folder_name == &quot;child&quot;
+         assert class_name == &quot;Child&quot;
+         assert folder_path.name == &quot;child&quot;
+<span class="h">@@ -88,18 +87,18 @@ def test_create_folder_structure_with_parent_folder():</span>
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+ def test_create_crew_with_trailing_slash_creates_valid_project(mock_load_env, mock_write_env, mock_copy_template, temp_dir):
+     mock_load_env.return_value = {}
+<span class="d">-    </span>
+<span class="a">+</span>
+     with tempfile.TemporaryDirectory() as work_dir:
+         with mock.patch(&quot;crewai.cli.create_crew.create_folder_structure&quot;) as mock_create_folder:
+             mock_folder_path = Path(work_dir) / &quot;test_project&quot;
+             mock_create_folder.return_value = (mock_folder_path, &quot;test_project&quot;, &quot;TestProject&quot;)
+<span class="d">-            </span>
+<span class="a">+</span>
+             create_crew(&quot;test-project/&quot;, skip_provider=True)
+<span class="d">-            </span>
+<span class="a">+</span>
+             mock_create_folder.assert_called_once_with(&quot;test-project/&quot;, None)
+             mock_copy_template.assert_called()
+             copy_calls = mock_copy_template.call_args_list
+<span class="d">-            </span>
+<span class="a">+</span>
+             for call in copy_calls:
+                 args = call[0]
+                 if len(args) &gt;= 5:
+<span class="h">@@ -112,14 +111,14 @@ def test_create_crew_with_trailing_slash_creates_valid_project(mock_load_env, mo</span>
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+ def test_create_crew_with_multiple_trailing_slashes(mock_load_env, mock_write_env, mock_copy_template, temp_dir):
+     mock_load_env.return_value = {}
+<span class="d">-    </span>
+<span class="a">+</span>
+     with tempfile.TemporaryDirectory() as work_dir:
+         with mock.patch(&quot;crewai.cli.create_crew.create_folder_structure&quot;) as mock_create_folder:
+             mock_folder_path = Path(work_dir) / &quot;test_project&quot;
+             mock_create_folder.return_value = (mock_folder_path, &quot;test_project&quot;, &quot;TestProject&quot;)
+<span class="d">-            </span>
+<span class="a">+</span>
+             create_crew(&quot;test-project///&quot;, skip_provider=True)
+<span class="d">-            </span>
+<span class="a">+</span>
+             mock_create_folder.assert_called_once_with(&quot;test-project///&quot;, None)
+ 
+ 
+<span class="h">@@ -128,21 +127,21 @@ def test_create_crew_with_multiple_trailing_slashes(mock_load_env, mock_write_en</span>
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+ def test_create_crew_normal_name_still_works(mock_load_env, mock_write_env, mock_copy_template, temp_dir):
+     mock_load_env.return_value = {}
+<span class="d">-    </span>
+<span class="a">+</span>
+     with tempfile.TemporaryDirectory() as work_dir:
+         with mock.patch(&quot;crewai.cli.create_crew.create_folder_structure&quot;) as mock_create_folder:
+             mock_folder_path = Path(work_dir) / &quot;normal_project&quot;
+             mock_create_folder.return_value = (mock_folder_path, &quot;normal_project&quot;, &quot;NormalProject&quot;)
+<span class="d">-            </span>
+<span class="a">+</span>
+             create_crew(&quot;normal-project&quot;, skip_provider=True)
+<span class="d">-            </span>
+<span class="a">+</span>
+             mock_create_folder.assert_called_once_with(&quot;normal-project&quot;, None)
+ 
+ 
+ def test_create_folder_structure_handles_spaces_and_dashes_with_slash():
+     with tempfile.TemporaryDirectory() as temp_dir:
+<span class=" m">         folder_path, folder_name, class_name = create_folder_structure(&quot;My Cool-Project/&quot;, parent_folder=temp_dir)</span>
+<span class="d">-        </span>
+<span class="a">+</span>
+         assert folder_name == &quot;my_cool_project&quot;
+         assert class_name == &quot;MyCoolProject&quot;
+         assert folder_path.name == &quot;my_cool_project&quot;
+<span class="h">@@ -155,7 +154,7 @@ def test_create_folder_structure_raises_error_for_invalid_names():</span>
+         invalid_cases = [
+             (&quot;123project/&quot;, &quot;cannot start with a digit&quot;),
+             (&quot;True/&quot;, &quot;reserved Python keyword&quot;),
+<span class="d">-            (&quot;False/&quot;, &quot;reserved Python keyword&quot;), </span>
+<span class="a">+            (&quot;False/&quot;, &quot;reserved Python keyword&quot;),</span>
+             (&quot;None/&quot;, &quot;reserved Python keyword&quot;),
+             (&quot;class/&quot;, &quot;reserved Python keyword&quot;),
+             (&quot;def/&quot;, &quot;reserved Python keyword&quot;),
+<span class="h">@@ -163,7 +162,7 @@ def test_create_folder_structure_raises_error_for_invalid_names():</span>
+             (&quot;&quot;, &quot;empty or contain only whitespace&quot;),
+             (&quot;@#$/&quot;, &quot;contains no valid characters&quot;),
+         ]
+<span class="d">-        </span>
+<span class="a">+</span>
+         for invalid_name, expected_error in invalid_cases:
+             with pytest.raises(ValueError, match=expected_error):
+                 create_folder_structure(invalid_name, parent_folder=temp_dir)
+<span class="h">@@ -179,20 +178,20 @@ def test_create_folder_structure_validates_names():</span>
+             (&quot;hello.world/&quot;, &quot;helloworld&quot;, &quot;HelloWorld&quot;),
+             (&quot;hello@world/&quot;, &quot;helloworld&quot;, &quot;HelloWorld&quot;),
+         ]
+<span class="d">-        </span>
+<span class="a">+</span>
+         for valid_name, expected_folder, expected_class in valid_cases:
+             folder_path, folder_name, class_name = create_folder_structure(valid_name, parent_folder=temp_dir)
+             assert folder_name == expected_folder
+             assert class_name == expected_class
+<span class="d">-            </span>
+<span class="a">+</span>
+             assert folder_name.isidentifier(), f&quot;folder_name &#x27;{folder_name}&#x27; should be valid Python identifier&quot;
+             assert not keyword.iskeyword(folder_name), f&quot;folder_name &#x27;{folder_name}&#x27; should not be Python keyword&quot;
+             assert not folder_name[0].isdigit(), f&quot;folder_name &#x27;{folder_name}&#x27; should not start with digit&quot;
+<span class="d">-            </span>
+<span class="a">+</span>
+             assert class_name.isidentifier(), f&quot;class_name &#x27;{class_name}&#x27; should be valid Python identifier&quot;
+             assert not keyword.iskeyword(class_name), f&quot;class_name &#x27;{class_name}&#x27; should not be Python keyword&quot;
+             assert folder_path.parent == Path(temp_dir)
+<span class="d">-            </span>
+<span class="a">+</span>
+             if folder_path.exists():
+                 shutil.rmtree(folder_path)
+ 
+<span class="h">@@ -202,13 +201,13 @@ def test_create_folder_structure_validates_names():</span>
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+ def test_create_crew_with_parent_folder_and_trailing_slash(mock_load_env, mock_write_env, mock_copy_template, temp_dir):
+     mock_load_env.return_value = {}
+<span class="d">-    </span>
+<span class="a">+</span>
+     with tempfile.TemporaryDirectory() as work_dir:
+         parent_path = Path(work_dir) / &quot;parent&quot;
+         parent_path.mkdir()
+<span class="d">-        </span>
+<span class="a">+</span>
+         create_crew(&quot;child-crew/&quot;, skip_provider=True, parent_folder=parent_path)
+<span class="d">-        </span>
+<span class="a">+</span>
+         crew_path = parent_path / &quot;child_crew&quot;
+         assert crew_path.exists()
+         assert not (crew_path / &quot;src&quot;).exists()
+<span class="h">@@ -224,23 +223,56 @@ def test_create_folder_structure_folder_name_validation():</span>
+             (&quot;for/&quot;, &quot;reserved Python keyword&quot;),
+             (&quot;@#$invalid/&quot;, &quot;contains no valid characters.*Python module name&quot;),
+         ]
+<span class="d">-        </span>
+<span class="a">+</span>
+         for invalid_name, expected_error in folder_invalid_cases:
+             with pytest.raises(ValueError, match=expected_error):
+                 create_folder_structure(invalid_name, parent_folder=temp_dir)
+<span class="d">-        </span>
+<span class="a">+</span>
+         valid_cases = [
+             (&quot;hello-world/&quot;, &quot;hello_world&quot;),
+             (&quot;my.project/&quot;, &quot;myproject&quot;),
+             (&quot;test@123/&quot;, &quot;test123&quot;),
+             (&quot;valid_name/&quot;, &quot;valid_name&quot;),
+         ]
+<span class="d">-        </span>
+<span class="a">+</span>
+         for valid_name, expected_folder in valid_cases:
+             folder_path, folder_name, class_name = create_folder_structure(valid_name, parent_folder=temp_dir)
+             assert folder_name == expected_folder
+             assert folder_name.isidentifier()
+             assert not keyword.iskeyword(folder_name)
+<span class="d">-            </span>
+<span class="a">+</span>
+             if folder_path.exists():
+                 shutil.rmtree(folder_path)
+<span class="a">+</span>
+<span class="a">+@mock.patch(&quot;crewai.cli.create_crew.create_folder_structure&quot;)</span>
+<span class="a">+@mock.patch(&quot;crewai.cli.create_crew.copy_template&quot;)</span>
+<span class="a">+@mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)</span>
+<span class="a">+@mock.patch(&quot;crewai.cli.create_crew.get_provider_data&quot;)</span>
+<span class="a">+@mock.patch(&quot;crewai.cli.create_crew.select_provider&quot;)</span>
+<span class="a">+@mock.patch(&quot;crewai.cli.create_crew.select_model&quot;)</span>
+<span class="a">+@mock.patch(&quot;click.prompt&quot;)</span>
+<span class="a">+def test_env_vars_are_uppercased_in_env_file(</span>
+<span class="a">+    mock_prompt,</span>
+<span class="a">+    mock_select_model,</span>
+<span class="a">+    mock_select_provider,</span>
+<span class="a">+    mock_get_provider_data,</span>
+<span class="a">+    mock_load_env_vars,</span>
+<span class="a">+    mock_copy_template,</span>
+<span class="a">+    mock_create_folder_structure,</span>
+<span class="a">+    tmp_path</span>
+<span class="a">+):</span>
+<span class="a">+    crew_path = tmp_path / &quot;test_crew&quot;</span>
+<span class="a">+    crew_path.mkdir()</span>
+<span class="a">+    mock_create_folder_structure.return_value = (crew_path, &quot;test_crew&quot;, &quot;TestCrew&quot;)</span>
+<span class="a">+</span>
+<span class="a">+    mock_load_env_vars.return_value = {}</span>
+<span class="a">+    mock_get_provider_data.return_value = {&quot;openai&quot;: [&quot;gpt-4&quot;]}</span>
+<span class="a">+    mock_select_provider.return_value = &quot;azure&quot;</span>
+<span class="a">+    mock_select_model.return_value = &quot;azure/openai&quot;</span>
+<span class="a">+    mock_prompt.return_value = &quot;fake-api-key&quot;</span>
+<span class="a">+</span>
+<span class="a">+    create_crew(&quot;Test Crew&quot;)</span>
+<span class="a">+</span>
+<span class="a">+    env_file_path = crew_path / &quot;.env&quot;</span>
+<span class="a">+    content = env_file_path.read_text()</span>
+<span class="a">+    assert &quot;MODEL=&quot; in content</span>
+\ No newline at end of file</pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: lib/crewai/tests/cli/test_create_crew.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/cli/test_create_crew.py b/lib/crewai/tests/cli/test_create_crew.py
+similarity index 76%
+rename from tests/cli/test_create_crew.py
+rename to lib/crewai/tests/cli/test_create_crew.py
+index 323b7aa18..638be9b5d 100644
+<span class="d">--- a/tests/cli/test_create_crew.py</span>
+<span class="a">+++ b/lib/crewai/tests/cli/test_create_crew.py</span>
+<span class="h">@@ -6,9 +6,9 @@ from unittest import mock</span>
+ 
+ import pytest
+ from click.testing import CliRunner
+<span class="d">-</span>
+ from crewai.cli.create_crew import create_crew, create_folder_structure
+ 
+<span class="a">+</span>
+ @pytest.fixture
+ def runner():
+     return CliRunner()
+<span class="h">@@ -23,7 +23,9 @@ def temp_dir():</span>
+ 
+ def test_create_folder_structure_strips_single_trailing_slash():
+     with tempfile.TemporaryDirectory() as temp_dir:
+<span class="d">-        folder_path, folder_name, class_name = create_folder_structure(&quot;hello/&quot;, parent_folder=temp_dir)</span>
+<span class="a">+        folder_path, folder_name, class_name = create_folder_structure(</span>
+<span class="a">+            &quot;hello/&quot;, parent_folder=temp_dir</span>
+<span class="a">+        )</span>
+ 
+         assert folder_name == &quot;hello&quot;
+         assert class_name == &quot;Hello&quot;
+<span class="h">@@ -34,7 +36,9 @@ def test_create_folder_structure_strips_single_trailing_slash():</span>
+ 
+ def test_create_folder_structure_strips_multiple_trailing_slashes():
+     with tempfile.TemporaryDirectory() as temp_dir:
+<span class="d">-        folder_path, folder_name, class_name = create_folder_structure(&quot;hello///&quot;, parent_folder=temp_dir)</span>
+<span class="a">+        folder_path, folder_name, class_name = create_folder_structure(</span>
+<span class="a">+            &quot;hello///&quot;, parent_folder=temp_dir</span>
+<span class="a">+        )</span>
+ 
+         assert folder_name == &quot;hello&quot;
+         assert class_name == &quot;Hello&quot;
+<span class="h">@@ -45,7 +49,9 @@ def test_create_folder_structure_strips_multiple_trailing_slashes():</span>
+ 
+ def test_create_folder_structure_handles_complex_name_with_trailing_slash():
+     with tempfile.TemporaryDirectory() as temp_dir:
+<span class="d">-        folder_path, folder_name, class_name = create_folder_structure(&quot;my-awesome_project/&quot;, parent_folder=temp_dir)</span>
+<span class="a">+        folder_path, folder_name, class_name = create_folder_structure(</span>
+<span class="a">+            &quot;my-awesome_project/&quot;, parent_folder=temp_dir</span>
+<span class="a">+        )</span>
+ 
+         assert folder_name == &quot;my_awesome_project&quot;
+         assert class_name == &quot;MyAwesomeProject&quot;
+<span class="h">@@ -56,7 +62,9 @@ def test_create_folder_structure_handles_complex_name_with_trailing_slash():</span>
+ 
+ def test_create_folder_structure_normal_name_unchanged():
+     with tempfile.TemporaryDirectory() as temp_dir:
+<span class="d">-        folder_path, folder_name, class_name = create_folder_structure(&quot;hello&quot;, parent_folder=temp_dir)</span>
+<span class="a">+        folder_path, folder_name, class_name = create_folder_structure(</span>
+<span class="a">+            &quot;hello&quot;, parent_folder=temp_dir</span>
+<span class="a">+        )</span>
+ 
+         assert folder_name == &quot;hello&quot;
+         assert class_name == &quot;Hello&quot;
+<span class="h">@@ -65,15 +73,14 @@ def test_create_folder_structure_normal_name_unchanged():</span>
+         assert folder_path.parent == Path(temp_dir)
+ 
+ 
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-</span>
+ def test_create_folder_structure_with_parent_folder():
+     with tempfile.TemporaryDirectory() as temp_dir:
+         parent_path = Path(temp_dir) / &quot;parent&quot;
+         parent_path.mkdir()
+ 
+<span class="d">-        folder_path, folder_name, class_name = create_folder_structure(&quot;child/&quot;, parent_folder=parent_path)</span>
+<span class="a">+        folder_path, folder_name, class_name = create_folder_structure(</span>
+<span class="a">+            &quot;child/&quot;, parent_folder=parent_path</span>
+<span class="a">+        )</span>
+ 
+         assert folder_name == &quot;child&quot;
+         assert class_name == &quot;Child&quot;
+<span class="h">@@ -85,13 +92,21 @@ def test_create_folder_structure_with_parent_folder():</span>
+ @mock.patch(&quot;crewai.cli.create_crew.copy_template&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.write_env_file&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+<span class="d">-def test_create_crew_with_trailing_slash_creates_valid_project(mock_load_env, mock_write_env, mock_copy_template, temp_dir):</span>
+<span class="a">+def test_create_crew_with_trailing_slash_creates_valid_project(</span>
+<span class="a">+    mock_load_env, mock_write_env, mock_copy_template, temp_dir</span>
+<span class="a">+):</span>
+     mock_load_env.return_value = {}
+ 
+     with tempfile.TemporaryDirectory() as work_dir:
+<span class="d">-        with mock.patch(&quot;crewai.cli.create_crew.create_folder_structure&quot;) as mock_create_folder:</span>
+<span class="a">+        with mock.patch(</span>
+<span class="a">+            &quot;crewai.cli.create_crew.create_folder_structure&quot;</span>
+<span class="a">+        ) as mock_create_folder:</span>
+             mock_folder_path = Path(work_dir) / &quot;test_project&quot;
+<span class="d">-            mock_create_folder.return_value = (mock_folder_path, &quot;test_project&quot;, &quot;TestProject&quot;)</span>
+<span class="a">+            mock_create_folder.return_value = (</span>
+<span class="a">+                mock_folder_path,</span>
+<span class="a">+                &quot;test_project&quot;,</span>
+<span class="a">+                &quot;TestProject&quot;,</span>
+<span class="a">+            )</span>
+ 
+             create_crew(&quot;test-project/&quot;, skip_provider=True)
+ 
+<span class="h">@@ -103,19 +118,29 @@ def test_create_crew_with_trailing_slash_creates_valid_project(mock_load_env, mo</span>
+                 args = call[0]
+                 if len(args) &gt;= 5:
+                     folder_name_arg = args[4]
+<span class="d">-                    assert not folder_name_arg.endswith(&quot;/&quot;), f&quot;folder_name should not end with slash: {folder_name_arg}&quot;</span>
+<span class="a">+                    assert not folder_name_arg.endswith(&quot;/&quot;), (</span>
+<span class="a">+                        f&quot;folder_name should not end with slash: {folder_name_arg}&quot;</span>
+<span class="a">+                    )</span>
+ 
+ 
+ @mock.patch(&quot;crewai.cli.create_crew.copy_template&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.write_env_file&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+<span class="d">-def test_create_crew_with_multiple_trailing_slashes(mock_load_env, mock_write_env, mock_copy_template, temp_dir):</span>
+<span class="a">+def test_create_crew_with_multiple_trailing_slashes(</span>
+<span class="a">+    mock_load_env, mock_write_env, mock_copy_template, temp_dir</span>
+<span class="a">+):</span>
+     mock_load_env.return_value = {}
+ 
+     with tempfile.TemporaryDirectory() as work_dir:
+<span class="d">-        with mock.patch(&quot;crewai.cli.create_crew.create_folder_structure&quot;) as mock_create_folder:</span>
+<span class="a">+        with mock.patch(</span>
+<span class="a">+            &quot;crewai.cli.create_crew.create_folder_structure&quot;</span>
+<span class="a">+        ) as mock_create_folder:</span>
+             mock_folder_path = Path(work_dir) / &quot;test_project&quot;
+<span class="d">-            mock_create_folder.return_value = (mock_folder_path, &quot;test_project&quot;, &quot;TestProject&quot;)</span>
+<span class="a">+            mock_create_folder.return_value = (</span>
+<span class="a">+                mock_folder_path,</span>
+<span class="a">+                &quot;test_project&quot;,</span>
+<span class="a">+                &quot;TestProject&quot;,</span>
+<span class="a">+            )</span>
+ 
+             create_crew(&quot;test-project///&quot;, skip_provider=True)
+ 
+<span class="h">@@ -125,13 +150,21 @@ def test_create_crew_with_multiple_trailing_slashes(mock_load_env, mock_write_en</span>
+ @mock.patch(&quot;crewai.cli.create_crew.copy_template&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.write_env_file&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+<span class="d">-def test_create_crew_normal_name_still_works(mock_load_env, mock_write_env, mock_copy_template, temp_dir):</span>
+<span class="a">+def test_create_crew_normal_name_still_works(</span>
+<span class="a">+    mock_load_env, mock_write_env, mock_copy_template, temp_dir</span>
+<span class="a">+):</span>
+     mock_load_env.return_value = {}
+ 
+     with tempfile.TemporaryDirectory() as work_dir:
+<span class="d">-        with mock.patch(&quot;crewai.cli.create_crew.create_folder_structure&quot;) as mock_create_folder:</span>
+<span class="a">+        with mock.patch(</span>
+<span class="a">+            &quot;crewai.cli.create_crew.create_folder_structure&quot;</span>
+<span class="a">+        ) as mock_create_folder:</span>
+             mock_folder_path = Path(work_dir) / &quot;normal_project&quot;
+<span class="d">-            mock_create_folder.return_value = (mock_folder_path, &quot;normal_project&quot;, &quot;NormalProject&quot;)</span>
+<span class="a">+            mock_create_folder.return_value = (</span>
+<span class="a">+                mock_folder_path,</span>
+<span class="a">+                &quot;normal_project&quot;,</span>
+<span class="a">+                &quot;NormalProject&quot;,</span>
+<span class="a">+            )</span>
+ 
+             create_crew(&quot;normal-project&quot;, skip_provider=True)
+ 
+<span class="h">@@ -140,7 +173,9 @@ def test_create_crew_normal_name_still_works(mock_load_env, mock_write_env, mock</span>
+ 
+ def test_create_folder_structure_handles_spaces_and_dashes_with_slash():
+     with tempfile.TemporaryDirectory() as temp_dir:
+<span class="d m">-        folder_path, folder_name, class_name = create_folder_structure(&quot;My Cool-Project/&quot;, parent_folder=temp_dir)</span>
+<span class="a">+        folder_path, folder_name, class_name = create_folder_structure(</span>
+<span class="a">+            &quot;My Cool-Project/&quot;, parent_folder=temp_dir</span>
+<span class="a">+        )</span>
+ 
+         assert folder_name == &quot;my_cool_project&quot;
+         assert class_name == &quot;MyCoolProject&quot;
+<span class="h">@@ -180,16 +215,28 @@ def test_create_folder_structure_validates_names():</span>
+         ]
+ 
+         for valid_name, expected_folder, expected_class in valid_cases:
+<span class="d">-            folder_path, folder_name, class_name = create_folder_structure(valid_name, parent_folder=temp_dir)</span>
+<span class="a">+            folder_path, folder_name, class_name = create_folder_structure(</span>
+<span class="a">+                valid_name, parent_folder=temp_dir</span>
+<span class="a">+            )</span>
+             assert folder_name == expected_folder
+             assert class_name == expected_class
+ 
+<span class="d">-            assert folder_name.isidentifier(), f&quot;folder_name &#x27;{folder_name}&#x27; should be valid Python identifier&quot;</span>
+<span class="d">-            assert not keyword.iskeyword(folder_name), f&quot;folder_name &#x27;{folder_name}&#x27; should not be Python keyword&quot;</span>
+<span class="d">-            assert not folder_name[0].isdigit(), f&quot;folder_name &#x27;{folder_name}&#x27; should not start with digit&quot;</span>
+<span class="d">-</span>
+<span class="d">-            assert class_name.isidentifier(), f&quot;class_name &#x27;{class_name}&#x27; should be valid Python identifier&quot;</span>
+<span class="d">-            assert not keyword.iskeyword(class_name), f&quot;class_name &#x27;{class_name}&#x27; should not be Python keyword&quot;</span>
+<span class="a">+            assert folder_name.isidentifier(), (</span>
+<span class="a">+                f&quot;folder_name &#x27;{folder_name}&#x27; should be valid Python identifier&quot;</span>
+<span class="a">+            )</span>
+<span class="a">+            assert not keyword.iskeyword(folder_name), (</span>
+<span class="a">+                f&quot;folder_name &#x27;{folder_name}&#x27; should not be Python keyword&quot;</span>
+<span class="a">+            )</span>
+<span class="a">+            assert not folder_name[0].isdigit(), (</span>
+<span class="a">+                f&quot;folder_name &#x27;{folder_name}&#x27; should not start with digit&quot;</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+<span class="a">+            assert class_name.isidentifier(), (</span>
+<span class="a">+                f&quot;class_name &#x27;{class_name}&#x27; should be valid Python identifier&quot;</span>
+<span class="a">+            )</span>
+<span class="a">+            assert not keyword.iskeyword(class_name), (</span>
+<span class="a">+                f&quot;class_name &#x27;{class_name}&#x27; should not be Python keyword&quot;</span>
+<span class="a">+            )</span>
+             assert folder_path.parent == Path(temp_dir)
+ 
+             if folder_path.exists():
+<span class="h">@@ -199,7 +246,9 @@ def test_create_folder_structure_validates_names():</span>
+ @mock.patch(&quot;crewai.cli.create_crew.copy_template&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.write_env_file&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+<span class="d">-def test_create_crew_with_parent_folder_and_trailing_slash(mock_load_env, mock_write_env, mock_copy_template, temp_dir):</span>
+<span class="a">+def test_create_crew_with_parent_folder_and_trailing_slash(</span>
+<span class="a">+    mock_load_env, mock_write_env, mock_copy_template, temp_dir</span>
+<span class="a">+):</span>
+     mock_load_env.return_value = {}
+ 
+     with tempfile.TemporaryDirectory() as work_dir:
+<span class="h">@@ -236,7 +285,9 @@ def test_create_folder_structure_folder_name_validation():</span>
+         ]
+ 
+         for valid_name, expected_folder in valid_cases:
+<span class="d">-            folder_path, folder_name, class_name = create_folder_structure(valid_name, parent_folder=temp_dir)</span>
+<span class="a">+            folder_path, folder_name, class_name = create_folder_structure(</span>
+<span class="a">+                valid_name, parent_folder=temp_dir</span>
+<span class="a">+            )</span>
+             assert folder_name == expected_folder
+             assert folder_name.isidentifier()
+             assert not keyword.iskeyword(folder_name)
+<span class="h">@@ -244,6 +295,7 @@ def test_create_folder_structure_folder_name_validation():</span>
+             if folder_path.exists():
+                 shutil.rmtree(folder_path)
+ 
+<span class="a">+</span>
+ @mock.patch(&quot;crewai.cli.create_crew.create_folder_structure&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.copy_template&quot;)
+ @mock.patch(&quot;crewai.cli.create_crew.load_env_vars&quot;)
+<span class="h">@@ -259,7 +311,7 @@ def test_env_vars_are_uppercased_in_env_file(</span>
+     mock_load_env_vars,
+     mock_copy_template,
+     mock_create_folder_structure,
+<span class="d">-    tmp_path</span>
+<span class="a">+    tmp_path,</span>
+ ):
+     crew_path = tmp_path / &quot;test_crew&quot;
+     crew_path.mkdir()
+<span class="h">@@ -275,4 +327,4 @@ def test_env_vars_are_uppercased_in_env_file(</span>
+ 
+     env_file_path = crew_path / &quot;.env&quot;
+     content = env_file_path.read_text()
+<span class="d">-    assert &quot;MODEL=&quot; in content</span>
+\ No newline at end of file
+<span class="a">+    assert &quot;MODEL=&quot; in content</span></pre></body></html>

@@ -1,0 +1,54 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L110 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L110: after the move</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>Original file:</b> src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py (see L110.html)<br><b>Move commit:</b> <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (commit #2 on L110.html)<br><b>Destination file (your label):</b> lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">        return f&quot;{base_prompt}\n\n{output_schema}&quot;</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 67).</p><h2>Destination file at the move commit, lines 59 to 67</h2><pre>   59 |             return base_prompt
+   60 | 
+   61 |         output_schema: str = (
+   62 |             I18N()
+   63 |             .slice(&quot;formatted_task_instructions&quot;)
+   64 |             .format(output_format=self._schema)
+   65 |         )
+   66 | 
+<span class="t">   67 |         return f&quot;{base_prompt}\n\n{output_schema}&quot;</span></pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/60332e0b195c0cf92dcf11ac3426a6997cb45647">60332e0b19</a> (2025-11-03T07:39:05-05:00)</h2><p class="k">feat: cache i18n prompts for efficient use<br>Path after this commit: lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py b/lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py
+index c476fe6ff..54ed9ddde 100644
+<span class="d">--- a/lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py</span>
+<span class="h">@@ -7,7 +7,7 @@ output conversion for OpenAI agents, supporting JSON and Pydantic model formats.</span>
+ from typing import Any
+ 
+ from crewai.agents.agent_adapters.base_converter_adapter import BaseConverterAdapter
+<span class="d">-from crewai.utilities.i18n import I18N</span>
+<span class="a">+from crewai.utilities.i18n import get_i18n</span>
+ 
+ 
+ class OpenAIConverterAdapter(BaseConverterAdapter):
+<span class="h">@@ -59,7 +59,7 @@ class OpenAIConverterAdapter(BaseConverterAdapter):</span>
+             return base_prompt
+ 
+         output_schema: str = (
+<span class="d">-            I18N()</span>
+<span class="a">+            get_i18n()</span>
+             .slice(&quot;formatted_task_instructions&quot;)
+             .format(output_format=self._schema)
+         )</pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/38b0b125d3b2cd1534f49b7e071a9540307df2f7">38b0b125d3</a> (2025-12-11T15:50:19-05:00)</h2><p class="k">feat: use json schema for tool argument serialization<br>Path after this commit: lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py b/lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py
+index 54ed9ddde..4033c8d50 100644
+<span class="d">--- a/lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py</span>
+<span class="a">+++ b/lib/crewai/src/crewai/agents/agent_adapters/openai_agents/structured_output_converter.py</span>
+<span class="h">@@ -4,6 +4,7 @@ This module contains the OpenAIConverterAdapter class that handles structured</span>
+ output conversion for OpenAI agents, supporting JSON and Pydantic model formats.
+ &quot;&quot;&quot;
+ 
+<span class="a">+import json</span>
+ from typing import Any
+ 
+ from crewai.agents.agent_adapters.base_converter_adapter import BaseConverterAdapter
+<span class="h">@@ -61,7 +62,7 @@ class OpenAIConverterAdapter(BaseConverterAdapter):</span>
+         output_schema: str = (
+             get_i18n()
+             .slice(&quot;formatted_task_instructions&quot;)
+<span class="d">-            .format(output_format=self._schema)</span>
+<span class="a">+            .format(output_format=json.dumps(self._schema, indent=2))</span>
+         )
+ 
+<span class=" m">         return f&quot;{base_prompt}\n\n{output_schema}&quot;</span></pre></body></html>

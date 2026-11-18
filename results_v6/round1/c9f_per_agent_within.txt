@@ -1,0 +1,7 @@
+C9f. Per-agent within-repository HR vs human (line, Definition 1, 500-resample repository bootstrap)
+
+GitHub Copilot  lines  67,398 PRs  489 repos with agent+human  53  HR 0.653 boot95 [0.450, 0.950] (excludes 1)
+OpenAI Codex    lines  48,867 PRs  491 repos with agent+human  63  HR 0.831 boot95 [0.457, 1.224] (includes 1)
+Cursor          lines  13,340 PRs   44 repos with agent+human  16  HR 0.379 boot95 [0.155, 4.545] (includes 1)
+Claude Code     lines  48,182 PRs   31 repos with agent+human  13  HR 0.934 boot95 [0.114, 1.594] (includes 1)
+Devin           lines  87,634 PRs  412 repos with agent+human  31  HR 1.059 boot95 [0.476, 2.138] (includes 1)

@@ -1,0 +1,1738 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L223 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L223: after the move</h1><p><b>Repository:</b> <a href="https://github.com/jina-ai/node-deepresearch">jina-ai/node-deepresearch</a><br><b>Original file:</b> src/tools/brave-search.ts (see L223.html)<br><b>Move commit:</b> <a href="https://github.com/jina-ai/node-deepresearch/commit/c793cb9bbce5519d930a1e292e84606007a1066f">c793cb9bbc</a> (commit #2 on L223.html)<br><b>Destination file (your label):</b> src/types.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/jina-ai/node-deepresearch/tree/d44cec6524d927d2bd1687e0f4b16847a16685bf">d44cec6524</a>)</p><p><b>The line:</b></p><pre><span class="t">    results: Array&lt;{</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 55).</p><h2>Destination file at the move commit, lines 47 to 63</h2><pre>   47 |     url: string;
+   48 |     content: string;
+   49 |     usage: { tokens: number; };
+   50 |   }&gt;;
+   51 | }
+   52 | 
+   53 | export interface BraveSearchResponse {
+   54 |   web: {
+<span class="t">   55 |     results: Array&lt;{</span>
+   56 |       title: string;
+   57 |       description: string;
+   58 |       url: string;
+   59 |     }&gt;;
+   60 |   };
+   61 | }
+   62 | 
+   63 | export type DedupResponse = {</pre><p class="k">Below are all 64 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/jina-ai/node-deepresearch/commit/20f5a94e88e505e01a537da418b8464bbbce0f21">20f5a94e88</a> (2025-02-02T22:42:18+08:00)</h2><p class="k">Merge branch &#x27;main&#x27; of https://github.com/jina-ai/node-agentic-search<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 5c34bff..209bd9a 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -134,3 +134,14 @@ export type ResponseSchema = {</span>
+   properties: Record&lt;string, SchemaProperty&gt;;
+   required: string[];
+ };
+<span class="a">+</span>
+<span class="a">+export interface StreamMessage {</span>
+<span class="a">+  type: &#x27;progress&#x27; | &#x27;answer&#x27; | &#x27;error&#x27;;</span>
+<span class="a">+  data: string | StepAction;</span>
+<span class="a">+  step?: number;</span>
+<span class="a">+  budget?: {</span>
+<span class="a">+    used: number;</span>
+<span class="a">+    total: number;</span>
+<span class="a">+    percentage: string;</span>
+<span class="a">+  };</span>
+<span class="a">+}</span></pre><h2>Commit #2: <a href="https://github.com/jina-ai/node-deepresearch/commit/76f8cd242a1329c54f109a045280679f063ef72f">76f8cd242a</a> (2025-02-03T18:01:59+08:00)</h2><p class="k">feat: merge types and add tests (#10)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 209bd9a..163738b 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -47,7 +47,10 @@ export interface SearchResponse {</span>
+     url: string;
+     content: string;
+     usage: { tokens: number; };
+<span class="d">-  }&gt;;</span>
+<span class="a">+  }&gt; | null;</span>
+<span class="a">+  name?: string;</span>
+<span class="a">+  message?: string;</span>
+<span class="a">+  readableMessage?: string;</span>
+ }
+ 
+ export interface BraveSearchResponse {
+<span class="h">@@ -68,13 +71,16 @@ export type DedupResponse = {</span>
+ export interface ReadResponse {
+   code: number;
+   status: number;
+<span class="d">-  data: {</span>
+<span class="a">+  data?: {</span>
+     title: string;
+     description: string;
+     url: string;
+     content: string;
+     usage: { tokens: number; };
+   };
+<span class="a">+  name?: string;</span>
+<span class="a">+  message?: string;</span>
+<span class="a">+  readableMessage?: string;</span>
+ }
+ 
+ export type EvaluationResponse = {
+<span class="h">@@ -145,3 +151,12 @@ export interface StreamMessage {</span>
+     percentage: string;
+   };
+ }
+<span class="a">+</span>
+<span class="a">+// Tracker Types</span>
+<span class="a">+import { TokenTracker } from &#x27;./utils/token-tracker&#x27;;</span>
+<span class="a">+import { ActionTracker } from &#x27;./utils/action-tracker&#x27;;</span>
+<span class="a">+</span>
+<span class="a">+export interface TrackerContext {</span>
+<span class="a">+  tokenTracker: TokenTracker;</span>
+<span class="a">+  actionTracker: ActionTracker;</span>
+<span class="a">+}</span></pre><h2>Commit #3: <a href="https://github.com/jina-ai/node-deepresearch/commit/fd40c7b0202e54fb47ca6bc03270798cc3f6dd4a">fd40c7b020</a> (2025-02-05T12:11:41+08:00)</h2><p class="k">fix: improve prompting<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 163738b..b15c296 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -3,7 +3,7 @@ import { SchemaType } from &quot;@google/generative-ai&quot;;</span>
+ // Action Types
+ type BaseAction = {
+   action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot;;
+<span class="d">-  thoughts: string;</span>
+<span class="a">+  think: string;</span>
+ };
+ 
+ export type SearchAction = BaseAction &amp; {
+<span class="h">@@ -64,7 +64,7 @@ export interface BraveSearchResponse {</span>
+ }
+ 
+ export type DedupResponse = {
+<span class="d">-  thought: string;</span>
+<span class="a">+  think: string;</span>
+   unique_queries: string[];
+ };
+ 
+<span class="h">@@ -115,7 +115,7 @@ export interface StepData {</span>
+ }
+ 
+ export type KeywordsResponse = {
+<span class="d">-  thought: string;</span>
+<span class="a">+  think: string;</span>
+   queries: string[];
+ };
+ </pre><h2>Commit #4: <a href="https://github.com/jina-ai/node-deepresearch/commit/f1c7ada6ae45bd665cd46491fe5bdd889be3b26a">f1c7ada6ae</a> (2025-02-06T14:14:12+08:00)</h2><p class="k">refactor: replace @google/generative-ai with @ai-sdk/google (#27)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index b15c296..0e7db89 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -1,4 +1,17 @@</span>
+<span class="d">-import { SchemaType } from &quot;@google/generative-ai&quot;;</span>
+<span class="a">+import { z } from &#x27;zod&#x27;;</span>
+<span class="a">+</span>
+<span class="a">+export const ThinkSchema = z.string().describe(&#x27;Strategic reasoning about the process&#x27;);</span>
+<span class="a">+</span>
+<span class="a">+export const QuerySchema = z.string()</span>
+<span class="a">+  .max(30)</span>
+<span class="a">+  .describe(&#x27;Search query, must be less than 30 characters&#x27;);</span>
+<span class="a">+</span>
+<span class="a">+export const URLSchema = z.string().url();</span>
+<span class="a">+</span>
+<span class="a">+export const ReferenceSchema = z.object({</span>
+<span class="a">+  exactQuote: z.string().describe(&#x27;Exact relevant quote from the document&#x27;),</span>
+<span class="a">+  url: URLSchema.describe(&#x27;URL of the document&#x27;)</span>
+<span class="a">+});</span>
+ 
+ // Action Types
+ type BaseAction = {
+<span class="h">@@ -119,28 +132,6 @@ export type KeywordsResponse = {</span>
+   queries: string[];
+ };
+ 
+<span class="d">-// Schema Types</span>
+<span class="d">-export type SchemaProperty = {</span>
+<span class="d">-  type: SchemaType;</span>
+<span class="d">-  description: string;</span>
+<span class="d">-  enum?: string[];</span>
+<span class="d">-  items?: {</span>
+<span class="d">-    type: SchemaType;</span>
+<span class="d">-    description?: string;</span>
+<span class="d">-    properties?: Record&lt;string, SchemaProperty&gt;;</span>
+<span class="d">-    required?: string[];</span>
+<span class="d">-  };</span>
+<span class="d">-  properties?: Record&lt;string, SchemaProperty&gt;;</span>
+<span class="d">-  required?: string[];</span>
+<span class="d">-  maxItems?: number;</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+<span class="d">-export type ResponseSchema = {</span>
+<span class="d">-  type: SchemaType;</span>
+<span class="d">-  properties: Record&lt;string, SchemaProperty&gt;;</span>
+<span class="d">-  required: string[];</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+ export interface StreamMessage {
+   type: &#x27;progress&#x27; | &#x27;answer&#x27; | &#x27;error&#x27;;
+   data: string | StepAction;</pre><h2>Commit #5: <a href="https://github.com/jina-ai/node-deepresearch/commit/906424f015198a28d5bb06743f0778ffb9677a58">906424f015</a> (2025-02-06T21:36:32+08:00)</h2><p class="k">feat: improved evaluators<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 0e7db89..a93ab5a 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -1,18 +1,3 @@</span>
+<span class="d">-import { z } from &#x27;zod&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-export const ThinkSchema = z.string().describe(&#x27;Strategic reasoning about the process&#x27;);</span>
+<span class="d">-</span>
+<span class="d">-export const QuerySchema = z.string()</span>
+<span class="d">-  .max(30)</span>
+<span class="d">-  .describe(&#x27;Search query, must be less than 30 characters&#x27;);</span>
+<span class="d">-</span>
+<span class="d">-export const URLSchema = z.string().url();</span>
+<span class="d">-</span>
+<span class="d">-export const ReferenceSchema = z.object({</span>
+<span class="d">-  exactQuote: z.string().describe(&#x27;Exact relevant quote from the document&#x27;),</span>
+<span class="d">-  url: URLSchema.describe(&#x27;URL of the document&#x27;)</span>
+<span class="d">-});</span>
+<span class="d">-</span>
+ // Action Types
+ type BaseAction = {
+   action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot;;
+<span class="h">@@ -96,9 +81,12 @@ export interface ReadResponse {</span>
+   readableMessage?: string;
+ }
+ 
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ export type EvaluationResponse = {
+<span class="d">-  is_definitive: boolean;</span>
+<span class="d">-  reasoning: string;</span>
+<span class="a">+  pass: boolean;</span>
+<span class="a">+  think: string;</span>
+ };
+ 
+ export type ErrorAnalysisResponse = {</pre><h2>Commit #6: <a href="https://github.com/jina-ai/node-deepresearch/commit/df992517fe14114c27ddfc988a655dd0352fa77b">df992517fe</a> (2025-02-06T21:51:56+08:00)</h2><p class="k">fix: update evaluator tests to match latest implementation (#34)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index a93ab5a..fe3d8b1 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -87,6 +87,19 @@ export interface ReadResponse {</span>
+ export type EvaluationResponse = {
+   pass: boolean;
+   think: string;
+<span class="a">+  type?: &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27;;</span>
+<span class="a">+  freshness_analysis?: {</span>
+<span class="a">+    likely_outdated: boolean;</span>
+<span class="a">+    dates_mentioned: string[];</span>
+<span class="a">+    current_time: string;</span>
+<span class="a">+    max_age_days?: number;</span>
+<span class="a">+  };</span>
+<span class="a">+  plurality_analysis?: {</span>
+<span class="a">+    expects_multiple: boolean;</span>
+<span class="a">+    provides_multiple: boolean;</span>
+<span class="a">+    count_expected?: number;</span>
+<span class="a">+    count_provided: number;</span>
+<span class="a">+  };</span>
+ };
+ 
+ export type ErrorAnalysisResponse = {</pre><h2>Commit #7: <a href="https://github.com/jina-ai/node-deepresearch/commit/39579d560e500fb62fb2b3d1b898b8875f4faa91">39579d560e</a> (2025-02-09T09:25:01+08:00)</h2><p class="k">feat: add OpenAI-compatible chat completions endpoint (#48)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index fe3d8b1..2409cb9 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -31,9 +31,24 @@ export type VisitAction = BaseAction &amp; {</span>
+ export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitAction;
+ 
+ // Response Types
+<span class="a">+export const TOKEN_CATEGORIES = {</span>
+<span class="a">+  PROMPT: &#x27;prompt&#x27;,</span>
+<span class="a">+  REASONING: &#x27;reasoning&#x27;,</span>
+<span class="a">+  ACCEPTED: &#x27;accepted&#x27;,</span>
+<span class="a">+  REJECTED: &#x27;rejected&#x27;</span>
+<span class="a">+} as const;</span>
+<span class="a">+</span>
+<span class="a">+export type TokenCategory = typeof TOKEN_CATEGORIES[keyof typeof TOKEN_CATEGORIES];</span>
+<span class="a">+</span>
+<span class="a">+// Following Vercel AI SDK&#x27;s token counting interface</span>
+ export interface TokenUsage {
+   tool: string;
+   tokens: number;
+<span class="a">+  category?: TokenCategory;</span>
+<span class="a">+  // Following Vercel AI SDK&#x27;s token counting interface</span>
+<span class="a">+  prompt_tokens?: number;</span>
+<span class="a">+  completion_tokens?: number;</span>
+<span class="a">+  total_tokens?: number;</span>
+ }
+ 
+ export interface SearchResponse {
+<span class="h">@@ -144,6 +159,60 @@ export interface StreamMessage {</span>
+   };
+ }
+ 
+<span class="a">+// OpenAI API Types</span>
+<span class="a">+export interface ChatCompletionRequest {</span>
+<span class="a">+  model: string;</span>
+<span class="a">+  messages: Array&lt;{</span>
+<span class="a">+    role: string;</span>
+<span class="a">+    content: string;</span>
+<span class="a">+  }&gt;;</span>
+<span class="a">+  stream?: boolean;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+export interface ChatCompletionResponse {</span>
+<span class="a">+  id: string;</span>
+<span class="a">+  object: &#x27;chat.completion&#x27;;</span>
+<span class="a">+  created: number;</span>
+<span class="a">+  model: string;</span>
+<span class="a">+  system_fingerprint: string;</span>
+<span class="a">+  choices: Array&lt;{</span>
+<span class="a">+    index: number;</span>
+<span class="a">+    message: {</span>
+<span class="a">+      role: &#x27;assistant&#x27;;</span>
+<span class="a">+      content: string;</span>
+<span class="a">+    };</span>
+<span class="a">+    logprobs: null;</span>
+<span class="a">+    finish_reason: &#x27;stop&#x27;;</span>
+<span class="a">+  }&gt;;</span>
+<span class="a">+  usage: {</span>
+<span class="a">+    prompt_tokens: number;</span>
+<span class="a">+    completion_tokens: number;</span>
+<span class="a">+    total_tokens: number;</span>
+<span class="a">+    completion_tokens_details?: {</span>
+<span class="a">+      reasoning_tokens: number;</span>
+<span class="a">+      accepted_prediction_tokens: number;</span>
+<span class="a">+      rejected_prediction_tokens: number;</span>
+<span class="a">+    };</span>
+<span class="a">+  };</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+export interface ChatCompletionChunk {</span>
+<span class="a">+  id: string;</span>
+<span class="a">+  object: &#x27;chat.completion.chunk&#x27;;</span>
+<span class="a">+  created: number;</span>
+<span class="a">+  model: string;</span>
+<span class="a">+  system_fingerprint: string;</span>
+<span class="a">+  choices: Array&lt;{</span>
+<span class="a">+    index: number;</span>
+<span class="a">+    delta: {</span>
+<span class="a">+      role?: &#x27;assistant&#x27;;</span>
+<span class="a">+      content?: string;</span>
+<span class="a">+    };</span>
+<span class="a">+    logprobs: null;</span>
+<span class="a">+    finish_reason: null | &#x27;stop&#x27;;</span>
+<span class="a">+  }&gt;;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // Tracker Types
+ import { TokenTracker } from &#x27;./utils/token-tracker&#x27;;
+ import { ActionTracker } from &#x27;./utils/action-tracker&#x27;;</pre><h2>Commit #8: <a href="https://github.com/jina-ai/node-deepresearch/commit/441654ac5d7e3ecc40d96f0c9a46c8d85bb2622e">441654ac5d</a> (2025-02-10T12:10:46+08:00)</h2><p class="k">feat: improve prompting<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 2409cb9..9f0fec0 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -97,8 +97,6 @@ export interface ReadResponse {</span>
+ }
+ 
+ 
+<span class="d">-</span>
+<span class="d">-</span>
+ export type EvaluationResponse = {
+   pass: boolean;
+   think: string;
+<span class="h">@@ -121,6 +119,7 @@ export type ErrorAnalysisResponse = {</span>
+   recap: string;
+   blame: string;
+   improvement: string;
+<span class="a">+  questionsToAnswer: string[];</span>
+ };
+ 
+ export interface SearchResult {
+<span class="h">@@ -214,8 +213,8 @@ export interface ChatCompletionChunk {</span>
+ }
+ 
+ // Tracker Types
+<span class="d">-import { TokenTracker } from &#x27;./utils/token-tracker&#x27;;</span>
+<span class="d">-import { ActionTracker } from &#x27;./utils/action-tracker&#x27;;</span>
+<span class="a">+import {TokenTracker} from &#x27;./utils/token-tracker&#x27;;</span>
+<span class="a">+import {ActionTracker} from &#x27;./utils/action-tracker&#x27;;</span>
+ 
+ export interface TrackerContext {
+   tokenTracker: TokenTracker;</pre><h2>Commit #9: <a href="https://github.com/jina-ai/node-deepresearch/commit/1dc73f2a18b239b9af2a7d5cc815ae507c241bbb">1dc73f2a18</a> (2025-02-10T14:08:13+08:00)</h2><p class="k">feat: add models API endpoints (#52)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 9f0fec0..ff829b3 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -159,6 +159,13 @@ export interface StreamMessage {</span>
+ }
+ 
+ // OpenAI API Types
+<span class="a">+export interface Model {</span>
+<span class="a">+  id: string;</span>
+<span class="a">+  object: &#x27;model&#x27;;</span>
+<span class="a">+  created: number;</span>
+<span class="a">+  owned_by: string;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export interface ChatCompletionRequest {
+   model: string;
+   messages: Array&lt;{</pre><h2>Commit #10: <a href="https://github.com/jina-ai/node-deepresearch/commit/188f1bb640642bd33230d357cb42bb9e7f78463d">188f1bb640</a> (2025-02-11T11:04:31+08:00)</h2><p class="k">chore: update readme<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index ff829b3..b1369bb 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -100,7 +100,7 @@ export interface ReadResponse {</span>
+ export type EvaluationResponse = {
+   pass: boolean;
+   think: string;
+<span class="d">-  type?: &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27;;</span>
+<span class="a">+  type?: &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27;;</span>
+   freshness_analysis?: {
+     likely_outdated: boolean;
+     dates_mentioned: string[];</pre><h2>Commit #11: <a href="https://github.com/jina-ai/node-deepresearch/commit/45bb105ad572001ddc737676df2885c4f68a55d3">45bb105ad5</a> (2025-02-12T09:55:17+08:00)</h2><p class="k">fix: streaming msg<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index b1369bb..df1ad43 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -217,6 +217,7 @@ export interface ChatCompletionChunk {</span>
+     logprobs: null;
+     finish_reason: null | &#x27;stop&#x27;;
+   }&gt;;
+<span class="a">+  usage?: any;</span>
+ }
+ 
+ // Tracker Types</pre><h2>Commit #12: <a href="https://github.com/jina-ai/node-deepresearch/commit/41ee1812db1d6cd8a3df1a45b26073958737fe31">41ee1812db</a> (2025-02-12T11:20:49+08:00)</h2><p class="k">fix: token tracking<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index df1ad43..f1c8d1d 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -1,4 +1,6 @@</span>
+ // Action Types
+<span class="a">+import {LanguageModelUsage} from &quot;ai&quot;;</span>
+<span class="a">+</span>
+ type BaseAction = {
+   action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot;;
+   think: string;
+<span class="h">@@ -30,25 +32,11 @@ export type VisitAction = BaseAction &amp; {</span>
+ 
+ export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitAction;
+ 
+<span class="d">-// Response Types</span>
+<span class="d">-export const TOKEN_CATEGORIES = {</span>
+<span class="d">-  PROMPT: &#x27;prompt&#x27;,</span>
+<span class="d">-  REASONING: &#x27;reasoning&#x27;,</span>
+<span class="d">-  ACCEPTED: &#x27;accepted&#x27;,</span>
+<span class="d">-  REJECTED: &#x27;rejected&#x27;</span>
+<span class="d">-} as const;</span>
+<span class="d">-</span>
+<span class="d">-export type TokenCategory = typeof TOKEN_CATEGORIES[keyof typeof TOKEN_CATEGORIES];</span>
+ 
+ // Following Vercel AI SDK&#x27;s token counting interface
+ export interface TokenUsage {
+   tool: string;
+<span class="d">-  tokens: number;</span>
+<span class="d">-  category?: TokenCategory;</span>
+<span class="d">-  // Following Vercel AI SDK&#x27;s token counting interface</span>
+<span class="d">-  prompt_tokens?: number;</span>
+<span class="d">-  completion_tokens?: number;</span>
+<span class="d">-  total_tokens?: number;</span>
+<span class="a">+  usage: LanguageModelUsage;</span>
+ }
+ 
+ export interface SearchResponse {</pre><h2>Commit #13: <a href="https://github.com/jina-ai/node-deepresearch/commit/57fb65d0c6b1467b51fd450a9bca4022bd3f2706">57fb65d0c6</a> (2025-02-12T11:55:52+08:00)</h2><p class="k">fix: token tracking<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index f1c8d1d..4f98cfb 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -161,6 +161,8 @@ export interface ChatCompletionRequest {</span>
+     content: string;
+   }&gt;;
+   stream?: boolean;
+<span class="a">+  reasoning_effort?: &#x27;low&#x27; | &#x27;medium&#x27; | &#x27;high&#x27; | null;</span>
+<span class="a">+  max_completion_tokens?: number | null;</span>
+ }
+ 
+ export interface ChatCompletionResponse {</pre><h2>Commit #14: <a href="https://github.com/jina-ai/node-deepresearch/commit/16a2f60fecd2cc6e95f58da2a8bb9ac284582f90">16a2f60fec</a> (2025-02-12T12:42:51+08:00)</h2><p class="k">feat: support history messages<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 4f98cfb..865d675 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ // Action Types
+<span class="d">-import {LanguageModelUsage} from &quot;ai&quot;;</span>
+<span class="a">+import {CoreAssistantMessage, CoreUserMessage, LanguageModelUsage} from &quot;ai&quot;;</span>
+ 
+ type BaseAction = {
+   action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot;;
+<span class="h">@@ -156,10 +156,7 @@ export interface Model {</span>
+ 
+ export interface ChatCompletionRequest {
+   model: string;
+<span class="d">-  messages: Array&lt;{</span>
+<span class="d">-    role: string;</span>
+<span class="d">-    content: string;</span>
+<span class="d">-  }&gt;;</span>
+<span class="a">+  messages: Array&lt;CoreUserMessage | CoreAssistantMessage&gt;;</span>
+   stream?: boolean;
+   reasoning_effort?: &#x27;low&#x27; | &#x27;medium&#x27; | &#x27;high&#x27; | null;
+   max_completion_tokens?: number | null;</pre><h2>Commit #15: <a href="https://github.com/jina-ai/node-deepresearch/commit/bd77535dd91e5f5cc207a9c6c8c0fcbe46b67dcd">bd77535dd9</a> (2025-02-13T00:33:58+08:00)</h2><p class="k">refactor: add safe obj generation (#60)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 865d675..61a13bc 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -181,11 +181,6 @@ export interface ChatCompletionResponse {</span>
+     prompt_tokens: number;
+     completion_tokens: number;
+     total_tokens: number;
+<span class="d">-    completion_tokens_details?: {</span>
+<span class="d">-      reasoning_tokens: number;</span>
+<span class="d">-      accepted_prediction_tokens: number;</span>
+<span class="d">-      rejected_prediction_tokens: number;</span>
+<span class="d">-    };</span>
+   };
+ }
+ </pre><h2>Commit #16: <a href="https://github.com/jina-ai/node-deepresearch/commit/086bde514e580695632f97be3211e06e4e9e557b">086bde514e</a> (2025-02-13T12:33:37+08:00)</h2><p class="k">fix: emit stream (#61)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 61a13bc..60e694c 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -18,6 +18,7 @@ export type AnswerAction = BaseAction &amp; {</span>
+     exactQuote: string;
+     url: string;
+   }&gt;;
+<span class="a">+  isFinal?: boolean;</span>
+ };
+ 
+ export type ReflectAction = BaseAction &amp; {</pre><h2>Commit #17: <a href="https://github.com/jina-ai/node-deepresearch/commit/57deb26946cbea1f3b6c10ecf7ea6a45a19e585e">57deb26946</a> (2025-02-13T12:58:46+08:00)</h2><p class="k">feat: add timestamp to the knowledge (#62)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 60e694c..f3f9f0d 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -21,6 +21,18 @@ export type AnswerAction = BaseAction &amp; {</span>
+   isFinal?: boolean;
+ };
+ 
+<span class="a">+</span>
+<span class="a">+export type KnowledgeItem = {</span>
+<span class="a">+  question: string,</span>
+<span class="a">+  answer: string,</span>
+<span class="a">+  references?: Array&lt;{</span>
+<span class="a">+    exactQuote: string;</span>
+<span class="a">+    url: string;</span>
+<span class="a">+  }&gt; | Array&lt;any&gt;;</span>
+<span class="a">+  type: &#x27;qa&#x27; | &#x27;side-info&#x27; | &#x27;chat-history&#x27; | &#x27;url&#x27;,</span>
+<span class="a">+  updated: string,</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export type ReflectAction = BaseAction &amp; {
+   action: &quot;reflect&quot;;
+   questionsToAnswer: string[];</pre><h2>Commit #18: <a href="https://github.com/jina-ai/node-deepresearch/commit/3b76e0b4d892e5ff460e1939ed32323c3f24431a">3b76e0b4d8</a> (2025-02-13T20:05:54+08:00)</h2><p class="k">feat: add timestamp to the knowledge (#64)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index f3f9f0d..12ac169 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -45,6 +45,11 @@ export type VisitAction = BaseAction &amp; {</span>
+ 
+ export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitAction;
+ 
+<span class="a">+export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27;;</span>
+<span class="a">+export type EvaluationCriteria = {</span>
+<span class="a">+  types: EvaluationType[];</span>
+<span class="a">+  languageStyle: string;</span>
+<span class="a">+};</span>
+ 
+ // Following Vercel AI SDK&#x27;s token counting interface
+ export interface TokenUsage {</pre><h2>Commit #19: <a href="https://github.com/jina-ai/node-deepresearch/commit/f8aa2b1353c86ce6c8d74abb59d821b8bb424aa6">f8aa2b1353</a> (2025-02-17T14:19:36+08:00)</h2><p class="k">feat: add coding tools<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 12ac169..ed2b599 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -2,7 +2,7 @@</span>
+ import {CoreAssistantMessage, CoreUserMessage, LanguageModelUsage} from &quot;ai&quot;;
+ 
+ type BaseAction = {
+<span class="d">-  action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot;;</span>
+<span class="a">+  action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot; | &quot;coding&quot;;</span>
+   think: string;
+ };
+ 
+<span class="h">@@ -29,7 +29,7 @@ export type KnowledgeItem = {</span>
+     exactQuote: string;
+     url: string;
+   }&gt; | Array&lt;any&gt;;
+<span class="d">-  type: &#x27;qa&#x27; | &#x27;side-info&#x27; | &#x27;chat-history&#x27; | &#x27;url&#x27;,</span>
+<span class="a">+  type: &#x27;qa&#x27; | &#x27;side-info&#x27; | &#x27;chat-history&#x27; | &#x27;url&#x27; | &#x27;coding&#x27;,</span>
+   updated: string,
+ }
+ 
+<span class="h">@@ -43,7 +43,12 @@ export type VisitAction = BaseAction &amp; {</span>
+   URLTargets: string[];
+ };
+ 
+<span class="d">-export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitAction;</span>
+<span class="a">+export type CodingAction = BaseAction &amp; {</span>
+<span class="a">+  action: &quot;coding&quot;;</span>
+<span class="a">+  codingIssue: string;</span>
+<span class="a">+};</span>
+<span class="a">+</span>
+<span class="a">+export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitAction | CodingAction;</span>
+ 
+ export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27;;
+ export type EvaluationCriteria = {</pre><h2>Commit #20: <a href="https://github.com/jina-ai/node-deepresearch/commit/4decc9a7501df766a119e893c357b9ddcf9b151d">4decc9a750</a> (2025-02-20T13:49:16+08:00)</h2><p class="k">search: introduce serper search provider<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index ed2b599..89e797c 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -87,6 +87,36 @@ export interface BraveSearchResponse {</span>
+   };
+ }
+ 
+<span class="a">+export interface SerperSearchResponse {</span>
+<span class="a">+  knowledgeGraph?: {</span>
+<span class="a">+      title: string;</span>
+<span class="a">+      type: string;</span>
+<span class="a">+      website: string;</span>
+<span class="a">+      imageUrl: string;</span>
+<span class="a">+      description: string;</span>
+<span class="a">+      descriptionSource: string;</span>
+<span class="a">+      descriptionLink: string;</span>
+<span class="a">+      attributes: { [k: string]: string; };</span>
+<span class="a">+  },</span>
+<span class="a">+  organic: {</span>
+<span class="a">+      title: string;</span>
+<span class="a">+      link: string;</span>
+<span class="a">+      snippet: string;</span>
+<span class="a">+      date: string;</span>
+<span class="a">+      siteLinks?: { title: string; link: string; }[];</span>
+<span class="a">+      position: number,</span>
+<span class="a">+  }[];</span>
+<span class="a">+  topStories?: {</span>
+<span class="a">+      title: string;</span>
+<span class="a">+      link: string;</span>
+<span class="a">+      source: string;</span>
+<span class="a">+      data: string;</span>
+<span class="a">+      imageUrl: string;</span>
+<span class="a">+  }[];</span>
+<span class="a">+  relatedSearches?: string[];</span>
+<span class="a">+  credits: number;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export type DedupResponse = {
+   think: string;
+   unique_queries: string[];</pre><h2>Commit #21: <a href="https://github.com/jina-ai/node-deepresearch/commit/3c0dffcdd123e462d1323f34bc4d45ec78aefaf4">3c0dffcdd1</a> (2025-02-20T15:25:10+08:00)</h2><p class="k">refactor: evaluator (#66)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 89e797c..21d8a05 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -143,14 +143,10 @@ export type EvaluationResponse = {</span>
+   think: string;
+   type?: &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27;;
+   freshness_analysis?: {
+<span class="d">-    likely_outdated: boolean;</span>
+<span class="d">-    dates_mentioned: string[];</span>
+<span class="d">-    current_time: string;</span>
+<span class="a">+    days_ago: number;</span>
+     max_age_days?: number;
+   };
+   plurality_analysis?: {
+<span class="d">-    expects_multiple: boolean;</span>
+<span class="d">-    provides_multiple: boolean;</span>
+     count_expected?: number;
+     count_provided: number;
+   };</pre><h2>Commit #22: <a href="https://github.com/jina-ai/node-deepresearch/commit/7ec22a23d1cce08351ad9114770332645fd60a78">7ec22a23d1</a> (2025-02-22T16:06:41+08:00)</h2><p class="k">fix: streaming<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 21d8a05..af1c23f 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -231,6 +231,7 @@ export interface ChatCompletionResponse {</span>
+     completion_tokens: number;
+     total_tokens: number;
+   };
+<span class="a">+  visitedURLs?: string[];</span>
+ }
+ 
+ export interface ChatCompletionChunk {
+<span class="h">@@ -249,6 +250,7 @@ export interface ChatCompletionChunk {</span>
+     finish_reason: null | &#x27;stop&#x27;;
+   }&gt;;
+   usage?: any;
+<span class="a">+  visitedURLs?: string[];</span>
+ }
+ 
+ // Tracker Types</pre><h2>Commit #23: <a href="https://github.com/jina-ai/node-deepresearch/commit/c02588a92ca57138c1dc01553fe794e9a3b7315a">c02588a92c</a> (2025-02-24T13:16:18+08:00)</h2><p class="k">feat: optimize prompt, coding, reflect<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index af1c23f..992a1ad 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -31,6 +31,7 @@ export type KnowledgeItem = {</span>
+   }&gt; | Array&lt;any&gt;;
+   type: &#x27;qa&#x27; | &#x27;side-info&#x27; | &#x27;chat-history&#x27; | &#x27;url&#x27; | &#x27;coding&#x27;,
+   updated: string,
+<span class="a">+  sourceCode?: string,</span>
+ }
+ 
+ export type ReflectAction = BaseAction &amp; {
+<span class="h">@@ -89,29 +90,29 @@ export interface BraveSearchResponse {</span>
+ 
+ export interface SerperSearchResponse {
+   knowledgeGraph?: {
+<span class="d">-      title: string;</span>
+<span class="d">-      type: string;</span>
+<span class="d">-      website: string;</span>
+<span class="d">-      imageUrl: string;</span>
+<span class="d">-      description: string;</span>
+<span class="d">-      descriptionSource: string;</span>
+<span class="d">-      descriptionLink: string;</span>
+<span class="d">-      attributes: { [k: string]: string; };</span>
+<span class="a">+    title: string;</span>
+<span class="a">+    type: string;</span>
+<span class="a">+    website: string;</span>
+<span class="a">+    imageUrl: string;</span>
+<span class="a">+    description: string;</span>
+<span class="a">+    descriptionSource: string;</span>
+<span class="a">+    descriptionLink: string;</span>
+<span class="a">+    attributes: { [k: string]: string; };</span>
+   },
+   organic: {
+<span class="d">-      title: string;</span>
+<span class="d">-      link: string;</span>
+<span class="d">-      snippet: string;</span>
+<span class="d">-      date: string;</span>
+<span class="d">-      siteLinks?: { title: string; link: string; }[];</span>
+<span class="d">-      position: number,</span>
+<span class="a">+    title: string;</span>
+<span class="a">+    link: string;</span>
+<span class="a">+    snippet: string;</span>
+<span class="a">+    date: string;</span>
+<span class="a">+    siteLinks?: { title: string; link: string; }[];</span>
+<span class="a">+    position: number,</span>
+   }[];
+   topStories?: {
+<span class="d">-      title: string;</span>
+<span class="d">-      link: string;</span>
+<span class="d">-      source: string;</span>
+<span class="d">-      data: string;</span>
+<span class="d">-      imageUrl: string;</span>
+<span class="a">+    title: string;</span>
+<span class="a">+    link: string;</span>
+<span class="a">+    source: string;</span>
+<span class="a">+    data: string;</span>
+<span class="a">+    imageUrl: string;</span>
+   }[];
+   relatedSearches?: string[];
+   credits: number;
+<span class="h">@@ -159,11 +160,10 @@ export type ErrorAnalysisResponse = {</span>
+   questionsToAnswer: string[];
+ };
+ 
+<span class="d">-export interface SearchResult {</span>
+<span class="d">-  title: string;</span>
+<span class="d">-  url: string;</span>
+<span class="d">-  description: string;</span>
+<span class="d">-}</span>
+<span class="a">+export type SearchResult =</span>
+<span class="a">+  | { title: string; url: string; description: string }</span>
+<span class="a">+  | { title: string; link: string; snippet: string };</span>
+<span class="a">+</span>
+ 
+ export interface QueryResult {
+   query: string;
+<span class="h">@@ -232,6 +232,7 @@ export interface ChatCompletionResponse {</span>
+     total_tokens: number;
+   };
+   visitedURLs?: string[];
+<span class="a">+  readURLs?: string[];</span>
+ }
+ 
+ export interface ChatCompletionChunk {
+<span class="h">@@ -251,6 +252,7 @@ export interface ChatCompletionChunk {</span>
+   }&gt;;
+   usage?: any;
+   visitedURLs?: string[];
+<span class="a">+  readURLs?: string[];</span>
+ }
+ 
+ // Tracker Types</pre><h2>Commit #24: <a href="https://github.com/jina-ai/node-deepresearch/commit/ad7e524554b8fd69309f8e4080646db0ea9d3172">ad7e524554</a> (2025-02-25T11:12:33+08:00)</h2><p class="k">fix: multi-aspect<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 992a1ad..da1060a 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -8,7 +8,7 @@ type BaseAction = {</span>
+ 
+ export type SearchAction = BaseAction &amp; {
+   action: &quot;search&quot;;
+<span class="d">-  searchQuery: string;</span>
+<span class="a">+  searchRequests: string[];</span>
+ };
+ 
+ export type AnswerAction = BaseAction &amp; {
+<span class="h">@@ -19,6 +19,7 @@ export type AnswerAction = BaseAction &amp; {</span>
+     url: string;
+   }&gt;;
+   isFinal?: boolean;
+<span class="a">+  mdAnswer?: string;</span>
+ };
+ 
+ </pre><h2>Commit #25: <a href="https://github.com/jina-ai/node-deepresearch/commit/3226aedf485cbb060ab53f4ffd192bb9c01f3c51">3226aedf48</a> (2025-02-25T11:49:28+08:00)</h2><p class="k">fix: evaluator<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index da1060a..4389f54 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -52,7 +52,7 @@ export type CodingAction = BaseAction &amp; {</span>
+ 
+ export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitAction | CodingAction;
+ 
+<span class="d">-export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27;;</span>
+<span class="a">+export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27; | &#x27;completeness&#x27;;</span>
+ export type EvaluationCriteria = {
+   types: EvaluationType[];
+   languageStyle: string;
+<span class="h">@@ -143,7 +143,7 @@ export interface ReadResponse {</span>
+ export type EvaluationResponse = {
+   pass: boolean;
+   think: string;
+<span class="d">-  type?: &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27;;</span>
+<span class="a">+  type?: EvaluationType;</span>
+   freshness_analysis?: {
+     days_ago: number;
+     max_age_days?: number;
+<span class="h">@@ -152,6 +152,15 @@ export type EvaluationResponse = {</span>
+     count_expected?: number;
+     count_provided: number;
+   };
+<span class="a">+  attribution_analysis?: {</span>
+<span class="a">+    sources_provided: boolean,</span>
+<span class="a">+    sources_verified: boolean,</span>
+<span class="a">+    quotes_accurate: boolean,</span>
+<span class="a">+  };</span>
+<span class="a">+  completeness_analysis?: {</span>
+<span class="a">+    aspects_expected: string,</span>
+<span class="a">+    aspects_provided: string,</span>
+<span class="a">+  }</span>
+ };
+ 
+ export type ErrorAnalysisResponse = {</pre><h2>Commit #26: <a href="https://github.com/jina-ai/node-deepresearch/commit/66490f3848eb6b78d78eee87f921b69e1a3e8708">66490f3848</a> (2025-02-25T15:12:19+08:00)</h2><p class="k">refactor: schemas<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 4389f54..0ce8761 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -53,10 +53,7 @@ export type CodingAction = BaseAction &amp; {</span>
+ export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitAction | CodingAction;
+ 
+ export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27; | &#x27;completeness&#x27;;
+<span class="d">-export type EvaluationCriteria = {</span>
+<span class="d">-  types: EvaluationType[];</span>
+<span class="d">-  languageStyle: string;</span>
+<span class="d">-};</span>
+<span class="a">+</span>
+ 
+ // Following Vercel AI SDK&#x27;s token counting interface
+ export interface TokenUsage {
+<span class="h">@@ -119,10 +116,6 @@ export interface SerperSearchResponse {</span>
+   credits: number;
+ }
+ 
+<span class="d">-export type DedupResponse = {</span>
+<span class="d">-  think: string;</span>
+<span class="d">-  unique_queries: string[];</span>
+<span class="d">-};</span>
+ 
+ export interface ReadResponse {
+   code: number;
+<span class="h">@@ -163,6 +156,11 @@ export type EvaluationResponse = {</span>
+   }
+ };
+ 
+<span class="a">+export type CodeGenResponse = {</span>
+<span class="a">+  think: string;</span>
+<span class="a">+  code: string;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export type ErrorAnalysisResponse = {
+   recap: string;
+   blame: string;
+<span class="h">@@ -175,36 +173,6 @@ export type SearchResult =</span>
+   | { title: string; link: string; snippet: string };
+ 
+ 
+<span class="d">-export interface QueryResult {</span>
+<span class="d">-  query: string;</span>
+<span class="d">-  results: SearchResult[];</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export interface StepData {</span>
+<span class="d">-  step: number;</span>
+<span class="d">-  question: string;</span>
+<span class="d">-  action: string;</span>
+<span class="d">-  reasoning: string;</span>
+<span class="d">-  searchQuery?: string;</span>
+<span class="d">-  result?: QueryResult[];</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export type KeywordsResponse = {</span>
+<span class="d">-  think: string;</span>
+<span class="d">-  queries: string[];</span>
+<span class="d">-};</span>
+<span class="d">-</span>
+<span class="d">-export interface StreamMessage {</span>
+<span class="d">-  type: &#x27;progress&#x27; | &#x27;answer&#x27; | &#x27;error&#x27;;</span>
+<span class="d">-  data: string | StepAction;</span>
+<span class="d">-  step?: number;</span>
+<span class="d">-  budget?: {</span>
+<span class="d">-    used: number;</span>
+<span class="d">-    total: number;</span>
+<span class="d">-    percentage: string;</span>
+<span class="d">-  };</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ // OpenAI API Types
+ export interface Model {
+   id: string;
+<span class="h">@@ -273,3 +241,4 @@ export interface TrackerContext {</span>
+   tokenTracker: TokenTracker;
+   actionTracker: ActionTracker;
+ }
+<span class="a">+</span></pre><h2>Commit #27: <a href="https://github.com/jina-ai/node-deepresearch/commit/4cedd57fcc3928e923712820c3673cef4a5647ee">4cedd57fcc</a> (2025-02-26T15:34:54+08:00)</h2><p class="k">feat: add api params<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 0ce8761..1ea97eb 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -187,6 +187,9 @@ export interface ChatCompletionRequest {</span>
+   stream?: boolean;
+   reasoning_effort?: &#x27;low&#x27; | &#x27;medium&#x27; | &#x27;high&#x27; | null;
+   max_completion_tokens?: number | null;
+<span class="a">+</span>
+<span class="a">+  budget_tokens?: number | null;</span>
+<span class="a">+  max_attempts?: number | null;</span>
+ }
+ 
+ export interface ChatCompletionResponse {</pre><h2>Commit #28: <a href="https://github.com/jina-ai/node-deepresearch/commit/dbc8a30fd4d09c473c24d446ceebb0cf1696675d">dbc8a30fd4</a> (2025-02-28T22:17:36+08:00)</h2><p class="k">feat: add api params<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 1ea97eb..d750474 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -181,6 +181,8 @@ export interface Model {</span>
+   owned_by: string;
+ }
+ 
+<span class="a">+export type PromptPair = { system: string, user: string };</span>
+<span class="a">+</span>
+ export interface ChatCompletionRequest {
+   model: string;
+   messages: Array&lt;CoreUserMessage | CoreAssistantMessage&gt;;</pre><h2>Commit #29: <a href="https://github.com/jina-ai/node-deepresearch/commit/9bf5c2047866f019c73b8c9472cdf63fca6216fa">9bf5c20478</a> (2025-03-01T22:04:54+08:00)</h2><p class="k">refactor: agent schema<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index d750474..1025399 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -17,6 +17,7 @@ export type AnswerAction = BaseAction &amp; {</span>
+   references: Array&lt;{
+     exactQuote: string;
+     url: string;
+<span class="a">+    dateTime?: string;</span>
+   }&gt;;
+   isFinal?: boolean;
+   mdAnswer?: string;
+<span class="h">@@ -29,6 +30,7 @@ export type KnowledgeItem = {</span>
+   references?: Array&lt;{
+     exactQuote: string;
+     url: string;
+<span class="a">+    dateTime?: string;</span>
+   }&gt; | Array&lt;any&gt;;
+   type: &#x27;qa&#x27; | &#x27;side-info&#x27; | &#x27;chat-history&#x27; | &#x27;url&#x27; | &#x27;coding&#x27;,
+   updated: string,</pre><h2>Commit #30: <a href="https://github.com/jina-ai/node-deepresearch/commit/7c035f59c5b8298010d1b5964a06585bc89f7ec3">7c035f59c5</a> (2025-03-03T10:51:03+08:00)</h2><p class="k">feat: add json schema support<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 1025399..770bce2 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -185,15 +185,21 @@ export interface Model {</span>
+ 
+ export type PromptPair = { system: string, user: string };
+ 
+<span class="a">+export type ResponseFormat = {</span>
+<span class="a">+  type: &#x27;json_schema&#x27; | &#x27;json_object&#x27;;</span>
+<span class="a">+  json_schema?: any;</span>
+<span class="a">+}</span>
+ export interface ChatCompletionRequest {
+   model: string;
+   messages: Array&lt;CoreUserMessage | CoreAssistantMessage&gt;;
+   stream?: boolean;
+<span class="d">-  reasoning_effort?: &#x27;low&#x27; | &#x27;medium&#x27; | &#x27;high&#x27; | null;</span>
+<span class="d">-  max_completion_tokens?: number | null;</span>
+<span class="a">+  reasoning_effort?: &#x27;low&#x27; | &#x27;medium&#x27; | &#x27;high&#x27;;</span>
+<span class="a">+  max_completion_tokens?: number;</span>
+<span class="a">+</span>
+<span class="a">+  budget_tokens?: number;</span>
+<span class="a">+  max_attempts?: number;</span>
+ 
+<span class="d">-  budget_tokens?: number | null;</span>
+<span class="d">-  max_attempts?: number | null;</span>
+<span class="a">+  response_format?: ResponseFormat;</span>
+ }
+ 
+ export interface ChatCompletionResponse {
+<span class="h">@@ -231,6 +237,7 @@ export interface ChatCompletionChunk {</span>
+     delta: {
+       role?: &#x27;assistant&#x27;;
+       content?: string;
+<span class="a">+      type?: &#x27;text&#x27; | &#x27;think&#x27; | &#x27;json&#x27; | &#x27;error&#x27;;</span>
+     };
+     logprobs: null;
+     finish_reason: null | &#x27;stop&#x27;;</pre><h2>Commit #31: <a href="https://github.com/jina-ai/node-deepresearch/commit/ebec1bc713fe7675e8e1f1ac8fb7081e4a85fe19">ebec1bc713</a> (2025-03-03T10:58:00+08:00)</h2><p class="k">feat: add json schema support<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 770bce2..80b294c 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -213,6 +213,7 @@ export interface ChatCompletionResponse {</span>
+     message: {
+       role: &#x27;assistant&#x27;;
+       content: string;
+<span class="a">+      type: &#x27;text&#x27; | &#x27;think&#x27; | &#x27;json&#x27; | &#x27;error&#x27;;</span>
+     };
+     logprobs: null;
+     finish_reason: &#x27;stop&#x27;;</pre><h2>Commit #32: <a href="https://github.com/jina-ai/node-deepresearch/commit/b5fe088472b6e939e27896818a811132419c937e">b5fe088472</a> (2025-03-03T16:05:32+08:00)</h2><p class="k">feat: add json schema support<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 80b294c..f2a6d50 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -54,7 +54,7 @@ export type CodingAction = BaseAction &amp; {</span>
+ 
+ export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitAction | CodingAction;
+ 
+<span class="d">-export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27; | &#x27;completeness&#x27;;</span>
+<span class="a">+export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27; | &#x27;completeness&#x27; | &#x27;strict&#x27;;</span>
+ 
+ 
+ // Following Vercel AI SDK&#x27;s token counting interface
+<span class="h">@@ -155,7 +155,8 @@ export type EvaluationResponse = {</span>
+   completeness_analysis?: {
+     aspects_expected: string,
+     aspects_provided: string,
+<span class="d">-  }</span>
+<span class="a">+  },</span>
+<span class="a">+  improvement_plan?: string;</span>
+ };
+ 
+ export type CodeGenResponse = {</pre><h2>Commit #33: <a href="https://github.com/jina-ai/node-deepresearch/commit/51ad77d302d34170c8db8fffe3753f64048f5fb2">51ad77d302</a> (2025-03-04T16:29:22+08:00)</h2><p class="k">feat: add url ranking<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index f2a6d50..d8ad27a 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -172,9 +172,20 @@ export type ErrorAnalysisResponse = {</span>
+ };
+ 
+ export type SearchResult =
+<span class="d">-  | { title: string; url: string; description: string }</span>
+<span class="d">-  | { title: string; link: string; snippet: string };</span>
+<span class="d">-</span>
+<span class="a">+  | { title: string; url: string; description: string; weight?: number }</span>
+<span class="a">+  | { title: string; link: string; snippet: string; weight?: number };</span>
+<span class="a">+</span>
+<span class="a">+export type BoostedSearchResult = {</span>
+<span class="a">+  title: string;</span>
+<span class="a">+  url: string;</span>
+<span class="a">+  description: string;</span>
+<span class="a">+  weight: number;</span>
+<span class="a">+  originalWeight: number;</span>
+<span class="a">+  hostnameBoost: number;</span>
+<span class="a">+  pathBoost: number;</span>
+<span class="a">+  boostScore: number;</span>
+<span class="a">+  boostedWeight: number;</span>
+<span class="a">+}</span>
+ 
+ // OpenAI API Types
+ export interface Model {
+<span class="h">@@ -190,6 +201,7 @@ export type ResponseFormat = {</span>
+   type: &#x27;json_schema&#x27; | &#x27;json_object&#x27;;
+   json_schema?: any;
+ }
+<span class="a">+</span>
+ export interface ChatCompletionRequest {
+   model: string;
+   messages: Array&lt;CoreUserMessage | CoreAssistantMessage&gt;;</pre><h2>Commit #34: <a href="https://github.com/jina-ai/node-deepresearch/commit/198a140d02465bfd0c3ccfcaa999faad1292d7d6">198a140d02</a> (2025-03-05T11:34:19+08:00)</h2><p class="k">fix: evaluator<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index d8ad27a..51b64a7 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -144,8 +144,8 @@ export type EvaluationResponse = {</span>
+     max_age_days?: number;
+   };
+   plurality_analysis?: {
+<span class="d">-    count_expected?: number;</span>
+<span class="d">-    count_provided: number;</span>
+<span class="a">+    minimum_count_required: number;</span>
+<span class="a">+    actual_count_provided: number;</span>
+   };
+   attribution_analysis?: {
+     sources_provided: boolean,</pre><h2>Commit #35: <a href="https://github.com/jina-ai/node-deepresearch/commit/d9bfc2fd1f6ff80d85cec9f0296839dc4388ddb8">d9bfc2fd1f</a> (2025-03-06T14:17:56+08:00)</h2><p class="k">feat: improve url ranking, fix eval bugs<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: src/tools/jina-rerank.ts.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 51b64a7..acd1335 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -128,6 +128,7 @@ export interface ReadResponse {</span>
+     url: string;
+     content: string;
+     usage: { tokens: number; };
+<span class="a">+    links: Array&lt;[string, string]&gt;; // [anchor, url]</span>
+   };
+   name?: string;
+   message?: string;
+<span class="h">@@ -147,11 +148,7 @@ export type EvaluationResponse = {</span>
+     minimum_count_required: number;
+     actual_count_provided: number;
+   };
+<span class="d">-  attribution_analysis?: {</span>
+<span class="d">-    sources_provided: boolean,</span>
+<span class="d">-    sources_verified: boolean,</span>
+<span class="d">-    quotes_accurate: boolean,</span>
+<span class="d">-  };</span>
+<span class="a">+  exactQuote? : string;</span>
+   completeness_analysis?: {
+     aspects_expected: string,
+     aspects_provided: string,
+<span class="h">@@ -171,20 +168,19 @@ export type ErrorAnalysisResponse = {</span>
+   questionsToAnswer: string[];
+ };
+ 
+<span class="a">+</span>
+ export type SearchResult =
+<span class="d">-  | { title: string; url: string; description: string; weight?: number }</span>
+<span class="a">+  | SearchSnippet</span>
+   | { title: string; link: string; snippet: string; weight?: number };
+ 
+<span class="d">-export type BoostedSearchResult = {</span>
+<span class="d">-  title: string;</span>
+<span class="d">-  url: string;</span>
+<span class="d">-  description: string;</span>
+<span class="d">-  weight: number;</span>
+<span class="d">-  originalWeight: number;</span>
+<span class="a">+export type SearchSnippet = { title: string; url: string; description: string; weight?: number }</span>
+<span class="a">+</span>
+<span class="a">+export type BoostedSearchSnippet = SearchSnippet &amp; {</span>
+<span class="a">+  freqBoost: number;</span>
+   hostnameBoost: number;
+   pathBoost: number;
+<span class="d">-  boostScore: number;</span>
+<span class="d">-  boostedWeight: number;</span>
+<span class="a">+  jinaRerankBoost: number;</span>
+<span class="a">+  finalScore: number;</span>
+ }
+ 
+ // OpenAI API Types</pre><h2>Commit #36: <a href="https://github.com/jina-ai/node-deepresearch/commit/8b836431affd60f81a3988f5f061adb27d5f0838">8b836431af</a> (2025-03-07T13:43:14+08:00)</h2><p class="k">fix: url datetime guessing<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index acd1335..786c009 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -33,7 +33,7 @@ export type KnowledgeItem = {</span>
+     dateTime?: string;
+   }&gt; | Array&lt;any&gt;;
+   type: &#x27;qa&#x27; | &#x27;side-info&#x27; | &#x27;chat-history&#x27; | &#x27;url&#x27; | &#x27;coding&#x27;,
+<span class="d">-  updated: string,</span>
+<span class="a">+  updated?: string,</span>
+   sourceCode?: string,
+ }
+ </pre><h2>Commit #37: <a href="https://github.com/jina-ai/node-deepresearch/commit/43e22cbd8d7f69fcebbe4a4f85443ab3c9cb69d9">43e22cbd8d</a> (2025-03-07T16:25:05+08:00)</h2><p class="k">fix: url datetime guessing<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 786c009..9e4909d 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ // Action Types
+<span class="d">-import {CoreAssistantMessage, CoreUserMessage, LanguageModelUsage} from &quot;ai&quot;;</span>
+<span class="a">+import { CoreMessage, LanguageModelUsage} from &quot;ai&quot;;</span>
+ 
+ type BaseAction = {
+   action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot; | &quot;coding&quot;;
+<span class="h">@@ -200,7 +200,7 @@ export type ResponseFormat = {</span>
+ 
+ export interface ChatCompletionRequest {
+   model: string;
+<span class="d">-  messages: Array&lt;CoreUserMessage | CoreAssistantMessage&gt;;</span>
+<span class="a">+  messages: Array&lt;CoreMessage&gt;;</span>
+   stream?: boolean;
+   reasoning_effort?: &#x27;low&#x27; | &#x27;medium&#x27; | &#x27;high&#x27;;
+   max_completion_tokens?: number;</pre><h2>Commit #38: <a href="https://github.com/jina-ai/node-deepresearch/commit/d947973a6869e3e1f727d0aced743ee6569db0b5">d947973a68</a> (2025-03-11T15:10:08+08:00)</h2><p class="k">refactor: query rewriter<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 9e4909d..6d8e1ab 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -1,11 +1,19 @@</span>
+ // Action Types
+<span class="d">-import { CoreMessage, LanguageModelUsage} from &quot;ai&quot;;</span>
+<span class="a">+import {CoreMessage, LanguageModelUsage} from &quot;ai&quot;;</span>
+ 
+ type BaseAction = {
+   action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot; | &quot;coding&quot;;
+   think: string;
+ };
+ 
+<span class="a">+export type SERPQuery = {</span>
+<span class="a">+  q: string,</span>
+<span class="a">+  hl?: string,</span>
+<span class="a">+  gl?: string,</span>
+<span class="a">+  location?: string,</span>
+<span class="a">+  tbs?: string,</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export type SearchAction = BaseAction &amp; {
+   action: &quot;search&quot;;
+   searchRequests: string[];
+<span class="h">@@ -148,7 +156,7 @@ export type EvaluationResponse = {</span>
+     minimum_count_required: number;
+     actual_count_provided: number;
+   };
+<span class="d">-  exactQuote? : string;</span>
+<span class="a">+  exactQuote?: string;</span>
+   completeness_analysis?: {
+     aspects_expected: string,
+     aspects_provided: string,</pre><h2>Commit #39: <a href="https://github.com/jina-ai/node-deepresearch/commit/013056f218a3815ca6a244cecddd9139acfc03fb">013056f218</a> (2025-03-12T14:07:11+08:00)</h2><p class="k">feat: late chunking<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 6d8e1ab..db4539d 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -233,7 +233,7 @@ export interface ChatCompletionResponse {</span>
+       type: &#x27;text&#x27; | &#x27;think&#x27; | &#x27;json&#x27; | &#x27;error&#x27;;
+     };
+     logprobs: null;
+<span class="d">-    finish_reason: &#x27;stop&#x27;;</span>
+<span class="a">+    finish_reason: &#x27;stop&#x27; | &#x27;error&#x27;;</span>
+   }&gt;;
+   usage: {
+     prompt_tokens: number;
+<span class="h">@@ -256,9 +256,10 @@ export interface ChatCompletionChunk {</span>
+       role?: &#x27;assistant&#x27;;
+       content?: string;
+       type?: &#x27;text&#x27; | &#x27;think&#x27; | &#x27;json&#x27; | &#x27;error&#x27;;
+<span class="a">+      url?: string;</span>
+     };
+     logprobs: null;
+<span class="d">-    finish_reason: null | &#x27;stop&#x27;;</span>
+<span class="a">+    finish_reason: null | &#x27;stop&#x27; | &#x27;thinking_end&#x27; | &#x27;error&#x27;;</span>
+   }&gt;;
+   usage?: any;
+   visitedURLs?: string[];</pre><h2>Commit #40: <a href="https://github.com/jina-ai/node-deepresearch/commit/0e0630b727d90dd56eaeb4a82b372ebc347cecc6">0e0630b727</a> (2025-03-13T14:01:35+08:00)</h2><p class="k">refactor: knowledge as msg<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index db4539d..dd7e217 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -173,7 +173,6 @@ export type ErrorAnalysisResponse = {</span>
+   recap: string;
+   blame: string;
+   improvement: string;
+<span class="d">-  questionsToAnswer: string[];</span>
+ };
+ 
+ </pre><h2>Commit #41: <a href="https://github.com/jina-ai/node-deepresearch/commit/c9a51bb4034cfd55b71ab827def598b2a312ecf9">c9a51bb403</a> (2025-03-14T13:22:17+08:00)</h2><p class="k">fix: fallback genobj<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index dd7e217..222ed52 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -19,14 +19,17 @@ export type SearchAction = BaseAction &amp; {</span>
+   searchRequests: string[];
+ };
+ 
+<span class="d">-export type AnswerAction = BaseAction &amp; {</span>
+<span class="d">-  action: &quot;answer&quot;;</span>
+<span class="d">-  answer: string;</span>
+<span class="d">-  references: Array&lt;{</span>
+<span class="a">+export type Reference = {</span>
+     exactQuote: string;
+     url: string;
+<span class="a">+    title: string;</span>
+     dateTime?: string;
+<span class="d">-  }&gt;;</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+<span class="a">+export type AnswerAction = BaseAction &amp; {</span>
+<span class="a">+  action: &quot;answer&quot;;</span>
+<span class="a">+  answer: string;</span>
+<span class="a">+  references: Array&lt;Reference&gt;;</span>
+   isFinal?: boolean;
+   mdAnswer?: string;
+ };
+<span class="h">@@ -35,11 +38,7 @@ export type AnswerAction = BaseAction &amp; {</span>
+ export type KnowledgeItem = {
+   question: string,
+   answer: string,
+<span class="d">-  references?: Array&lt;{</span>
+<span class="d">-    exactQuote: string;</span>
+<span class="d">-    url: string;</span>
+<span class="d">-    dateTime?: string;</span>
+<span class="d">-  }&gt; | Array&lt;any&gt;;</span>
+<span class="a">+  references?: Array&lt;Reference&gt; | Array&lt;any&gt;;</span>
+   type: &#x27;qa&#x27; | &#x27;side-info&#x27; | &#x27;chat-history&#x27; | &#x27;url&#x27; | &#x27;coding&#x27;,
+   updated?: string,
+   sourceCode?: string,
+<span class="h">@@ -218,6 +217,11 @@ export interface ChatCompletionRequest {</span>
+   response_format?: ResponseFormat;
+ }
+ 
+<span class="a">+export interface URLAnnotation {</span>
+<span class="a">+  type: &#x27;url_citation&#x27;,</span>
+<span class="a">+  url_citation: Reference</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export interface ChatCompletionResponse {
+   id: string;
+   object: &#x27;chat.completion&#x27;;
+<span class="h">@@ -230,6 +234,7 @@ export interface ChatCompletionResponse {</span>
+       role: &#x27;assistant&#x27;;
+       content: string;
+       type: &#x27;text&#x27; | &#x27;think&#x27; | &#x27;json&#x27; | &#x27;error&#x27;;
+<span class="a">+      annotations?: Array&lt;URLAnnotation&gt;;</span>
+     };
+     logprobs: null;
+     finish_reason: &#x27;stop&#x27; | &#x27;error&#x27;;
+<span class="h">@@ -241,6 +246,7 @@ export interface ChatCompletionResponse {</span>
+   };
+   visitedURLs?: string[];
+   readURLs?: string[];
+<span class="a">+  numURLs?: number;</span>
+ }
+ 
+ export interface ChatCompletionChunk {
+<span class="h">@@ -256,6 +262,7 @@ export interface ChatCompletionChunk {</span>
+       content?: string;
+       type?: &#x27;text&#x27; | &#x27;think&#x27; | &#x27;json&#x27; | &#x27;error&#x27;;
+       url?: string;
+<span class="a">+      annotations?: Array&lt;URLAnnotation&gt;;</span>
+     };
+     logprobs: null;
+     finish_reason: null | &#x27;stop&#x27; | &#x27;thinking_end&#x27; | &#x27;error&#x27;;
+<span class="h">@@ -263,6 +270,7 @@ export interface ChatCompletionChunk {</span>
+   usage?: any;
+   visitedURLs?: string[];
+   readURLs?: string[];
+<span class="a">+  numURLs?: number;</span>
+ }
+ 
+ // Tracker Types</pre><h2>Commit #42: <a href="https://github.com/jina-ai/node-deepresearch/commit/f742478d159c6fb3db2b33b56ddd583fa54e2acd">f742478d15</a> (2025-03-14T13:41:29+08:00)</h2><p class="k">feat: add num urls<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 222ed52..d66cde8 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -215,6 +215,7 @@ export interface ChatCompletionRequest {</span>
+   max_attempts?: number;
+ 
+   response_format?: ResponseFormat;
+<span class="a">+  numReturnedURLs?: number;</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #43: <a href="https://github.com/jina-ai/node-deepresearch/commit/ad2aa7f6e6ac99b38a8634a89a094d6d3538122d">ad2aa7f6e6</a> (2025-03-14T16:08:11+08:00)</h2><p class="k">feat: add api args<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index d66cde8..66ad104 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -216,6 +216,7 @@ export interface ChatCompletionRequest {</span>
+ 
+   response_format?: ResponseFormat;
+   numReturnedURLs?: number;
+<span class="a">+  noDirectAnswer?: boolean;</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #44: <a href="https://github.com/jina-ai/node-deepresearch/commit/64098a2992e799a0e8fa80aaeb7233b2e21fb9f2">64098a2992</a> (2025-03-14T16:59:07+08:00)</h2><p class="k">feat: add api args<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 66ad104..cfc33b6 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -215,8 +215,8 @@ export interface ChatCompletionRequest {</span>
+   max_attempts?: number;
+ 
+   response_format?: ResponseFormat;
+<span class="d">-  numReturnedURLs?: number;</span>
+<span class="d">-  noDirectAnswer?: boolean;</span>
+<span class="a">+  no_direct_answer?: boolean;</span>
+<span class="a">+  max_returned_urls?: number;</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #45: <a href="https://github.com/jina-ai/node-deepresearch/commit/4ca7804e58404e2acd1c862506bfd93c86542f44">4ca7804e58</a> (2025-03-18T10:43:46+08:00)</h2><p class="k">feat: add hostnames bw filter<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index cfc33b6..97279d5 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -217,6 +217,9 @@ export interface ChatCompletionRequest {</span>
+   response_format?: ResponseFormat;
+   no_direct_answer?: boolean;
+   max_returned_urls?: number;
+<span class="a">+</span>
+<span class="a">+  boostHostnames?: string[];</span>
+<span class="a">+  badHostnames?: string[];</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #46: <a href="https://github.com/jina-ai/node-deepresearch/commit/7eedb561a3bebad2c22167f1fde19eb1313affe8">7eedb561a3</a> (2025-03-18T11:32:29+08:00)</h2><p class="k">feat: add hostnames bw filter<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 97279d5..6160cb8 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -218,8 +218,8 @@ export interface ChatCompletionRequest {</span>
+   no_direct_answer?: boolean;
+   max_returned_urls?: number;
+ 
+<span class="d">-  boostHostnames?: string[];</span>
+<span class="d">-  badHostnames?: string[];</span>
+<span class="a">+  boost_hostnames?: string[];</span>
+<span class="a">+  bad_hostnames?: string[];</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #47: <a href="https://github.com/jina-ai/node-deepresearch/commit/4523f102838fc0bd4b0df423239071cd0bc97a69">4523f10283</a> (2025-03-20T10:49:57+08:00)</h2><p class="k">fix: eval logics<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 6160cb8..0c9720c 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -63,6 +63,10 @@ export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitActi</span>
+ 
+ export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27; | &#x27;completeness&#x27; | &#x27;strict&#x27;;
+ 
+<span class="a">+export type RepeatEvaluationType = {</span>
+<span class="a">+    type: EvaluationType;</span>
+<span class="a">+    numEvalsRequired: number;</span>
+<span class="a">+}</span>
+ 
+ // Following Vercel AI SDK&#x27;s token counting interface
+ export interface TokenUsage {</pre><h2>Commit #48: <a href="https://github.com/jina-ai/node-deepresearch/commit/7d07078ec5e0ff7471058b7f5f69e4c741248274">7d07078ec5</a> (2025-03-24T10:41:35+08:00)</h2><p class="k">feat: only hostnames<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 0c9720c..ae1a039 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -224,6 +224,7 @@ export interface ChatCompletionRequest {</span>
+ 
+   boost_hostnames?: string[];
+   bad_hostnames?: string[];
+<span class="a">+  only_hostnames?: string[];</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #49: <a href="https://github.com/jina-ai/node-deepresearch/commit/347beda0c28c71c970ffdc96676b6a0ddf7f76ed">347beda0c2</a> (2025-03-24T11:27:27+08:00)</h2><p class="k">feat: only hostnames<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index ae1a039..6f958a3 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -179,11 +179,20 @@ export type ErrorAnalysisResponse = {</span>
+ };
+ 
+ 
+<span class="d">-export type SearchResult =</span>
+<span class="d">-  | SearchSnippet</span>
+<span class="d">-  | { title: string; link: string; snippet: string; weight?: number };</span>
+<span class="a">+export type UnNormalizedSearchSnippet = {</span>
+<span class="a">+  title: string;</span>
+<span class="a">+  url?: string;</span>
+<span class="a">+  description?: string;</span>
+<span class="a">+  link?: string;</span>
+<span class="a">+  snippet?: string;</span>
+<span class="a">+  weight?: number,</span>
+<span class="a">+  date?: string</span>
+<span class="a">+};</span>
+ 
+<span class="d">-export type SearchSnippet = { title: string; url: string; description: string; weight?: number }</span>
+<span class="a">+export type SearchSnippet = UnNormalizedSearchSnippet&amp; {</span>
+<span class="a">+  url: string;</span>
+<span class="a">+  description: string;</span>
+<span class="a">+};</span>
+ 
+ export type BoostedSearchSnippet = SearchSnippet &amp; {
+   freqBoost: number;</pre><h2>Commit #50: <a href="https://github.com/jina-ai/node-deepresearch/commit/7bd4f51f42042d1e84c7536080031c1962df0832">7bd4f51f42</a> (2025-03-27T15:29:51+08:00)</h2><p class="k">fix: emit url idx in visit action<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 6f958a3..afd52e8 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -51,7 +51,7 @@ export type ReflectAction = BaseAction &amp; {</span>
+ 
+ export type VisitAction = BaseAction &amp; {
+   action: &quot;visit&quot;;
+<span class="d">-  URLTargets: string[];</span>
+<span class="a">+  URLTargets: number[] | string[];</span>
+ };
+ 
+ export type CodingAction = BaseAction &amp; {</pre><h2>Commit #51: <a href="https://github.com/jina-ai/node-deepresearch/commit/c7b42fb150ae3229564b77ae1591f33b1fb37faa">c7b42fb150</a> (2025-04-13T23:32:50+08:00)</h2><p class="k">refactor: v2 (#95)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index afd52e8..85898ce 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -20,11 +20,14 @@ export type SearchAction = BaseAction &amp; {</span>
+ };
+ 
+ export type Reference = {
+<span class="d">-    exactQuote: string;</span>
+<span class="d">-    url: string;</span>
+<span class="d">-    title: string;</span>
+<span class="d">-    dateTime?: string;</span>
+<span class="d">-  }</span>
+<span class="a">+  exactQuote: string;</span>
+<span class="a">+  url: string;</span>
+<span class="a">+  title: string;</span>
+<span class="a">+  dateTime?: string;</span>
+<span class="a">+  relevanceScore?: number;</span>
+<span class="a">+  answerChunk?: string;</span>
+<span class="a">+  answerChunkPosition?: number[];</span>
+<span class="a">+}</span>
+ 
+ export type AnswerAction = BaseAction &amp; {
+   action: &quot;answer&quot;;
+<span class="h">@@ -64,8 +67,8 @@ export type StepAction = SearchAction | AnswerAction | ReflectAction | VisitActi</span>
+ export type EvaluationType = &#x27;definitive&#x27; | &#x27;freshness&#x27; | &#x27;plurality&#x27; | &#x27;attribution&#x27; | &#x27;completeness&#x27; | &#x27;strict&#x27;;
+ 
+ export type RepeatEvaluationType = {
+<span class="d">-    type: EvaluationType;</span>
+<span class="d">-    numEvalsRequired: number;</span>
+<span class="a">+  type: EvaluationType;</span>
+<span class="a">+  numEvalsRequired: number;</span>
+ }
+ 
+ // Following Vercel AI SDK&#x27;s token counting interface
+<span class="h">@@ -189,11 +192,18 @@ export type UnNormalizedSearchSnippet = {</span>
+   date?: string
+ };
+ 
+<span class="d">-export type SearchSnippet = UnNormalizedSearchSnippet&amp; {</span>
+<span class="a">+export type SearchSnippet = UnNormalizedSearchSnippet &amp; {</span>
+   url: string;
+   description: string;
+ };
+ 
+<span class="a">+export type WebContent = {</span>
+<span class="a">+  full: string,</span>
+<span class="a">+  chunks: string[]</span>
+<span class="a">+  chunk_positions: number[][],</span>
+<span class="a">+  title: string</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export type BoostedSearchSnippet = SearchSnippet &amp; {
+   freqBoost: number;
+   hostnameBoost: number;</pre><h2>Commit #52: <a href="https://github.com/jina-ai/node-deepresearch/commit/b0b71f553b820c38fde6a59d6100da3c1476ef0c">b0b71f553b</a> (2025-04-14T22:09:26+08:00)</h2><p class="k">refactor: build ref with embeddings<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 85898ce..7e543fa 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -311,3 +311,31 @@ export interface TrackerContext {</span>
+   actionTracker: ActionTracker;
+ }
+ 
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+// Interface definitions for Jina API</span>
+<span class="a">+export interface JinaEmbeddingRequest {</span>
+<span class="a">+  model: string;</span>
+<span class="a">+  task: string;</span>
+<span class="a">+  late_chunking?: boolean;</span>
+<span class="a">+  dimensions?: number;</span>
+<span class="a">+  embedding_type?: string;</span>
+<span class="a">+  input: string[];</span>
+<span class="a">+  truncate?: boolean;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+export interface JinaEmbeddingResponse {</span>
+<span class="a">+  model: string;</span>
+<span class="a">+  object: string;</span>
+<span class="a">+  usage: {</span>
+<span class="a">+    total_tokens: number;</span>
+<span class="a">+    prompt_tokens: number;</span>
+<span class="a">+  };</span>
+<span class="a">+  data: Array&lt;{</span>
+<span class="a">+    object: string;</span>
+<span class="a">+    index: number;</span>
+<span class="a">+    embedding: number[];</span>
+<span class="a">+  }&gt;;</span>
+<span class="a">+}</span>
+\ No newline at end of file</pre><h2>Commit #53: <a href="https://github.com/jina-ai/node-deepresearch/commit/b432a27bff154e02c0f941c6e9f81c7041316069">b432a27bff</a> (2025-04-15T23:22:48+08:00)</h2><p class="k">refactor: build ref with embeddings<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 7e543fa..794bb02 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -244,6 +244,9 @@ export interface ChatCompletionRequest {</span>
+   boost_hostnames?: string[];
+   bad_hostnames?: string[];
+   only_hostnames?: string[];
+<span class="a">+</span>
+<span class="a">+  max_annotations?: number;</span>
+<span class="a">+  min_annotation_relevance?: number;</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #54: <a href="https://github.com/jina-ai/node-deepresearch/commit/dc45c1c58e7841b2b18bae0cb7bb45dae7361c4a">dc45c1c58e</a> (2025-04-22T19:36:27+08:00)</h2><p class="k">Merge branch &#x27;main&#x27; of github.com:jina-ai/node-DeepResearch<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 794bb02..d426476 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -8,8 +8,6 @@ type BaseAction = {</span>
+ 
+ export type SERPQuery = {
+   q: string,
+<span class="d">-  hl?: string,</span>
+<span class="d">-  gl?: string,</span>
+   location?: string,
+   tbs?: string,
+ }</pre><h2>Commit #55: <a href="https://github.com/jina-ai/node-deepresearch/commit/5674402bb1a84f6d081eb9ececb77931b71ea1b4">5674402bb1</a> (2025-05-09T14:01:27+08:00)</h2><p class="k">fix: optimize webContent for references, add axios client<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index d426476..1901a5b 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -196,7 +196,7 @@ export type SearchSnippet = UnNormalizedSearchSnippet &amp; {</span>
+ };
+ 
+ export type WebContent = {
+<span class="d">-  full: string,</span>
+<span class="a">+  full?: string,</span>
+   chunks: string[]
+   chunk_positions: number[][],
+   title: string</pre><h2>Commit #56: <a href="https://github.com/jina-ai/node-deepresearch/commit/16f01546f53ebb465857d0ba49b44baa38ec1eff">16f01546f5</a> (2025-05-09T14:51:49+02:00)</h2><p class="k">style: format imports and add language_code to request<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 1901a5b..4e8cf56 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -1,5 +1,5 @@</span>
+ // Action Types
+<span class="d">-import {CoreMessage, LanguageModelUsage} from &quot;ai&quot;;</span>
+<span class="a">+import { CoreMessage, LanguageModelUsage } from &quot;ai&quot;;</span>
+ 
+ type BaseAction = {
+   action: &quot;search&quot; | &quot;answer&quot; | &quot;reflect&quot; | &quot;visit&quot; | &quot;coding&quot;;
+<span class="h">@@ -245,6 +245,7 @@ export interface ChatCompletionRequest {</span>
+ 
+   max_annotations?: number;
+   min_annotation_relevance?: number;
+<span class="a">+  language_code?: string;</span>
+ }
+ 
+ export interface URLAnnotation {
+<span class="h">@@ -304,8 +305,8 @@ export interface ChatCompletionChunk {</span>
+ }
+ 
+ // Tracker Types
+<span class="d">-import {TokenTracker} from &#x27;./utils/token-tracker&#x27;;</span>
+<span class="d">-import {ActionTracker} from &#x27;./utils/action-tracker&#x27;;</span>
+<span class="a">+import { TokenTracker } from &#x27;./utils/token-tracker&#x27;;</span>
+<span class="a">+import { ActionTracker } from &#x27;./utils/action-tracker&#x27;;</span>
+ 
+ export interface TrackerContext {
+   tokenTracker: TokenTracker;</pre><h2>Commit #57: <a href="https://github.com/jina-ai/node-deepresearch/commit/d5a31bce526a53c45b155275915777f16f3bb9c9">d5a31bce52</a> (2025-06-09T13:29:52-07:00)</h2><p class="k">chore: update .gitignore, format config.json, add arxiv search functionality (#113)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 4e8cf56..cbbe1ea 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -75,6 +75,20 @@ export interface TokenUsage {</span>
+   usage: LanguageModelUsage;
+ }
+ 
+<span class="a">+export interface ArxivSearchResponse {</span>
+<span class="a m">+  results: Array&lt;{</span>
+<span class="a">+    title: string;</span>
+<span class="a">+    snippet: string;</span>
+<span class="a">+    url: string;</span>
+<span class="a">+  }&gt;;</span>
+<span class="a">+  meta: {</span>
+<span class="a">+    query: string;</span>
+<span class="a">+    num_results: number;</span>
+<span class="a">+    latency: number;</span>
+<span class="a">+    credits: number;</span>
+<span class="a">+  }</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export interface SearchResponse {
+   code: number;
+   status: number;</pre><h2>Commit #58: <a href="https://github.com/jina-ai/node-deepresearch/commit/9fa0fe3b220036aeee50b546a8e3799c7e33e68a">9fa0fe3b22</a> (2025-06-09T14:31:53-07:00)</h2><p class="k">feat: add searchProvider param to executeSearchQueries and getResponse<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index cbbe1ea..cde50c6 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -260,6 +260,7 @@ export interface ChatCompletionRequest {</span>
+   max_annotations?: number;
+   min_annotation_relevance?: number;
+   language_code?: string;
+<span class="a">+  search_provider?: string;</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #59: <a href="https://github.com/jina-ai/node-deepresearch/commit/ae2e7c7fc62d8ec164a212afacfaa187d516648d">ae2e7c7fc6</a> (2025-06-09T18:38:17-07:00)</h2><p class="k">feat: use new jina serp api<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index cde50c6..5f1a413 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -75,7 +75,7 @@ export interface TokenUsage {</span>
+   usage: LanguageModelUsage;
+ }
+ 
+<span class="d">-export interface ArxivSearchResponse {</span>
+<span class="a">+export interface JinaSearchResponse {</span>
+<span class=" m">   results: Array&lt;{</span>
+     title: string;
+     snippet: string;</pre><h2>Commit #60: <a href="https://github.com/jina-ai/node-deepresearch/commit/2307c2ff44356026143812d0b2ffbeeb7ca8abd8">2307c2ff44</a> (2025-06-09T19:11:36-07:00)</h2><p class="k">feat: update minRelScore and add searchLanguageCode support<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 5f1a413..83c0264 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -260,6 +260,7 @@ export interface ChatCompletionRequest {</span>
+   max_annotations?: number;
+   min_annotation_relevance?: number;
+   language_code?: string;
+<span class="a">+  search_language_code?: string;</span>
+   search_provider?: string;
+ }
+ </pre><h2>Commit #61: <a href="https://github.com/jina-ai/node-deepresearch/commit/a768755783b967db9f8a0b680ed4222924ac08a0">a768755783</a> (2025-06-10T11:55:46+08:00)</h2><p class="k">feat: gather images to response  (#98)<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 83c0264..78dc2f5 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -27,6 +27,14 @@ export type Reference = {</span>
+   answerChunkPosition?: number[];
+ }
+ 
+<span class="a">+export type ImageReference = {</span>
+<span class="a">+  url: string;</span>
+<span class="a">+  dateTime?: string;</span>
+<span class="a">+  relevanceScore?: number;</span>
+<span class="a">+  answerChunk?: string;</span>
+<span class="a">+  answerChunkPosition?: number[];</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ export type AnswerAction = BaseAction &amp; {
+   action: &quot;answer&quot;;
+   answer: string;
+<span class="h">@@ -53,6 +61,7 @@ export type ReflectAction = BaseAction &amp; {</span>
+ export type VisitAction = BaseAction &amp; {
+   action: &quot;visit&quot;;
+   URLTargets: number[] | string[];
+<span class="a">+  image?: ImageObject;</span>
+ };
+ 
+ export type CodingAction = BaseAction &amp; {
+<span class="h">@@ -155,6 +164,7 @@ export interface ReadResponse {</span>
+     content: string;
+     usage: { tokens: number; };
+     links: Array&lt;[string, string]&gt;; // [anchor, url]
+<span class="a">+    images: Record&lt;string, string&gt;; // { image: url }</span>
+   };
+   name?: string;
+   message?: string;
+<span class="h">@@ -259,6 +269,8 @@ export interface ChatCompletionRequest {</span>
+ 
+   max_annotations?: number;
+   min_annotation_relevance?: number;
+<span class="a">+</span>
+<span class="a">+  with_images?: boolean;</span>
+   language_code?: string;
+   search_language_code?: string;
+   search_provider?: string;
+<span class="h">@@ -294,6 +306,8 @@ export interface ChatCompletionResponse {</span>
+   visitedURLs?: string[];
+   readURLs?: string[];
+   numURLs?: number;
+<span class="a">+  allImages?: string[];</span>
+<span class="a">+  relatedImages?: string[];</span>
+ }
+ 
+ export interface ChatCompletionChunk {
+<span class="h">@@ -318,6 +332,8 @@ export interface ChatCompletionChunk {</span>
+   visitedURLs?: string[];
+   readURLs?: string[];
+   numURLs?: number;
+<span class="a">+  allImages?: string[];</span>
+<span class="a">+  relatedImages?: string[];</span>
+ }
+ 
+ // Tracker Types
+<span class="h">@@ -336,11 +352,11 @@ export interface TrackerContext {</span>
+ // Interface definitions for Jina API
+ export interface JinaEmbeddingRequest {
+   model: string;
+<span class="d">-  task: string;</span>
+<span class="a">+  task?: string;</span>
+   late_chunking?: boolean;
+   dimensions?: number;
+   embedding_type?: string;
+<span class="d">-  input: string[];</span>
+<span class="a">+  input: string[] | Record&lt;string, string&gt;[];</span>
+   truncate?: boolean;
+ }
+ 
+<span class="h">@@ -356,4 +372,10 @@ export interface JinaEmbeddingResponse {</span>
+     index: number;
+     embedding: number[];
+   }&gt;;
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+export type ImageObject = {</span>
+<span class="a">+  url: string;</span>
+<span class="a">+  alt?: string;</span>
+<span class="a">+  embedding: number[][];</span>
+ }
+\ No newline at end of file</pre><h2>Commit #62: <a href="https://github.com/jina-ai/node-deepresearch/commit/3d10f2502874cdd36462d1c7fc6291b2c8f4467f">3d10f25028</a> (2025-06-11T13:18:00-07:00)</h2><p class="k">feat: add agentic team mapreduce pattern<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 78dc2f5..5df5d06 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -41,6 +41,7 @@ export type AnswerAction = BaseAction &amp; {</span>
+   references: Array&lt;Reference&gt;;
+   isFinal?: boolean;
+   mdAnswer?: string;
+<span class="a">+  isAggregated?: boolean;</span>
+ };
+ 
+ 
+<span class="h">@@ -274,6 +275,7 @@ export interface ChatCompletionRequest {</span>
+   language_code?: string;
+   search_language_code?: string;
+   search_provider?: string;
+<span class="a">+  team_size?: number;</span>
+ }
+ 
+ export interface URLAnnotation {</pre><h2>Commit #63: <a href="https://github.com/jina-ai/node-deepresearch/commit/45c668106fc8f7c039f2b4459c81d794f76c7a61">45c668106f</a> (2025-06-13T12:25:26+08:00)</h2><p class="k">aggregate images when team size &gt; 1<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 5df5d06..62e2d94 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -33,6 +33,7 @@ export type ImageReference = {</span>
+   relevanceScore?: number;
+   answerChunk?: string;
+   answerChunkPosition?: number[];
+<span class="a">+  embedding?: number[][];</span>
+ }
+ 
+ export type AnswerAction = BaseAction &amp; {
+<span class="h">@@ -42,6 +43,7 @@ export type AnswerAction = BaseAction &amp; {</span>
+   isFinal?: boolean;
+   mdAnswer?: string;
+   isAggregated?: boolean;
+<span class="a">+  imageReferences?: Array&lt;ImageReference&gt;;</span>
+ };
+ 
+ </pre><h2>Commit #64: <a href="https://github.com/jina-ai/node-deepresearch/commit/c1f8f9525db14f30a1488379afe2443a4942e59c">c1f8f9525d</a> (2025-06-17T18:42:33-07:00)</h2><p class="k">feat: add meta param to search queries<br>Path after this commit: src/types.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/types.ts b/src/types.ts
+index 62e2d94..5dbff89 100644
+<span class="d">--- a/src/types.ts</span>
+<span class="a">+++ b/src/types.ts</span>
+<span class="h">@@ -327,6 +327,7 @@ export interface ChatCompletionChunk {</span>
+       content?: string;
+       type?: &#x27;text&#x27; | &#x27;think&#x27; | &#x27;json&#x27; | &#x27;error&#x27;;
+       url?: string;
+<span class="a">+      query?: string;</span>
+       annotations?: Array&lt;URLAnnotation&gt;;
+     };
+     logprobs: null;</pre></body></html>

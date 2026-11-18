@@ -1,0 +1,90 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L144</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L144</h1><p><b>Repository:</b> <a href="https://github.com/antiwork/gumroad">antiwork/gumroad</a><br><b>File at merge:</b> spec/helpers/admin_helper_spec.rb, line 87<br><b>Merge commit (birth):</b> <a href="https://github.com/antiwork/gumroad/commit/9aac26252082d4364b535f5104bbf01e13ecf62b">9aac262520</a> (2025-06-03T20:38:24)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/antiwork/gumroad/tree/841de7d7b8f8d4c47f52dce8d9320d49edb249ca">841de7d7b8</a>)</p><p><b>The line:</b></p><pre><span class="t">        expect(result).to eq(&#x27;&lt;span title=&quot;1 day from now&quot;&gt;Feb 23, 2022 at 10:00 AM&lt;/span&gt;&#x27;)</span></pre><h2>File at the merge commit, lines 79 to 95</h2><pre>   79 |       expect(result).to eq(&quot;Nope&quot;)
+   80 |     end
+   81 | 
+   82 |     it &quot;returns exact date with relative time in tooltip for future dates&quot; do
+   83 |       datetime = DateTime.parse(&quot;2022-02-22 10:00:01&quot;)
+   84 |       travel_to(datetime) do
+   85 |         puts Time.current
+   86 |         result = format_datetime_with_relative_tooltip(1.day.from_now)
+<span class="t">   87 |         expect(result).to eq(&#x27;&lt;span title=&quot;1 day from now&quot;&gt;Feb 23, 2022 at 10:00 AM&lt;/span&gt;&#x27;)</span>
+   88 |       end
+   89 |     end
+   90 | 
+   91 |     it &quot;returns exact date with relative time in tooltip for past dates&quot; do
+   92 |       datetime = DateTime.parse(&quot;2022-02-22 10:00:01&quot;)
+   93 |       travel_to(datetime) do
+   94 |         puts Time.current
+   95 |         result = format_datetime_with_relative_tooltip(1.day.ago)</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/antiwork/gumroad/commit/717d1d3d0bdec56547780741d5c5a855fa5f64eb">717d1d3d0b</a> (2025-07-25T13:08:45+00:00)</h2><p class="k">Add UTC timezone indicator to admin timestamps (#689)<br>Path after this commit: spec/helpers/admin_helper_spec.rb. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/spec/helpers/admin_helper_spec.rb b/spec/helpers/admin_helper_spec.rb
+index d17ab4fdf..1ac2f4bc2 100644
+<span class="d">--- a/spec/helpers/admin_helper_spec.rb</span>
+<span class="a">+++ b/spec/helpers/admin_helper_spec.rb</span>
+<span class="h">@@ -84,7 +84,7 @@ describe AdminHelper do</span>
+       travel_to(datetime) do
+         puts Time.current
+         result = format_datetime_with_relative_tooltip(1.day.from_now)
+<span class="d m">-        expect(result).to eq(&#x27;&lt;span title=&quot;1 day from now&quot;&gt;Feb 23, 2022 at 10:00 AM&lt;/span&gt;&#x27;)</span>
+<span class="a">+        expect(result).to eq(&#x27;&lt;span title=&quot;1 day from now&quot;&gt;Feb 23, 2022 at 10:00 AM UTC&lt;/span&gt;&#x27;)</span>
+       end
+     end
+ 
+<span class="h">@@ -93,7 +93,7 @@ describe AdminHelper do</span>
+       travel_to(datetime) do
+         puts Time.current
+         result = format_datetime_with_relative_tooltip(1.day.ago)
+<span class="d">-        expect(result).to eq(&#x27;&lt;span title=&quot;1 day ago&quot;&gt;Feb 21, 2022 at 10:00 AM&lt;/span&gt;&#x27;)</span>
+<span class="a">+        expect(result).to eq(&#x27;&lt;span title=&quot;1 day ago&quot;&gt;Feb 21, 2022 at 10:00 AM UTC&lt;/span&gt;&#x27;)</span>
+       end
+     end
+   end</pre><h2>Commit #2: <a href="https://github.com/antiwork/gumroad/commit/5c7b80d1abe83552658f89b7688041a4f9101326">5c7b80d1ab</a> (2025-10-28T16:54:18+01:00)</h2><p class="k">Feature/attribute blockable extraction (#1705)<br>Path after this commit: spec/helpers/admin_helper_spec.rb. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/spec/helpers/admin_helper_spec.rb b/spec/helpers/admin_helper_spec.rb
+index 1ac2f4bc2..9821cb8ef 100644
+<span class="d">--- a/spec/helpers/admin_helper_spec.rb</span>
+<span class="a">+++ b/spec/helpers/admin_helper_spec.rb</span>
+<span class="h">@@ -107,13 +107,13 @@ describe AdminHelper do</span>
+   end
+ 
+   describe &quot;#blocked_email_tooltip&quot; do
+<span class="d">-    let(:user) { User.last }</span>
+     let(:email) { &quot;john@example.com&quot; }
+<span class="d">-    let!(:email_blocked_object) { BlockedObject.block!(:email, email, user) }</span>
+<span class="d">-    let!(:email_domain_blocked_object) { BlockedObject.block!(:email_domain, Mail::Address.new(email).domain, user) }</span>
+<span class="a">+    let!(:user) { create(:user, email:) }</span>
+<span class="a">+    let!(:email_blocked_object) { BlockedObject.block!(:email, email, nil) }</span>
+<span class="a">+    let!(:email_domain_blocked_object) { BlockedObject.block!(:email_domain, Mail::Address.new(email).domain, nil) }</span>
+ 
+     it &quot;includes email and email domain tooltip information&quot; do
+<span class="d">-      result = blocked_email_tooltip(email)</span>
+<span class="a">+      result = blocked_email_tooltip(user)</span>
+       expect(result).to include(&quot;Email blocked&quot;)
+       expect(result).to include(&quot;example.com blocked&quot;)
+     end
+<span class="h">@@ -124,7 +124,7 @@ describe AdminHelper do</span>
+       end
+ 
+       it &quot;includes email information&quot; do
+<span class="d">-        result = blocked_email_tooltip(email)</span>
+<span class="a">+        result = blocked_email_tooltip(user)</span>
+         expect(result).to_not include(&quot;Email blocked&quot;)
+         expect(result).to include(&quot;example.com blocked&quot;)
+       end
+<span class="h">@@ -136,7 +136,7 @@ describe AdminHelper do</span>
+       end
+ 
+       it &quot;includes email information&quot; do
+<span class="d">-        result = blocked_email_tooltip(email)</span>
+<span class="a">+        result = blocked_email_tooltip(user)</span>
+         expect(result).to include(&quot;Email blocked&quot;)
+         expect(result).to_not include(&quot;example.com blocked&quot;)
+       end
+<span class="h">@@ -149,7 +149,7 @@ describe AdminHelper do</span>
+       end
+ 
+       it &quot;returns nil&quot; do
+<span class="d">-        result = blocked_email_tooltip(email)</span>
+<span class="a">+        result = blocked_email_tooltip(user)</span>
+         expect(result).to be(nil)
+       end
+     end</pre></body></html>

@@ -1,0 +1,3 @@
+estimate_type,n_sampled,n_contaminated,rate,ci_lower,ci_upper,ci_method
+conservative (CONFIRMED_AI only),200,45,0.225,0.1726,0.2877,Wilson 95%
+upper bound (CONFIRMED_AI + UNCERTAIN),200,75,0.375,0.3109,0.4439,Wilson 95%

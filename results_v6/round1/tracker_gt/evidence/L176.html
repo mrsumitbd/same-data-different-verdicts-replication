@@ -1,0 +1,441 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L176</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L176</h1><p><b>Repository:</b> <a href="https://github.com/awslabs/mcp">awslabs/mcp</a><br><b>File at merge:</b> src/eks-mcp-server/awslabs/eks_mcp_server/models.py, line 264<br><b>Merge commit (birth):</b> <a href="https://github.com/awslabs/mcp/commit/2fb0362b0b6dac064046e526a30dd203757ca186">2fb0362b0b</a> (2025-05-29T00:49:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/awslabs/mcp/tree/e3ad693e04f85e98b95a41650c381561cbb753ea">e3ad693e04</a>)</p><p><b>The line:</b></p><pre><span class="t">class AddInlinePolicyResponse(CallToolResult):</span></pre><h2>File at the merge commit, lines 256 to 271</h2><pre>  256 |     managed_policies: List[PolicySummary] = Field(
+  257 |         ..., description=&#x27;Managed policies attached to the IAM role&#x27;
+  258 |     )
+  259 |     inline_policies: List[PolicySummary] = Field(
+  260 |         ..., description=&#x27;Inline policies embedded in the IAM role&#x27;
+  261 |     )
+  262 | 
+  263 | 
+<span class="t">  264 | class AddInlinePolicyResponse(CallToolResult):</span>
+  265 |     &quot;&quot;&quot;Response model for add_inline_policy tool.&quot;&quot;&quot;
+  266 | 
+  267 |     policy_name: str = Field(..., description=&#x27;Name of the inline policy to create&#x27;)
+  268 |     role_name: str = Field(..., description=&#x27;Name of the role to add the policy to&#x27;)
+  269 |     permissions_added: Union[Dict[str, Any], List[Dict[str, Any]]] = Field(
+  270 |         ..., description=&#x27;Permissions to include in the policy (in JSON format)&#x27;
+  271 |     )</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/awslabs/mcp/commit/6827ea31fbdef08e648b0c422e4158f913001f59">6827ea31fb</a> (2025-06-04T15:44:58+00:00)</h2><p class="k">feat: fix and check license header automation (#510)<br>Path after this commit: src/eks-mcp-server/awslabs/eks_mcp_server/models.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py
+index 5d8c129f..1c830e09 100644
+<span class="d">--- a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="a">+++ b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="h">@@ -1,13 +1,16 @@</span>
+ # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ #
+<span class="d">-# Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance</span>
+<span class="d">-# with the License. A copy of the License is located at</span>
+<span class="a">+# Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="a">+# you may not use this file except in compliance with the License.</span>
+<span class="a">+# You may obtain a copy of the License at</span>
+ #
+<span class="d">-#    http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="a">+#     http://www.apache.org/licenses/LICENSE-2.0</span>
+ #
+<span class="d">-# or in the &#x27;license&#x27; file accompanying this file. This file is distributed on an &#x27;AS IS&#x27; BASIS, WITHOUT WARRANTIES</span>
+<span class="d">-# OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions</span>
+<span class="d">-# and limitations under the License.</span>
+<span class="a">+# Unless required by applicable law or agreed to in writing, software</span>
+<span class="a">+# distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="a">+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="a">+# See the License for the specific language governing permissions and</span>
+<span class="a">+# limitations under the License.</span>
+ 
+ &quot;&quot;&quot;Data models for the EKS MCP Server.&quot;&quot;&quot;
+ </pre><h2>Commit #2: <a href="https://github.com/awslabs/mcp/commit/6cc04ae59d56ca5de30ecc642ac055e332e937e2">6cc04ae59d</a> (2025-06-04T23:20:44+00:00)</h2><p class="k">feat: (eks-mcp-server) enhanced cloudwatch tools and doc fixes (#509)<br>Path after this commit: src/eks-mcp-server/awslabs/eks_mcp_server/models.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py
+index 1c830e09..725b93ab 100644
+<span class="d">--- a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="a">+++ b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="h">@@ -153,7 +153,7 @@ class CloudWatchLogsResponse(CallToolResult):</span>
+     &quot;&quot;&quot;
+ 
+     resource_type: str = Field(..., description=&#x27;Resource type (pod, node, container)&#x27;)
+<span class="d">-    resource_name: str = Field(..., description=&#x27;Resource name&#x27;)</span>
+<span class="a">+    resource_name: Optional[str] = Field(None, description=&#x27;Resource name&#x27;)</span>
+     cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)
+     log_type: str = Field(
+         ..., description=&#x27;Log type (application, host, performance, control-plane, or custom)&#x27;
+<span class="h">@@ -181,11 +181,9 @@ class CloudWatchMetricsResponse(CallToolResult):</span>
+     &quot;&quot;&quot;Response model for get_cloudwatch_metrics tool.
+ 
+     This model contains the response from a CloudWatch metrics query,
+<span class="d">-    including resource information, metric details, time range, and data points.</span>
+<span class="a">+    including metric details, time range, and data points.</span>
+     &quot;&quot;&quot;
+ 
+<span class="d">-    resource_type: str = Field(..., description=&#x27;Resource type (pod, node, container, cluster)&#x27;)</span>
+<span class="d">-    resource_name: str = Field(..., description=&#x27;Resource name&#x27;)</span>
+     cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)
+     metric_name: str = Field(..., description=&#x27;Metric name (e.g., cpu_usage_total, memory_rss)&#x27;)
+     namespace: str = Field(..., description=&#x27;CloudWatch namespace (e.g., ContainerInsights)&#x27;)
+<span class="h">@@ -272,3 +270,16 @@ class AddInlinePolicyResponse(CallToolResult):</span>
+     permissions_added: Union[Dict[str, Any], List[Dict[str, Any]]] = Field(
+         ..., description=&#x27;Permissions to include in the policy (in JSON format)&#x27;
+     )
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class MetricsGuidanceResponse(CallToolResult):</span>
+<span class="a">+    &quot;&quot;&quot;Response model for get_eks_metrics_guidance tool.</span>
+<span class="a">+</span>
+<span class="a">+    This model contains the response from a metrics guidance query,</span>
+<span class="a">+    including resource type and available metrics with their details.</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    resource_type: str = Field(</span>
+<span class="a">+        ..., description=&#x27;Resource type (cluster, node, pod, namespace, service)&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    metrics: List[Dict[str, Any]] = Field(..., description=&#x27;List of metrics with their details&#x27;)</span></pre><h2>Commit #3: <a href="https://github.com/awslabs/mcp/commit/d0c6e6ba000859e3ab407f7adfd1a185a1498043">d0c6e6ba00</a> (2025-07-17T03:44:44+00:00)</h2><p class="k">chore(deps): upgrade mcp dep (#851)<br>Path after this commit: src/eks-mcp-server/awslabs/eks_mcp_server/models.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py
+index 725b93ab..15789945 100644
+<span class="d">--- a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="a">+++ b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="h">@@ -209,6 +209,7 @@ class GenerateTemplateResponse(CallToolResult):</span>
+     &quot;&quot;&quot;Response model for generate operation of manage_eks_stacks tool.&quot;&quot;&quot;
+ 
+     template_path: str = Field(..., description=&#x27;Path to the generated template&#x27;)
+<span class="a">+    content: list = Field(..., description=&#x27;Content blocks for the response&#x27;)</span>
+ 
+ 
+ class DeployStackResponse(CallToolResult):
+<span class="h">@@ -217,6 +218,7 @@ class DeployStackResponse(CallToolResult):</span>
+     stack_name: str = Field(..., description=&#x27;Name of the CloudFormation stack&#x27;)
+     stack_arn: str = Field(..., description=&#x27;ARN of the CloudFormation stack&#x27;)
+     cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)
+<span class="a">+    content: list = Field(..., description=&#x27;Content blocks for the response&#x27;)</span>
+ 
+ 
+ class DescribeStackResponse(CallToolResult):
+<span class="h">@@ -228,6 +230,7 @@ class DescribeStackResponse(CallToolResult):</span>
+     creation_time: str = Field(..., description=&#x27;Creation time of the stack&#x27;)
+     stack_status: str = Field(..., description=&#x27;Current status of the stack&#x27;)
+     outputs: Dict[str, str] = Field(..., description=&#x27;Stack outputs&#x27;)
+<span class="a">+    content: list = Field(..., description=&#x27;Content blocks for the response&#x27;)</span>
+ 
+ 
+ class DeleteStackResponse(CallToolResult):
+<span class="h">@@ -236,6 +239,7 @@ class DeleteStackResponse(CallToolResult):</span>
+     stack_name: str = Field(..., description=&#x27;Name of the deleted CloudFormation stack&#x27;)
+     stack_id: str = Field(..., description=&#x27;ID of the deleted CloudFormation stack&#x27;)
+     cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)
+<span class="a">+    content: list = Field(..., description=&#x27;Content blocks for the response&#x27;)</span>
+ 
+ 
+ class PolicySummary(BaseModel):</pre><h2>Commit #4: <a href="https://github.com/awslabs/mcp/commit/05068e02b1ebef5f6cdc58496252174baa6c2a40">05068e02b1</a> (2025-08-26T20:59:07+00:00)</h2><p class="k">feat(eks-mcp-server): Added VPC and EKS Insights Handler with testing (#919)<br>Path after this commit: src/eks-mcp-server/awslabs/eks_mcp_server/models.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py
+index 15789945..0428db23 100644
+<span class="d">--- a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="a">+++ b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="h">@@ -287,3 +287,81 @@ class MetricsGuidanceResponse(CallToolResult):</span>
+         ..., description=&#x27;Resource type (cluster, node, pod, namespace, service)&#x27;
+     )
+     metrics: List[Dict[str, Any]] = Field(..., description=&#x27;List of metrics with their details&#x27;)
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class EksVpcConfigResponse(CallToolResult):</span>
+<span class="a">+    &quot;&quot;&quot;Response model for get_eks_vpc_config tool.</span>
+<span class="a">+</span>
+<span class="a">+    This model contains comprehensive VPC configuration details for any EKS cluster,</span>
+<span class="a">+    including CIDR blocks and route tables which are essential for understanding</span>
+<span class="a">+    network connectivity. For hybrid node setups, it also automatically identifies</span>
+<span class="a">+    and includes remote node and pod CIDR configurations.</span>
+<span class="a">+    &quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    vpc_id: str = Field(..., description=&#x27;ID of the VPC&#x27;)</span>
+<span class="a">+    cidr_block: str = Field(..., description=&#x27;Primary CIDR block of the VPC&#x27;)</span>
+<span class="a">+    additional_cidr_blocks: List[str] = Field(</span>
+<span class="a">+        [], description=&#x27;Additional CIDR blocks associated with the VPC&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    routes: List[Dict[str, Any]] = Field(</span>
+<span class="a">+        ..., description=&#x27;List of route entries in the main route table&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    remote_node_cidr_blocks: List[str] = Field(</span>
+<span class="a">+        [], description=&#x27;CIDR blocks configured for remote node access (for hybrid setups)&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    remote_pod_cidr_blocks: List[str] = Field(</span>
+<span class="a">+        [], description=&#x27;CIDR blocks configured for remote pod access (for hybrid setups)&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    subnets: List[Dict[str, Any]] = Field(</span>
+<span class="a">+        [], description=&#x27;List of subnets in the VPC with their configurations&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class EksInsightStatus(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Status of an EKS insight with status code and reason.&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    status: str = Field(..., description=&#x27;Status of the insight (e.g., PASSING, FAILING, UNKNOWN)&#x27;)</span>
+<span class="a">+    reason: str = Field(..., description=&#x27;Explanation of the current status&#x27;)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class EksInsightItem(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Model for a single EKS insight item.&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    id: str = Field(..., description=&#x27;Unique identifier of the insight&#x27;)</span>
+<span class="a">+    name: str = Field(..., description=&#x27;Name of the insight&#x27;)</span>
+<span class="a">+    category: str = Field(</span>
+<span class="a">+        ..., description=&#x27;Category of the insight (e.g., CONFIGURATION, UPGRADE_READINESS)&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    kubernetes_version: Optional[str] = Field(</span>
+<span class="a">+        None, description=&#x27;Target Kubernetes version for upgrade insights&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    last_refresh_time: float = Field(</span>
+<span class="a">+        ..., description=&#x27;Timestamp when the insight was last refreshed&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    last_transition_time: float = Field(</span>
+<span class="a">+        ..., description=&#x27;Timestamp when the insight last changed status&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    description: str = Field(..., description=&#x27;Description of what the insight checks&#x27;)</span>
+<span class="a">+    insight_status: EksInsightStatus = Field(..., description=&#x27;Current status of the insight&#x27;)</span>
+<span class="a">+    recommendation: Optional[str] = Field(</span>
+<span class="a">+        None, description=&#x27;Recommendation for addressing the insight&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    additional_info: Optional[Dict[str, str]] = Field(</span>
+<span class="a">+        None, description=&#x27;Additional information links&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+    resources: Optional[List[str]] = Field(None, description=&#x27;Resources involved in the insight&#x27;)</span>
+<span class="a">+    category_specific_summary: Optional[Dict[str, Any]] = Field(</span>
+<span class="a">+        None, description=&#x27;Additional category-specific details&#x27;</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class EksInsightsResponse(CallToolResult):</span>
+<span class="a">+    &quot;&quot;&quot;Response model for get_eks_insights tool.&quot;&quot;&quot;</span>
+<span class="a">+</span>
+<span class="a">+    cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)</span>
+<span class="a">+    insights: List[EksInsightItem] = Field(..., description=&#x27;List of insights&#x27;)</span>
+<span class="a">+    next_token: Optional[str] = Field(None, description=&#x27;Token for pagination&#x27;)</span>
+<span class="a">+    detail_mode: bool = Field(</span>
+<span class="a">+        False, description=&#x27;Whether the response contains detailed insight information&#x27;</span>
+<span class="a">+    )</span></pre><h2>Commit #5: <a href="https://github.com/awslabs/mcp/commit/2b5c37b3c3f36bed00b244e69b309d8a0250ec1c">2b5c37b3c3</a> (2025-12-11T21:34:07+00:00)</h2><p class="k">chore(eks-mcp-server): Update response data structure in CallToolResult to upgrade mcp version (#1940)<br>Path after this commit: src/eks-mcp-server/awslabs/eks_mcp_server/models.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py
+index 0428db23..c9f3a296 100644
+<span class="d">--- a/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="a">+++ b/src/eks-mcp-server/awslabs/eks_mcp_server/models.py</span>
+<span class="h">@@ -15,7 +15,6 @@</span>
+ &quot;&quot;&quot;Data models for the EKS MCP Server.&quot;&quot;&quot;
+ 
+ from enum import Enum
+<span class="d">-from mcp.types import CallToolResult</span>
+ from pydantic import BaseModel, Field
+ from typing import Any, Dict, List, Optional, Union
+ 
+<span class="h">@@ -54,8 +53,8 @@ class Operation(str, Enum):</span>
+     READ = &#x27;read&#x27;
+ 
+ 
+<span class="d">-class ApplyYamlResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for apply_yaml tool.&quot;&quot;&quot;</span>
+<span class="a">+class ApplyYamlData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for apply_yaml response.&quot;&quot;&quot;</span>
+ 
+     force_applied: bool = Field(
+         False, description=&#x27;Whether force option was used to update existing resources&#x27;
+<span class="h">@@ -64,8 +63,8 @@ class ApplyYamlResponse(CallToolResult):</span>
+     resources_updated: int = Field(0, description=&#x27;Number of resources updated (when force=True)&#x27;)
+ 
+ 
+<span class="d">-class KubernetesResourceResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for single Kubernetes resource operations.&quot;&quot;&quot;</span>
+<span class="a">+class KubernetesResourceData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for single Kubernetes resource operations.&quot;&quot;&quot;</span>
+ 
+     kind: str = Field(..., description=&#x27;Kind of the Kubernetes resource&#x27;)
+     name: str = Field(..., description=&#x27;Name of the Kubernetes resource&#x27;)
+<span class="h">@@ -89,8 +88,8 @@ class ResourceSummary(BaseModel):</span>
+     annotations: Optional[Dict[str, str]] = Field(None, description=&#x27;Resource annotations&#x27;)
+ 
+ 
+<span class="d">-class KubernetesResourceListResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for list_resources tool.&quot;&quot;&quot;</span>
+<span class="a">+class KubernetesResourceListData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for list_resources response.&quot;&quot;&quot;</span>
+ 
+     kind: str = Field(..., description=&#x27;Kind of the Kubernetes resources&#x27;)
+     api_version: str = Field(..., description=&#x27;API version of the Kubernetes resources&#x27;)
+<span class="h">@@ -99,22 +98,22 @@ class KubernetesResourceListResponse(CallToolResult):</span>
+     items: List[ResourceSummary] = Field(..., description=&#x27;List of resources&#x27;)
+ 
+ 
+<span class="d">-class ApiVersionsResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for list_api_versions tool.&quot;&quot;&quot;</span>
+<span class="a">+class ApiVersionsData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for list_api_versions response.&quot;&quot;&quot;</span>
+ 
+     cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)
+     api_versions: List[str] = Field(..., description=&#x27;List of available API versions&#x27;)
+     count: int = Field(..., description=&#x27;Number of API versions&#x27;)
+ 
+ 
+<span class="d">-class GenerateAppManifestResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for generate_app_manifest tool.&quot;&quot;&quot;</span>
+<span class="a">+class GenerateAppManifestData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for generate_app_manifest response.&quot;&quot;&quot;</span>
+ 
+     output_file_path: str = Field(..., description=&#x27;Path to the output manifest file&#x27;)
+ 
+ 
+<span class="d">-class PodLogsResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for get_pod_logs tool.&quot;&quot;&quot;</span>
+<span class="a">+class PodLogsData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for get_pod_logs response.&quot;&quot;&quot;</span>
+ 
+     pod_name: str = Field(..., description=&#x27;Name of the pod&#x27;)
+     namespace: str = Field(..., description=&#x27;Namespace of the pod&#x27;)
+<span class="h">@@ -122,8 +121,8 @@ class PodLogsResponse(CallToolResult):</span>
+     log_lines: List[str] = Field(..., description=&#x27;Pod log lines&#x27;)
+ 
+ 
+<span class="d">-class EventsResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for get_k8s_events tool.&quot;&quot;&quot;</span>
+<span class="a">+class EventsData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for get_k8s_events response.&quot;&quot;&quot;</span>
+ 
+     involved_object_kind: str = Field(..., description=&#x27;Kind of the involved object&#x27;)
+     involved_object_name: str = Field(..., description=&#x27;Name of the involved object&#x27;)
+<span class="h">@@ -145,10 +144,10 @@ class CloudWatchLogEntry(BaseModel):</span>
+     message: str = Field(..., description=&#x27;Log message content&#x27;)
+ 
+ 
+<span class="d">-class CloudWatchLogsResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for get_cloudwatch_logs tool.</span>
+<span class="a">+class CloudWatchLogsData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for CloudWatch logs response.</span>
+ 
+<span class="d">-    This model contains the response from a CloudWatch logs query,</span>
+<span class="a">+    This model contains the structured data from a CloudWatch logs query,</span>
+     including resource information, time range, and log entries.
+     &quot;&quot;&quot;
+ 
+<span class="h">@@ -177,10 +176,10 @@ class CloudWatchDataPoint(BaseModel):</span>
+     value: float = Field(..., description=&#x27;Metric value&#x27;)
+ 
+ 
+<span class="d">-class CloudWatchMetricsResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for get_cloudwatch_metrics tool.</span>
+<span class="a">+class CloudWatchMetricsData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for CloudWatch metrics response.</span>
+ 
+<span class="d">-    This model contains the response from a CloudWatch metrics query,</span>
+<span class="a">+    This model contains the structured data from a CloudWatch metrics query,</span>
+     including metric details, time range, and data points.
+     &quot;&quot;&quot;
+ 
+<span class="h">@@ -205,41 +204,32 @@ class StackSummary(BaseModel):</span>
+     description: Optional[str] = Field(None, description=&#x27;Description of the stack&#x27;)
+ 
+ 
+<span class="d">-class GenerateTemplateResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for generate operation of manage_eks_stacks tool.&quot;&quot;&quot;</span>
+<span class="a">+class ManageEksStacksData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for manage_eks_stacks response.&quot;&quot;&quot;</span>
+ 
+<span class="d">-    template_path: str = Field(..., description=&#x27;Path to the generated template&#x27;)</span>
+<span class="d">-    content: list = Field(..., description=&#x27;Content blocks for the response&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class DeployStackResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for deploy operation of manage_eks_stacks tool.&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-    stack_name: str = Field(..., description=&#x27;Name of the CloudFormation stack&#x27;)</span>
+<span class="d">-    stack_arn: str = Field(..., description=&#x27;ARN of the CloudFormation stack&#x27;)</span>
+<span class="d">-    cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)</span>
+<span class="d">-    content: list = Field(..., description=&#x27;Content blocks for the response&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class DescribeStackResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for describe operation of manage_eks_stacks tool.&quot;&quot;&quot;</span>
+<span class="a">+    operation: str = Field(</span>
+<span class="a">+        ..., description=&#x27;Operation performed (generate, deploy, describe, delete)&#x27;</span>
+<span class="a">+    )</span>
+ 
+<span class="d">-    stack_name: str = Field(..., description=&#x27;Name of the CloudFormation stack&#x27;)</span>
+<span class="d">-    stack_id: str = Field(..., description=&#x27;ID of the CloudFormation stack&#x27;)</span>
+<span class="d">-    cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)</span>
+<span class="d">-    creation_time: str = Field(..., description=&#x27;Creation time of the stack&#x27;)</span>
+<span class="d">-    stack_status: str = Field(..., description=&#x27;Current status of the stack&#x27;)</span>
+<span class="d">-    outputs: Dict[str, str] = Field(..., description=&#x27;Stack outputs&#x27;)</span>
+<span class="d">-    content: list = Field(..., description=&#x27;Content blocks for the response&#x27;)</span>
+<span class="a">+    # Fields for generate operation</span>
+<span class="a">+    template_path: str = Field(</span>
+<span class="a">+        &#x27;&#x27;, description=&#x27;Path to the generated template (generate operation)&#x27;</span>
+<span class="a">+    )</span>
+ 
+<span class="a">+    # Fields for deploy operation</span>
+<span class="a">+    stack_arn: str = Field(&#x27;&#x27;, description=&#x27;ARN of the CloudFormation stack (deploy operation)&#x27;)</span>
+ 
+<span class="d">-class DeleteStackResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for delete operation of manage_eks_stacks tool.&quot;&quot;&quot;</span>
+<span class="a">+    # Fields for describe operation</span>
+<span class="a">+    creation_time: str = Field(&#x27;&#x27;, description=&#x27;Creation time of the stack (describe operation)&#x27;)</span>
+<span class="a">+    stack_status: str = Field(&#x27;&#x27;, description=&#x27;Current status of the stack (describe operation)&#x27;)</span>
+<span class="a">+    outputs: Dict[str, str] = Field(</span>
+<span class="a">+        default_factory=dict, description=&#x27;Stack outputs (describe operation)&#x27;</span>
+<span class="a">+    )</span>
+ 
+<span class="d">-    stack_name: str = Field(..., description=&#x27;Name of the deleted CloudFormation stack&#x27;)</span>
+<span class="d">-    stack_id: str = Field(..., description=&#x27;ID of the deleted CloudFormation stack&#x27;)</span>
+<span class="d">-    cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)</span>
+<span class="d">-    content: list = Field(..., description=&#x27;Content blocks for the response&#x27;)</span>
+<span class="a">+    # Common fields</span>
+<span class="a">+    stack_name: str = Field(&#x27;&#x27;, description=&#x27;Name of the CloudFormation stack&#x27;)</span>
+<span class="a">+    stack_id: str = Field(&#x27;&#x27;, description=&#x27;ID of the CloudFormation stack&#x27;)</span>
+<span class="a">+    cluster_name: str = Field(&#x27;&#x27;, description=&#x27;Name of the EKS cluster&#x27;)</span>
+ 
+ 
+ class PolicySummary(BaseModel):
+<span class="h">@@ -250,8 +240,8 @@ class PolicySummary(BaseModel):</span>
+     policy_document: Optional[Dict[str, Any]] = Field(None, description=&#x27;Policy document&#x27;)
+ 
+ 
+<span class="d">-class RoleDescriptionResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for get_policies_for_role tool.&quot;&quot;&quot;</span>
+<span class="a">+class RoleDescriptionData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for get_policies_for_role response.&quot;&quot;&quot;</span>
+ 
+     role_arn: str = Field(..., description=&#x27;ARN of the IAM role&#x27;)
+     assume_role_policy_document: Dict[str, Any] = Field(
+<span class="h">@@ -266,8 +256,8 @@ class RoleDescriptionResponse(CallToolResult):</span>
+     )
+ 
+ 
+<span class="d m">-class AddInlinePolicyResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for add_inline_policy tool.&quot;&quot;&quot;</span>
+<span class="a">+class AddInlinePolicyData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for add_inline_policy response.&quot;&quot;&quot;</span>
+ 
+     policy_name: str = Field(..., description=&#x27;Name of the inline policy to create&#x27;)
+     role_name: str = Field(..., description=&#x27;Name of the role to add the policy to&#x27;)
+<span class="h">@@ -276,10 +266,10 @@ class AddInlinePolicyResponse(CallToolResult):</span>
+     )
+ 
+ 
+<span class="d">-class MetricsGuidanceResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for get_eks_metrics_guidance tool.</span>
+<span class="a">+class MetricsGuidanceData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for get_eks_metrics_guidance response.</span>
+ 
+<span class="d">-    This model contains the response from a metrics guidance query,</span>
+<span class="a">+    This model contains the structured data from a metrics guidance query,</span>
+     including resource type and available metrics with their details.
+     &quot;&quot;&quot;
+ 
+<span class="h">@@ -289,8 +279,8 @@ class MetricsGuidanceResponse(CallToolResult):</span>
+     metrics: List[Dict[str, Any]] = Field(..., description=&#x27;List of metrics with their details&#x27;)
+ 
+ 
+<span class="d">-class EksVpcConfigResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for get_eks_vpc_config tool.</span>
+<span class="a">+class EksVpcConfigData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for get_eks_vpc_config response.</span>
+ 
+     This model contains comprehensive VPC configuration details for any EKS cluster,
+     including CIDR blocks and route tables which are essential for understanding
+<span class="h">@@ -356,8 +346,8 @@ class EksInsightItem(BaseModel):</span>
+     )
+ 
+ 
+<span class="d">-class EksInsightsResponse(CallToolResult):</span>
+<span class="d">-    &quot;&quot;&quot;Response model for get_eks_insights tool.&quot;&quot;&quot;</span>
+<span class="a">+class EksInsightsData(BaseModel):</span>
+<span class="a">+    &quot;&quot;&quot;Data model for get_eks_insights response.&quot;&quot;&quot;</span>
+ 
+     cluster_name: str = Field(..., description=&#x27;Name of the EKS cluster&#x27;)
+     insights: List[EksInsightItem] = Field(..., description=&#x27;List of insights&#x27;)</pre></body></html>

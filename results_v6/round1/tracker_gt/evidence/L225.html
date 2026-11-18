@@ -1,0 +1,133 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L225</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L225</h1><p><b>Repository:</b> <a href="https://github.com/agentops-ai/agentops">agentops-ai/agentops</a><br><b>File at merge:</b> examples/openai_examples/openai_example_sync.py, line 33<br><b>Merge commit (birth):</b> <a href="https://github.com/agentops-ai/agentops/commit/543b1800d1746d92e1bffede31f6f46879f8a5b4">543b1800d1</a> (2025-01-18T18:55:38)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/agentops-ai/agentops/tree/89b980f77505b6902afcf766f85dc8e0e88d1344">89b980f775</a>)</p><p><b>The line:</b></p><pre><span class="t">OPENAI_API_KEY = os.getenv(&quot;OPENAI_API_KEY&quot;) or &quot;&lt;your_openai_key&gt;&quot;</span></pre><h2>File at the merge commit, lines 25 to 41</h2><pre>   25 | 
+   26 | 
+   27 | # Next, we&#x27;ll grab our API keys. You can use dotenv like below or however else you like to load environment variables
+   28 | 
+   29 | # In[2]:
+   30 | 
+   31 | 
+   32 | load_dotenv()
+<span class="t">   33 | OPENAI_API_KEY = os.getenv(&quot;OPENAI_API_KEY&quot;) or &quot;&lt;your_openai_key&gt;&quot;</span>
+   34 | AGENTOPS_API_KEY = os.getenv(&quot;AGENTOPS_API_KEY&quot;) or &quot;&lt;your_agentops_key&gt;&quot;
+   35 | 
+   36 | 
+   37 | # Next we initialize the AgentOps client.
+   38 | 
+   39 | # In[ ]:
+   40 | 
+   41 | </pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/agentops-ai/agentops/commit/0883c348df4991119c4fd8d69b4c835b98539dc4">0883c348df</a> (2025-01-24T14:10:10+05:30)</h2><p class="k">[Fix] Linting in `main` (#660)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/examples/openai_examples/openai_example_sync.py b/examples/openai_examples/openai_example_sync.py
+deleted file mode 100644
+index c1a64227..00000000
+<span class="d">--- a/examples/openai_examples/openai_example_sync.py</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,107 +0,0 @@</span>
+<span class="d">-#!/usr/bin/env python</span>
+<span class="d">-# coding: utf-8</span>
+<span class="d">-</span>
+<span class="d">-# # OpenAI Sync Example</span>
+<span class="d">-# </span>
+<span class="d">-# We are going to create a simple chatbot that creates stories based on a prompt. The chatbot will use the gpt-4o-mini LLM to generate the story using a user prompt.</span>
+<span class="d">-# </span>
+<span class="d">-# We will track the chatbot with AgentOps and see how it performs!</span>
+<span class="d">-</span>
+<span class="d">-# First let&#x27;s install the required packages</span>
+<span class="d">-</span>
+<span class="d">-# In[ ]:</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-get_ipython().run_line_magic(&#x27;pip&#x27;, &#x27;install -U openai&#x27;)</span>
+<span class="d">-get_ipython().run_line_magic(&#x27;pip&#x27;, &#x27;install -U agentops&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-from openai import OpenAI</span>
+<span class="d">-import agentops</span>
+<span class="d">-import os</span>
+<span class="d">-from dotenv import load_dotenv</span>
+<span class="d">-</span>
+<span class="d">-# Then continue with the example</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-# Next, we&#x27;ll grab our API keys. You can use dotenv like below or however else you like to load environment variables</span>
+<span class="d">-</span>
+<span class="d">-# In[2]:</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-load_dotenv()</span>
+<span class="d m">-OPENAI_API_KEY = os.getenv(&quot;OPENAI_API_KEY&quot;) or &quot;&lt;your_openai_key&gt;&quot;</span>
+<span class="d">-AGENTOPS_API_KEY = os.getenv(&quot;AGENTOPS_API_KEY&quot;) or &quot;&lt;your_agentops_key&gt;&quot;</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-# Next we initialize the AgentOps client.</span>
+<span class="d">-</span>
+<span class="d">-# In[ ]:</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-agentops.init(AGENTOPS_API_KEY, default_tags=[&quot;openai-sync-example&quot;])</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-# And we are all set! Note the seesion url above. We will use it to track the chatbot.</span>
+<span class="d">-# </span>
+<span class="d">-# Let&#x27;s create a simple chatbot that generates stories.</span>
+<span class="d">-</span>
+<span class="d">-# In[4]:</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-client = OpenAI(api_key=OPENAI_API_KEY)</span>
+<span class="d">-</span>
+<span class="d">-system_prompt = &quot;&quot;&quot;</span>
+<span class="d">-You are a master storyteller, with the ability to create vivid and engaging stories.</span>
+<span class="d">-You have experience in writing for children and adults alike.</span>
+<span class="d">-You are given a prompt and you need to generate a story based on the prompt.</span>
+<span class="d">-&quot;&quot;&quot;</span>
+<span class="d">-</span>
+<span class="d">-user_prompt = &quot;Write a story about a cyber-warrior trapped in the imperial time period.&quot;</span>
+<span class="d">-</span>
+<span class="d">-messages = [</span>
+<span class="d">-    {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: system_prompt},</span>
+<span class="d">-    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_prompt},</span>
+<span class="d">-]</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-# In[ ]:</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-response = client.chat.completions.create(</span>
+<span class="d">-    model=&quot;gpt-4o-mini&quot;,</span>
+<span class="d">-    messages=messages,</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-print(response.choices[0].message.content)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-# The response is a string that contains the story. We can track this with AgentOps by navigating to the session url and viewing the run.</span>
+<span class="d">-</span>
+<span class="d">-# ## Streaming Version</span>
+<span class="d">-# We will demonstrate the streaming version of the API.</span>
+<span class="d">-</span>
+<span class="d">-# In[ ]:</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-stream = client.chat.completions.create(</span>
+<span class="d">-    model=&quot;gpt-4o-mini&quot;,</span>
+<span class="d">-    messages=messages,</span>
+<span class="d">-    stream=True,</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-for chunk in stream:</span>
+<span class="d">-  print(chunk.choices[0].delta.content or &quot;&quot;, end=&quot;&quot;)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-# Note that the response is a generator that yields chunks of the story. We can track this with AgentOps by navigating to the session url and viewing the run.</span>
+<span class="d">-</span>
+<span class="d">-# In[ ]:</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-agentops.end_session(end_state=&quot;Success&quot;, end_state_reason=&quot;The story was generated successfully.&quot;)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-# We end the session with a success state and a success reason. This is useful if you want to track the success or failure of the chatbot. In that case you can set the end state to failure and provide a reason. By default the session will have an indeterminate end state.</span>
+<span class="d">-# </span>
+<span class="d">-# All done!</span></pre></body></html>

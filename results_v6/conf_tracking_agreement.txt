@@ -1,0 +1,97 @@
+Identity tracker (journal) vs blame --reverse tracker (conference), same conference born lines
+input: /Users/umroot/Documents/PhD_works/PhD-Core-Contents/ai-code-survival/data/survival_events_line_v6conf.csv
+
+## all conference lines
+lines 854,139; repos 215; PRs 2,802
+identity tracker event_type: censored 525,255 (61.50%), content_modified 255,916 (29.96%), file_deleted 45,809 (5.36%), line_deleted 22,635 (2.65%), unverified 4,524 (0.53%)
+verified 849,615 (99.47%), unverified 4,524 (0.53%)
+
+cross-tab (rows identity, columns conference):
+conf_kind   censored  modified     All
+event                                 
+censored      498292     26963  525255
+modified         121    324239  324360
+unverified        10      4514    4524
+All           498423    355716  854139
+
+same status, all lines (unverified counts as disagreement): 96.30%
+same status, verified lines: 96.81%
+modified by both: 324,239; same modification commit: 288,088 (88.85%)
+same status AND (censored, or modified in the same commit), verified lines: 92.56%
+modification rate: identity 38.2% (verified), conference 41.6%
+
+## non-vendored lines
+lines 648,959; repos 215; PRs 2,794
+identity tracker event_type: censored 494,828 (76.25%), content_modified 94,397 (14.55%), file_deleted 37,432 (5.77%), line_deleted 21,622 (3.33%), unverified 680 (0.10%)
+verified 648,279 (99.90%), unverified 680 (0.10%)
+
+cross-tab (rows identity, columns conference):
+conf_kind   censored  modified     All
+event                                 
+censored      471280     23548  494828
+modified         121    153330  153451
+unverified        10       670     680
+All           471411    177548  648959
+
+same status, all lines (unverified counts as disagreement): 96.25%
+same status, verified lines: 96.35%
+modified by both: 153,330; same modification commit: 124,070 (80.92%)
+same status AND (censored, or modified in the same commit), verified lines: 91.84%
+modification rate: identity 23.7% (verified), conference 27.4%
+
+## vendored lines
+lines 205,180; repos 19; PRs 60
+identity tracker event_type: content_modified 161,519 (78.72%), censored 30,427 (14.83%), file_deleted 8,377 (4.08%), unverified 3,844 (1.87%), line_deleted 1,013 (0.49%)
+verified 201,336 (98.13%), unverified 3,844 (1.87%)
+
+cross-tab (rows identity, columns conference):
+conf_kind   censored  modified     All
+event                                 
+censored       27012      3415   30427
+modified           0    170909  170909
+unverified         0      3844    3844
+All            27012    178168  205180
+
+same status, all lines (unverified counts as disagreement): 96.46%
+same status, verified lines: 98.30%
+modified by both: 170,909; same modification commit: 164,018 (95.97%)
+same status AND (censored, or modified in the same commit), verified lines: 94.88%
+modification rate: identity 84.9% (verified), conference 86.8%
+
+## agent lines
+lines 274,278; repos 171; PRs 1,470
+identity tracker event_type: censored 217,114 (79.16%), content_modified 36,011 (13.13%), file_deleted 11,424 (4.17%), line_deleted 9,511 (3.47%), unverified 218 (0.08%)
+verified 274,060 (99.92%), unverified 218 (0.08%)
+
+cross-tab (rows identity, columns conference):
+conf_kind   censored  modified     All
+event                                 
+censored      210420      6694  217114
+modified           4     56942   56946
+unverified         0       218     218
+All           210424     63854  274278
+
+same status, all lines (unverified counts as disagreement): 97.48%
+same status, verified lines: 97.56%
+modified by both: 56,942; same modification commit: 49,621 (87.14%)
+same status AND (censored, or modified in the same commit), verified lines: 94.88%
+modification rate: identity 20.8% (verified), conference 23.3%
+
+## human lines
+lines 579,861; repos 193; PRs 1,332
+identity tracker event_type: censored 308,141 (53.14%), content_modified 219,905 (37.92%), file_deleted 34,385 (5.93%), line_deleted 13,124 (2.26%), unverified 4,306 (0.74%)
+verified 575,555 (99.26%), unverified 4,306 (0.74%)
+
+cross-tab (rows identity, columns conference):
+conf_kind   censored  modified     All
+event                                 
+censored      287872     20269  308141
+modified         117    267297  267414
+unverified        10      4296    4306
+All           287999    291862  579861
+
+same status, all lines (unverified counts as disagreement): 95.74%
+same status, verified lines: 96.46%
+modified by both: 267,297; same modification commit: 238,467 (89.21%)
+same status AND (censored, or modified in the same commit), verified lines: 91.45%
+modification rate: identity 46.5% (verified), conference 50.3%

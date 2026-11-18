@@ -1,0 +1,42 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L239</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L239</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/typescript">microsoft/typescript</a><br><b>File at merge:</b> tests/cases/fourslash/syntacticClassificationsJsx2.ts, line 29<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/typescript/commit/02672d281c26e561708127da1d8d1a6cae45fee2">02672d281c</a> (2025-06-25T22:37:21)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/typescript/tree/f3770c9b89ba7969b163c5cea7805d5df23b2086">f3770c9b89</a>)</p><p><b>The line:</b></p><pre><span class="t">const c2 = classification(&quot;2020&quot;);</span></pre><h2>File at the merge commit, lines 21 to 33</h2><pre>   21 |         c.punctuation(&quot;&lt;/&quot;), c.jsxCloseTagName(&quot;div.name&quot;), c.punctuation(&quot;&gt;&quot;), c.punctuation(&quot;;&quot;),
+   22 |     c.keyword(&quot;let&quot;), c.identifier(&quot;y&quot;), c.operator(&quot;=&quot;),
+   23 |         c.punctuation(&quot;&lt;&quot;), 
+   24 |             c.jsxSelfClosingTagName(&quot;element.name&quot;), 
+   25 |                 c.jsxAttribute(&quot;attr&quot;), c.operator(&quot;=&quot;), c.jsxAttributeStringLiteralValue(`&quot;123&quot;`), 
+   26 |            c.punctuation(&quot;/&quot;), c.punctuation(&quot;&gt;&quot;)
+   27 | ) 
+   28 | 
+<span class="t">   29 | const c2 = classification(&quot;2020&quot;);</span>
+   30 | verify.semanticClassificationsAre(&quot;2020&quot;,
+   31 |     c2.semanticToken(&quot;variable.declaration&quot;, &quot;x&quot;), 
+   32 |     c2.semanticToken(&quot;variable.declaration&quot;, &quot;y&quot;), 
+   33 | );</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/typescript/commit/5f183ad73dc1500209619cf52e174c45d73f8617">5f183ad73d</a> (2025-09-25T10:22:27-07:00)</h2><p class="k">Revert PR 61928 (#62423)<br>Path after this commit: tests/cases/fourslash/syntacticClassificationsJsx2.ts. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: tests/cases/fourslash/syntacticClassificationsJsx1.ts.</p><pre>diff --git a/tests/cases/fourslash/syntacticClassificationsJsx2.ts b/tests/cases/fourslash/syntacticClassificationsJsx2.ts
+index d4aff5d1ed..6c244ef4b6 100644
+<span class="d">--- a/tests/cases/fourslash/syntacticClassificationsJsx2.ts</span>
+<span class="a">+++ b/tests/cases/fourslash/syntacticClassificationsJsx2.ts</span>
+<span class="h">@@ -18,7 +18,7 @@ verify.syntacticClassificationsAre(</span>
+             c.jsxText(`
+     some jsx text
+ `),
+<span class="d">-        c.punctuation(&quot;&lt;/&quot;), c.jsxCloseTagName(&quot;div.name&quot;), c.punctuation(&quot;&gt;&quot;), c.punctuation(&quot;;&quot;),</span>
+<span class="a">+        c.punctuation(&quot;&lt;&quot;), c.punctuation(&quot;/&quot;), c.jsxCloseTagName(&quot;div.name&quot;), c.punctuation(&quot;&gt;&quot;), c.punctuation(&quot;;&quot;),</span>
+     c.keyword(&quot;let&quot;), c.identifier(&quot;y&quot;), c.operator(&quot;=&quot;),
+         c.punctuation(&quot;&lt;&quot;), 
+             c.jsxSelfClosingTagName(&quot;element.name&quot;), 
+<span class="h">@@ -26,8 +26,8 @@ verify.syntacticClassificationsAre(</span>
+            c.punctuation(&quot;/&quot;), c.punctuation(&quot;&gt;&quot;)
+ ) 
+ 
+<span class="d m">-const c2 = classification(&quot;2020&quot;);</span>
+<span class="d">-verify.semanticClassificationsAre(&quot;2020&quot;,</span>
+<span class="d">-    c2.semanticToken(&quot;variable.declaration&quot;, &quot;x&quot;), </span>
+<span class="d">-    c2.semanticToken(&quot;variable.declaration&quot;, &quot;y&quot;), </span>
+<span class="a m">+const c2 = classification(&quot;2020&quot;);</span>
+<span class="a">+verify.semanticClassificationsAre(&quot;2020&quot;,</span>
+<span class="a">+    c2.semanticToken(&quot;variable.declaration&quot;, &quot;x&quot;), </span>
+<span class="a">+    c2.semanticToken(&quot;variable.declaration&quot;, &quot;y&quot;), </span>
+ );</pre></body></html>

@@ -1,0 +1,43 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L103</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L103</h1><p><b>Repository:</b> <a href="https://github.com/risingwavelabs/risingwave">risingwavelabs/risingwave</a><br><b>File at merge:</b> src/common/src/config/frontend.rs, line 19<br><b>Merge commit (birth):</b> <a href="https://github.com/risingwavelabs/risingwave/commit/0fcf512dd7bfcb02e4fe2b55c3a635228ec2dc03">0fcf512dd7</a> (2025-07-18T08:16:58)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/risingwavelabs/risingwave/tree/fef6e1f4e5f6cbf5dd756a510a116543f8d8ba97">fef6e1f4e5</a>)</p><p><b>The line:</b></p><pre><span class="t">pub struct FrontendConfig {</span></pre><h2>File at the merge commit, lines 11 to 27</h2><pre>   11 | // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   12 | // See the License for the specific language governing permissions and
+   13 | // limitations under the License.
+   14 | 
+   15 | use super::*;
+   16 | 
+   17 | /// The section [`frontend`] in `risingwave.toml`.
+   18 | #[derive(Clone, Debug, Serialize, Deserialize, DefaultFromSerde, ConfigDoc)]
+<span class="t">   19 | pub struct FrontendConfig {</span>
+   20 |     /// Total memory constraints for running queries.
+   21 |     #[serde(default = &quot;default::frontend::max_total_query_size_bytes&quot;)]
+   22 |     pub max_total_query_size_bytes: u64,
+   23 | 
+   24 |     /// A query of size under this threshold will never be rejected due to memory constraints.
+   25 |     #[serde(default = &quot;default::frontend::min_single_query_size_bytes&quot;)]
+   26 |     pub min_single_query_size_bytes: u64,
+   27 | </pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/risingwavelabs/risingwave/commit/8aa78ee09a7a38cf430e670b5950f1d3c0e0232f">8aa78ee09a</a> (2025-11-04T10:05:08+00:00)</h2><p class="k">feat(frontend): support LDAP authentication (#23150)<br>Path after this commit: src/common/src/config/frontend.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/frontend.rs b/src/common/src/config/frontend.rs
+index 8d6fcbe90e..bbaef76d99 100644
+<span class="d">--- a/src/common/src/config/frontend.rs</span>
+<span class="a">+++ b/src/common/src/config/frontend.rs</span>
+<span class="h">@@ -12,6 +12,7 @@</span>
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+<span class="a">+use super::hba::HbaConfig;</span>
+ use super::*;
+ 
+ /// The section [`frontend`] in `risingwave.toml`.
+<span class="h">@@ -28,6 +29,10 @@ pub struct FrontendConfig {</span>
+     /// A query of size exceeding this threshold will always be rejected due to memory constraints.
+     #[serde(default = &quot;default::frontend::max_single_query_size_bytes&quot;)]
+     pub max_single_query_size_bytes: u64,
+<span class="a">+</span>
+<span class="a">+    /// Host-based authentication configuration</span>
+<span class="a">+    #[serde(default = &quot;HbaConfig::default&quot;)]</span>
+<span class="a">+    pub hba_config: HbaConfig,</span>
+ }
+ 
+ pub mod default {</pre></body></html>

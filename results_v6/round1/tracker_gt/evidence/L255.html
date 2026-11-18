@@ -1,0 +1,462 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L255</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L255</h1><p><b>Repository:</b> <a href="https://github.com/marimo-team/marimo">marimo-team/marimo</a><br><b>File at merge:</b> marimo/_cli/file_path.py, line 154<br><b>Merge commit (birth):</b> <a href="https://github.com/marimo-team/marimo/commit/8fda46c5516301c5446ab16d4ecbe83b41c0b94d">8fda46c551</a> (2025-05-08T14:43:42)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/marimo-team/marimo/tree/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a>)</p><p><b>The line:</b></p><pre><span class="t">        prefix = StaticNotebookReader.FILENAME_PREFIX</span></pre><h2>File at the merge commit, lines 146 to 162</h2><pre>  146 |         return urllib.parse.unquote(encoded_code)
+  147 | 
+  148 |     @staticmethod
+  149 |     def _extract_filename_from_static_notebook(file_contents: str) -&gt; str:
+  150 |         if StaticNotebookReader.FILENAME_SUFFIX not in file_contents:
+  151 |             return &quot;notebook.py&quot;
+  152 |         # normalize hidden attribute
+  153 |         file_contents = file_contents.replace(&quot;hidden=&#x27;&#x27;&quot;, &#x27;hidden=&quot;&quot;&#x27;)
+<span class="t">  154 |         prefix = StaticNotebookReader.FILENAME_PREFIX</span>
+  155 |         suffix = StaticNotebookReader.FILENAME_SUFFIX
+  156 |         encoded_filename = file_contents.split(prefix)[1].split(suffix)[0]
+  157 |         return urllib.parse.unquote(encoded_filename)
+  158 | 
+  159 | 
+  160 | class GitHubSourceReader(FileReader):
+  161 |     def can_read(self, name: str) -&gt; bool:
+  162 |         return is_github_src(name, ext=&quot;.py&quot;) or is_github_src(name, ext=&quot;.md&quot;)</pre><p class="k">Below are all 9 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/marimo-team/marimo/commit/06ca0e19b0f43dd9acec99eab72d9ad8b49ce209">06ca0e19b0</a> (2025-05-08T16:40:32-04:00)</h2><p class="k">fix: brittle code extraction broken with live marimo.app/e?slug=xxxx (#4851)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index 097fee160..fcf71e0f1 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -4,6 +4,7 @@ from __future__ import annotations</span>
+ import abc
+ import json
+ import os
+<span class="a">+import re</span>
+ import urllib.parse
+ import urllib.request
+ from pathlib import Path
+<span class="h">@@ -84,10 +85,11 @@ class GitHubIssueReader(FileReader):</span>
+ 
+ 
+ class StaticNotebookReader(FileReader):
+<span class="d">-    CODE_PREFIX = &#x27;&lt;marimo-code hidden=&quot;&quot;&gt;&#x27;</span>
+<span class="d">-    CODE_SUFFIX = &quot;&lt;/marimo-code&gt;&quot;</span>
+<span class="d">-    FILENAME_PREFIX = &#x27;&lt;marimo-filename hidden=&quot;&quot;&gt;&#x27;</span>
+<span class="d">-    FILENAME_SUFFIX = &quot;&lt;/marimo-filename&gt;&quot;</span>
+<span class="a">+    CODE_TAG = r&quot;marimo-code&quot;</span>
+<span class="a">+    CODE_REGEX = re.compile(r&quot;&lt;marimo-code\s+hidden(?:=[&#x27;\&quot;]{2})?\s*&gt;(.*?)&lt;&quot;)</span>
+<span class="a">+    FILENAME_REGEX = re.compile(</span>
+<span class="a">+        r&quot;&lt;marimo-filename\s+hidden(?:=[&#x27;\&quot;]{2})?\s*&gt;(.*?)&lt;&quot;</span>
+<span class="a">+    )</span>
+ 
+     def can_read(self, name: str) -&gt; bool:
+         return self._is_static_marimo_notebook_url(name)[0]
+<span class="h">@@ -110,7 +112,7 @@ class StaticNotebookReader(FileReader):</span>
+             file_contents = (
+                 urllib.request.urlopen(request).read().decode(&quot;utf-8&quot;)
+             )
+<span class="d">-            return StaticNotebookReader.CODE_PREFIX in file_contents, str(</span>
+<span class="a">+            return StaticNotebookReader.CODE_TAG in file_contents, str(</span>
+                 file_contents
+             )
+ 
+<span class="h">@@ -135,26 +137,17 @@ class StaticNotebookReader(FileReader):</span>
+ 
+     @staticmethod
+     def _extract_code_from_static_notebook(file_contents: str) -&gt; str:
+<span class="d">-        assert StaticNotebookReader.CODE_SUFFIX in file_contents, (</span>
+<span class="d">-            &quot;&lt;marimo-code&gt; not found in file contents&quot;</span>
+<span class="d">-        )</span>
+<span class="d">-        # normalize hidden attribute</span>
+<span class="d">-        file_contents = file_contents.replace(&quot;hidden=&#x27;&#x27;&quot;, &#x27;hidden=&quot;&quot;&#x27;)</span>
+<span class="d">-        prefix = StaticNotebookReader.CODE_PREFIX</span>
+<span class="d">-        suffix = StaticNotebookReader.CODE_SUFFIX</span>
+<span class="d">-        encoded_code = file_contents.split(prefix)[1].split(suffix)[0]</span>
+<span class="d">-        return urllib.parse.unquote(encoded_code)</span>
+<span class="a">+        search = re.search(StaticNotebookReader.CODE_REGEX, file_contents)</span>
+<span class="a">+        assert search is not None, &quot;&lt;marimo-code&gt; not found in file contents&quot;</span>
+<span class="a">+        return urllib.parse.unquote(search.group(1))</span>
+ 
+     @staticmethod
+     def _extract_filename_from_static_notebook(file_contents: str) -&gt; str:
+<span class="d">-        if StaticNotebookReader.FILENAME_SUFFIX not in file_contents:</span>
+<span class="d">-            return &quot;notebook.py&quot;</span>
+<span class="d">-        # normalize hidden attribute</span>
+<span class="d">-        file_contents = file_contents.replace(&quot;hidden=&#x27;&#x27;&quot;, &#x27;hidden=&quot;&quot;&#x27;)</span>
+<span class="d m">-        prefix = StaticNotebookReader.FILENAME_PREFIX</span>
+<span class="d">-        suffix = StaticNotebookReader.FILENAME_SUFFIX</span>
+<span class="d">-        encoded_filename = file_contents.split(prefix)[1].split(suffix)[0]</span>
+<span class="d">-        return urllib.parse.unquote(encoded_filename)</span>
+<span class="a">+        if search := re.search(</span>
+<span class="a">+            StaticNotebookReader.FILENAME_REGEX, file_contents</span>
+<span class="a">+        ):</span>
+<span class="a">+            return urllib.parse.unquote(search.group(1))</span>
+<span class="a">+        return &quot;notebook.py&quot;</span>
+ 
+ 
+ class GitHubSourceReader(FileReader):</pre><h2>Commit #2: <a href="https://github.com/marimo-team/marimo/commit/69ec6a395e7a857eea05a74ba336e3e866348de9">69ec6a395e</a> (2025-05-13T14:21:47-04:00)</h2><p class="k">fix: support links.marimo.app (#4910)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index fcf71e0f1..3a9eda328 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -128,8 +128,12 @@ class StaticNotebookReader(FileReader):</span>
+         if url.startswith(&quot;https://static.marimo.app/static&quot;):
+             return download(os.path.join(url, &quot;download&quot;))
+ 
+<span class="d">-        # Starts with https://marimo.app/</span>
+<span class="d">-        if url.startswith(&quot;https://marimo.app/&quot;):</span>
+<span class="a">+        # Other marimo domains</span>
+<span class="a">+        DOMAINS = [</span>
+<span class="a">+            &quot;marimo.app&quot;,</span>
+<span class="a">+            &quot;links.marimo.app&quot;,</span>
+<span class="a">+        ]</span>
+<span class="a">+        if any(url.startswith(f&quot;https://{domain}/&quot;) for domain in DOMAINS):</span>
+             return download(url)
+ 
+         # Otherwise, not a static marimo notebook</pre><h2>Commit #3: <a href="https://github.com/marimo-team/marimo/commit/fa9264690eb92328d6f54fd4f2c4c2db880b4030">fa9264690e</a> (2025-06-26T09:22:24-07:00)</h2><p class="k">chore: Expand remote downloads for a broader range of urls (#5456)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index 3a9eda328..643c5cd25 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -136,6 +136,10 @@ class StaticNotebookReader(FileReader):</span>
+         if any(url.startswith(f&quot;https://{domain}/&quot;) for domain in DOMAINS):
+             return download(url)
+ 
+<span class="a">+        # TODO: Adjust for other various forms of static marimo notebook URLs.</span>
+<span class="a">+        if &quot;notebooks/nb&quot; in url:</span>
+<span class="a">+            return download(url)</span>
+<span class="a">+</span>
+         # Otherwise, not a static marimo notebook
+         return False, &quot;&quot;
+ </pre><h2>Commit #4: <a href="https://github.com/marimo-team/marimo/commit/be6ec76d5e5df2ced6bd6e70fa76e9388a1aa411">be6ec76d5e</a> (2025-07-07T23:09:38-04:00)</h2><p class="k">internal: request utils, make remote file send marimo user-agent (#5571)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index 643c5cd25..539140239 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -2,23 +2,24 @@</span>
+ from __future__ import annotations
+ 
+ import abc
+<span class="d">-import json</span>
+ import os
+ import re
+ import urllib.parse
+<span class="d">-import urllib.request</span>
+ from pathlib import Path
+ from tempfile import TemporaryDirectory
+<span class="d">-from typing import Optional</span>
+<span class="a">+from typing import Any, Optional, cast</span>
+ from urllib.error import HTTPError
+ 
+<span class="d">-from marimo import __version__, _loggers</span>
+<span class="a">+import marimo._utils.requests as requests</span>
+<span class="a">+from marimo import _loggers</span>
+ from marimo._cli.print import green
+ from marimo._utils.marimo_path import MarimoPath
+ from marimo._utils.url import is_url
+ 
+ LOGGER = _loggers.marimo_logger()
+ 
+<span class="a">+USER_AGENT_HEADER = {&quot;User-Agent&quot;: requests.MARIMO_USER_AGENT}</span>
+<span class="a">+</span>
+ 
+ def is_github_src(url: str, ext: str) -&gt; bool:
+     if not is_url(url):
+<span class="h">@@ -73,14 +74,24 @@ class GitHubIssueReader(FileReader):</span>
+     def read(self, name: str) -&gt; tuple[str, str]:
+         issue_number = name.split(&quot;/&quot;)[-1]
+         api_url = f&quot;https://api.github.com/repos/marimo-team/marimo/issues/{issue_number}&quot;
+<span class="d">-        issue_response = urllib.request.urlopen(api_url).read().decode(&quot;utf-8&quot;)</span>
+<span class="d">-        issue_json = json.loads(issue_response)</span>
+<span class="d">-        body = issue_json[&quot;body&quot;]</span>
+<span class="a">+        response = requests.get(api_url)</span>
+<span class="a">+        response.raise_for_status()</span>
+<span class="a">+        issue_response = cast(dict[str, Any], response.json())</span>
+<span class="a">+</span>
+<span class="a">+        if &quot;body&quot; not in issue_response:</span>
+<span class="a">+            raise ValueError(</span>
+<span class="a">+                f&quot;Failed to read GitHub issue {name}. No &#x27;body&#x27; in response {issue_response}&quot;</span>
+<span class="a">+            )</span>
+<span class="a">+</span>
+<span class="a">+        body = issue_response[&quot;body&quot;]</span>
+         code = self._find_python_code_in_github_issue(body)
+         return code, f&quot;issue_{issue_number}.py&quot;
+ 
+     @staticmethod
+     def _find_python_code_in_github_issue(body: str) -&gt; str:
+<span class="a">+        if &quot;```python&quot; not in body:</span>
+<span class="a">+            raise ValueError(f&quot;No Python code found in GitHub issue {body}&quot;)</span>
+<span class="a">+</span>
+         return body.split(&quot;```python&quot;)[1].rsplit(&quot;```&quot;, 1)[0]
+ 
+ 
+<span class="h">@@ -104,16 +115,12 @@ class StaticNotebookReader(FileReader):</span>
+     def _is_static_marimo_notebook_url(url: str) -&gt; tuple[bool, str]:
+         def download(url: str) -&gt; tuple[bool, str]:
+             LOGGER.info(&quot;Downloading %s&quot;, url)
+<span class="d">-            request = urllib.request.Request(</span>
+<span class="d">-                url,</span>
+<span class="d">-                # User agent to avoid 403 Forbidden some bot protection</span>
+<span class="d">-                headers={&quot;User-Agent&quot;: f&quot;marimo/{__version__}&quot;},</span>
+<span class="d">-            )</span>
+<span class="d">-            file_contents = (</span>
+<span class="d">-                urllib.request.urlopen(request).read().decode(&quot;utf-8&quot;)</span>
+<span class="d">-            )</span>
+<span class="d">-            return StaticNotebookReader.CODE_TAG in file_contents, str(</span>
+<span class="d">-                file_contents</span>
+<span class="a">+            response = requests.get(url, headers=USER_AGENT_HEADER)</span>
+<span class="a">+            response.raise_for_status()</span>
+<span class="a">+            file_contents = response.text()</span>
+<span class="a">+            return (</span>
+<span class="a">+                StaticNotebookReader.CODE_TAG in file_contents,</span>
+<span class="a">+                file_contents,</span>
+             )
+ 
+         # Not a URL
+<span class="h">@@ -126,7 +133,8 @@ class StaticNotebookReader(FileReader):</span>
+ 
+         # Starts with https://static.marimo.app/, append /download
+         if url.startswith(&quot;https://static.marimo.app/static&quot;):
+<span class="d">-            return download(os.path.join(url, &quot;download&quot;))</span>
+<span class="a">+            normalized_url = url if url.endswith(&quot;/&quot;) else url + &quot;/&quot;</span>
+<span class="a">+            return download(urllib.parse.urljoin(normalized_url, &quot;download&quot;))</span>
+ 
+         # Other marimo domains
+         DOMAINS = [
+<span class="h">@@ -164,7 +172,9 @@ class GitHubSourceReader(FileReader):</span>
+ 
+     def read(self, name: str) -&gt; tuple[str, str]:
+         url = get_github_src_url(name)
+<span class="d">-        content = urllib.request.urlopen(url).read().decode(&quot;utf-8&quot;)</span>
+<span class="a">+        response = requests.get(url, headers=USER_AGENT_HEADER)</span>
+<span class="a">+        response.raise_for_status()</span>
+<span class="a">+        content = response.text()</span>
+         return content, os.path.basename(url)
+ 
+ 
+<span class="h">@@ -173,7 +183,9 @@ class GenericURLReader(FileReader):</span>
+         return is_url(name)
+ 
+     def read(self, name: str) -&gt; tuple[str, str]:
+<span class="d">-        content = urllib.request.urlopen(name).read().decode(&quot;utf-8&quot;)</span>
+<span class="a">+        response = requests.get(name, headers=USER_AGENT_HEADER)</span>
+<span class="a">+        response.raise_for_status()</span>
+<span class="a">+        content = response.text()</span>
+         # Remove query parameters from the URL
+         url_without_query = name.split(&quot;?&quot;)[0]
+         return content, os.path.basename(url_without_query)</pre><h2>Commit #5: <a href="https://github.com/marimo-team/marimo/commit/4039d0c1a619ca1c8d45a04f9f180067d4f27d11">4039d0c1a6</a> (2025-07-25T10:47:24-07:00)</h2><p class="k">fix: allow marimo to open the markdown file format over http (#5742)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index 539140239..bfb1eafb2 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -307,8 +307,14 @@ class RemoteFileHandler(FileHandler):</span>
+         LOGGER.info(&quot;Creating temporary file&quot;)
+         path_to_app = Path(temp_dir.name) / name
+         # If doesn&#x27;t end in .py, add it
+<span class="d">-        if not path_to_app.suffix == &quot;.py&quot;:</span>
+<span class="d">-            path_to_app = path_to_app.with_suffix(&quot;.py&quot;)</span>
+<span class="a">+        if path_to_app.suffix not in (&quot;.py&quot;, &quot;.md&quot;, &quot;.qmd&quot;):</span>
+<span class="a">+            if &quot;__generated_with&quot; in content:</span>
+<span class="a">+                path_to_app = path_to_app.with_suffix(&quot;.py&quot;)</span>
+<span class="a">+            elif &quot;marimo-version&quot; in content:</span>
+<span class="a">+                path_to_app = path_to_app.with_suffix(&quot;.md&quot;)</span>
+<span class="a">+            else:</span>
+<span class="a">+                # Fallback to .py</span>
+<span class="a">+                path_to_app = path_to_app.with_suffix(&quot;.py&quot;)</span>
+         path_to_app.write_text(content, encoding=&quot;utf-8&quot;)
+         LOGGER.info(&quot;App saved to %s&quot;, path_to_app)
+         return str(path_to_app)</pre><h2>Commit #6: <a href="https://github.com/marimo-team/marimo/commit/997d7d5554b88a5b489acec435e187e9fce8d2de">997d7d5554</a> (2025-07-29T12:45:17-04:00)</h2><p class="k">Prevent accidental overwrites and converter for non-marimo Python scripts (#5686)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index bfb1eafb2..ed33c66f1 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -257,7 +257,7 @@ class LocalFileHandler(FileHandler):</span>
+                 f&quot;Invalid NAME - {name} is not a Python file.\n\n&quot;
+                 f&quot;  {green(&#x27;Tip:&#x27;)} Convert {name} to a marimo notebook with&quot;
+                 &quot;\n\n&quot;
+<span class="d">-                f&quot;    marimo convert {name} &gt; {prefix}.py\n\n&quot;</span>
+<span class="a">+                f&quot;    marimo convert {name} -o {prefix}.py\n\n&quot;</span>
+                 f&quot;  then open with marimo edit {prefix}.py&quot;
+             )
+ </pre><h2>Commit #7: <a href="https://github.com/marimo-team/marimo/commit/0f4e0bcf719c619c11b515518d38915c027cd952">0f4e0bcf71</a> (2025-09-28T10:21:16-04:00)</h2><p class="k">feat: edit files from a Gist url (#6559)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index ed33c66f1..5fabdca5a 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -41,6 +41,52 @@ def get_github_src_url(url: str) -&gt; str:</span>
+     return f&quot;https://raw.githubusercontent.com{path}&quot;
+ 
+ 
+<span class="a">+def is_gist_src(url: str) -&gt; bool:</span>
+<span class="a">+    if not is_url(url):</span>
+<span class="a">+        return False</span>
+<span class="a">+</span>
+<span class="a">+    hostname = urllib.parse.urlparse(url).hostname</span>
+<span class="a">+    if (</span>
+<span class="a">+        hostname != &quot;gist.github.com&quot;</span>
+<span class="a">+        and hostname != &quot;gist.githubusercontent.com&quot;</span>
+<span class="a">+    ):</span>
+<span class="a">+        return False</span>
+<span class="a">+    return True</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def get_gist_src_url(url: str) -&gt; str:</span>
+<span class="a">+    # Return url if it&#x27;s a direct link to a raw file,</span>
+<span class="a">+    # or get the first python or markdown file of the gist</span>
+<span class="a">+    # by getting the raw_url from api.github.com</span>
+<span class="a">+    path_parts = urllib.parse.urlparse(url).path.strip(&quot;/&quot;).split(&quot;/&quot;)</span>
+<span class="a">+    if &quot;raw&quot; in path_parts:</span>
+<span class="a">+        if not path_parts[-1].endswith((&quot;.py&quot;, &quot;.md&quot;)):</span>
+<span class="a">+            raise ValueError(&quot;No python or markdown files found in the Gist&quot;)</span>
+<span class="a">+        return url</span>
+<span class="a">+    else:</span>
+<span class="a">+        gist_id = path_parts[1]</span>
+<span class="a">+        api_url = f&quot;https://api.github.com/gists/{gist_id}&quot;</span>
+<span class="a">+        api_response = requests.get(api_url, headers=USER_AGENT_HEADER)</span>
+<span class="a">+        api_response.raise_for_status()</span>
+<span class="a">+        gist_data = api_response.json()</span>
+<span class="a">+</span>
+<span class="a">+        files_dict = gist_data.get(&quot;files&quot;, {})</span>
+<span class="a">+        if not files_dict:</span>
+<span class="a">+            raise ValueError(&quot;No files found in the Gist&quot;)</span>
+<span class="a">+</span>
+<span class="a">+        py_or_md_url_generator = (</span>
+<span class="a">+            file_info[&quot;raw_url&quot;]</span>
+<span class="a">+            for filename, file_info in files_dict.items()</span>
+<span class="a">+            if filename.lower().endswith((&quot;.py&quot;, &quot;.md&quot;))</span>
+<span class="a">+        )</span>
+<span class="a">+        raw_url = next(py_or_md_url_generator, &quot;&quot;)</span>
+<span class="a">+</span>
+<span class="a">+        if raw_url == &quot;&quot;:</span>
+<span class="a">+            raise ValueError(&quot;No python or markdown files found in the Gist&quot;)</span>
+<span class="a">+</span>
+<span class="a">+        return raw_url</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ class FileReader(abc.ABC):
+     @abc.abstractmethod
+     def can_read(self, name: str) -&gt; bool:
+<span class="h">@@ -178,6 +224,18 @@ class GitHubSourceReader(FileReader):</span>
+         return content, os.path.basename(url)
+ 
+ 
+<span class="a">+class GistSourceReader(FileReader):</span>
+<span class="a">+    def can_read(self, name: str) -&gt; bool:</span>
+<span class="a">+        return is_gist_src(name) or is_gist_src(name)</span>
+<span class="a">+</span>
+<span class="a">+    def read(self, name: str) -&gt; tuple[str, str]:</span>
+<span class="a">+        url = get_gist_src_url(name)</span>
+<span class="a">+        response = requests.get(url, headers=USER_AGENT_HEADER)</span>
+<span class="a">+        response.raise_for_status()</span>
+<span class="a">+        content = response.text()</span>
+<span class="a">+        return content, os.path.basename(url)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ class GenericURLReader(FileReader):
+     def can_read(self, name: str) -&gt; bool:
+         return is_url(name)
+<span class="h">@@ -198,6 +256,7 @@ class FileContentReader:</span>
+             GitHubIssueReader(),
+             StaticNotebookReader(),
+             GitHubSourceReader(),
+<span class="a">+            GistSourceReader(),</span>
+             GenericURLReader(),
+         ]
+ </pre><h2>Commit #8: <a href="https://github.com/marimo-team/marimo/commit/61c90766c81cb4d2277ec5c56eed733672a53b80">61c90766c8</a> (2025-12-15T22:44:51-05:00)</h2><p class="k">feat: `marimo edit` local static notebooks (#7474)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index 5fabdca5a..e6a89654b 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -143,10 +143,13 @@ class GitHubIssueReader(FileReader):</span>
+ 
+ class StaticNotebookReader(FileReader):
+     CODE_TAG = r&quot;marimo-code&quot;
+<span class="d">-    CODE_REGEX = re.compile(r&quot;&lt;marimo-code\s+hidden(?:=[&#x27;\&quot;]{2})?\s*&gt;(.*?)&lt;&quot;)</span>
+<span class="a">+    CODE_REGEX = re.compile(</span>
+<span class="a">+        r&quot;&lt;marimo-code\s+hidden(?:=[&#x27;\&quot;]{2})?\s*&gt;\s*(.*?)\s*&lt;&quot;</span>
+<span class="a">+    )</span>
+     FILENAME_REGEX = re.compile(
+<span class="d">-        r&quot;&lt;marimo-filename\s+hidden(?:=[&#x27;\&quot;]{2})?\s*&gt;(.*?)&lt;&quot;</span>
+<span class="a">+        r&quot;&lt;marimo-filename\s+hidden(?:=[&#x27;\&quot;]{2})?\s*&gt;\s*(.*?)\s*&lt;&quot;</span>
+     )
+<span class="a">+    DEFAULT_FILENAME = &quot;notebook.py&quot;</span>
+ 
+     def can_read(self, name: str) -&gt; bool:
+         return self._is_static_marimo_notebook_url(name)[0]
+<span class="h">@@ -171,6 +174,14 @@ class StaticNotebookReader(FileReader):</span>
+ 
+         # Not a URL
+         if not is_url(url):
+<span class="a">+            # Read a local Static Notebook</span>
+<span class="a">+            if url.endswith(&quot;.html&quot;):</span>
+<span class="a">+                file_contents = Path(url).read_text(encoding=&quot;utf-8&quot;)</span>
+<span class="a">+                return (</span>
+<span class="a">+                    StaticNotebookReader.CODE_TAG in file_contents,</span>
+<span class="a">+                    file_contents,</span>
+<span class="a">+                )</span>
+<span class="a">+</span>
+             return False, &quot;&quot;
+ 
+         # Ends with .html, try to download it
+<span class="h">@@ -209,7 +220,7 @@ class StaticNotebookReader(FileReader):</span>
+             StaticNotebookReader.FILENAME_REGEX, file_contents
+         ):
+             return urllib.parse.unquote(search.group(1))
+<span class="d">-        return &quot;notebook.py&quot;</span>
+<span class="a">+        return StaticNotebookReader.DEFAULT_FILENAME</span>
+ 
+ 
+ class GitHubSourceReader(FileReader):
+<span class="h">@@ -254,9 +265,9 @@ class FileContentReader:</span>
+         self.readers = [
+             LocalFileReader(),
+             GitHubIssueReader(),
+<span class="d">-            StaticNotebookReader(),</span>
+             GitHubSourceReader(),
+             GistSourceReader(),
+<span class="a">+            StaticNotebookReader(),</span>
+             GenericURLReader(),
+         ]
+ 
+<span class="h">@@ -302,7 +313,6 @@ class LocalFileHandler(FileHandler):</span>
+     def handle(
+         self, name: str, temp_dir: TemporaryDirectory[str]
+     ) -&gt; tuple[str, Optional[TemporaryDirectory[str]]]:
+<span class="d">-        del temp_dir</span>
+         import click
+ 
+         path = Path(name)
+<span class="h">@@ -320,6 +330,19 @@ class LocalFileHandler(FileHandler):</span>
+                 f&quot;  then open with marimo edit {prefix}.py&quot;
+             )
+ 
+<span class="a">+        if path.suffix == &quot;.html&quot;:</span>
+<span class="a">+            reader = StaticNotebookReader()</span>
+<span class="a">+            if reader.can_read(name):</span>
+<span class="a">+                content, filename = reader.read(name)</span>
+<span class="a">+                path_to_app = self._create_tmp_file_from_content(</span>
+<span class="a">+                    content, filename, temp_dir</span>
+<span class="a">+                )</span>
+<span class="a">+                return path_to_app, temp_dir</span>
+<span class="a">+            else:</span>
+<span class="a">+                raise click.ClickException(</span>
+<span class="a">+                    f&quot;Invalid HTML file - {name} does not contain Python code. Make sure the file was downloaded from marimo.&quot;</span>
+<span class="a">+                )</span>
+<span class="a">+</span>
+         if not MarimoPath.is_valid_path(path):
+             raise click.ClickException(
+                 f&quot;Invalid NAME - {name} is not a Python or Markdown file&quot;
+<span class="h">@@ -337,6 +360,16 @@ class LocalFileHandler(FileHandler):</span>
+ 
+         return name, None
+ 
+<span class="a">+    @staticmethod</span>
+<span class="a">+    def _create_tmp_file_from_content(</span>
+<span class="a">+        content: str, name: str, temp_dir: TemporaryDirectory[str]</span>
+<span class="a">+    ) -&gt; str:</span>
+<span class="a">+        LOGGER.info(&quot;Creating temporary file&quot;)</span>
+<span class="a">+        path_to_app = Path(temp_dir.name) / name</span>
+<span class="a">+        path_to_app.write_text(content, encoding=&quot;utf-8&quot;)</span>
+<span class="a">+        LOGGER.info(&quot;App saved to %s&quot;, path_to_app)</span>
+<span class="a">+        return str(path_to_app)</span>
+<span class="a">+</span>
+ 
+ class RemoteFileHandler(FileHandler):
+     def __init__(self) -&gt; None:</pre><h2>Commit #9: <a href="https://github.com/marimo-team/marimo/commit/adebb475066ed8d1d5bdf5006472b9750c8faaa9">adebb47506</a> (2025-12-26T09:56:49-05:00)</h2><p class="k">Change copyright to 2026 including scripts (#7606)<br>Path after this commit: marimo/_cli/file_path.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/marimo/_cli/file_path.py b/marimo/_cli/file_path.py
+index e6a89654b..db0622a92 100644
+<span class="d">--- a/marimo/_cli/file_path.py</span>
+<span class="a">+++ b/marimo/_cli/file_path.py</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-# Copyright 2024 Marimo. All rights reserved.</span>
+<span class="a">+# Copyright 2026 Marimo. All rights reserved.</span>
+ from __future__ import annotations
+ 
+ import abc</pre></body></html>

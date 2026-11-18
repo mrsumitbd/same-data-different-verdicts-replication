@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L226</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L226</h1><p><b>Repository:</b> <a href="https://github.com/marimo-team/marimo">marimo-team/marimo</a><br><b>File at merge:</b> frontend/src/plugins/core/sidebar-element.tsx, line 7<br><b>Merge commit (birth):</b> <a href="https://github.com/marimo-team/marimo/commit/ca735fc23cbb3a004b7de1793ad2a7b89c52f207">ca735fc23c</a> (2025-01-27T23:03:50)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/marimo-team/marimo/tree/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a>)</p><p><b>The line:</b></p><pre><span class="t">import { sidebarAtom } from &quot;@/components/editor/renderers/vertical-layout/sidebar/state&quot;;</span></pre><h2>File at the merge commit, lines 1 to 15</h2><pre>    1 | /* Copyright 2024 Marimo. All rights reserved. */
+    2 | import { defineCustomElement } from &quot;@/core/dom/defineCustomElement&quot;;
+    3 | import { renderHTML } from &quot;./RenderHTML&quot;;
+    4 | import { SlotNames, slotsController } from &quot;@/core/slots/slots&quot;;
+    5 | import { init } from &quot;@paralleldrive/cuid2&quot;;
+    6 | import { store } from &quot;@/core/state/jotai&quot;;
+<span class="t">    7 | import { sidebarAtom } from &quot;@/components/editor/renderers/vertical-layout/sidebar/state&quot;;</span>
+    8 | import { Logger } from &quot;@/utils/Logger&quot;;
+    9 | 
+   10 | const createId = init({ length: 6 });
+   11 | 
+   12 | /**
+   13 |  * This is a custom DOM element that will be used to portal
+   14 |  * it&#x27;s children to a React component sidebar.
+   15 |  */</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/marimo-team/marimo/commit/e543a9b45dc8af04aa40517ef33d6110799cc553">e543a9b45d</a> (2025-06-12T21:10:32-04:00)</h2><p class="k">chore: biome 2x (#5291)<br>Path after this commit: frontend/src/plugins/core/sidebar-element.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/plugins/core/sidebar-element.tsx b/frontend/src/plugins/core/sidebar-element.tsx
+index 85e583219..01d3c0f20 100644
+<span class="d">--- a/frontend/src/plugins/core/sidebar-element.tsx</span>
+<span class="a">+++ b/frontend/src/plugins/core/sidebar-element.tsx</span>
+<span class="h">@@ -1,11 +1,12 @@</span>
+ /* Copyright 2024 Marimo. All rights reserved. */
+<span class="a">+</span>
+<span class="a">+import { init } from &quot;@paralleldrive/cuid2&quot;;</span>
+<span class="a m">+import { sidebarAtom } from &quot;@/components/editor/renderers/vertical-layout/sidebar/state&quot;;</span>
+ import { defineCustomElement } from &quot;@/core/dom/defineCustomElement&quot;;
+<span class="d">-import { renderHTML } from &quot;./RenderHTML&quot;;</span>
+ import { SlotNames, slotsController } from &quot;@/core/slots/slots&quot;;
+<span class="d">-import { init } from &quot;@paralleldrive/cuid2&quot;;</span>
+ import { store } from &quot;@/core/state/jotai&quot;;
+<span class="d m">-import { sidebarAtom } from &quot;@/components/editor/renderers/vertical-layout/sidebar/state&quot;;</span>
+ import { Logger } from &quot;@/utils/Logger&quot;;
+<span class="a">+import { renderHTML } from &quot;./RenderHTML&quot;;</span>
+ 
+ const createId = init({ length: 6 });
+ </pre><h2>Commit #2: <a href="https://github.com/marimo-team/marimo/commit/adebb475066ed8d1d5bdf5006472b9750c8faaa9">adebb47506</a> (2025-12-26T09:56:49-05:00)</h2><p class="k">Change copyright to 2026 including scripts (#7606)<br>Path after this commit: frontend/src/plugins/core/sidebar-element.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/frontend/src/plugins/core/sidebar-element.tsx b/frontend/src/plugins/core/sidebar-element.tsx
+index 01d3c0f20..dcfe8013e 100644
+<span class="d">--- a/frontend/src/plugins/core/sidebar-element.tsx</span>
+<span class="a">+++ b/frontend/src/plugins/core/sidebar-element.tsx</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-/* Copyright 2024 Marimo. All rights reserved. */</span>
+<span class="a">+/* Copyright 2026 Marimo. All rights reserved. */</span>
+ 
+ import { init } from &quot;@paralleldrive/cuid2&quot;;
+<span class=" m"> import { sidebarAtom } from &quot;@/components/editor/renderers/vertical-layout/sidebar/state&quot;;</span></pre></body></html>

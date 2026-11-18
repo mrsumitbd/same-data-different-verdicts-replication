@@ -1,0 +1,288 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L105</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L105</h1><p><b>Repository:</b> <a href="https://github.com/hotovo/aider-desk">hotovo/aider-desk</a><br><b>File at merge:</b> src/renderer/src/components/settings/AiderSettings.tsx, line 93<br><b>Merge commit (birth):</b> <a href="https://github.com/hotovo/aider-desk/commit/a8e93bb1e78fadf894320f9099b3ef9c91b295bc">a8e93bb1e7</a> (2025-06-19T10:36:16)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/hotovo/aider-desk/tree/ec287e40abd178b3d41092e5a93f037bb11d897b">ec287e40ab</a>)</p><p><b>The line:</b></p><pre><span class="t">                  aider: {</span></pre><h2>File at the merge commit, lines 85 to 101</h2><pre>   85 |               }}
+   86 |             /&gt;
+   87 |             &lt;Checkbox
+   88 |               label={t(&#x27;settings.aider.cachingEnabled&#x27;)}
+   89 |               checked={settings.aider.cachingEnabled}
+   90 |               onChange={(checked) =&gt;
+   91 |                 setSettings({
+   92 |                   ...settings,
+<span class="t">   93 |                   aider: {</span>
+   94 |                     ...settings.aider,
+   95 |                     cachingEnabled: checked,
+   96 |                   },
+   97 |                 })
+   98 |               }
+   99 |             /&gt;
+  100 |             &lt;Checkbox
+  101 |               label={t(&#x27;settings.aider.watchFiles&#x27;)}</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/hotovo/aider-desk/commit/6546d6339de858ebf339f05226d02027157622f3">6546d6339d</a> (2025-07-03T18:40:12+02:00)</h2><p class="k">feat: unified LLM providers settings<br>Path after this commit: src/renderer/src/components/settings/AiderSettings.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/renderer/src/components/settings/AiderSettings.tsx b/src/renderer/src/components/settings/AiderSettings.tsx
+index c3c8b64c..c2ec331c 100644
+<span class="d">--- a/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="a">+++ b/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="h">@@ -22,34 +22,49 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+ 
+   return (
+     &lt;div className=&quot;space-y-6&quot;&gt;
+<span class="d">-      &lt;Section title={t(&#x27;settings.aider.context&#x27;)}&gt;</span>
+<span class="d">-        &lt;div className=&quot;px-4 py-6 pb-3 space-y-1.5&quot;&gt;</span>
+<span class="a">+      &lt;Section title={t(&#x27;settings.aider.options&#x27;)}&gt;</span>
+<span class="a">+        &lt;div className=&quot;px-4 py-5 pb-3 space-y-1.5&quot;&gt;</span>
+           &lt;Checkbox
+<span class="d">-            label={</span>
+<span class="d">-              &lt;Trans</span>
+<span class="d">-                i18nKey=&quot;settings.aider.addRuleFiles&quot;</span>
+<span class="d">-                components={{</span>
+<span class="d">-                  file: &lt;CodeInline /&gt;,</span>
+<span class="d">-                }}</span>
+<span class="d">-              /&gt;</span>
+<span class="a">+            label={t(&#x27;settings.aider.autoCommits&#x27;)}</span>
+<span class="a">+            checked={settings.aider.autoCommits}</span>
+<span class="a">+            onChange={(checked) =&gt; {</span>
+<span class="a">+              setSettings({</span>
+<span class="a">+                ...settings,</span>
+<span class="a m">+                aider: {</span>
+<span class="a">+                  ...settings.aider,</span>
+<span class="a">+                  autoCommits: checked,</span>
+<span class="a">+                },</span>
+<span class="a">+              });</span>
+<span class="a">+            }}</span>
+<span class="a">+          /&gt;</span>
+<span class="a">+          &lt;Checkbox</span>
+<span class="a">+            label={t(&#x27;settings.aider.cachingEnabled&#x27;)}</span>
+<span class="a">+            checked={settings.aider.cachingEnabled}</span>
+<span class="a">+            onChange={(checked) =&gt;</span>
+<span class="a">+              setSettings({</span>
+<span class="a">+                ...settings,</span>
+<span class="a m">+                aider: {</span>
+<span class="a">+                  ...settings.aider,</span>
+<span class="a">+                  cachingEnabled: checked,</span>
+<span class="a">+                },</span>
+<span class="a">+              })</span>
+             }
+<span class="d">-            checked={settings.aider.addRuleFiles}</span>
+<span class="a">+          /&gt;</span>
+<span class="a">+          &lt;Checkbox</span>
+<span class="a">+            label={t(&#x27;settings.aider.watchFiles&#x27;)}</span>
+<span class="a">+            checked={settings.aider.watchFiles}</span>
+             onChange={(checked) =&gt;
+               setSettings({
+                 ...settings,
+<span class=" m">                 aider: {</span>
+                   ...settings.aider,
+<span class="d">-                  addRuleFiles: checked,</span>
+<span class="a">+                  watchFiles: checked,</span>
+                 },
+               })
+             }
+           /&gt;
+<span class="d">-        &lt;/div&gt;</span>
+<span class="d">-      &lt;/Section&gt;</span>
+<span class="d">-</span>
+<span class="d">-      &lt;Section title={t(&#x27;settings.aider.options&#x27;)}&gt;</span>
+<span class="d">-        &lt;div className=&quot;px-4 py-6 pb-3 space-y-1.5&quot;&gt;</span>
+           &lt;Input
+<span class="a">+            className=&quot;mt-3&quot;</span>
+             type=&quot;text&quot;
+             value={settings.aider.options}
+             spellCheck={false}
+<span class="h">@@ -70,47 +85,6 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+               https://aider.chat/docs/config/options.html
+             &lt;/a&gt;
+           &lt;/p&gt;
+<span class="d">-          &lt;div className=&quot;flex gap-4 pt-2&quot;&gt;</span>
+<span class="d">-            &lt;Checkbox</span>
+<span class="d">-              label={t(&#x27;settings.aider.autoCommits&#x27;)}</span>
+<span class="d">-              checked={settings.aider.autoCommits}</span>
+<span class="d">-              onChange={(checked) =&gt; {</span>
+<span class="d">-                setSettings({</span>
+<span class="d">-                  ...settings,</span>
+<span class="d m">-                  aider: {</span>
+<span class="d">-                    ...settings.aider,</span>
+<span class="d">-                    autoCommits: checked,</span>
+<span class="d">-                  },</span>
+<span class="d">-                });</span>
+<span class="d">-              }}</span>
+<span class="d">-            /&gt;</span>
+<span class="d">-            &lt;Checkbox</span>
+<span class="d">-              label={t(&#x27;settings.aider.cachingEnabled&#x27;)}</span>
+<span class="d">-              checked={settings.aider.cachingEnabled}</span>
+<span class="d">-              onChange={(checked) =&gt;</span>
+<span class="d">-                setSettings({</span>
+<span class="d">-                  ...settings,</span>
+<span class="d m">-                  aider: {</span>
+<span class="d">-                    ...settings.aider,</span>
+<span class="d">-                    cachingEnabled: checked,</span>
+<span class="d">-                  },</span>
+<span class="d">-                })</span>
+<span class="d">-              }</span>
+<span class="d">-            /&gt;</span>
+<span class="d">-            &lt;Checkbox</span>
+<span class="d">-              label={t(&#x27;settings.aider.watchFiles&#x27;)}</span>
+<span class="d">-              checked={settings.aider.watchFiles}</span>
+<span class="d">-              onChange={(checked) =&gt;</span>
+<span class="d">-                setSettings({</span>
+<span class="d">-                  ...settings,</span>
+<span class="d m">-                  aider: {</span>
+<span class="d">-                    ...settings.aider,</span>
+<span class="d">-                    watchFiles: checked,</span>
+<span class="d">-                  },</span>
+<span class="d">-                })</span>
+<span class="d">-              }</span>
+<span class="d">-            /&gt;</span>
+<span class="d">-          &lt;/div&gt;</span>
+         &lt;/div&gt;
+       &lt;/Section&gt;
+ 
+<span class="h">@@ -129,7 +103,7 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+                 })
+               }
+               spellCheck={false}
+<span class="d">-              className=&quot;min-h-[300px]&quot;</span>
+<span class="a">+              className=&quot;min-h-[200px]&quot;</span>
+               placeholder={t(&#x27;settings.aider.envVarsPlaceholder&#x27;)}
+             /&gt;
+             {!showEnvVars &amp;&amp; (
+<span class="h">@@ -148,6 +122,30 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+           &lt;/p&gt;
+         &lt;/div&gt;
+       &lt;/Section&gt;
+<span class="a">+      &lt;Section title={t(&#x27;settings.aider.context&#x27;)}&gt;</span>
+<span class="a">+        &lt;div className=&quot;px-4 py-6 pb-3 space-y-1.5&quot;&gt;</span>
+<span class="a">+          &lt;Checkbox</span>
+<span class="a">+            label={</span>
+<span class="a">+              &lt;Trans</span>
+<span class="a">+                i18nKey=&quot;settings.aider.addRuleFiles&quot;</span>
+<span class="a">+                components={{</span>
+<span class="a">+                  file: &lt;CodeInline /&gt;,</span>
+<span class="a">+                }}</span>
+<span class="a">+              /&gt;</span>
+<span class="a">+            }</span>
+<span class="a">+            checked={settings.aider.addRuleFiles}</span>
+<span class="a">+            onChange={(checked) =&gt;</span>
+<span class="a">+              setSettings({</span>
+<span class="a">+                ...settings,</span>
+<span class="a m">+                aider: {</span>
+<span class="a">+                  ...settings.aider,</span>
+<span class="a">+                  addRuleFiles: checked,</span>
+<span class="a">+                },</span>
+<span class="a">+              })</span>
+<span class="a">+            }</span>
+<span class="a">+          /&gt;</span>
+<span class="a">+        &lt;/div&gt;</span>
+<span class="a">+      &lt;/Section&gt;</span>
+     &lt;/div&gt;
+   );
+ };</pre><h2>Commit #2: <a href="https://github.com/hotovo/aider-desk/commit/a58d7db18a78a70b64ec11720115893a991b814c">a58d7db18a</a> (2025-07-05T23:08:24+02:00)</h2><p class="k">refactor: consolidate main process modules and UI components<br>Path after this commit: src/renderer/src/components/settings/AiderSettings.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/renderer/src/components/settings/AiderSettings.tsx b/src/renderer/src/components/settings/AiderSettings.tsx
+index c2ec331c..ba8da54b 100644
+<span class="d">--- a/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="a">+++ b/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="h">@@ -8,7 +8,7 @@ import { Input } from &#x27;@/components/common/Input&#x27;;</span>
+ import { Section } from &#x27;@/components/common/Section&#x27;;
+ import { TextArea } from &#x27;@/components/common/TextArea&#x27;;
+ import { Checkbox } from &#x27;@/components/common/Checkbox&#x27;;
+<span class="d">-import { CodeInline } from &#x27;@/components/message&#x27;;</span>
+<span class="a">+import { CodeInline } from &#x27;@/components/common/CodeInline&#x27;;</span>
+ 
+ type Props = {
+   settings: SettingsData;</pre><h2>Commit #3: <a href="https://github.com/hotovo/aider-desk/commit/7b6421895cbb1f9f522aa8e24c4f8bb8d3d34ce4">7b6421895c</a> (2025-08-13T13:18:59+02:00)</h2><p class="k">feat: implemented better support for color themes<br>Path after this commit: src/renderer/src/components/settings/AiderSettings.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/renderer/src/components/settings/AiderSettings.tsx b/src/renderer/src/components/settings/AiderSettings.tsx
+index ba8da54b..f187c540 100644
+<span class="d">--- a/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="a">+++ b/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="h">@@ -79,9 +79,14 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+             }
+             placeholder={t(&#x27;settings.aider.optionsPlaceholder&#x27;)}
+           /&gt;
+<span class="d">-          &lt;p className=&quot;text-xs text-neutral-200 px-1&quot;&gt;</span>
+<span class="a">+          &lt;p className=&quot;text-xs text-text-secondary px-1&quot;&gt;</span>
+             {t(&#x27;settings.aider.optionsDocumentation&#x27;)}{&#x27; &#x27;}
+<span class="d">-            &lt;a href=&quot;https://aider.chat/docs/config/options.html&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;text-blue-400 hover:text-blue-300&quot;&gt;</span>
+<span class="a">+            &lt;a</span>
+<span class="a">+              href=&quot;https://aider.chat/docs/config/options.html&quot;</span>
+<span class="a">+              target=&quot;_blank&quot;</span>
+<span class="a">+              rel=&quot;noopener noreferrer&quot;</span>
+<span class="a">+              className=&quot;text-info-lighter hover:text-info-lightest&quot;</span>
+<span class="a">+            &gt;</span>
+               https://aider.chat/docs/config/options.html
+             &lt;/a&gt;
+           &lt;/p&gt;
+<span class="h">@@ -107,16 +112,21 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+               placeholder={t(&#x27;settings.aider.envVarsPlaceholder&#x27;)}
+             /&gt;
+             {!showEnvVars &amp;&amp; (
+<span class="d">-              &lt;div className=&quot;absolute inset-[3px] bottom-[9px] bg-neutral-900/50 backdrop-blur-sm flex items-center justify-center rounded-sm&quot;&gt;</span>
+<span class="a">+              &lt;div className=&quot;absolute inset-[3px] bottom-[9px] bg-bg-primary-light-strong backdrop-blur-sm flex items-center justify-center rounded-sm&quot;&gt;</span>
+                 &lt;Button variant=&quot;text&quot; color=&quot;secondary&quot; onClick={() =&gt; setShowEnvVars(true)} className=&quot;flex items-center&quot; size=&quot;sm&quot;&gt;
+                   &lt;HiEye className=&quot;mr-2&quot; /&gt; {t(&#x27;settings.common.showSecrets&#x27;)}
+                 &lt;/Button&gt;
+               &lt;/div&gt;
+             )}
+           &lt;/div&gt;
+<span class="d">-          &lt;p className=&quot;text-xs text-neutral-200 px-1&quot;&gt;</span>
+<span class="a">+          &lt;p className=&quot;text-xs text-text-secondary px-1&quot;&gt;</span>
+             {t(&#x27;settings.aider.envVarsDocumentation&#x27;)}{&#x27; &#x27;}
+<span class="d">-            &lt;a href=&quot;https://aider.chat/docs/config/dotenv.html&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;text-blue-400 hover:text-blue-300&quot;&gt;</span>
+<span class="a">+            &lt;a</span>
+<span class="a">+              href=&quot;https://aider.chat/docs/config/dotenv.html&quot;</span>
+<span class="a">+              target=&quot;_blank&quot;</span>
+<span class="a">+              rel=&quot;noopener noreferrer&quot;</span>
+<span class="a">+              className=&quot;text-info-lighter hover:text-info-lightest&quot;</span>
+<span class="a">+            &gt;</span>
+               https://aider.chat/docs/config/dotenv.html
+             &lt;/a&gt;
+           &lt;/p&gt;</pre><h2>Commit #4: <a href="https://github.com/hotovo/aider-desk/commit/82b4a05561328643ef807ed378650a183317a8a4">82b4a05561</a> (2025-08-21T20:55:05+02:00)</h2><p class="k">feat: added confirm before edit option for Aider coder<br>Path after this commit: src/renderer/src/components/settings/AiderSettings.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/renderer/src/components/settings/AiderSettings.tsx b/src/renderer/src/components/settings/AiderSettings.tsx
+index f187c540..5e7974de 100644
+<span class="d">--- a/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="a">+++ b/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="h">@@ -63,6 +63,19 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+               })
+             }
+           /&gt;
+<span class="a">+          &lt;Checkbox</span>
+<span class="a">+            label={t(&#x27;settings.aider.confirmBeforeEdit&#x27;)}</span>
+<span class="a">+            checked={settings.aider.confirmBeforeEdit}</span>
+<span class="a">+            onChange={(checked) =&gt;</span>
+<span class="a">+              setSettings({</span>
+<span class="a">+                ...settings,</span>
+<span class="a m">+                aider: {</span>
+<span class="a">+                  ...settings.aider,</span>
+<span class="a">+                  confirmBeforeEdit: checked,</span>
+<span class="a">+                },</span>
+<span class="a">+              })</span>
+<span class="a">+            }</span>
+<span class="a">+          /&gt;</span>
+           &lt;Input
+             className=&quot;mt-3&quot;
+             type=&quot;text&quot;</pre><h2>Commit #5: <a href="https://github.com/hotovo/aider-desk/commit/cd34c576f91e6961015c09fa8d6e9bea7f2f52fd">cd34c576f9</a> (2025-11-24T22:44:41+01:00)</h2><p class="k">feat: redesign settings interface with sidebar navigation<br>Path after this commit: src/renderer/src/components/settings/AiderSettings.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/renderer/src/components/settings/AiderSettings.tsx b/src/renderer/src/components/settings/AiderSettings.tsx
+index 5e7974de..191e6ac5 100644
+<span class="d">--- a/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="a">+++ b/src/renderer/src/components/settings/AiderSettings.tsx</span>
+<span class="h">@@ -22,7 +22,7 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+ 
+   return (
+     &lt;div className=&quot;space-y-6&quot;&gt;
+<span class="d">-      &lt;Section title={t(&#x27;settings.aider.options&#x27;)}&gt;</span>
+<span class="a">+      &lt;Section id=&quot;aider-options&quot; title={t(&#x27;settings.aider.options&#x27;)}&gt;</span>
+         &lt;div className=&quot;px-4 py-5 pb-3 space-y-1.5&quot;&gt;
+           &lt;Checkbox
+             label={t(&#x27;settings.aider.autoCommits&#x27;)}
+<span class="h">@@ -106,7 +106,7 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+         &lt;/div&gt;
+       &lt;/Section&gt;
+ 
+<span class="d">-      &lt;Section title={t(&#x27;settings.aider.environmentVariables&#x27;)}&gt;</span>
+<span class="a">+      &lt;Section id=&quot;aider-env-vars&quot; title={t(&#x27;settings.aider.environmentVariables&#x27;)}&gt;</span>
+         &lt;div className=&quot;px-4 py-6 pb-3&quot;&gt;
+           &lt;div className=&quot;relative&quot;&gt;
+             &lt;TextArea
+<span class="h">@@ -145,7 +145,7 @@ export const AiderSettings = ({ settings, setSettings, initialShowEnvVars = fals</span>
+           &lt;/p&gt;
+         &lt;/div&gt;
+       &lt;/Section&gt;
+<span class="d">-      &lt;Section title={t(&#x27;settings.aider.context&#x27;)}&gt;</span>
+<span class="a">+      &lt;Section id=&quot;aider-context&quot; title={t(&#x27;settings.aider.context&#x27;)}&gt;</span>
+         &lt;div className=&quot;px-4 py-6 pb-3 space-y-1.5&quot;&gt;
+           &lt;Checkbox
+             label={</pre></body></html>

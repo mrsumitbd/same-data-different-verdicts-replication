@@ -1,0 +1,75 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L240</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L240</h1><p><b>Repository:</b> <a href="https://github.com/cartography-cncf/cartography">cartography-cncf/cartography</a><br><b>File at merge:</b> cartography/models/aws/ecs/task_definitions.py, line 41<br><b>Merge commit (birth):</b> <a href="https://github.com/cartography-cncf/cartography/commit/0aa3c53cce85aa848be2182e130e01becdb06302">0aa3c53cce</a> (2025-06-23T15:07:37)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/cartography-cncf/cartography/tree/3881615b88816199205ea864d97e7019e37a20e3">3881615b88</a>)</p><p><b>The line:</b></p><pre><span class="t">    deregistered_at: PropertyRef = PropertyRef(&quot;deregisteredAt&quot;)</span></pre><h2>File at the merge commit, lines 33 to 49</h2><pre>   33 |     memory: PropertyRef = PropertyRef(&quot;memory&quot;)
+   34 |     pid_mode: PropertyRef = PropertyRef(&quot;pidMode&quot;)
+   35 |     ipc_mode: PropertyRef = PropertyRef(&quot;ipcMode&quot;)
+   36 |     proxy_configuration_type: PropertyRef = PropertyRef(&quot;proxyConfiguration.type&quot;)
+   37 |     proxy_configuration_container_name: PropertyRef = PropertyRef(
+   38 |         &quot;proxyConfiguration.containerName&quot;
+   39 |     )
+   40 |     registered_at: PropertyRef = PropertyRef(&quot;registeredAt&quot;)
+<span class="t">   41 |     deregistered_at: PropertyRef = PropertyRef(&quot;deregisteredAt&quot;)</span>
+   42 |     registered_by: PropertyRef = PropertyRef(&quot;registeredBy&quot;)
+   43 |     ephemeral_storage_size_in_gib: PropertyRef = PropertyRef(
+   44 |         &quot;ephemeralStorage.sizeInGiB&quot;
+   45 |     )
+   46 |     region: PropertyRef = PropertyRef(&quot;Region&quot;, set_in_kwargs=True)
+   47 |     lastupdated: PropertyRef = PropertyRef(&quot;lastupdated&quot;, set_in_kwargs=True)
+   48 | 
+   49 | </pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/cartography-cncf/cartography/commit/805628ed09712c6f92f52c43b0ac683eeeb4e6d5">805628ed09</a> (2025-07-04T19:02:22+00:00)</h2><p class="k">feat: Attach ECS assets to task role, execution role, and ECR image (#1673)<br>Path after this commit: cartography/models/aws/ecs/task_definitions.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/cartography/models/aws/ecs/task_definitions.py b/cartography/models/aws/ecs/task_definitions.py
+index e5b6a125..af0ad260 100644
+<span class="d">--- a/cartography/models/aws/ecs/task_definitions.py</span>
+<span class="a">+++ b/cartography/models/aws/ecs/task_definitions.py</span>
+<span class="h">@@ -83,6 +83,42 @@ class ECSTaskDefinitionToECSTaskRel(CartographyRelSchema):</span>
+     )
+ 
+ 
+<span class="a">+@dataclass(frozen=True)</span>
+<span class="a">+class ECSTaskDefinitionToTaskRoleRelProperties(CartographyRelProperties):</span>
+<span class="a">+    lastupdated: PropertyRef = PropertyRef(&quot;lastupdated&quot;, set_in_kwargs=True)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+@dataclass(frozen=True)</span>
+<span class="a">+class ECSTaskDefinitionToTaskRoleRel(CartographyRelSchema):</span>
+<span class="a">+    target_node_label: str = &quot;AWSRole&quot;</span>
+<span class="a">+    target_node_matcher: TargetNodeMatcher = make_target_node_matcher(</span>
+<span class="a">+        {&quot;arn&quot;: PropertyRef(&quot;taskRoleArn&quot;)}</span>
+<span class="a">+    )</span>
+<span class="a">+    direction: LinkDirection = LinkDirection.OUTWARD</span>
+<span class="a">+    rel_label: str = &quot;HAS_TASK_ROLE&quot;</span>
+<span class="a">+    properties: ECSTaskDefinitionToTaskRoleRelProperties = (</span>
+<span class="a">+        ECSTaskDefinitionToTaskRoleRelProperties()</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+@dataclass(frozen=True)</span>
+<span class="a">+class ECSTaskDefinitionToExecutionRoleRelProperties(CartographyRelProperties):</span>
+<span class="a">+    lastupdated: PropertyRef = PropertyRef(&quot;lastupdated&quot;, set_in_kwargs=True)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+@dataclass(frozen=True)</span>
+<span class="a">+class ECSTaskDefinitionToExecutionRoleRel(CartographyRelSchema):</span>
+<span class="a">+    target_node_label: str = &quot;AWSRole&quot;</span>
+<span class="a">+    target_node_matcher: TargetNodeMatcher = make_target_node_matcher(</span>
+<span class="a">+        {&quot;arn&quot;: PropertyRef(&quot;executionRoleArn&quot;)}</span>
+<span class="a">+    )</span>
+<span class="a">+    direction: LinkDirection = LinkDirection.OUTWARD</span>
+<span class="a">+    rel_label: str = &quot;HAS_EXECUTION_ROLE&quot;</span>
+<span class="a">+    properties: ECSTaskDefinitionToExecutionRoleRelProperties = (</span>
+<span class="a">+        ECSTaskDefinitionToExecutionRoleRelProperties()</span>
+<span class="a">+    )</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ @dataclass(frozen=True)
+ class ECSTaskDefinitionSchema(CartographyNodeSchema):
+     label: str = &quot;ECSTaskDefinition&quot;
+<span class="h">@@ -93,5 +129,7 @@ class ECSTaskDefinitionSchema(CartographyNodeSchema):</span>
+     other_relationships: OtherRelationships = OtherRelationships(
+         [
+             ECSTaskDefinitionToECSTaskRel(),
+<span class="a">+            ECSTaskDefinitionToTaskRoleRel(),</span>
+<span class="a">+            ECSTaskDefinitionToExecutionRoleRel(),</span>
+         ]
+     )</pre></body></html>

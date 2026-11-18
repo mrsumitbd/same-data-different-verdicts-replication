@@ -1,0 +1,138 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L191</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L191</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs, line 126<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/bfa8ae0b7738727b8c8654bf48a924b84d89fbcd">bfa8ae0b77</a> (2025-06-11T03:23:45)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">            // generated values would change every time, so they can&#x27;t be part of the checksum.</span></pre><h2>File at the merge commit, lines 118 to 134</h2><pre>  118 | 
+  119 |             if (parameters is null)
+  120 |             {
+  121 |                 return null;
+  122 |             }
+  123 | 
+  124 |             // Now overwrite with live object values skipping known and generated values.
+  125 |             // This is important because the provisioner will fill in the known values and
+<span class="t">  126 |             // generated values would change every time, so they can&#x27;t be part of the checksum.</span>
+  127 |             await SetParametersAsync(parameters, resource, skipDynamicValues: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+  128 |             if (scope is not null)
+  129 |             {
+  130 |                 await SetScopeAsync(scope, resource, cancellationToken).ConfigureAwait(false);
+  131 |             }
+  132 | 
+  133 |             // Get the checksum of the new values
+  134 |             return GetChecksum(resource, parameters, scope);</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/15ce241663ef78b760cac7bc7b344a020994bfcc">15ce241663</a> (2025-10-28T07:55:56+00:00)</h2><p class="k">Decentralize build/push/deploy pipeline logic to resources and deployment targets (#12385)<br>Path after this commit: src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs b/src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs
+index 89f72f093e..0e263b7f1a 100644
+<span class="d">--- a/src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs</span>
+<span class="h">@@ -14,30 +14,14 @@ namespace Aspire.Hosting.Azure.Provisioning;</span>
+ /// &lt;/summary&gt;
+ internal static class BicepUtilities
+ {
+<span class="d">-    // Known values since they will be filled in by the provisioner</span>
+<span class="d">-    private static readonly string[] s_knownParameterNames =</span>
+<span class="d">-    [</span>
+<span class="d">-        AzureBicepResource.KnownParameters.PrincipalName,</span>
+<span class="d">-        AzureBicepResource.KnownParameters.PrincipalId,</span>
+<span class="d">-        AzureBicepResource.KnownParameters.PrincipalType,</span>
+<span class="d">-        AzureBicepResource.KnownParameters.UserPrincipalId,</span>
+<span class="d">-        AzureBicepResource.KnownParameters.Location,</span>
+<span class="d">-    ];</span>
+<span class="d">-</span>
+     /// &lt;summary&gt;
+     /// Converts the parameters to a JSON object compatible with the ARM template.
+     /// &lt;/summary&gt;
+<span class="d">-    public static async Task SetParametersAsync(JsonObject parameters, AzureBicepResource resource, bool skipDynamicValues = false, CancellationToken cancellationToken = default)</span>
+<span class="a">+    public static async Task SetParametersAsync(JsonObject parameters, AzureBicepResource resource, CancellationToken cancellationToken = default)</span>
+     {
+         // Convert the parameters to a JSON object
+         foreach (var parameter in resource.Parameters)
+         {
+<span class="d">-            if (skipDynamicValues &amp;&amp;</span>
+<span class="d">-                (s_knownParameterNames.Contains(parameter.Key) || IsParameterWithGeneratedValue(parameter.Value)))</span>
+<span class="d">-            {</span>
+<span class="d">-                continue;</span>
+<span class="d">-            }</span>
+<span class="d">-</span>
+             // Execute parameter values which are deferred.
+             var parameterValue = parameter.Value is Func&lt;object?&gt; f ? f() : parameter.Value;
+ 
+<span class="h">@@ -121,10 +105,11 @@ internal static class BicepUtilities</span>
+                 return null;
+             }
+ 
+<span class="d">-            // Now overwrite with live object values skipping known and generated values.</span>
+<span class="d">-            // This is important because the provisioner will fill in the known values and</span>
+<span class="d m">-            // generated values would change every time, so they can&#x27;t be part of the checksum.</span>
+<span class="d">-            await SetParametersAsync(parameters, resource, skipDynamicValues: true, cancellationToken: cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+            // Force evaluation of the Bicep template to ensure parameters are expanded</span>
+<span class="a">+            _ = resource.GetBicepTemplateString();</span>
+<span class="a">+</span>
+<span class="a">+            // Now overwrite with live object values skipping known values.</span>
+<span class="a">+            await SetParametersAsync(parameters, resource, cancellationToken: cancellationToken).ConfigureAwait(false);</span>
+             if (scope is not null)
+             {
+                 await SetScopeAsync(scope, resource, cancellationToken).ConfigureAwait(false);
+<span class="h">@@ -145,9 +130,4 @@ internal static class BicepUtilities</span>
+             (resource.TryGetLastAnnotation&lt;ExistingAzureResourceAnnotation&gt;(out var existingResource) ?
+                 existingResource.ResourceGroup :
+                 null);
+<span class="d">-</span>
+<span class="d">-    private static bool IsParameterWithGeneratedValue(object? value)</span>
+<span class="d">-    {</span>
+<span class="d">-        return value is ParameterResource { Default: not null };</span>
+<span class="d">-    }</span>
+ }
+\ No newline at end of file</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/d3fce4b741830a578ee1cd094b3f17d6574a66b5">d3fce4b741</a> (2025-11-13T15:44:28+00:00)</h2><p class="k">Fix Azure roles resources always redeploying (#12901)<br>Path after this commit: src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs b/src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs
+index 0e263b7f1a..38c43fea9e 100644
+<span class="d">--- a/src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs</span>
+<span class="a">+++ b/src/Aspire.Hosting.Azure/Provisioning/BicepUtilities.cs</span>
+<span class="h">@@ -14,10 +14,20 @@ namespace Aspire.Hosting.Azure.Provisioning;</span>
+ /// &lt;/summary&gt;
+ internal static class BicepUtilities
+ {
+<span class="a">+    // Known values since they will be filled in by the provisioner</span>
+<span class="a">+    private static readonly string[] s_knownParameterNames =</span>
+<span class="a">+    [</span>
+<span class="a">+        AzureBicepResource.KnownParameters.PrincipalName,</span>
+<span class="a">+        AzureBicepResource.KnownParameters.PrincipalId,</span>
+<span class="a">+        AzureBicepResource.KnownParameters.PrincipalType,</span>
+<span class="a">+        AzureBicepResource.KnownParameters.UserPrincipalId,</span>
+<span class="a">+        AzureBicepResource.KnownParameters.Location,</span>
+<span class="a">+    ];</span>
+<span class="a">+</span>
+     /// &lt;summary&gt;
+     /// Converts the parameters to a JSON object compatible with the ARM template.
+     /// &lt;/summary&gt;
+<span class="d">-    public static async Task SetParametersAsync(JsonObject parameters, AzureBicepResource resource, CancellationToken cancellationToken = default)</span>
+<span class="a">+    public static async Task SetParametersAsync(JsonObject parameters, AzureBicepResource resource, bool skipKnownValues = false, CancellationToken cancellationToken = default)</span>
+     {
+         // Convert the parameters to a JSON object
+         foreach (var parameter in resource.Parameters)
+<span class="h">@@ -25,6 +35,13 @@ internal static class BicepUtilities</span>
+             // Execute parameter values which are deferred.
+             var parameterValue = parameter.Value is Func&lt;object?&gt; f ? f() : parameter.Value;
+ 
+<span class="a">+            // Skip known parameters with &#x27;null&#x27; values, like PrincipalType and PrincipalId, since they are filled in by the provisioner</span>
+<span class="a">+            // and are not available at this time. If we don&#x27;t do this, the &quot;roles&quot; resources will be re-deployed every run.</span>
+<span class="a">+            if (skipKnownValues &amp;&amp; s_knownParameterNames.Contains(parameter.Key) &amp;&amp; parameterValue is null)</span>
+<span class="a">+            {</span>
+<span class="a">+                continue;</span>
+<span class="a">+            }</span>
+<span class="a">+</span>
+             parameters[parameter.Key] = new JsonObject()
+             {
+                 [&quot;value&quot;] = parameterValue switch
+<span class="h">@@ -109,7 +126,7 @@ internal static class BicepUtilities</span>
+             _ = resource.GetBicepTemplateString();
+ 
+             // Now overwrite with live object values skipping known values.
+<span class="d">-            await SetParametersAsync(parameters, resource, cancellationToken: cancellationToken).ConfigureAwait(false);</span>
+<span class="a">+            await SetParametersAsync(parameters, resource, skipKnownValues: true, cancellationToken: cancellationToken).ConfigureAwait(false);</span>
+             if (scope is not null)
+             {
+                 await SetScopeAsync(scope, resource, cancellationToken).ConfigureAwait(false);
+<span class="h">@@ -130,4 +147,4 @@ internal static class BicepUtilities</span>
+             (resource.TryGetLastAnnotation&lt;ExistingAzureResourceAnnotation&gt;(out var existingResource) ?
+                 existingResource.ResourceGroup :
+                 null);
+<span class="d">-}</span>
+\ No newline at end of file
+<span class="a">+}</span></pre></body></html>

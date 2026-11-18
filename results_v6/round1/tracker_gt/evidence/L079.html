@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L079</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L079</h1><p><b>Repository:</b> <a href="https://github.com/primer/view_components">primer/view_components</a><br><b>File at merge:</b> lib/rubocop/cop/primer/component_name_migration.rb, line 27<br><b>Merge commit (birth):</b> <a href="https://github.com/primer/view_components/commit/b606322653c6109797fe9933fdb7fcbfb09f8235">b606322653</a> (2025-06-10T18:29:22)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/primer/view_components/tree/954596a07c4230f107c24dad2967f25577828d5b">954596a07c</a>)</p><p><b>The line:</b></p><pre><span class="t">            next unless ::Primer::Deprecations.correctable?(component_name)</span></pre><h2>File at the merge commit, lines 19 to 35</h2><pre>   19 | 
+   20 |         def on_send(node)
+   21 |           return unless node.method_name == :new &amp;&amp; !node.receiver.nil? &amp;&amp; ::Primer::Deprecations.deprecated?(node.receiver.const_name)
+   22 | 
+   23 |           message = ::Primer::Deprecations.deprecation_message(node.receiver.const_name)
+   24 |           
+   25 |           add_offense(node.receiver, message: message) do |corrector|
+   26 |             component_name = node.receiver.const_name
+<span class="t">   27 |             next unless ::Primer::Deprecations.correctable?(component_name)</span>
+   28 | 
+   29 |             replacement = ::Primer::Deprecations.replacement(component_name)
+   30 |             corrector.replace(node.receiver, replacement) if replacement.present?
+   31 |           end
+   32 |         end
+   33 |       end
+   34 |     end
+   35 |   end</pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

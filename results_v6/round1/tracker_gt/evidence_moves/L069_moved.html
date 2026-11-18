@@ -1,0 +1,39 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L069 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L069: after the move</h1><p><b>Repository:</b> <a href="https://github.com/schemahero/schemahero">schemahero/schemahero</a><br><b>Original file:</b> pkg/database/postgres/connection.go (see L069.html)<br><b>Move commit:</b> <a href="https://github.com/schemahero/schemahero/commit/72d2c42078238b1048bd62f52d1b808363d8241c">72d2c42078</a> (commit #2 on L069.html)<br><b>Destination file (your label):</b> plugins/postgres/lib/connection.go<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/schemahero/schemahero/tree/a34d82846e2802aa4115f0db232072f50e93cf5b">a34d82846e</a>)</p><p><b>The line:</b></p><pre><span class="t">				schemas = []string{schema}</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 80).</p><h2>Destination file at the move commit, lines 72 to 88</h2><pre>   72 | 		} else if parsed.Query().Get(&quot;currentSchema&quot;) != &quot;&quot; {
+   73 | 			schema = parsed.Query().Get(&quot;currentSchema&quot;)
+   74 | 			schemas = []string{schema}
+   75 | 		} else if parsed.Query().Get(&quot;search_path&quot;) != &quot;&quot; {
+   76 | 			searchPath := parsed.Query().Get(&quot;search_path&quot;)
+   77 | 			pathSchemas := strings.Split(searchPath, &quot;,&quot;)
+   78 | 			if len(pathSchemas) &gt; 0 {
+   79 | 				schema = strings.TrimSpace(pathSchemas[0])
+<span class="t">   80 | 				schemas = []string{schema}</span>
+   81 | 			}
+   82 | 		}
+   83 | 
+   84 | 		if parsed.Query().Get(&quot;schemas&quot;) != &quot;&quot; {
+   85 | 			schemasList := parsed.Query().Get(&quot;schemas&quot;)
+   86 | 			schemas = []string{}
+   87 | 			for _, s := range strings.Split(schemasList, &quot;,&quot;) {
+   88 | 				schemas = append(schemas, strings.TrimSpace(s))</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/schemahero/schemahero/commit/9ff0a7c011e512e33644c30f709726d7ff5b2d2d">9ff0a7c011</a> (2025-12-12T12:41:26-06:00)</h2><p class="k">Add support for extensions in the plugins (#1271)<br>Path after this commit: plugins/postgres/lib/connection.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/plugins/postgres/lib/connection.go b/plugins/postgres/lib/connection.go
+index 7729d070..113edfff 100644
+<span class="d">--- a/plugins/postgres/lib/connection.go</span>
+<span class="a">+++ b/plugins/postgres/lib/connection.go</span>
+<span class="h">@@ -159,8 +159,12 @@ func (p *PostgresConnection) PlanFunctionSchema(functionName string, functionSch</span>
+ 
+ // PlanExtensionSchema generates SQL statements to manage database extensions
+ func (p *PostgresConnection) PlanExtensionSchema(extensionName string, extensionSchema interface{}) ([]string, error) {
+<span class="d">-	// Extensions planning not yet implemented</span>
+<span class="d">-	return nil, errors.New(&quot;extension planning not yet implemented&quot;)</span>
+<span class="a">+	postgresExtension, ok := extensionSchema.(*schemasv1alpha4.PostgresDatabaseExtension)</span>
+<span class="a">+	if !ok {</span>
+<span class="a">+		return nil, errors.New(&quot;extensionSchema must be *PostgresDatabaseExtension&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	</span>
+<span class="a">+	return PlanPostgresExtension(p.GetConnectionURI(), extensionName, postgresExtension)</span>
+ }
+ 
+ // DeployStatements executes a list of SQL statements</pre></body></html>

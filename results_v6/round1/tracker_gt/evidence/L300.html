@@ -1,0 +1,296 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L300</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L300</h1><p><b>Repository:</b> <a href="https://github.com/go-vikunja/vikunja">go-vikunja/vikunja</a><br><b>File at merge:</b> pkg/models/task_collection_subtasks_move_test.go, line 56<br><b>Merge commit (birth):</b> <a href="https://github.com/go-vikunja/vikunja/commit/048e09ee1201df3c0e068e1381ab489696c71ca6">048e09ee12</a> (2025-06-24T09:08:01)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/go-vikunja/vikunja/tree/705e3468c0dd673a04167773a0305c79d8e67ade">705e3468c0</a>)</p><p><b>The line:</b></p><pre><span class="t">	err = subtask.Update(s, u)</span></pre><h2>File at the merge commit, lines 48 to 64</h2><pre>   48 | 		if tsk.ID == 29 {
+   49 | 			found = true
+   50 | 			break
+   51 | 		}
+   52 | 	}
+   53 | 	assert.True(t, found, &quot;subtask should be returned before moving&quot;)
+   54 | 
+   55 | 	subtask := &amp;Task{ID: 29, ProjectID: 7}
+<span class="t">   56 | 	err = subtask.Update(s, u)</span>
+   57 | 	require.NoError(t, err)
+   58 | 	require.NoError(t, s.Commit())
+   59 | 
+   60 | 	s2 := db.NewSession()
+   61 | 	defer s2.Close()
+   62 | 	c = &amp;TaskCollection{
+   63 | 		ProjectID: 7,
+   64 | 		Expand:    []TaskCollectionExpandable{TaskCollectionExpandSubtasks},</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/go-vikunja/vikunja/commit/c6c18d1ca1ab64af1912bf13e1ffdca226ef0551">c6c18d1ca1</a> (2025-06-26T20:05:04+00:00)</h2><p class="k">fix(task): ambiguous description search (#1032)<br>Path after this commit: pkg/models/task_collection_subtasks_move_test.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/pkg/models/task_collection_subtasks_move_test.go b/pkg/models/task_collection_subtasks_move_test.go
+index 0b30bb469..68a919439 100644
+<span class="d">--- a/pkg/models/task_collection_subtasks_move_test.go</span>
+<span class="a">+++ b/pkg/models/task_collection_subtasks_move_test.go</span>
+<span class="h">@@ -78,3 +78,21 @@ func TestTaskCollection_SubtaskRemainsAfterMove(t *testing.T) {</span>
+ 	}
+ 	assert.True(t, found, &quot;subtask should be returned after moving to another project&quot;)
+ }
+<span class="a">+</span>
+<span class="a">+func TestTaskSearchWithExpandSubtasks(t *testing.T) {</span>
+<span class="a">+	db.LoadAndAssertFixtures(t)</span>
+<span class="a">+	s := db.NewSession()</span>
+<span class="a">+	defer s.Close()</span>
+<span class="a">+</span>
+<span class="a">+	project, err := GetProjectSimpleByID(s, 36)</span>
+<span class="a">+	require.NoError(t, err)</span>
+<span class="a">+</span>
+<span class="a">+	opts := &amp;taskSearchOptions{</span>
+<span class="a">+		search: &quot;Caldav&quot;,</span>
+<span class="a">+		expand: []TaskCollectionExpandable{TaskCollectionExpandSubtasks},</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	tasks, _, _, err := getRawTasksForProjects(s, []*Project{project}, &amp;user.User{ID: 15}, opts)</span>
+<span class="a">+	require.NoError(t, err)</span>
+<span class="a">+	require.NotEmpty(t, tasks)</span>
+<span class="a">+}</span></pre><h2>Commit #2: <a href="https://github.com/go-vikunja/vikunja/commit/9b579d282c4e777c773ac360d9f3078c29486e17">9b579d282c</a> (2025-07-02T23:16:05+02:00)</h2><p class="k">fix(tasks): do not return subtasks multiple times when they are related to multiple tasks<br>Path after this commit: pkg/models/task_collection_subtasks_move_test.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/pkg/models/task_collection_subtasks_move_test.go b/pkg/models/task_collection_subtasks_move_test.go
+index 68a919439..ca84c84a5 100644
+<span class="d">--- a/pkg/models/task_collection_subtasks_move_test.go</span>
+<span class="a">+++ b/pkg/models/task_collection_subtasks_move_test.go</span>
+<span class="h">@@ -96,3 +96,73 @@ func TestTaskSearchWithExpandSubtasks(t *testing.T) {</span>
+ 	require.NoError(t, err)
+ 	require.NotEmpty(t, tasks)
+ }
+<span class="a">+</span>
+<span class="a">+func TestTaskCollection_SubtaskWithMultipleParentsNoDuplicates(t *testing.T) {</span>
+<span class="a">+	db.LoadAndAssertFixtures(t)</span>
+<span class="a">+	s := db.NewSession()</span>
+<span class="a">+	defer s.Close()</span>
+<span class="a">+</span>
+<span class="a">+	u := &amp;user.User{ID: 15}</span>
+<span class="a">+</span>
+<span class="a">+	// Use existing tasks from fixtures:</span>
+<span class="a">+	// - Task 41: Parent task in project 36 (already exists)</span>
+<span class="a">+	// - Task 42: Another parent task in project 36 (already exists)</span>
+<span class="a">+	// - Task 43: Subtask in project 36 (already a subtask of task 41)</span>
+<span class="a">+</span>
+<span class="a">+	// Add a second parent relationship: task 43 -&gt; task 42</span>
+<span class="a">+	// This will make task 43 have multiple parents (task 41 and task 42)</span>
+<span class="a">+	relation := &amp;TaskRelation{</span>
+<span class="a">+		TaskID:       43, // subtask</span>
+<span class="a">+		OtherTaskID:  42, // second parent</span>
+<span class="a">+		RelationKind: RelationKindParenttask,</span>
+<span class="a">+		CreatedByID:  15,</span>
+<span class="a">+	}</span>
+<span class="a">+	_, err := s.Insert(relation)</span>
+<span class="a">+	require.NoError(t, err)</span>
+<span class="a">+</span>
+<span class="a">+	// Create inverse relation: task 42 -&gt; task 43</span>
+<span class="a">+	inverseRelation := &amp;TaskRelation{</span>
+<span class="a">+		TaskID:       42, // second parent</span>
+<span class="a">+		OtherTaskID:  43, // subtask</span>
+<span class="a">+		RelationKind: RelationKindSubtask,</span>
+<span class="a">+		CreatedByID:  15,</span>
+<span class="a">+	}</span>
+<span class="a">+	_, err = s.Insert(inverseRelation)</span>
+<span class="a">+	require.NoError(t, err)</span>
+<span class="a">+</span>
+<span class="a">+	// Test Project 36 - should include tasks 41, 42, and 43, but task 43 should only appear once</span>
+<span class="a">+	c := &amp;TaskCollection{</span>
+<span class="a">+		ProjectID: 36,</span>
+<span class="a">+		Expand:    []TaskCollectionExpandable{TaskCollectionExpandSubtasks},</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	res, _, _, err := c.ReadAll(s, u, &quot;&quot;, 0, 50)</span>
+<span class="a">+	require.NoError(t, err)</span>
+<span class="a">+	tasks, ok := res.([]*Task)</span>
+<span class="a">+	require.True(t, ok)</span>
+<span class="a">+</span>
+<span class="a">+	// Count how many times task 43 (the subtask) appears</span>
+<span class="a">+	subtaskCount := 0</span>
+<span class="a">+	for _, task := range tasks {</span>
+<span class="a">+		if task.ID == 43 {</span>
+<span class="a">+			subtaskCount++</span>
+<span class="a">+		}</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// The subtask should appear exactly once (as a subtask, not as a standalone task)</span>
+<span class="a">+	assert.Equal(t, 1, subtaskCount, &quot;Subtask should appear exactly once in Project 36&quot;)</span>
+<span class="a">+</span>
+<span class="a">+	// Verify that both parent tasks are present</span>
+<span class="a">+	foundParent1 := false</span>
+<span class="a">+	foundParent2 := false</span>
+<span class="a">+	for _, task := range tasks {</span>
+<span class="a">+		if task.ID == 41 {</span>
+<span class="a">+			foundParent1 = true</span>
+<span class="a">+		}</span>
+<span class="a">+		if task.ID == 42 {</span>
+<span class="a">+			foundParent2 = true</span>
+<span class="a">+		}</span>
+<span class="a">+	}</span>
+<span class="a">+	assert.True(t, foundParent1, &quot;Parent task 41 should be present&quot;)</span>
+<span class="a">+	assert.True(t, foundParent2, &quot;Parent task 42 should be present&quot;)</span>
+<span class="a">+}</span></pre><h2>Commit #3: <a href="https://github.com/go-vikunja/vikunja/commit/510b1f246ab00b6b65a077121d94e148d2856e96">510b1f246a</a> (2025-07-02T23:16:05+02:00)</h2><p class="k">refactor: move test<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: pkg/models/task_collection_test.go.</p><pre>diff --git a/pkg/models/task_collection_subtasks_move_test.go b/pkg/models/task_collection_subtasks_move_test.go
+deleted file mode 100644
+index ca84c84a5..000000000
+<span class="d">--- a/pkg/models/task_collection_subtasks_move_test.go</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,168 +0,0 @@</span>
+<span class="d">-// Vikunja is a to-do list application to facilitate your life.</span>
+<span class="d">-// Copyright 2018-present Vikunja and contributors. All rights reserved.</span>
+<span class="d">-//</span>
+<span class="d">-// This program is free software: you can redistribute it and/or modify</span>
+<span class="d">-// it under the terms of the GNU Affero General Public License as published by</span>
+<span class="d">-// the Free Software Foundation, either version 3 of the License, or</span>
+<span class="d">-// (at your option) any later version.</span>
+<span class="d">-//</span>
+<span class="d">-// This program is distributed in the hope that it will be useful,</span>
+<span class="d">-// but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="d">-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="d">-// GNU Affero General Public License for more details.</span>
+<span class="d">-//</span>
+<span class="d">-// You should have received a copy of the GNU Affero General Public License</span>
+<span class="d">-// along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="d">-</span>
+<span class="d">-package models</span>
+<span class="d">-</span>
+<span class="d">-import (</span>
+<span class="d">-	&quot;testing&quot;</span>
+<span class="d">-</span>
+<span class="d">-	&quot;code.vikunja.io/api/pkg/db&quot;</span>
+<span class="d">-	&quot;code.vikunja.io/api/pkg/user&quot;</span>
+<span class="d">-</span>
+<span class="d">-	&quot;github.com/stretchr/testify/assert&quot;</span>
+<span class="d">-	&quot;github.com/stretchr/testify/require&quot;</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-func TestTaskCollection_SubtaskRemainsAfterMove(t *testing.T) {</span>
+<span class="d">-	db.LoadAndAssertFixtures(t)</span>
+<span class="d">-	s := db.NewSession()</span>
+<span class="d">-	defer s.Close()</span>
+<span class="d">-</span>
+<span class="d">-	u := &amp;user.User{ID: 1}</span>
+<span class="d">-</span>
+<span class="d">-	c := &amp;TaskCollection{</span>
+<span class="d">-		ProjectID: 1,</span>
+<span class="d">-		Expand:    []TaskCollectionExpandable{TaskCollectionExpandSubtasks},</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	res, _, _, err := c.ReadAll(s, u, &quot;&quot;, 0, 50)</span>
+<span class="d">-	require.NoError(t, err)</span>
+<span class="d">-	tasks, ok := res.([]*Task)</span>
+<span class="d">-	require.True(t, ok)</span>
+<span class="d">-</span>
+<span class="d">-	found := false</span>
+<span class="d">-	for _, tsk := range tasks {</span>
+<span class="d">-		if tsk.ID == 29 {</span>
+<span class="d">-			found = true</span>
+<span class="d">-			break</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-	assert.True(t, found, &quot;subtask should be returned before moving&quot;)</span>
+<span class="d">-</span>
+<span class="d">-	subtask := &amp;Task{ID: 29, ProjectID: 7}</span>
+<span class="d m">-	err = subtask.Update(s, u)</span>
+<span class="d">-	require.NoError(t, err)</span>
+<span class="d">-	require.NoError(t, s.Commit())</span>
+<span class="d">-</span>
+<span class="d">-	s2 := db.NewSession()</span>
+<span class="d">-	defer s2.Close()</span>
+<span class="d">-	c = &amp;TaskCollection{</span>
+<span class="d">-		ProjectID: 7,</span>
+<span class="d">-		Expand:    []TaskCollectionExpandable{TaskCollectionExpandSubtasks},</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	res, _, _, err = c.ReadAll(s2, u, &quot;&quot;, 0, 50)</span>
+<span class="d">-	require.NoError(t, err)</span>
+<span class="d">-	tasks, ok = res.([]*Task)</span>
+<span class="d">-	require.True(t, ok)</span>
+<span class="d">-</span>
+<span class="d">-	found = false</span>
+<span class="d">-	for _, tsk := range tasks {</span>
+<span class="d">-		if tsk.ID == 29 {</span>
+<span class="d">-			found = true</span>
+<span class="d">-			break</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-	assert.True(t, found, &quot;subtask should be returned after moving to another project&quot;)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func TestTaskSearchWithExpandSubtasks(t *testing.T) {</span>
+<span class="d">-	db.LoadAndAssertFixtures(t)</span>
+<span class="d">-	s := db.NewSession()</span>
+<span class="d">-	defer s.Close()</span>
+<span class="d">-</span>
+<span class="d">-	project, err := GetProjectSimpleByID(s, 36)</span>
+<span class="d">-	require.NoError(t, err)</span>
+<span class="d">-</span>
+<span class="d">-	opts := &amp;taskSearchOptions{</span>
+<span class="d">-		search: &quot;Caldav&quot;,</span>
+<span class="d">-		expand: []TaskCollectionExpandable{TaskCollectionExpandSubtasks},</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	tasks, _, _, err := getRawTasksForProjects(s, []*Project{project}, &amp;user.User{ID: 15}, opts)</span>
+<span class="d">-	require.NoError(t, err)</span>
+<span class="d">-	require.NotEmpty(t, tasks)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func TestTaskCollection_SubtaskWithMultipleParentsNoDuplicates(t *testing.T) {</span>
+<span class="d">-	db.LoadAndAssertFixtures(t)</span>
+<span class="d">-	s := db.NewSession()</span>
+<span class="d">-	defer s.Close()</span>
+<span class="d">-</span>
+<span class="d">-	u := &amp;user.User{ID: 15}</span>
+<span class="d">-</span>
+<span class="d">-	// Use existing tasks from fixtures:</span>
+<span class="d">-	// - Task 41: Parent task in project 36 (already exists)</span>
+<span class="d">-	// - Task 42: Another parent task in project 36 (already exists)</span>
+<span class="d">-	// - Task 43: Subtask in project 36 (already a subtask of task 41)</span>
+<span class="d">-</span>
+<span class="d">-	// Add a second parent relationship: task 43 -&gt; task 42</span>
+<span class="d">-	// This will make task 43 have multiple parents (task 41 and task 42)</span>
+<span class="d">-	relation := &amp;TaskRelation{</span>
+<span class="d">-		TaskID:       43, // subtask</span>
+<span class="d">-		OtherTaskID:  42, // second parent</span>
+<span class="d">-		RelationKind: RelationKindParenttask,</span>
+<span class="d">-		CreatedByID:  15,</span>
+<span class="d">-	}</span>
+<span class="d">-	_, err := s.Insert(relation)</span>
+<span class="d">-	require.NoError(t, err)</span>
+<span class="d">-</span>
+<span class="d">-	// Create inverse relation: task 42 -&gt; task 43</span>
+<span class="d">-	inverseRelation := &amp;TaskRelation{</span>
+<span class="d">-		TaskID:       42, // second parent</span>
+<span class="d">-		OtherTaskID:  43, // subtask</span>
+<span class="d">-		RelationKind: RelationKindSubtask,</span>
+<span class="d">-		CreatedByID:  15,</span>
+<span class="d">-	}</span>
+<span class="d">-	_, err = s.Insert(inverseRelation)</span>
+<span class="d">-	require.NoError(t, err)</span>
+<span class="d">-</span>
+<span class="d">-	// Test Project 36 - should include tasks 41, 42, and 43, but task 43 should only appear once</span>
+<span class="d">-	c := &amp;TaskCollection{</span>
+<span class="d">-		ProjectID: 36,</span>
+<span class="d">-		Expand:    []TaskCollectionExpandable{TaskCollectionExpandSubtasks},</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	res, _, _, err := c.ReadAll(s, u, &quot;&quot;, 0, 50)</span>
+<span class="d">-	require.NoError(t, err)</span>
+<span class="d">-	tasks, ok := res.([]*Task)</span>
+<span class="d">-	require.True(t, ok)</span>
+<span class="d">-</span>
+<span class="d">-	// Count how many times task 43 (the subtask) appears</span>
+<span class="d">-	subtaskCount := 0</span>
+<span class="d">-	for _, task := range tasks {</span>
+<span class="d">-		if task.ID == 43 {</span>
+<span class="d">-			subtaskCount++</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// The subtask should appear exactly once (as a subtask, not as a standalone task)</span>
+<span class="d">-	assert.Equal(t, 1, subtaskCount, &quot;Subtask should appear exactly once in Project 36&quot;)</span>
+<span class="d">-</span>
+<span class="d">-	// Verify that both parent tasks are present</span>
+<span class="d">-	foundParent1 := false</span>
+<span class="d">-	foundParent2 := false</span>
+<span class="d">-	for _, task := range tasks {</span>
+<span class="d">-		if task.ID == 41 {</span>
+<span class="d">-			foundParent1 = true</span>
+<span class="d">-		}</span>
+<span class="d">-		if task.ID == 42 {</span>
+<span class="d">-			foundParent2 = true</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-	assert.True(t, foundParent1, &quot;Parent task 41 should be present&quot;)</span>
+<span class="d">-	assert.True(t, foundParent2, &quot;Parent task 42 should be present&quot;)</span>
+<span class="d">-}</span></pre></body></html>

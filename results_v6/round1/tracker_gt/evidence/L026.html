@@ -1,0 +1,70 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L026</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L026</h1><p><b>Repository:</b> <a href="https://github.com/marimo-team/marimo">marimo-team/marimo</a><br><b>File at merge:</b> tests/_messaging/test_types.py, line 20<br><b>Merge commit (birth):</b> <a href="https://github.com/marimo-team/marimo/commit/4e001e2120adef245329aa9d2bf142985ce157ca">4e001e2120</a> (2025-03-07T00:02:44)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/marimo-team/marimo/tree/b70293a7f077ac30e981401fa99328777b76d48f">b70293a7f0</a>)</p><p><b>The line:</b></p><pre><span class="t">        stream.write(&quot;test_op&quot;, {&quot;key&quot;: &quot;value&quot;})</span></pre><h2>File at the merge commit, lines 12 to 28</h2><pre>   12 | 
+   13 | 
+   14 | class TestStream:
+   15 |     def test_noop_stream(self) -&gt; None:
+   16 |         # Test that NoopStream implements Stream
+   17 |         stream = NoopStream()
+   18 | 
+   19 |         # Should not raise any exceptions
+<span class="t">   20 |         stream.write(&quot;test_op&quot;, {&quot;key&quot;: &quot;value&quot;})</span>
+   21 |         stream.stop()
+   22 | 
+   23 |         # cell_id should be None by default
+   24 |         assert stream.cell_id is None
+   25 | 
+   26 |         # Set cell_id
+   27 |         stream.cell_id = &quot;test_cell&quot;
+   28 |         assert stream.cell_id == &quot;test_cell&quot;</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/marimo-team/marimo/commit/6e4010e6716d0934fa83c9f3961cd0cb594dd142">6e4010e671</a> (2025-08-19T14:33:50-06:00)</h2><p class="k">fix: stdout and stderr should not be stoppable by users (#5955)<br>Path after this commit: tests/_messaging/test_types.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/_messaging/test_types.py b/tests/_messaging/test_types.py
+index 16dcf353a..4a6e2be55 100644
+<span class="d">--- a/tests/_messaging/test_types.py</span>
+<span class="a">+++ b/tests/_messaging/test_types.py</span>
+<span class="h">@@ -83,16 +83,21 @@ class TestStdoutStderr:</span>
+         stderr = self.MockStderr()
+         assert stderr.name == &quot;stderr&quot;
+ 
+<span class="a">+    def test_not_stoppable(self) -&gt; None:</span>
+<span class="a">+        stdout = self.MockStdout()</span>
+<span class="a">+        assert not hasattr(stdout, &quot;stop&quot;)</span>
+<span class="a">+        stderr = self.MockStderr()</span>
+<span class="a">+        assert not hasattr(stderr, &quot;stop&quot;)</span>
+<span class="a">+</span>
+ 
+ class TestStdin:
+     def test_stdin_name(self) -&gt; None:
+         stdin = Stdin()
+         assert stdin.name == &quot;stdin&quot;
+ 
+<span class="d">-    def test_stdin_stop(self) -&gt; None:</span>
+<span class="a">+    def test_not_stoppable(self) -&gt; None:</span>
+         stdin = Stdin()
+<span class="d">-        # Should not raise any exceptions</span>
+<span class="d">-        stdin.stop()</span>
+<span class="a">+        assert not hasattr(stdin, &quot;stop&quot;)</span>
+ 
+ 
+ class TestKernelMessage:</pre><h2>Commit #2: <a href="https://github.com/marimo-team/marimo/commit/d8b2bb88168d7babab3a5d33f7d9c80d85f58c5a">d8b2bb8816</a> (2025-09-16T21:43:08-04:00)</h2><p class="k">internal: pass around single bytes of message for KernelMessage (#6380)<br>Path after this commit: tests/_messaging/test_types.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/_messaging/test_types.py b/tests/_messaging/test_types.py
+index 4a6e2be55..9395d068e 100644
+<span class="d">--- a/tests/_messaging/test_types.py</span>
+<span class="a">+++ b/tests/_messaging/test_types.py</span>
+<span class="h">@@ -17,7 +17,7 @@ class TestStream:</span>
+         stream = NoopStream()
+ 
+         # Should not raise any exceptions
+<span class="d m">-        stream.write(&quot;test_op&quot;, {&quot;key&quot;: &quot;value&quot;})</span>
+<span class="a">+        stream.write({&quot;key&quot;: &quot;value&quot;})</span>
+         stream.stop()
+ 
+         # cell_id should be None by default</pre><h2>Commit #3: <a href="https://github.com/marimo-team/marimo/commit/adebb475066ed8d1d5bdf5006472b9750c8faaa9">adebb47506</a> (2025-12-26T09:56:49-05:00)</h2><p class="k">Change copyright to 2026 including scripts (#7606)<br>Path after this commit: tests/_messaging/test_types.py. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/tests/_messaging/test_types.py b/tests/_messaging/test_types.py
+index 9395d068e..e1adbe15f 100644
+<span class="d">--- a/tests/_messaging/test_types.py</span>
+<span class="a">+++ b/tests/_messaging/test_types.py</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-# Copyright 2024 Marimo. All rights reserved.</span>
+<span class="a">+# Copyright 2026 Marimo. All rights reserved.</span>
+ from __future__ import annotations
+ 
+ from marimo._messaging.mimetypes import KnownMimeType</pre></body></html>

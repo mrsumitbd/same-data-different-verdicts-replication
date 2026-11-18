@@ -1,0 +1,70 @@
+% Tables of the paper whose values src/paper_figs_r3.py and src/forest_r6.py plot.
+
+\begin{table}[t]
+\centering
+\caption{Within-repository hazard ratio of each agent's code against human code (identity tracking, all lines, syntactic definition, each line counts once), with 500-resample cluster-bootstrap 95\% CIs.}
+\label{tab:rq3_per_agent}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Agent} & \textbf{Lines} & \textbf{PRs} & \textbf{Repositories}$^{a}$ & \textbf{HR [95\% CI]} \\
+\midrule
+GitHub Copilot & 67,398 & 489 & 53 & 0.653 [0.459, 0.954] \\
+OpenAI Codex & 48,867 & 491 & 63 & 0.831 [0.468, 1.218] \\
+Cursor & 13,340 & 44 & 16 & 0.379 [0.150, 3.695] \\
+Claude Code & 48,182 & 31 & 13 & 0.934 [0.136, 1.950] \\
+Devin & 87,634 & 412 & 31 & 1.059 [0.409, 2.076] \\
+\bottomrule
+\end{tabular}
+\par\smallskip\parbox{\linewidth}{\footnotesize $^{a}$ Repositories that contain both the agent's code and human code.}
+\end{table}
+
+\begin{table*}[t]
+\centering
+\caption{Modification intent by tier under seven classification approaches (full corpus: 5,300 modification commits mapped to a tier: 1,453 human-supervised, 617 fully-autonomous, 3,230 human) and under the human labels (618 labeled commits, weighted to the corpus). Shares are corrective / perfective / adaptive / preventive (\%). $\kappa$: agreement with the 618 human labels. Tests: $\chi^2$ $p$ of each tier against the human baseline (design-corrected for the human labels), with Cram\'er's $V$ in parentheses.}
+\label{tab:rq4_intent}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrlllll}
+\toprule
+\textbf{Approach} & \textbf{$\kappa$} & \textbf{Human-supervised} & \textbf{Fully-autonomous} & \textbf{Human baseline} & \textbf{HS vs.\ human} & \textbf{FA vs.\ human} \\
+\midrule
+Keyword$^{a}$ & 0.38 & 36.2 / 12.8 / 30.6 / 10.3 & 30.6 / 15.6 / 36.0 / 13.5 & 34.2 / 13.7 / 28.7 / 11.2 & 0.10 (0.04) & $<$0.001 (0.11) \\
+DeepSeek & 0.70 & 22.7 / 22.2 / 49.6 / 5.4 & 22.4 / 25.8 / 47.3 / 4.5 & 22.1 / 23.7 / 49.4 / 4.8 & 0.62 (0.02) & 0.67 (0.02) \\
+gpt-oss & 0.69 & 21.2 / 22.4 / 51.5 / 4.9 & 22.2 / 24.0 / 48.6 / 5.2 & 20.9 / 23.2 / 51.8 / 4.1 & 0.59 (0.02) & 0.37 (0.03) \\
+MiniMax & 0.71 & 24.8 / 21.6 / 48.2 / 5.4 & 24.5 / 22.7 / 48.5 / 4.4 & 24.3 / 22.6 / 48.8 / 4.2 & 0.34 (0.03) & 0.998 (0.003) \\
+Majority vote$^{b}$ & 0.71 & 23.1 / 21.7 / 50.0 / 5.3 & 23.3 / 23.7 / 48.8 / 4.2 & 22.5 / 23.0 / 50.1 / 4.4 & 0.43 (0.02) & 0.93 (0.01) \\
+Weighted vote & 0.71 & 23.3 / 21.8 / 49.6 / 5.4 & 23.3 / 23.7 / 48.6 / 4.4 & 22.7 / 23.0 / 49.9 / 4.4 & 0.40 (0.03) & 0.95 (0.01) \\
+Dawid-Skene & 0.72 & 22.9 / 21.7 / 49.7 / 5.6 & 23.2 / 23.7 / 48.6 / 4.5 & 22.3 / 23.1 / 50.0 / 4.5 & 0.31 (0.03) & 0.93 (0.01) \\
+\midrule
+Human labels (618, weighted) & n/a & 28.1 / 19.3 / 42.0 / 10.6 & 19.3 / 22.3 / 46.3 / 12.1 & 21.1 / 30.0 / 41.8 / 7.1 & 0.038 (0.13) & 0.37 (0.09) \\
+\bottomrule
+\end{tabular}%
+}
+\par\smallskip\parbox{\linewidth}{\footnotesize $^{a}$ Remaining share unclassified: 10.1\% (HS), 4.3\% (FA), 12.2\% (human). $^{b}$ 37 three-way splits left undecided.}
+\end{table*}
+
+\begin{table}[t]
+\centering
+\caption{Share of modifications of each group's code made by agents (\%), by unit and window, and, in parentheses, the share made by the agent that wrote the code. A follow-up PR is the earliest merged PR, other than the original one, that contains the modifying commit.}
+\label{tab:modifier_variants}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrrr}
+\toprule
+\textbf{Unit} & \textbf{Window} & \textbf{Human-supervised} & \textbf{Fully-autonomous (Devin)} & \textbf{Human baseline} \\
+\midrule
+Commit & 7 days & 14.5 (12.9) & 24.6 (24.6) & 2.1 \\
+Commit & 30 days & 12.3 (11.3) & 22.5 (22.5) & 2.3 \\
+Commit & Full & 11.4 (9.9) & 14.3 (13.8) & 3.1 \\
+Line & 7 days & 6.3 (5.5) & 11.4 (11.4) & 0.3 \\
+Line & 30 days & 8.1 (6.2) & 9.6 (9.6) & 1.1 \\
+Line & Full & 9.8 (8.4) & 5.7 (5.6) & 1.2 \\
+Follow-up PR & 7 days & 15.6 (13.2) & 29.9 (29.9) & 2.8 \\
+Follow-up PR & 30 days & 13.3 (11.8) & 25.5 (25.5) & 2.9 \\
+Follow-up PR & Full & 11.8 (10.1) & 13.7 (13.2) & 3.8 \\
+\midrule
+Commit, co-author rule & Full & 16.3 (12.9) & 16.2 (14.6) & 5.5 \\
+\bottomrule
+\end{tabular}}
+\end{table}

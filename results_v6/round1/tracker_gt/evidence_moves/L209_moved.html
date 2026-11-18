@@ -1,0 +1,85 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L209 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L209: after the move</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>Original file:</b> apps/forms/app/(dev)/canvas/editor.tsx (see L209.html)<br><b>Move commit:</b> <a href="https://github.com/gridaco/grida/commit/c7d96550e01e7a9e7553bb83ea24b7ed6c8ab866">c7d96550e0</a> (commit #3 on L209.html)<br><b>Destination file (your label):</b> editor/components/desktop-drag-area.tsx<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t">  // Renderer process</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 6).</p><h2>Destination file at the move commit, lines 1 to 14</h2><pre>    1 | &quot;use client&quot;;
+    2 | import { cn } from &quot;@/utils&quot;;
+    3 | import React, { useEffect, useState } from &quot;react&quot;;
+    4 | 
+    5 | function isElectron(): boolean {
+<span class="t">    6 |   // Renderer process</span>
+    7 |   if (
+    8 |     typeof window !== &quot;undefined&quot; &amp;&amp;
+    9 |     typeof window.process === &quot;object&quot; &amp;&amp;
+   10 |     // @ts-expect-error electron type
+   11 |     window.process.type === &quot;renderer&quot;
+   12 |   ) {
+   13 |     return true;
+   14 |   }</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gridaco/grida/commit/a80c7520fc7fc8072969d1c289798825c02efdc8">a80c7520fc</a> (2025-02-27T05:14:09+09:00)</h2><p class="k">Merge pull request #262 from gridaco/desktop<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/editor/components/desktop-drag-area.tsx b/editor/components/desktop-drag-area.tsx
+deleted file mode 100644
+index 84965d790..000000000
+<span class="d">--- a/editor/components/desktop-drag-area.tsx</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,62 +0,0 @@</span>
+<span class="d">-&quot;use client&quot;;</span>
+<span class="d">-import { cn } from &quot;@/utils&quot;;</span>
+<span class="d">-import React, { useEffect, useState } from &quot;react&quot;;</span>
+<span class="d">-</span>
+<span class="d">-function isElectron(): boolean {</span>
+<span class="d m">-  // Renderer process</span>
+<span class="d">-  if (</span>
+<span class="d">-    typeof window !== &quot;undefined&quot; &amp;&amp;</span>
+<span class="d">-    typeof window.process === &quot;object&quot; &amp;&amp;</span>
+<span class="d">-    // @ts-expect-error electron type</span>
+<span class="d">-    window.process.type === &quot;renderer&quot;</span>
+<span class="d">-  ) {</span>
+<span class="d">-    return true;</span>
+<span class="d">-  }</span>
+<span class="d">-</span>
+<span class="d">-  // Main process</span>
+<span class="d">-  if (</span>
+<span class="d">-    typeof process !== &quot;undefined&quot; &amp;&amp;</span>
+<span class="d">-    typeof process.versions === &quot;object&quot; &amp;&amp;</span>
+<span class="d">-    !!process.versions.electron</span>
+<span class="d">-  ) {</span>
+<span class="d">-    return true;</span>
+<span class="d">-  }</span>
+<span class="d">-</span>
+<span class="d">-  // Detect the user agent when the `nodeIntegration` option is set to false</span>
+<span class="d">-  if (</span>
+<span class="d">-    typeof navigator === &quot;object&quot; &amp;&amp;</span>
+<span class="d">-    typeof navigator.userAgent === &quot;string&quot; &amp;&amp;</span>
+<span class="d">-    navigator.userAgent.indexOf(&quot;Electron&quot;) &gt;= 0</span>
+<span class="d">-  ) {</span>
+<span class="d">-    return true;</span>
+<span class="d">-  }</span>
+<span class="d">-</span>
+<span class="d">-  return false;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-function useIsElectron() {</span>
+<span class="d">-  const [_isElectron, setIsElectron] = useState&lt;boolean&gt;(false);</span>
+<span class="d">-  useEffect(() =&gt; {</span>
+<span class="d">-    setIsElectron(isElectron());</span>
+<span class="d">-  }, []);</span>
+<span class="d">-</span>
+<span class="d">-  return _isElectron;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-export function DesktopDragArea({</span>
+<span class="d">-  children,</span>
+<span class="d">-  className,</span>
+<span class="d">-  ...props</span>
+<span class="d">-}: React.HtmlHTMLAttributes&lt;HTMLDivElement&gt;) {</span>
+<span class="d">-  const isElectron = useIsElectron();</span>
+<span class="d">-</span>
+<span class="d">-  if (!isElectron) return null;</span>
+<span class="d">-  return (</span>
+<span class="d">-    &lt;div</span>
+<span class="d">-      {...props}</span>
+<span class="d">-      className={cn(&quot;w-full min-h-11 h-11 desktop-drag-area&quot;, className)}</span>
+<span class="d">-    &gt;</span>
+<span class="d">-      {children}</span>
+<span class="d">-    &lt;/div&gt;</span>
+<span class="d">-  );</span>
+<span class="d">-}</span></pre></body></html>

@@ -1,0 +1,538 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L237</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L237</h1><p><b>Repository:</b> <a href="https://github.com/prebid/prebid.js">prebid/prebid.js</a><br><b>File at merge:</b> test/spec/modules/adnuntiusBidAdapter_spec.js, line 1067<br><b>Merge commit (birth):</b> <a href="https://github.com/prebid/prebid.js/commit/36d7454ca531121086d061893e14a3cdd1e6feaf">36d7454ca5</a> (2025-05-28T16:50:31)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/prebid/prebid.js/tree/60baec61d09bdc52b09bde5de4ce4cc0f84f0953">60baec61d0</a>)</p><p><b>The line:</b></p><pre><span class="t">      expectUrlsEqual(request[0].url, ENDPOINT_URL_SEGMENTS.replace(&#x27;segment3&#x27;, &#x27;segment3,merge-this,and-this&#x27;));</span></pre><h2>File at the merge commit, lines 1059 to 1075</h2><pre> 1059 | 
+ 1060 |       bidderRequests[0].params.targeting = {
+ 1061 |         segments: [&#x27;merge-this&#x27;, &#x27;and-this&#x27;]
+ 1062 |       };
+ 1063 | 
+ 1064 |       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(bidderRequests, { ortb2 }));
+ 1065 |       expect(request.length).to.equal(1);
+ 1066 |       expect(request[0]).to.have.property(&#x27;url&#x27;)
+<span class="t"> 1067 |       expectUrlsEqual(request[0].url, ENDPOINT_URL_SEGMENTS.replace(&#x27;segment3&#x27;, &#x27;segment3,merge-this,and-this&#x27;));</span>
+ 1068 | 
+ 1069 |       delete bidderRequests[0].params.targeting;
+ 1070 |     });
+ 1071 | 
+ 1072 |     function countMatches(actualArray, expectedValue) {
+ 1073 |       return actualArray.filter(val =&gt; {
+ 1074 |         return JSON.stringify(val) === JSON.stringify(expectedValue);
+ 1075 |       }).length;</pre><p class="k">Below are all 11 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/prebid/prebid.js/commit/4ca80b9e00f338172aedfc18d4cdd25208e37920">4ca80b9e00</a> (2025-05-29T06:20:12-06:00)</h2><p class="k">Using userIdAsEids in ad requests (#13190)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 9765c83f0..899df878f 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -4,8 +4,8 @@ import { newBidder } from &#x27;src/adapters/bidderFactory.js&#x27;;</span>
+ import { config } from &#x27;src/config.js&#x27;;
+ import * as utils from &#x27;src/utils.js&#x27;;
+ import { getStorageManager } from &#x27;src/storageManager.js&#x27;;
+<span class="d">-import { getGlobal } from &#x27;../../../src/prebidGlobal&#x27;;</span>
+<span class="d">-import { getUnixTimestampFromNow, getWindowTop } from &#x27;src/utils.js&#x27;;</span>
+<span class="a">+import { getGlobal } from &#x27;../../../src/prebidGlobal.js&#x27;;</span>
+<span class="a">+import { getUnixTimestampFromNow } from &#x27;src/utils.js&#x27;;</span>
+ import { getWinDimensions } from &#x27;../../../src/utils&#x27;;
+ 
+ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {
+<span class="h">@@ -45,7 +45,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+   const winDimensions = getWinDimensions();
+   const screen = winDimensions.screen.availWidth + &#x27;x&#x27; + winDimensions.screen.availHeight;
+   const viewport = winDimensions.innerWidth + &#x27;x&#x27; + winDimensions.innerHeight;
+<span class="d">-  const prebidVersion = window.$$PREBID_GLOBAL$$.version;</span>
+<span class="a">+  const prebidVersion = getGlobal().version;</span>
+   const ENDPOINT_URL_BASE = `${URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}`;
+   const ENDPOINT_URL = `${ENDPOINT_URL_BASE}&amp;userId=${usi}`;
+   const LOCALHOST_URL = `http://localhost:8078/i?tzo=${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;
+<span class="h">@@ -935,7 +935,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+       })
+       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(bidderRequests, { }));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, LOCALHOST_URL);
+     });
+ 
+<span class="h">@@ -1053,7 +1053,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+           {
+             name: &#x27;other&#x27;,
+             segment: [&#x27;segment3&#x27;]
+<span class="d">-          }],</span>
+<span class="a">+          }]</span>
+         }
+       };
+ 
+<span class="h">@@ -1224,7 +1224,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(bidderRequests, { ortb2 }));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL_SEGMENTS);
+     });
+   });
+<span class="h">@@ -1233,14 +1233,14 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+     it(&#x27;should send GDPR Consent data if gdprApplies&#x27;, function () {
+       let request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: true, consentString: &#x27;consentString&#x27; } });
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL_CONSENT);
+     });
+ 
+     it(&#x27;should not send GDPR Consent data if gdprApplies equals undefined&#x27;, function () {
+       let request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: undefined, consentString: &#x27;consentString&#x27; } });
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL);
+     });
+ 
+<span class="h">@@ -1254,13 +1254,13 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+           {
+             name: &#x27;other&#x27;,
+             segment: [&#x27;segment3&#x27;]
+<span class="d">-          }],</span>
+<span class="a">+          }]</span>
+         }
+       }
+ 
+       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(bidderRequests, { ortb2 }));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL_SEGMENTS);
+     });
+ 
+<span class="h">@@ -1316,26 +1316,39 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+       ];
+       let request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(req, { bids: req }));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, `${ENDPOINT_URL_BASE}&amp;userId=${usi}`);
+ 
+       const ortb2 = {user: {ext: {eids: [{source: &#x27;a&#x27;, uids: [{id: &#x27;123&#x27;, atype: 1}]}, {source: &#x27;b&#x27;, uids: [{id: &#x27;456&#x27;, atype: 3, ext: {some: &#x27;1&#x27;}}]}]}}};
+       request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(req, { bids: req, ortb2: ortb2 }));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, `${ENDPOINT_URL_BASE}&amp;userId=${usi}&amp;eids=%5B%7B%22source%22%3A%22a%22%2C%22uids%22%3A%5B%7B%22id%22%3A%22123%22%2C%22atype%22%3A1%7D%5D%7D%2C%7B%22source%22%3A%22b%22%2C%22uids%22%3A%5B%7B%22id%22%3A%22456%22%2C%22atype%22%3A3%2C%22ext%22%3A%7B%22some%22%3A%221%22%7D%7D%5D%7D%5D`);
+ 
+       ortb2.user.id = &quot;ortb2userid&quot;
+       request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(req, { bids: req, ortb2: ortb2 }));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="d">-      expectUrlsEqual(request[0].url, `${ENDPOINT_URL_BASE}&amp;userId=ortb2userid`);</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+<span class="a">+      expectUrlsEqual(request[0].url, `${ENDPOINT_URL_BASE}&amp;userId=ortb2userid&amp;eids=%5B%7B%22source%22%3A%22a%22%2C%22uids%22%3A%5B%7B%22id%22%3A%22123%22%2C%22atype%22%3A1%7D%5D%7D%2C%7B%22source%22%3A%22b%22%2C%22uids%22%3A%5B%7B%22id%22%3A%22456%22%2C%22atype%22%3A3%2C%22ext%22%3A%7B%22some%22%3A%221%22%7D%7D%5D%7D%5D`);</span>
+ 
+       req[0].params.userId = &#x27;different_user_id&#x27;;
+       request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(req, { bids: req }));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, `${ENDPOINT_URL_BASE}&amp;userId=different_user_id`);
+<span class="a">+</span>
+<span class="a">+      const eids = [{source: &#x27;pubcid&#x27;, uids: [{id: &#x27;123&#x27;, atype: 1}]}, {source: &#x27;otherid&#x27;, uids: [{id: &#x27;456&#x27;, atype: 3, ext: {some: &#x27;1&#x27;}}]}];</span>
+<span class="a">+      req[0].params.userId = &#x27;different_user_id&#x27;;</span>
+<span class="a">+      req[0].params.userIdAsEids = eids;</span>
+<span class="a">+      request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(req, { bids: req }));</span>
+<span class="a">+      expect(request.length).to.equal(1);</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expectUrlsEqual(request[0].url, `${ENDPOINT_URL_BASE}&amp;userId=different_user_id&amp;eids=` + encodeURIComponent(JSON.stringify(eids)));</span>
+<span class="a">+</span>
+<span class="a">+      request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(req, { bids: req, ortb2: ortb2 }));</span>
+<span class="a">+      expect(request.length).to.equal(1);</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+<span class="a">+      expectUrlsEqual(request[0].url, `${ENDPOINT_URL_BASE}&amp;userId=different_user_id&amp;eids=` + encodeURIComponent(JSON.stringify(eids)));</span>
+     });
+ 
+     it(&#x27;should handle no user specified&#x27;, function () {
+<span class="h">@@ -1354,7 +1367,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+       ];
+       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(req, { bids: req }));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL);
+     });
+   });
+<span class="h">@@ -1363,14 +1376,14 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+     it(&#x27;should send GDPR Consent data if gdprApplies&#x27;, function () {
+       let request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: true, consentString: &#x27;consentString&#x27; } });
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL_CONSENT);
+     });
+ 
+     it(&#x27;should not send GDPR Consent data if gdprApplies equals undefined&#x27;, function () {
+       let request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: undefined, consentString: &#x27;consentString&#x27; } });
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL);
+     });
+   });
+<span class="h">@@ -1387,7 +1400,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(bidderRequests, {}));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL_NOCOOKIE + &#x27;&amp;advertiserTransparency=true&#x27;);
+     });
+   });
+<span class="h">@@ -1426,7 +1439,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(bidderRequests, {}));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL);
+       expect(request[0]).to.have.property(&#x27;data&#x27;);
+       const data = JSON.parse(request[0].data);
+<span class="h">@@ -1507,7 +1520,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(bidderRequests, {}));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       expectUrlsEqual(request[0].url, ENDPOINT_URL + &#x27;&amp;ds=5&#x27;);
+     });
+     it(&#x27;Should allow a minimum of 0 deals when using bidder config.&#x27;, function () {
+<span class="h">@@ -1520,7 +1533,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+       const request = config.runWithBidder(&#x27;adnuntius&#x27;, () =&gt; spec.buildRequests(bidderRequests, {}));
+       expect(request.length).to.equal(1);
+<span class="d">-      expect(request[0]).to.have.property(&#x27;url&#x27;)</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+       // The maxDeals value is ignored because it is less than zero
+       expectUrlsEqual(request[0].url, ENDPOINT_URL);
+     });</pre><h2>Commit #2: <a href="https://github.com/prebid/prebid.js/commit/64e99dd9261026d46a006236608173f7f412154f">64e99dd926</a> (2025-05-29T18:37:40-06:00)</h2><p class="k">Better failure messages. (#13217)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 899df878f..1fe16566d 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -58,7 +58,17 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+     const e = utils.parseUrl(expected);
+     expect(a.protocol + &#x27;://&#x27; + a.host + a.pathname).to.equal(e.protocol + &#x27;://&#x27; + e.host + e.pathname);
+     const sortEntries = obj =&gt; Object.entries(obj).sort();
+<span class="d">-    expect(sortEntries(a.search)).to.deep.equal(sortEntries(e.search));</span>
+<span class="a">+    const sortedExpectations = sortEntries(a.search);</span>
+<span class="a">+    const sortedActuals = sortEntries(e.search);</span>
+<span class="a">+    for (let i = 0; i &lt; sortedExpectations.length; i++) {</span>
+<span class="a">+      const expectation = sortedExpectations[i];</span>
+<span class="a">+      const actual = sortedActuals[i];</span>
+<span class="a">+</span>
+<span class="a">+      const expectationAsString = expectation[0] + &quot;:&quot; + expectation[1];</span>
+<span class="a">+      const actualAsString = actual[0] + &quot;:&quot; + actual[1];</span>
+<span class="a">+      expect(expectationAsString).to.equal(actualAsString);</span>
+<span class="a">+    }</span>
+<span class="a">+    expect(sortedExpectations.length).to.equal(sortedActuals.length);</span>
+   }
+ 
+   const adapter = newBidder(spec);</pre><h2>Commit #3: <a href="https://github.com/prebid/prebid.js/commit/9c69d7543c4f99c3a4c8b56a1c35f54404c6bdb3">9c69d7543c</a> (2025-05-31T07:43:05-06:00)</h2><p class="k">Aduntius Bid Adapter : test failures on safari 15.6 (#13233)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 1fe16566d..e19b3b0d9 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -24,10 +24,12 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+       }
+     };
+     storage = getStorageManager({ bidderCode: &#x27;adnuntius&#x27; });
+<span class="a">+    resetExpectedUrls();</span>
+   });
+ 
+   beforeEach(() =&gt; {
+     storage.setDataInLocalStorage(&#x27;adn.metaData&#x27;, JSON.stringify(meta));
+<span class="a">+    resetExpectedUrls();</span>
+   });
+ 
+   afterEach(function () {
+<span class="h">@@ -35,23 +37,37 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+     config.setBidderConfig({ bidders: [] });
+     localStorage.removeItem(&#x27;adn.metaData&#x27;);
+     sandbox.restore();
+<span class="a">+    resetExpectedUrls();</span>
+   });
+ 
+   after(() =&gt; {
+     getGlobal().bidderSettings = {};
+<span class="a">+    resetExpectedUrls();</span>
+   });
+ 
+   const tzo = new Date().getTimezoneOffset();
+<span class="d">-  const winDimensions = getWinDimensions();</span>
+<span class="d">-  const screen = winDimensions.screen.availWidth + &#x27;x&#x27; + winDimensions.screen.availHeight;</span>
+<span class="d">-  const viewport = winDimensions.innerWidth + &#x27;x&#x27; + winDimensions.innerHeight;</span>
+   const prebidVersion = getGlobal().version;
+<span class="d">-  const ENDPOINT_URL_BASE = `${URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}`;</span>
+<span class="d">-  const ENDPOINT_URL = `${ENDPOINT_URL_BASE}&amp;userId=${usi}`;</span>
+<span class="d">-  const LOCALHOST_URL = `http://localhost:8078/i?tzo=${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+<span class="d">-  const ENDPOINT_URL_NOCOOKIE = `${ENDPOINT_URL_BASE}&amp;userId=${usi}&amp;noCookies=true`;</span>
+<span class="d">-  const ENDPOINT_URL_SEGMENTS = `${ENDPOINT_URL_BASE}&amp;segments=segment1,segment2,segment3&amp;userId=${usi}`;</span>
+<span class="d">-  const ENDPOINT_URL_CONSENT = `${EURO_URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;consentString=consentString&amp;gdpr=1&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+<span class="a">+</span>
+<span class="a">+  let screen;</span>
+<span class="a">+  let viewport;</span>
+<span class="a">+  let ENDPOINT_URL_BASE;</span>
+<span class="a">+  let ENDPOINT_URL;</span>
+<span class="a">+  let LOCALHOST_URL;</span>
+<span class="a">+  let ENDPOINT_URL_NOCOOKIE;</span>
+<span class="a">+  let ENDPOINT_URL_SEGMENTS;</span>
+<span class="a">+  let ENDPOINT_URL_CONSENT;</span>
+<span class="a">+</span>
+<span class="a">+  function resetExpectedUrls() {</span>
+<span class="a">+    const winDimensions = getWinDimensions();</span>
+<span class="a">+    screen = winDimensions.screen.availWidth + &#x27;x&#x27; + winDimensions.screen.availHeight;</span>
+<span class="a">+    viewport = winDimensions.innerWidth + &#x27;x&#x27; + winDimensions.innerHeight;</span>
+<span class="a">+    ENDPOINT_URL_BASE = `${URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}`;</span>
+<span class="a">+    ENDPOINT_URL = `${ENDPOINT_URL_BASE}&amp;userId=${usi}`;</span>
+<span class="a">+    LOCALHOST_URL = `http://localhost:8078/i?tzo=${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+<span class="a">+    ENDPOINT_URL_NOCOOKIE = `${ENDPOINT_URL_BASE}&amp;userId=${usi}&amp;noCookies=true`;</span>
+<span class="a">+    ENDPOINT_URL_SEGMENTS = `${ENDPOINT_URL_BASE}&amp;segments=segment1,segment2,segment3&amp;userId=${usi}`;</span>
+<span class="a">+    ENDPOINT_URL_CONSENT = `${EURO_URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;consentString=consentString&amp;gdpr=1&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+<span class="a">+  }</span>
+ 
+   function expectUrlsEqual(actual, expected) {
+     const a = utils.parseUrl(actual);</pre><h2>Commit #4: <a href="https://github.com/prebid/prebid.js/commit/05f5977194bca1ba67f2c1a40ecaa13bad2c3ceb">05f5977194</a> (2025-06-20T06:31:02-06:00)</h2><p class="k">Adds support for passing through deal IDs to adnuntius ad server. (#13410)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index e19b3b0d9..58fd93d0c 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -5,7 +5,7 @@ import { config } from &#x27;src/config.js&#x27;;</span>
+ import * as utils from &#x27;src/utils.js&#x27;;
+ import { getStorageManager } from &#x27;src/storageManager.js&#x27;;
+ import { getGlobal } from &#x27;../../../src/prebidGlobal.js&#x27;;
+<span class="d">-import { getUnixTimestampFromNow } from &#x27;src/utils.js&#x27;;</span>
+<span class="a">+import {deepClone, getUnixTimestampFromNow} from &#x27;src/utils.js&#x27;;</span>
+ import { getWinDimensions } from &#x27;../../../src/utils&#x27;;
+ 
+ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {
+<span class="h">@@ -965,6 +965,29 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+       expectUrlsEqual(request[0].url, LOCALHOST_URL);
+     });
+ 
+<span class="a">+    it(&#x27;Test specifying deal IDs&#x27;, function () {</span>
+<span class="a">+      const dealIdRequest = deepClone(bidderRequests);</span>
+<span class="a">+      dealIdRequest[0].params.dealId = &#x27;simplestringdeal&#x27;;</span>
+<span class="a">+      dealIdRequest[0].params.inventory = {</span>
+<span class="a">+        pmp: {</span>
+<span class="a">+          deals: [{id: &#x27;123&#x27;, bidfloor: 12, bidfloorcur: &#x27;USD&#x27;}]</span>
+<span class="a">+        }</span>
+<span class="a">+      };</span>
+<span class="a">+      let request = spec.buildRequests(dealIdRequest, {});</span>
+<span class="a">+      expect(request.length).to.equal(1);</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;bid&#x27;);</span>
+<span class="a">+      const bid = request[0].bid[0]</span>
+<span class="a">+      expect(bid).to.have.property(&#x27;bidId&#x27;);</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;url&#x27;);</span>
+<span class="a">+      expectUrlsEqual(request[0].url, ENDPOINT_URL);</span>
+<span class="a">+      expect(request[0]).to.have.property(&#x27;data&#x27;);</span>
+<span class="a">+      expect(request[0].data).to.equal(&#x27;{&quot;adUnits&quot;:[{&quot;auId&quot;:&quot;000000000008b6bc&quot;,&quot;targetId&quot;:&quot;123&quot;,&quot;dealId&quot;:&quot;simplestringdeal&quot;,&quot;maxDeals&quot;:1,&quot;dimensions&quot;:[[640,480],[600,400]]},{&quot;auId&quot;:&quot;0000000000000551&quot;,&quot;targetId&quot;:&quot;adn-0000000000000551&quot;,&quot;dimensions&quot;:[[1640,1480],[1600,1400]]}]}&#x27;);</span>
+<span class="a">+</span>
+<span class="a">+      delete dealIdRequest[0].params.dealId;</span>
+<span class="a">+      request = spec.buildRequests(dealIdRequest, {});</span>
+<span class="a">+      expect(request[0].data).to.equal(&#x27;{&quot;adUnits&quot;:[{&quot;auId&quot;:&quot;000000000008b6bc&quot;,&quot;targetId&quot;:&quot;123&quot;,&quot;dealId&quot;:[{&quot;id&quot;:&quot;123&quot;,&quot;bidfloor&quot;:12,&quot;bidfloorcur&quot;:&quot;USD&quot;}],&quot;maxDeals&quot;:1,&quot;dimensions&quot;:[[640,480],[600,400]]},{&quot;auId&quot;:&quot;0000000000000551&quot;,&quot;targetId&quot;:&quot;adn-0000000000000551&quot;,&quot;dimensions&quot;:[[1640,1480],[1600,1400]]}]}&#x27;);</span>
+<span class="a">+    });</span>
+<span class="a">+</span>
+     it(&#x27;Test requests with no local storage&#x27;, function () {
+       storage.setDataInLocalStorage(&#x27;adn.metaData&#x27;, JSON.stringify([{}]));
+       const request = spec.buildRequests(bidderRequests, {});</pre><h2>Commit #5: <a href="https://github.com/prebid/prebid.js/commit/7203d19a6349b12b34cd82dc7afa2fb15fcef918">7203d19a63</a> (2025-07-10T10:32:20-04:00)</h2><p class="k">Linting: remove exception (#13518)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 58fd93d0c..1bf9f4cd2 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -1280,14 +1280,14 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+   describe(&#x27;user privacy&#x27;, function () {
+     it(&#x27;should send GDPR Consent data if gdprApplies&#x27;, function () {
+<span class="d">-      let request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: true, consentString: &#x27;consentString&#x27; } });</span>
+<span class="a">+      const request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: true, consentString: &#x27;consentString&#x27; } });</span>
+       expect(request.length).to.equal(1);
+       expect(request[0]).to.have.property(&#x27;url&#x27;);
+       expectUrlsEqual(request[0].url, ENDPOINT_URL_CONSENT);
+     });
+ 
+     it(&#x27;should not send GDPR Consent data if gdprApplies equals undefined&#x27;, function () {
+<span class="d">-      let request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: undefined, consentString: &#x27;consentString&#x27; } });</span>
+<span class="a">+      const request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: undefined, consentString: &#x27;consentString&#x27; } });</span>
+       expect(request.length).to.equal(1);
+       expect(request[0]).to.have.property(&#x27;url&#x27;);
+       expectUrlsEqual(request[0].url, ENDPOINT_URL);
+<span class="h">@@ -1423,14 +1423,14 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+   describe(&#x27;user privacy&#x27;, function () {
+     it(&#x27;should send GDPR Consent data if gdprApplies&#x27;, function () {
+<span class="d">-      let request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: true, consentString: &#x27;consentString&#x27; } });</span>
+<span class="a">+      const request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: true, consentString: &#x27;consentString&#x27; } });</span>
+       expect(request.length).to.equal(1);
+       expect(request[0]).to.have.property(&#x27;url&#x27;);
+       expectUrlsEqual(request[0].url, ENDPOINT_URL_CONSENT);
+     });
+ 
+     it(&#x27;should not send GDPR Consent data if gdprApplies equals undefined&#x27;, function () {
+<span class="d">-      let request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: undefined, consentString: &#x27;consentString&#x27; } });</span>
+<span class="a">+      const request = spec.buildRequests(bidderRequests, { gdprConsent: { gdprApplies: undefined, consentString: &#x27;consentString&#x27; } });</span>
+       expect(request.length).to.equal(1);
+       expect(request[0]).to.have.property(&#x27;url&#x27;);
+       expectUrlsEqual(request[0].url, ENDPOINT_URL);</pre><h2>Commit #6: <a href="https://github.com/prebid/prebid.js/commit/217887e9c152153f44535912ba049235f76c0b7d">217887e9c1</a> (2025-07-14T11:52:48-06:00)</h2><p class="k">Test suite: enforce import extensions in tests (#13569)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 1bf9f4cd2..04eca59c6 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -6,7 +6,7 @@ import * as utils from &#x27;src/utils.js&#x27;;</span>
+ import { getStorageManager } from &#x27;src/storageManager.js&#x27;;
+ import { getGlobal } from &#x27;../../../src/prebidGlobal.js&#x27;;
+ import {deepClone, getUnixTimestampFromNow} from &#x27;src/utils.js&#x27;;
+<span class="d">-import { getWinDimensions } from &#x27;../../../src/utils&#x27;;</span>
+<span class="a">+import { getWinDimensions } from &#x27;../../../src/utils.js&#x27;;</span>
+ 
+ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {
+   const sandbox = sinon.createSandbox();</pre><h2>Commit #7: <a href="https://github.com/prebid/prebid.js/commit/f1a0b7afbb6fcc4221618c8c779a96dfc38f1f0a">f1a0b7afbb</a> (2025-07-14T14:57:52-06:00)</h2><p class="k">Linting: add stylistc indentation rule (#13585)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 04eca59c6..b384f624e 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -379,13 +379,13 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+             &#x27;url&#x27;: &#x27;https://whatever.com&#x27;
+           },
+           &#x27;assets&#x27;: [
+<span class="d">-          {</span>
+<span class="d">-            &#x27;id&#x27;: 1,</span>
+<span class="d">-            &#x27;required&#x27;: 1,</span>
+<span class="d">-            &#x27;img&#x27;: {</span>
+<span class="d">-              &#x27;url&#x27;: &#x27;http://something.com/something.png&#x27;</span>
+<span class="d">-            }</span>
+<span class="d">-          }]</span>
+<span class="a">+            {</span>
+<span class="a">+              &#x27;id&#x27;: 1,</span>
+<span class="a">+              &#x27;required&#x27;: 1,</span>
+<span class="a">+              &#x27;img&#x27;: {</span>
+<span class="a">+                &#x27;url&#x27;: &#x27;http://something.com/something.png&#x27;</span>
+<span class="a">+              }</span>
+<span class="a">+            }]</span>
+         }
+       },
+       &#x27;matchedAdCount&#x27;: 1,</pre><h2>Commit #8: <a href="https://github.com/prebid/prebid.js/commit/af1539553aa7dba226677c49eb417bdb2e3480f8">af1539553a</a> (2025-07-28T16:11:24-04:00)</h2><p class="k">Build sytem: allow customization of some build options (such as global name) to NPM consumers (#13685)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index b384f624e..708da11ea 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -8,6 +8,8 @@ import { getGlobal } from &#x27;../../../src/prebidGlobal.js&#x27;;</span>
+ import {deepClone, getUnixTimestampFromNow} from &#x27;src/utils.js&#x27;;
+ import { getWinDimensions } from &#x27;../../../src/utils.js&#x27;;
+ 
+<span class="a">+import {getGlobalVarName} from &#x27;../../../src/buildOptions.js&#x27;;</span>
+<span class="a">+</span>
+ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {
+   const sandbox = sinon.createSandbox();
+   const URL = &#x27;https://ads.adnuntius.delivery/i?tzo=&#x27;;
+<span class="h">@@ -886,7 +888,7 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+       const winDimensions = getWinDimensions();
+       const screen = winDimensions.screen.availWidth + &#x27;x&#x27; + winDimensions.screen.availHeight;
+       const viewport = winDimensions.innerWidth + &#x27;x&#x27; + winDimensions.innerHeight;
+<span class="d">-      const prebidVersion = window.$$PREBID_GLOBAL$$.version;</span>
+<span class="a">+      const prebidVersion = window[getGlobalVarName()].version;</span>
+       const tzo = new Date().getTimezoneOffset();
+       const ENDPOINT_URL = `https://ads.adnuntius.delivery/i?tzo=${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;
+ </pre><h2>Commit #9: <a href="https://github.com/prebid/prebid.js/commit/f8367edd9d3bbdadbce89f130432ec20a1ed9de3">f8367edd9d</a> (2025-09-22T15:18:48-04:00)</h2><p class="k">Core: do not poll for some window dimensions (#13916)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 708da11ea..474345564 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -9,6 +9,7 @@ import {deepClone, getUnixTimestampFromNow} from &#x27;src/utils.js&#x27;;</span>
+ import { getWinDimensions } from &#x27;../../../src/utils.js&#x27;;
+ 
+ import {getGlobalVarName} from &#x27;../../../src/buildOptions.js&#x27;;
+<span class="a">+import {getExtraWinDimensions} from &#x27;../../../libraries/extraWinDimensions/extraWinDimensions.js&#x27;;</span>
+ 
+ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {
+   const sandbox = sinon.createSandbox();
+<span class="h">@@ -61,7 +62,8 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+   function resetExpectedUrls() {
+     const winDimensions = getWinDimensions();
+<span class="d">-    screen = winDimensions.screen.availWidth + &#x27;x&#x27; + winDimensions.screen.availHeight;</span>
+<span class="a">+    const extraDims = getExtraWinDimensions();</span>
+<span class="a">+    screen = extraDims.screen.availWidth + &#x27;x&#x27; + extraDims.screen.availHeight;</span>
+     viewport = winDimensions.innerWidth + &#x27;x&#x27; + winDimensions.innerHeight;
+     ENDPOINT_URL_BASE = `${URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}`;
+     ENDPOINT_URL = `${ENDPOINT_URL_BASE}&amp;userId=${usi}`;
+<span class="h">@@ -886,7 +888,8 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+   describe(&#x27;buildRequests&#x27;, function () {
+     it(&#x27;Test requests&#x27;, function () {
+       const winDimensions = getWinDimensions();
+<span class="d">-      const screen = winDimensions.screen.availWidth + &#x27;x&#x27; + winDimensions.screen.availHeight;</span>
+<span class="a">+      const extraDims = getExtraWinDimensions();</span>
+<span class="a">+      const screen = extraDims.screen.availWidth + &#x27;x&#x27; + extraDims.screen.availHeight;</span>
+       const viewport = winDimensions.innerWidth + &#x27;x&#x27; + winDimensions.innerHeight;
+       const prebidVersion = window[getGlobalVarName()].version;
+       const tzo = new Date().getTimezoneOffset();</pre><h2>Commit #10: <a href="https://github.com/prebid/prebid.js/commit/3d76c96222c6a603d78662af4c6fd95a56496971">3d76c96222</a> (2025-10-09T09:08:37-04:00)</h2><p class="k">Core: refactor window dimensions utilities to only access DOM APIs when necessary (#13929)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 474345564..8a531ba08 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -1,15 +1,14 @@</span>
+<span class="d">-import { expect } from &#x27;chai&#x27;;</span>
+<span class="d">-import { spec } from &#x27;modules/adnuntiusBidAdapter.js&#x27;;</span>
+<span class="d">-import { newBidder } from &#x27;src/adapters/bidderFactory.js&#x27;;</span>
+<span class="d">-import { config } from &#x27;src/config.js&#x27;;</span>
+<span class="a">+import {expect} from &#x27;chai&#x27;;</span>
+<span class="a">+import {spec} from &#x27;modules/adnuntiusBidAdapter.js&#x27;;</span>
+<span class="a">+import {newBidder} from &#x27;src/adapters/bidderFactory.js&#x27;;</span>
+<span class="a">+import {config} from &#x27;src/config.js&#x27;;</span>
+ import * as utils from &#x27;src/utils.js&#x27;;
+<span class="d">-import { getStorageManager } from &#x27;src/storageManager.js&#x27;;</span>
+<span class="d">-import { getGlobal } from &#x27;../../../src/prebidGlobal.js&#x27;;</span>
+ import {deepClone, getUnixTimestampFromNow} from &#x27;src/utils.js&#x27;;
+<span class="d">-import { getWinDimensions } from &#x27;../../../src/utils.js&#x27;;</span>
+<span class="a">+import {getStorageManager} from &#x27;src/storageManager.js&#x27;;</span>
+<span class="a">+import {getGlobal} from &#x27;../../../src/prebidGlobal.js&#x27;;</span>
+<span class="a">+import {getWinDimensions} from &#x27;../../../src/utils.js&#x27;;</span>
+ 
+ import {getGlobalVarName} from &#x27;../../../src/buildOptions.js&#x27;;
+<span class="d">-import {getExtraWinDimensions} from &#x27;../../../libraries/extraWinDimensions/extraWinDimensions.js&#x27;;</span>
+ 
+ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {
+   const sandbox = sinon.createSandbox();
+<span class="h">@@ -51,7 +50,6 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+   const tzo = new Date().getTimezoneOffset();
+   const prebidVersion = getGlobal().version;
+ 
+<span class="d">-  let screen;</span>
+   let viewport;
+   let ENDPOINT_URL_BASE;
+   let ENDPOINT_URL;
+<span class="h">@@ -62,15 +60,13 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+ 
+   function resetExpectedUrls() {
+     const winDimensions = getWinDimensions();
+<span class="d">-    const extraDims = getExtraWinDimensions();</span>
+<span class="d">-    screen = extraDims.screen.availWidth + &#x27;x&#x27; + extraDims.screen.availHeight;</span>
+     viewport = winDimensions.innerWidth + &#x27;x&#x27; + winDimensions.innerHeight;
+<span class="d">-    ENDPOINT_URL_BASE = `${URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}`;</span>
+<span class="a">+    ENDPOINT_URL_BASE = `${URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;viewport=${viewport}`;</span>
+     ENDPOINT_URL = `${ENDPOINT_URL_BASE}&amp;userId=${usi}`;
+<span class="d">-    LOCALHOST_URL = `http://localhost:8078/i?tzo=${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+<span class="a">+    LOCALHOST_URL = `http://localhost:8078/i?tzo=${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+     ENDPOINT_URL_NOCOOKIE = `${ENDPOINT_URL_BASE}&amp;userId=${usi}&amp;noCookies=true`;
+     ENDPOINT_URL_SEGMENTS = `${ENDPOINT_URL_BASE}&amp;segments=segment1,segment2,segment3&amp;userId=${usi}`;
+<span class="d">-    ENDPOINT_URL_CONSENT = `${EURO_URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;consentString=consentString&amp;gdpr=1&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+<span class="a">+    ENDPOINT_URL_CONSENT = `${EURO_URL}${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;consentString=consentString&amp;gdpr=1&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+   }
+ 
+   function expectUrlsEqual(actual, expected) {
+<span class="h">@@ -888,12 +884,10 @@ describe(&#x27;adnuntiusBidAdapter&#x27;, function () {</span>
+   describe(&#x27;buildRequests&#x27;, function () {
+     it(&#x27;Test requests&#x27;, function () {
+       const winDimensions = getWinDimensions();
+<span class="d">-      const extraDims = getExtraWinDimensions();</span>
+<span class="d">-      const screen = extraDims.screen.availWidth + &#x27;x&#x27; + extraDims.screen.availHeight;</span>
+       const viewport = winDimensions.innerWidth + &#x27;x&#x27; + winDimensions.innerHeight;
+       const prebidVersion = window[getGlobalVarName()].version;
+       const tzo = new Date().getTimezoneOffset();
+<span class="d">-      const ENDPOINT_URL = `https://ads.adnuntius.delivery/i?tzo=${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;screen=${screen}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+<span class="a">+      const ENDPOINT_URL = `https://ads.adnuntius.delivery/i?tzo=${tzo}&amp;format=prebid&amp;pbv=${prebidVersion}&amp;viewport=${viewport}&amp;userId=${usi}`;</span>
+ 
+       const bidderRequests = [
+         {</pre><h2>Commit #11: <a href="https://github.com/prebid/prebid.js/commit/d90038742037d2c9fc4ddad1c18310f6a0c8fce3">d900387420</a> (2025-11-21T10:19:34-05:00)</h2><p class="k">Various modules: fix tests (#14194)<br>Path after this commit: test/spec/modules/adnuntiusBidAdapter_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/adnuntiusBidAdapter_spec.js b/test/spec/modules/adnuntiusBidAdapter_spec.js
+index 8a531ba08..6c6f08b87 100644
+<span class="d">--- a/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="a">+++ b/test/spec/modules/adnuntiusBidAdapter_spec.js</span>
+<span class="h">@@ -1,3 +1,4 @@</span>
+<span class="a">+import &#x27;../../../src/prebid.js&#x27;;</span>
+ import {expect} from &#x27;chai&#x27;;
+ import {spec} from &#x27;modules/adnuntiusBidAdapter.js&#x27;;
+ import {newBidder} from &#x27;src/adapters/bidderFactory.js&#x27;;</pre></body></html>

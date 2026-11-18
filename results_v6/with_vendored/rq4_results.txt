@@ -1,0 +1,78 @@
+
+======================================================================
+SECTION A: Modifier type distribution by birth tier
+======================================================================
+
+  human_supervised (n=1479):
+    human: 1310 (88.6%)
+    agent: 169 (11.4%)
+    unknown: 0 (0.0%)
+
+  fully_autonomous (n=617):
+    human: 529 (85.7%)
+    agent: 88 (14.3%)
+    unknown: 0 (0.0%)
+
+  human (n=3268):
+    human: 3166 (96.9%)
+    agent: 102 (3.1%)
+    unknown: 0 (0.0%)
+
+Overall modifier_type distribution (all birth tiers):
+  human: 5005 (93.3%)
+  agent: 359 (6.7%)
+  unknown: 0 (0.0%)
+
+Agent-attributed code (both tiers) modified by humans: 1839/2096 (87.7%)
+
+======================================================================
+SECTION B: Agent modifier identity by birth tier
+(Who modifies agent-attributed code when an agent does it?)
+======================================================================
+
+Total agent-modified commits: 359
+
+  human_supervised modified by agent (n=169):
+    Copilot: 154 (91.1%)
+    gru-agent[bot]: 4 (2.4%)
+    github-actions[bot]: 2 (1.2%)
+    renovate[bot]: 2 (1.2%)
+    mergify[bot]: 1 (0.6%)
+    blink-so[bot]: 1 (0.6%)
+    dependabot[bot]: 1 (0.6%)
+    devin-ai-integration[bot]: 1 (0.6%)
+
+  fully_autonomous modified by agent (n=88):
+    devin-ai-integration[bot]: 85 (96.6%)
+    renovate[bot]: 2 (2.3%)
+    dependabot[bot]: 1 (1.1%)
+
+  human modified by agent (n=102):
+    Copilot: 42 (41.2%)
+    devin-ai-integration[bot]: 40 (39.2%)
+    mlflow-app[bot]: 4 (3.9%)
+    roomote[bot]: 4 (3.9%)
+    gru-agent[bot]: 3 (2.9%)
+    mergify[bot]: 2 (2.0%)
+    github-actions[bot]: 2 (2.0%)
+    dependabot[bot]: 2 (2.0%)
+
+======================================================================
+SECTION C: Integrated corrected picture summary
+======================================================================
+
+Retention (repo-stratified, bootstrap CI; from rq1_master_results.txt):
+  human_supervised: HR=0.778 [0.510, 1.119], p=0.181
+  fully_autonomous: HR=0.715 [0.382, 1.713], p=0.214
+
+Measurement contrast, across vs within repositories (from rq1_master_results.txt):
+  tier                     across: HR [95% CI]     within: HR [boot 95% CI]  ratio  direction / significance
+  human_supervised     0.376 [0.372, 0.380]      0.778 [0.510, 1.119]    2.067  same direction; across significant, within n.s.
+  fully_autonomous     0.389 [0.384, 0.395]      0.715 [0.382, 1.713]    1.836  same direction; across significant, within n.s.
+
+Intent: reported per classification approach in results/intent_aggregation_full_corpus.txt
+
+Modifier identity overall:
+  human: 5005 (93.3%)
+  agent: 359 (6.7%)
+  unknown: 0 (0.0%)

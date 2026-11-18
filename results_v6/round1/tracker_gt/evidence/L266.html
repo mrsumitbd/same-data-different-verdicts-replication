@@ -1,0 +1,184 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L266</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L266</h1><p><b>Repository:</b> <a href="https://github.com/openpipe/art">openpipe/art</a><br><b>File at merge:</b> dev/swebench/rollout.py, line 5<br><b>Merge commit (birth):</b> <a href="https://github.com/openpipe/art/commit/68bcdab8b0b82605d0c50642bb132d7c67d91aad">68bcdab8b0</a> (2025-06-26T17:02:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/openpipe/art/tree/3b4a9427374c36e16e54bd69394e35ceddde7d1b">3b4a942737</a>)</p><p><b>The line:</b></p><pre><span class="t">from http.client import RemoteDisconnected</span></pre><h2>File at the merge commit, lines 1 to 13</h2><pre>    1 | from aiolimiter import AsyncLimiter
+    2 | import art
+    3 | import asyncio
+    4 | from grpclib.exceptions import StreamTerminatedError
+<span class="t">    5 | from http.client import RemoteDisconnected</span>
+    6 | import json
+    7 | from langfuse.decorators import observe
+    8 | import modal
+    9 | from pathlib import Path
+   10 | from pydantic import BaseModel
+   11 | import requests
+   12 | from requests import adapters as requests_adapters
+   13 | from requests.exceptions import ConnectTimeout, ConnectionError, SSLError</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/openpipe/art/commit/b85897ff07cd6077ff5aeed22153b9f78dded603">b85897ff07</a> (2025-07-01T13:45:26-06:00)</h2><p class="k">chore: SWE-Bench related changes<br>Path after this commit: dev/swebench/rollout.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dev/swebench/rollout.py b/dev/swebench/rollout.py
+index 93c73d8c..84474dfc 100644
+<span class="d">--- a/dev/swebench/rollout.py</span>
+<span class="a">+++ b/dev/swebench/rollout.py</span>
+<span class="h">@@ -48,7 +48,9 @@ async def rollout(</span>
+     completion_kwargs: dict[str, Any] | None = None,
+     replay_trajectory_path: Path | None = None,
+     return_run_single: Literal[False] = False,
+<span class="a">+    reward_power: float = 1.0,</span>
+     run_in_thread: bool = True,
+<span class="a">+    timeout: float = 60 * 15,</span>
+ ) -&gt; art.Trajectory: ...
+ 
+ 
+<span class="h">@@ -60,7 +62,9 @@ async def rollout(</span>
+     completion_kwargs: dict[str, Any] | None = None,
+     replay_trajectory_path: Path | None = None,
+     return_run_single: Literal[True],
+<span class="a">+    reward_power: float = 1.0,</span>
+     run_in_thread: bool = True,
+<span class="a">+    timeout: float = 60 * 15,</span>
+ ) -&gt; tuple[art.Trajectory, RunSingle]: ...
+ 
+ 
+<span class="h">@@ -77,6 +81,7 @@ async def rollout(</span>
+     return_run_single: bool = False,
+     reward_power: float = 1.0,
+     run_in_thread: bool = True,
+<span class="a">+    timeout: float = 60 * 15,</span>
+ ) -&gt; art.Trajectory | tuple[art.Trajectory, RunSingle]:
+     trajectory = art.Trajectory(messages_and_choices=[], reward=0.0)
+     config = get_config(model, instance, completion_kwargs)
+<span class="h">@@ -113,11 +118,12 @@ async def rollout(</span>
+         )
+     try:
+         async with limiter:
+<span class="d">-            await run(run_single.run, run_in_thread)</span>
+<span class="a">+            await asyncio.wait_for(run(run_single.run, run_in_thread), timeout)</span>
+     except modal.exception.RemoteError as error:
+         print(instance[&quot;instance_id&quot;])
+         print(error)
+     except (
+<span class="a">+        asyncio.TimeoutError,</span>
+         ProtocolError,
+         RemoteDisconnected,
+         ConnectionError,
+<span class="h">@@ -132,7 +138,7 @@ async def rollout(</span>
+     finally:
+         try:
+             if isinstance(run_single.env.deployment, ModalDeployment):
+<span class="d">-                await run_single.env.deployment.stop()</span>
+<span class="a">+                asyncio.create_task(run_single.env.deployment.stop())</span>
+         except:
+             pass
+     if instance[&quot;use_swebench_modal_harness&quot;]:
+<span class="h">@@ -335,7 +341,7 @@ def update_trajectory(</span>
+     )
+     # calculate reward and save metrics
+     trajectory.reward = (
+<span class="d">-        0.45 * maintenance + 0.45 * progress**reward_power + 0.1 * resolved</span>
+<span class="a">+        0.2 * maintenance + 0.3 * progress**reward_power + 0.5 * resolved</span>
+     )
+     trajectory.metrics[&quot;progress&quot;] = progress
+     trajectory.metrics[&quot;maintenance&quot;] = maintenance</pre><h2>Commit #2: <a href="https://github.com/openpipe/art/commit/290f2abaa94153f4b33d5a50c0cf9c12181a96fc">290f2abaa9</a> (2025-07-03T13:30:24-06:00)</h2><p class="k">feat: Add ruff formatting checks to CI<br>Path after this commit: dev/swebench/rollout.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dev/swebench/rollout.py b/dev/swebench/rollout.py
+index 84474dfc..1fd05995 100644
+<span class="d">--- a/dev/swebench/rollout.py</span>
+<span class="a">+++ b/dev/swebench/rollout.py</span>
+<span class="h">@@ -139,7 +139,7 @@ async def rollout(</span>
+         try:
+             if isinstance(run_single.env.deployment, ModalDeployment):
+                 asyncio.create_task(run_single.env.deployment.stop())
+<span class="d">-        except:</span>
+<span class="a">+        except:  # noqa: E722</span>
+             pass
+     if instance[&quot;use_swebench_modal_harness&quot;]:
+         await update_trajectory_with_swebench_modal_harness(</pre><h2>Commit #3: <a href="https://github.com/openpipe/art/commit/b16f2ad5e2e81870d3b0b51f85be70980fe31988">b16f2ad5e2</a> (2025-08-07T21:08:22-06:00)</h2><p class="k">feat: Sort imports<br>Path after this commit: dev/swebench/rollout.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dev/swebench/rollout.py b/dev/swebench/rollout.py
+index 1fd05995..2622d7b0 100644
+<span class="d">--- a/dev/swebench/rollout.py</span>
+<span class="a">+++ b/dev/swebench/rollout.py</span>
+<span class="h">@@ -1,33 +1,34 @@</span>
+<span class="d">-from aiolimiter import AsyncLimiter</span>
+<span class="d">-import art</span>
+ import asyncio
+<span class="d">-from grpclib.exceptions import StreamTerminatedError</span>
+<span class="d m">-from http.client import RemoteDisconnected</span>
+ import json
+<span class="d">-from langfuse.decorators import observe</span>
+<span class="d">-import modal</span>
+<span class="a m">+from http.client import RemoteDisconnected</span>
+ from pathlib import Path
+<span class="d">-from pydantic import BaseModel</span>
+<span class="a">+from typing import Any, Literal, overload</span>
+<span class="a">+</span>
+<span class="a">+import modal</span>
+ import requests
+<span class="a">+from aiolimiter import AsyncLimiter</span>
+<span class="a">+from config import get_config</span>
+<span class="a">+from eval import eval_instance</span>
+<span class="a">+from grpclib.exceptions import StreamTerminatedError</span>
+<span class="a">+from instances import Instance</span>
+<span class="a">+from langfuse.decorators import observe</span>
+<span class="a">+from logs import setup_agent_logger</span>
+<span class="a">+from pydantic import BaseModel</span>
+ from requests import adapters as requests_adapters
+<span class="d">-from requests.exceptions import ConnectTimeout, ConnectionError, SSLError</span>
+<span class="a">+from requests.exceptions import ConnectionError, ConnectTimeout, SSLError</span>
+<span class="a">+from run import run</span>
+ from sweagent.agent.agents import DefaultAgent, DefaultAgentConfig
+ from sweagent.run.hooks.abstract import RunHook
+ from sweagent.run.run_replay import RunReplay
+ from sweagent.run.run_single import RunSingle, RunSingleConfig
+ from sweagent.types import AgentRunResult
+<span class="d">-from swebench.harness.modal_eval.run_evaluation_modal import app, run_instance_modal</span>
+<span class="d">-from swebench.harness.test_spec.test_spec import make_test_spec</span>
+ from swerex.deployment.modal import ModalDeployment
+ from swerex.exceptions import CommandTimeoutError, SwerexException
+<span class="d">-from typing import Any, Literal, overload</span>
+ from urllib3.exceptions import ProtocolError
+ 
+<span class="d">-from config import get_config</span>
+<span class="d">-from eval import eval_instance</span>
+<span class="d">-from logs import setup_agent_logger</span>
+<span class="d">-from instances import Instance</span>
+<span class="d">-from run import run</span>
+<span class="a">+import art</span>
+<span class="a">+from swebench.harness.modal_eval.run_evaluation_modal import app, run_instance_modal</span>
+<span class="a">+from swebench.harness.test_spec.test_spec import make_test_spec</span>
+ 
+ limiter = AsyncLimiter(max_rate=5, time_period=1)
+ </pre><h2>Commit #4: <a href="https://github.com/openpipe/art/commit/243ce4300efa7a561e824f0a88ff48a1d8ec08af">243ce4300e</a> (2025-08-25T11:37:22-06:00)</h2><p class="k">refactor: Clean up assertions and re-import logger in rollout.py<br>Path after this commit: dev/swebench/rollout.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dev/swebench/rollout.py b/dev/swebench/rollout.py
+index 2622d7b0..d09660ba 100644
+<span class="d">--- a/dev/swebench/rollout.py</span>
+<span class="a">+++ b/dev/swebench/rollout.py</span>
+<span class="h">@@ -12,7 +12,6 @@ from eval import eval_instance</span>
+ from grpclib.exceptions import StreamTerminatedError
+ from instances import Instance
+ from langfuse.decorators import observe
+<span class="d">-from logs import setup_agent_logger</span>
+ from pydantic import BaseModel
+ from requests import adapters as requests_adapters
+ from requests.exceptions import ConnectionError, ConnectTimeout, SSLError
+<span class="h">@@ -27,6 +26,7 @@ from swerex.exceptions import CommandTimeoutError, SwerexException</span>
+ from urllib3.exceptions import ProtocolError
+ 
+ import art
+<span class="a">+from logs import setup_agent_logger</span>
+ from swebench.harness.modal_eval.run_evaluation_modal import app, run_instance_modal
+ from swebench.harness.test_spec.test_spec import make_test_spec
+ </pre><h2>Commit #5: <a href="https://github.com/openpipe/art/commit/b89624fddc28d5ca42a3ebe22dd1a1edc6810bb0">b89624fddc</a> (2025-08-25T17:56:48+00:00)</h2><p class="k">refactor: Reorganize logger import in rollout.py<br>Path after this commit: dev/swebench/rollout.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/dev/swebench/rollout.py b/dev/swebench/rollout.py
+index d09660ba..2622d7b0 100644
+<span class="d">--- a/dev/swebench/rollout.py</span>
+<span class="a">+++ b/dev/swebench/rollout.py</span>
+<span class="h">@@ -12,6 +12,7 @@ from eval import eval_instance</span>
+ from grpclib.exceptions import StreamTerminatedError
+ from instances import Instance
+ from langfuse.decorators import observe
+<span class="a">+from logs import setup_agent_logger</span>
+ from pydantic import BaseModel
+ from requests import adapters as requests_adapters
+ from requests.exceptions import ConnectionError, ConnectTimeout, SSLError
+<span class="h">@@ -26,7 +27,6 @@ from swerex.exceptions import CommandTimeoutError, SwerexException</span>
+ from urllib3.exceptions import ProtocolError
+ 
+ import art
+<span class="d">-from logs import setup_agent_logger</span>
+ from swebench.harness.modal_eval.run_evaluation_modal import app, run_instance_modal
+ from swebench.harness.test_spec.test_spec import make_test_spec
+ </pre></body></html>

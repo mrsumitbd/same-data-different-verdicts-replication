@@ -1,0 +1,75 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L252</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L252</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/runtime">dotnet/runtime</a><br><b>File at merge:</b> src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs, line 188<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/runtime/commit/1a5d477f6c70d2474e05e7a8ed6a1f1bc6264bd4">1a5d477f6c</a> (2025-01-03T14:35:22)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/runtime/tree/32fcc41afe5747cf674ca6c62de087ab5fd332eb">32fcc41afe</a>)</p><p><b>The line:</b></p><pre><span class="t">                (RuntimeInformation.ProcessArchitecture == Architecture.LoongArch64)) &amp;&amp;</span></pre><h2>File at the merge commit, lines 180 to 196</h2><pre>  180 |                 throw new Exception(&quot;Missing \&quot;InfiniteRecursionC\&quot; method frame&quot;);
+  181 |             }
+  182 |         }
+  183 | 
+  184 |         [Fact]
+  185 |         public static void TestStackOverflowLargeFrameSecondaryThread()
+  186 |         {
+  187 |             if (((RuntimeInformation.ProcessArchitecture == Architecture.Arm64) || (RuntimeInformation.ProcessArchitecture == Architecture.RiscV64) ||
+<span class="t">  188 |                 (RuntimeInformation.ProcessArchitecture == Architecture.LoongArch64)) &amp;&amp;</span>
+  189 |                 ((Environment.OSVersion.Platform == PlatformID.Unix) || (Environment.OSVersion.Platform == PlatformID.MacOSX)))
+  190 |             {
+  191 |                 // Disabled on Unix RISCV64 and LoongArch64, similar to ARM64.
+  192 |                 // LoongArch64 hit this issue on Alpine. TODO: implement stack probing using helpers.
+  193 |                 // Disabled on Unix ARM64 due to https://github.com/dotnet/runtime/issues/13519
+  194 |                 // The current stack probing doesn&#x27;t move the stack pointer and so the runtime sometimes cannot
+  195 |                 // recognize the underlying sigsegv as stack overflow when it probes too far from SP.
+  196 |                 return;</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/runtime/commit/5ed086c8ae9d8c07c7c57dca468c41c0a1055e5d">5ed086c8ae</a> (2025-03-11T18:59:12+01:00)</h2><p class="k">Add another set of debugging prints for stack overflow issue (#112284)<br>Path after this commit: src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs b/src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs
+index 50487ae2ead..c17689f6d76 100644
+<span class="d">--- a/src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs</span>
+<span class="a">+++ b/src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs</span>
+<span class="h">@@ -24,6 +24,7 @@ namespace TestStackOverflow</span>
+             testProcess.StartInfo.UseShellExecute = false;
+             testProcess.StartInfo.RedirectStandardError = true;
+             testProcess.StartInfo.Environment.Add(&quot;DOTNET_DbgEnableMiniDump&quot;, &quot;0&quot;);
+<span class="a">+            testProcess.StartInfo.Environment.Add(&quot;DOTNET_LogStackOverflowExit&quot;, &quot;1&quot;);</span>
+             bool endOfStackTrace = false;
+             
+             testProcess.ErrorDataReceived += (sender, line) =&gt; 
+<span class="h">@@ -40,7 +41,7 @@ namespace TestStackOverflow</span>
+                     {
+                         lines.Add(line.Data);
+                     }
+<span class="d">-                    else</span>
+<span class="a">+                    else if (!line.Data.StartsWith(&quot;@&quot;))</span>
+                     {
+                         endOfStackTrace = true;
+                     }</pre><h2>Commit #2: <a href="https://github.com/dotnet/runtime/commit/e0eea1fd356223de0a9476c44cbdc29dbf6c33d7">e0eea1fd35</a> (2025-06-11T09:42:31-07:00)</h2><p class="k">Disable certain stackoverflow tests (#116535)<br>Path after this commit: src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs b/src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs
+index c17689f6d76..5d1909e8ac6 100644
+<span class="d">--- a/src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs</span>
+<span class="a">+++ b/src/tests/baseservices/exceptions/stackoverflow/stackoverflowtester.cs</span>
+<span class="h">@@ -185,8 +185,8 @@ namespace TestStackOverflow</span>
+         [Fact]
+         public static void TestStackOverflowLargeFrameSecondaryThread()
+         {
+<span class="d">-            if (((RuntimeInformation.ProcessArchitecture == Architecture.Arm64) || (RuntimeInformation.ProcessArchitecture == Architecture.RiscV64) ||</span>
+<span class="d m">-                (RuntimeInformation.ProcessArchitecture == Architecture.LoongArch64)) &amp;&amp;</span>
+<span class="a">+            if (((RuntimeInformation.ProcessArchitecture == Architecture.Arm64) || (RuntimeInformation.ProcessArchitecture == Architecture.X64) || (RuntimeInformation.ProcessArchitecture == Architecture.RiscV64) ||</span>
+<span class="a">+                (RuntimeInformation.ProcessArchitecture == Architecture.LoongArch64) || (RuntimeInformation.ProcessArchitecture == Architecture.Arm)) &amp;&amp;</span>
+                 ((Environment.OSVersion.Platform == PlatformID.Unix) || (Environment.OSVersion.Platform == PlatformID.MacOSX)))
+             {
+                 // Disabled on Unix RISCV64 and LoongArch64, similar to ARM64.
+<span class="h">@@ -194,6 +194,7 @@ namespace TestStackOverflow</span>
+                 // Disabled on Unix ARM64 due to https://github.com/dotnet/runtime/issues/13519
+                 // The current stack probing doesn&#x27;t move the stack pointer and so the runtime sometimes cannot
+                 // recognize the underlying sigsegv as stack overflow when it probes too far from SP.
+<span class="a">+                // Disabled on Unix X64/Arm due to https://github.com/dotnet/runtime/issues/110173 which needs investigation.</span>
+                 return;
+             }
+ 
+<span class="h">@@ -223,9 +224,10 @@ namespace TestStackOverflow</span>
+         [Fact]
+         public static void TestStackOverflow3()
+         {
+<span class="d">-            if (RuntimeInformation.ProcessArchitecture == Architecture.Arm)</span>
+<span class="a">+            if ((RuntimeInformation.ProcessArchitecture == Architecture.Arm) || ((RuntimeInformation.ProcessArchitecture == Architecture.Arm64) &amp;&amp; (Environment.OSVersion.Platform == PlatformID.Unix)))</span>
+             {
+                 // Disabled on ARM due to https://github.com/dotnet/runtime/issues/107184
+<span class="a">+                // Disabled on Unix ARM64 due to https://github.com/dotnet/runtime/issues/110173 which needs investigation.</span>
+                 return;
+             }
+ </pre></body></html>

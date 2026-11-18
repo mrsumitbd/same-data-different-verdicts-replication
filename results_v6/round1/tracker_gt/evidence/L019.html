@@ -1,0 +1,499 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L019</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L019</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/vscode">microsoft/vscode</a><br><b>File at merge:</b> src/vs/editor/test/common/utils/testDecoder.ts, line 217<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/vscode/commit/a1bbb37b0b97c815ac631e634696ed70d6a5455e">a1bbb37b0b</a> (2025-03-12T19:22:48)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/vscode/tree/99d8a2706e687a31c8d147586668454d399bb208">99d8a2706e</a>)</p><p><b>The line:</b></p><pre><span class="t">			return;</span></pre><h2>File at the merge commit, lines 209 to 225</h2><pre>  209 | 
+  210 | 			assert(
+  211 | 				receivedtoken.equals(expectedToken),
+  212 | 				`Expected token &#x27;${i}&#x27; to be &#x27;${expectedToken}&#x27;, got &#x27;${receivedtoken}&#x27;.`,
+  213 | 			);
+  214 | 		}
+  215 | 
+  216 | 		if (receivedTokens.length === expectedTokens.length) {
+<span class="t">  217 | 			return;</span>
+  218 | 		}
+  219 | 
+  220 | 		// sanity check - if received/expected list lengths are not equal, the received
+  221 | 		// list must be longer than the expected one, because the other way around case
+  222 | 		// must have been caught by the comparison loop above
+  223 | 		assert(
+  224 | 			receivedTokens.length &gt; expectedTokens.length,
+  225 | 			&#x27;Must have received more tokens than expected.&#x27;,</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/vscode/commit/8f7b53d806fcfb523517be7f6f844c5d80d69a53">8f7b53d806</a> (2025-03-12T14:54:57-07:00)</h2><p class="k">allow for empty #variable data<br>Path after this commit: src/vs/editor/test/common/utils/testDecoder.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/editor/test/common/utils/testDecoder.ts b/src/vs/editor/test/common/utils/testDecoder.ts
+index e0127aacdc0..78ce39a310b 100644
+<span class="d">--- a/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="h">@@ -200,16 +200,16 @@ export class TestDecoder&lt;T extends BaseToken, D extends BaseDecoder&lt;T&gt;&gt; extends</span>
+ 	) {
+ 		for (let i = 0; i &lt; expectedTokens.length; i++) {
+ 			const expectedToken = expectedTokens[i];
+<span class="d">-			const receivedtoken = receivedTokens[i];</span>
+<span class="a">+			const receivedToken = receivedTokens[i];</span>
+ 
+ 			assertDefined(
+<span class="d">-				receivedtoken,</span>
+<span class="a">+				receivedToken,</span>
+ 				`Expected token &#x27;${i}&#x27; to be &#x27;${expectedToken}&#x27;, got &#x27;undefined&#x27;.`,
+ 			);
+ 
+ 			assert(
+<span class="d">-				receivedtoken.equals(expectedToken),</span>
+<span class="d">-				`Expected token &#x27;${i}&#x27; to be &#x27;${expectedToken}&#x27;, got &#x27;${receivedtoken}&#x27;.`,</span>
+<span class="a">+				receivedToken.equals(expectedToken),</span>
+<span class="a">+				`Expected token &#x27;${i}&#x27; to be &#x27;${expectedToken}&#x27;, got &#x27;${receivedToken}&#x27;.`,</span>
+ 			);
+ 		}
+ </pre><h2>Commit #2: <a href="https://github.com/microsoft/vscode/commit/e9517eaaec6e6c0aa2d88be0004ab501b83806d9">e9517eaaec</a> (2025-04-08T08:02:19-07:00)</h2><p class="k">add unit tests for the markdown extensions decoder<br>Path after this commit: src/vs/editor/test/common/utils/testDecoder.ts. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: src/vs/editor/common/codecs/markdownExtensionsCodec/markdownExtensionsDecoder.ts.</p><pre>diff --git a/src/vs/editor/test/common/utils/testDecoder.ts b/src/vs/editor/test/common/utils/testDecoder.ts
+index 78ce39a310b..e744408bfe4 100644
+<span class="d">--- a/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="h">@@ -102,45 +102,8 @@ export class TestDecoder&lt;T extends BaseToken, D extends BaseDecoder&lt;T&gt;&gt; extends</span>
+ 			// initiate the data sending flow
+ 			this.sendData(inputData);
+ 
+<span class="d">-			// consume the decoder tokens based on specified</span>
+<span class="d">-			// (or randomly generated) tokens consume method</span>
+<span class="d">-			const receivedTokens: T[] = [];</span>
+<span class="d">-			switch (tokensConsumeMethod) {</span>
+<span class="d">-				// test the `async iterator` code path</span>
+<span class="d">-				case &#x27;async-generator&#x27;: {</span>
+<span class="d">-					for await (const token of this.decoder) {</span>
+<span class="d">-						if (token === null) {</span>
+<span class="d">-							break;</span>
+<span class="d">-						}</span>
+<span class="d">-</span>
+<span class="d">-						receivedTokens.push(token);</span>
+<span class="d">-					}</span>
+<span class="d">-</span>
+<span class="d">-					break;</span>
+<span class="d">-				}</span>
+<span class="d">-				// test the `.consumeAll()` method code path</span>
+<span class="d">-				case &#x27;consume-all-method&#x27;: {</span>
+<span class="d">-					receivedTokens.push(...(await this.decoder.consumeAll()));</span>
+<span class="d">-					break;</span>
+<span class="d">-				}</span>
+<span class="d">-				// test the `.onData()` event consume flow</span>
+<span class="d">-				case &#x27;on-data-event&#x27;: {</span>
+<span class="d">-					this.decoder.onData((token) =&gt; {</span>
+<span class="d">-						receivedTokens.push(token);</span>
+<span class="d">-					});</span>
+<span class="d">-</span>
+<span class="d">-					this.decoder.start();</span>
+<span class="d">-</span>
+<span class="d">-					// in this case we also test the `settled` promise of the decoder</span>
+<span class="d">-					await this.decoder.settled;</span>
+<span class="d">-</span>
+<span class="d">-					break;</span>
+<span class="d">-				}</span>
+<span class="d">-				// ensure that the switch block is exhaustive</span>
+<span class="d">-				default: {</span>
+<span class="d">-					throw new Error(`Unknown consume method &#x27;${tokensConsumeMethod}&#x27;.`);</span>
+<span class="d">-				}</span>
+<span class="d">-			}</span>
+<span class="a">+			// receive tokens from the decoder stream</span>
+<span class="a">+			const receivedTokens = await this.receiveTokens(tokensConsumeMethod);</span>
+ 
+ 			// validate the received tokens
+ 			this.validateReceivedTokens(
+<span class="h">@@ -191,6 +154,55 @@ export class TestDecoder&lt;T extends BaseToken, D extends BaseDecoder&lt;T&gt;&gt; extends</span>
+ 		}
+ 	}
+ 
+<span class="a">+	/**</span>
+<span class="a">+	 * TODO: @legomushroom</span>
+<span class="a">+	 */</span>
+<span class="a">+	public async receiveTokens(</span>
+<span class="a">+		tokensConsumeMethod: TTokensConsumeMethod = this.randomTokensConsumeMethod(),</span>
+<span class="a">+	): Promise&lt;readonly T[]&gt; {</span>
+<span class="a">+		// consume the decoder tokens based on specified</span>
+<span class="a">+		// (or randomly generated) tokens consume method</span>
+<span class="a">+		const receivedTokens: T[] = [];</span>
+<span class="a">+		switch (tokensConsumeMethod) {</span>
+<span class="a">+			// test the `async iterator` code path</span>
+<span class="a">+			case &#x27;async-generator&#x27;: {</span>
+<span class="a">+				for await (const token of this.decoder) {</span>
+<span class="a">+					if (token === null) {</span>
+<span class="a">+						break;</span>
+<span class="a">+					}</span>
+<span class="a">+</span>
+<span class="a">+					receivedTokens.push(token);</span>
+<span class="a">+				}</span>
+<span class="a">+</span>
+<span class="a">+				break;</span>
+<span class="a">+			}</span>
+<span class="a">+			// test the `.consumeAll()` method code path</span>
+<span class="a">+			case &#x27;consume-all-method&#x27;: {</span>
+<span class="a">+				receivedTokens.push(...(await this.decoder.consumeAll()));</span>
+<span class="a">+				break;</span>
+<span class="a">+			}</span>
+<span class="a">+			// test the `.onData()` event consume flow</span>
+<span class="a">+			case &#x27;on-data-event&#x27;: {</span>
+<span class="a">+				this.decoder.onData((token) =&gt; {</span>
+<span class="a">+					receivedTokens.push(token);</span>
+<span class="a">+				});</span>
+<span class="a">+</span>
+<span class="a">+				this.decoder.start();</span>
+<span class="a">+</span>
+<span class="a">+				// in this case we also test the `settled` promise of the decoder</span>
+<span class="a">+				await this.decoder.settled;</span>
+<span class="a">+</span>
+<span class="a">+				break;</span>
+<span class="a">+			}</span>
+<span class="a">+			// ensure that the switch block is exhaustive</span>
+<span class="a">+			default: {</span>
+<span class="a">+				throw new Error(`Unknown consume method &#x27;${tokensConsumeMethod}&#x27;.`);</span>
+<span class="a">+			}</span>
+<span class="a">+		}</span>
+<span class="a">+</span>
+<span class="a">+		return receivedTokens;</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+ 	/**
+ 	 * Validate that received tokens list is equal to the expected one.
+ 	 */</pre><h2>Commit #3: <a href="https://github.com/microsoft/vscode/commit/7700ced88a5bf3a26d5b7fd9d99dcc3df40d5e95">7700ced88a</a> (2025-04-08T08:02:19-07:00)</h2><p class="k">cleanup, refactor and improve unit tests<br>Path after this commit: src/vs/editor/test/common/utils/testDecoder.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/editor/test/common/utils/testDecoder.ts b/src/vs/editor/test/common/utils/testDecoder.ts
+index e744408bfe4..410606fbffc 100644
+<span class="d">--- a/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="h">@@ -155,7 +155,7 @@ export class TestDecoder&lt;T extends BaseToken, D extends BaseDecoder&lt;T&gt;&gt; extends</span>
+ 	}
+ 
+ 	/**
+<span class="d">-	 * TODO: @legomushroom</span>
+<span class="a">+	 * Receive all tokens from the decoder stream using the specified consume method.</span>
+ 	 */
+ 	public async receiveTokens(
+ 		tokensConsumeMethod: TTokensConsumeMethod = this.randomTokensConsumeMethod(),</pre><h2>Commit #4: <a href="https://github.com/microsoft/vscode/commit/520c0046d29c61a98fd1cb5c4c8463226570da95">520c0046d2</a> (2025-04-29T11:39:46-07:00)</h2><p class="k">improve unit tests error message formatting<br>Path after this commit: src/vs/editor/test/common/utils/testDecoder.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/editor/test/common/utils/testDecoder.ts b/src/vs/editor/test/common/utils/testDecoder.ts
+index 410606fbffc..28b5130fa26 100644
+<span class="d">--- a/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="h">@@ -221,7 +221,7 @@ export class TestDecoder&lt;T extends BaseToken, D extends BaseDecoder&lt;T&gt;&gt; extends</span>
+ 
+ 			assert(
+ 				receivedToken.equals(expectedToken),
+<span class="d">-				`Expected token &#x27;${i}&#x27; to be &#x27;${expectedToken}&#x27;, got &#x27;${receivedToken}&#x27;.`,</span>
+<span class="a">+				`\nExpected token &#x27;${i}&#x27; to be:\n\n${expectedToken.text}\n(${expectedToken.range})\n\ngot:\n\n${receivedToken.text}\n(${receivedToken.range})\n`,</span>
+ 			);
+ 		}
+ </pre><h2>Commit #5: <a href="https://github.com/microsoft/vscode/commit/278c883f086663a4b28ca53df38ad7547f65d880">278c883f08</a> (2025-05-20T14:56:51-07:00)</h2><p class="k">Merge pull request #249374 from microsoft/legomushroom/prompts/front-matter-non-quoted-string-values-support--backup<br>Path after this commit: src/vs/editor/test/common/utils/testDecoder.ts. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: src/vs/workbench/contrib/chat/common/promptSyntax/contributions/languageFeatures/providers/promptHeaderDiagnosticsProvider.ts.</p><pre>diff --git a/src/vs/editor/test/common/utils/testDecoder.ts b/src/vs/editor/test/common/utils/testDecoder.ts
+index 28b5130fa26..637bf86f6fd 100644
+<span class="d">--- a/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="a">+++ b/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="h">@@ -11,6 +11,7 @@ import { assertDefined } from &#x27;../../../../base/common/types.js&#x27;;</span>
+ import { Disposable } from &#x27;../../../../base/common/lifecycle.js&#x27;;
+ import { WriteableStream } from &#x27;../../../../base/common/stream.js&#x27;;
+ import { BaseDecoder } from &#x27;../../../../base/common/codecs/baseDecoder.js&#x27;;
+<span class="a">+import { SimpleToken } from &#x27;../../../common/codecs/simpleCodec/tokens/simpleToken.js&#x27;;</span>
+ 
+ /**
+  * Kind of decoder tokens consume methods are different ways
+<span class="h">@@ -219,9 +220,17 @@ export class TestDecoder&lt;T extends BaseToken, D extends BaseDecoder&lt;T&gt;&gt; extends</span>
+ 				`Expected token &#x27;${i}&#x27; to be &#x27;${expectedToken}&#x27;, got &#x27;undefined&#x27;.`,
+ 			);
+ 
+<span class="a">+			const expectedTokenString = (expectedToken instanceof SimpleToken)</span>
+<span class="a">+				? `${expectedToken} `</span>
+<span class="a">+				: `\n  &quot;${expectedToken.text}&quot;(${expectedToken.range})\n`;</span>
+<span class="a">+</span>
+<span class="a">+			const receivedTokenString = (receivedToken instanceof SimpleToken)</span>
+<span class="a">+				? receivedToken.toString()</span>
+<span class="a">+				: `\n  &quot;${receivedToken.text}&quot;(${receivedToken.range})\n`;</span>
+<span class="a">+</span>
+ 			assert(
+ 				receivedToken.equals(expectedToken),
+<span class="d">-				`\nExpected token &#x27;${i}&#x27; to be:\n\n${expectedToken.text}\n(${expectedToken.range})\n\ngot:\n\n${receivedToken.text}\n(${receivedToken.range})\n`,</span>
+<span class="a">+				`Expected token &#x27;${i}&#x27; to be: ${expectedTokenString}got: ${receivedTokenString}`,</span>
+ 			);
+ 		}
+ </pre><h2>Commit #6: <a href="https://github.com/microsoft/vscode/commit/af623e09a15b4c51f65de708835410053e693cc1">af623e09a1</a> (2025-06-06T06:32:24-07:00)</h2><p class="k">move prompt codecs and utils to workbench/contrib/chat/common/promptSyntax (#250847)<br>Path after this commit: src/vs/workbench/contrib/chat/test/common/promptSyntax/codecs/base/utils/testDecoder.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/editor/test/common/utils/testDecoder.ts b/src/vs/workbench/contrib/chat/test/common/promptSyntax/codecs/base/utils/testDecoder.ts
+similarity index 91%
+rename from src/vs/editor/test/common/utils/testDecoder.ts
+rename to src/vs/workbench/contrib/chat/test/common/promptSyntax/codecs/base/utils/testDecoder.ts
+index 637bf86f6fd..62a1293ff13 100644
+<span class="d">--- a/src/vs/editor/test/common/utils/testDecoder.ts</span>
+<span class="a">+++ b/src/vs/workbench/contrib/chat/test/common/promptSyntax/codecs/base/utils/testDecoder.ts</span>
+<span class="h">@@ -4,14 +4,15 @@</span>
+  *--------------------------------------------------------------------------------------------*/
+ 
+ import assert from &#x27;assert&#x27;;
+<span class="d">-import { VSBuffer } from &#x27;../../../../base/common/buffer.js&#x27;;</span>
+<span class="d">-import { randomInt } from &#x27;../../../../base/common/numbers.js&#x27;;</span>
+<span class="d">-import { BaseToken } from &#x27;../../../common/codecs/baseToken.js&#x27;;</span>
+<span class="d">-import { assertDefined } from &#x27;../../../../base/common/types.js&#x27;;</span>
+<span class="d">-import { Disposable } from &#x27;../../../../base/common/lifecycle.js&#x27;;</span>
+<span class="d">-import { WriteableStream } from &#x27;../../../../base/common/stream.js&#x27;;</span>
+<span class="d">-import { BaseDecoder } from &#x27;../../../../base/common/codecs/baseDecoder.js&#x27;;</span>
+<span class="d">-import { SimpleToken } from &#x27;../../../common/codecs/simpleCodec/tokens/simpleToken.js&#x27;;</span>
+<span class="a">+import { VSBuffer } from &#x27;../../../../../../../../../base/common/buffer.js&#x27;;</span>
+<span class="a">+import { randomInt } from &#x27;../../../../../../../../../base/common/numbers.js&#x27;;</span>
+<span class="a">+import { assertDefined } from &#x27;../../../../../../../../../base/common/types.js&#x27;;</span>
+<span class="a">+import { Disposable } from &#x27;../../../../../../../../../base/common/lifecycle.js&#x27;;</span>
+<span class="a">+import { WriteableStream } from &#x27;../../../../../../../../../base/common/stream.js&#x27;;</span>
+<span class="a">+import { BaseDecoder } from &#x27;../../../../../../common/promptSyntax/codecs/base/baseDecoder.js&#x27;;</span>
+<span class="a">+import { BaseToken } from &#x27;../../../../../../common/promptSyntax/codecs/base/baseToken.js&#x27;;</span>
+<span class="a">+import { SimpleToken } from &#x27;../../../../../../common/promptSyntax/codecs/base/simpleCodec/tokens/simpleToken.js&#x27;;</span>
+<span class="a">+</span>
+ 
+ /**
+  * Kind of decoder tokens consume methods are different ways</pre><h2>Commit #7: <a href="https://github.com/microsoft/vscode/commit/b5c6cba28238b0d4ea91dbf773369f2be13a4a92">b5c6cba282</a> (2025-09-15T13:09:47-07:00)</h2><p class="k">Merge pull request #266953 from microsoft/aeschli/annoyed-chickadee-149<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/vs/workbench/contrib/chat/test/common/promptSyntax/codecs/base/utils/testDecoder.ts b/src/vs/workbench/contrib/chat/test/common/promptSyntax/codecs/base/utils/testDecoder.ts
+deleted file mode 100644
+index 62a1293ff13..00000000000
+<span class="d">--- a/src/vs/workbench/contrib/chat/test/common/promptSyntax/codecs/base/utils/testDecoder.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,258 +0,0 @@</span>
+<span class="d">-/*---------------------------------------------------------------------------------------------</span>
+<span class="d">- *  Copyright (c) Microsoft Corporation. All rights reserved.</span>
+<span class="d">- *  Licensed under the MIT License. See License.txt in the project root for license information.</span>
+<span class="d">- *--------------------------------------------------------------------------------------------*/</span>
+<span class="d">-</span>
+<span class="d">-import assert from &#x27;assert&#x27;;</span>
+<span class="d">-import { VSBuffer } from &#x27;../../../../../../../../../base/common/buffer.js&#x27;;</span>
+<span class="d">-import { randomInt } from &#x27;../../../../../../../../../base/common/numbers.js&#x27;;</span>
+<span class="d">-import { assertDefined } from &#x27;../../../../../../../../../base/common/types.js&#x27;;</span>
+<span class="d">-import { Disposable } from &#x27;../../../../../../../../../base/common/lifecycle.js&#x27;;</span>
+<span class="d">-import { WriteableStream } from &#x27;../../../../../../../../../base/common/stream.js&#x27;;</span>
+<span class="d">-import { BaseDecoder } from &#x27;../../../../../../common/promptSyntax/codecs/base/baseDecoder.js&#x27;;</span>
+<span class="d">-import { BaseToken } from &#x27;../../../../../../common/promptSyntax/codecs/base/baseToken.js&#x27;;</span>
+<span class="d">-import { SimpleToken } from &#x27;../../../../../../common/promptSyntax/codecs/base/simpleCodec/tokens/simpleToken.js&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * Kind of decoder tokens consume methods are different ways</span>
+<span class="d">- * consume tokens that a decoder produces out of a byte stream.</span>
+<span class="d">- */</span>
+<span class="d">-export type TTokensConsumeMethod = &#x27;async-generator&#x27; | &#x27;consume-all-method&#x27; | &#x27;on-data-event&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * A reusable test utility that asserts that the given decoder</span>
+<span class="d">- * produces the expected `expectedTokens` sequence of tokens.</span>
+<span class="d">- *</span>
+<span class="d">- * ## Examples</span>
+<span class="d">- *</span>
+<span class="d">- * ```typescript</span>
+<span class="d">- * const stream = newWriteableStream&lt;VSBuffer&gt;(null);</span>
+<span class="d">- * const decoder = testDisposables.add(new LinesDecoder(stream));</span>
+<span class="d">- *</span>
+<span class="d">- * // create a new test utility instance</span>
+<span class="d">- * const test = testDisposables.add(new TestDecoder(stream, decoder));</span>
+<span class="d">- *</span>
+<span class="d">- * // run the test</span>
+<span class="d">- * await test.run(</span>
+<span class="d">- *   &#x27; hello world\n&#x27;,</span>
+<span class="d">- *   [</span>
+<span class="d">- * 	   new Line(1, &#x27; hello world&#x27;),</span>
+<span class="d">- * 	   new NewLine(new Range(1, 13, 1, 14)),</span>
+<span class="d">- *   ],</span>
+<span class="d">- * );</span>
+<span class="d">- */</span>
+<span class="d">-export class TestDecoder&lt;T extends BaseToken, D extends BaseDecoder&lt;T&gt;&gt; extends Disposable {</span>
+<span class="d">-	constructor(</span>
+<span class="d">-		private readonly stream: WriteableStream&lt;VSBuffer&gt;,</span>
+<span class="d">-		public readonly decoder: D,</span>
+<span class="d">-	) {</span>
+<span class="d">-		super();</span>
+<span class="d">-</span>
+<span class="d">-		this._register(this.decoder);</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	/**</span>
+<span class="d">-	 * Write provided {@linkcode inputData} data to the input byte stream</span>
+<span class="d">-	 * asynchronously in the background in small random-length chunks.</span>
+<span class="d">-	 *</span>
+<span class="d">-	 * @param inputData Input data to send.</span>
+<span class="d">-	 */</span>
+<span class="d">-	public sendData(</span>
+<span class="d">-		inputData: string | string[],</span>
+<span class="d">-	): this {</span>
+<span class="d">-		// if input data was passed as an array of lines,</span>
+<span class="d">-		// join them into a single string with newlines</span>
+<span class="d">-		if (Array.isArray(inputData)) {</span>
+<span class="d">-			inputData = inputData.join(&#x27;\n&#x27;);</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// write the input data to the stream in multiple random-length</span>
+<span class="d">-		// chunks to simulate real input stream data flows</span>
+<span class="d">-		let inputDataBytes = VSBuffer.fromString(inputData);</span>
+<span class="d">-		const interval = setInterval(() =&gt; {</span>
+<span class="d">-			if (inputDataBytes.byteLength &lt;= 0) {</span>
+<span class="d">-				clearInterval(interval);</span>
+<span class="d">-				this.stream.end();</span>
+<span class="d">-</span>
+<span class="d m">-				return;</span>
+<span class="d">-			}</span>
+<span class="d">-</span>
+<span class="d">-			const dataToSend = inputDataBytes.slice(0, randomInt(inputDataBytes.byteLength));</span>
+<span class="d">-			this.stream.write(dataToSend);</span>
+<span class="d">-			inputDataBytes = inputDataBytes.slice(dataToSend.byteLength);</span>
+<span class="d">-		}, randomInt(5));</span>
+<span class="d">-</span>
+<span class="d">-		return this;</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	/**</span>
+<span class="d">-	 * Run the test sending the `inputData` data to the stream and asserting</span>
+<span class="d">-	 * that the decoder produces the `expectedTokens` sequence of tokens.</span>
+<span class="d">-	 *</span>
+<span class="d">-	 * @param inputData Input data of the input byte stream.</span>
+<span class="d">-	 * @param expectedTokens List of expected tokens the test token must produce.</span>
+<span class="d">-	 * @param tokensConsumeMethod *Optional* method of consuming the decoder stream.</span>
+<span class="d">-	 *       					  Defaults to a random method (see {@linkcode randomTokensConsumeMethod}).</span>
+<span class="d">-	 */</span>
+<span class="d">-	public async run(</span>
+<span class="d">-		inputData: string | string[],</span>
+<span class="d">-		expectedTokens: readonly T[],</span>
+<span class="d">-		tokensConsumeMethod: TTokensConsumeMethod = this.randomTokensConsumeMethod(),</span>
+<span class="d">-	): Promise&lt;void&gt; {</span>
+<span class="d">-		try {</span>
+<span class="d">-			// initiate the data sending flow</span>
+<span class="d">-			this.sendData(inputData);</span>
+<span class="d">-</span>
+<span class="d">-			// receive tokens from the decoder stream</span>
+<span class="d">-			const receivedTokens = await this.receiveTokens(tokensConsumeMethod);</span>
+<span class="d">-</span>
+<span class="d">-			// validate the received tokens</span>
+<span class="d">-			this.validateReceivedTokens(</span>
+<span class="d">-				receivedTokens,</span>
+<span class="d">-				expectedTokens,</span>
+<span class="d">-			);</span>
+<span class="d">-		} catch (error) {</span>
+<span class="d">-			assertDefined(</span>
+<span class="d">-				error,</span>
+<span class="d">-				`An non-nullable error must be thrown.`,</span>
+<span class="d">-			);</span>
+<span class="d">-			assert(</span>
+<span class="d">-				error instanceof Error,</span>
+<span class="d">-				`An error error instance must be thrown.`,</span>
+<span class="d">-			);</span>
+<span class="d">-</span>
+<span class="d">-			// add the tokens consume method to the error message so we</span>
+<span class="d">-			// would know which method of consuming the tokens failed exactly</span>
+<span class="d">-			error.message = `[${tokensConsumeMethod}] ${error.message}`;</span>
+<span class="d">-</span>
+<span class="d">-			throw error;</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	/**</span>
+<span class="d">-	 * Randomly generate a tokens consume method type for the test.</span>
+<span class="d">-	 */</span>
+<span class="d">-	private randomTokensConsumeMethod(): TTokensConsumeMethod {</span>
+<span class="d">-		const testConsumeMethodIndex = randomInt(2);</span>
+<span class="d">-</span>
+<span class="d">-		switch (testConsumeMethodIndex) {</span>
+<span class="d">-			// test the `async iterator` code path</span>
+<span class="d">-			case 0: {</span>
+<span class="d">-				return &#x27;async-generator&#x27;;</span>
+<span class="d">-			}</span>
+<span class="d">-			// test the `.consumeAll()` method code path</span>
+<span class="d">-			case 1: {</span>
+<span class="d">-				return &#x27;consume-all-method&#x27;;</span>
+<span class="d">-			}</span>
+<span class="d">-			// test the `.onData()` event consume flow</span>
+<span class="d">-			case 2: {</span>
+<span class="d">-				return &#x27;on-data-event&#x27;;</span>
+<span class="d">-			}</span>
+<span class="d">-			// ensure that the switch block is exhaustive</span>
+<span class="d">-			default: {</span>
+<span class="d">-				throw new Error(`Unknown consume method index &#x27;${testConsumeMethodIndex}&#x27;.`);</span>
+<span class="d">-			}</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	/**</span>
+<span class="d">-	 * Receive all tokens from the decoder stream using the specified consume method.</span>
+<span class="d">-	 */</span>
+<span class="d">-	public async receiveTokens(</span>
+<span class="d">-		tokensConsumeMethod: TTokensConsumeMethod = this.randomTokensConsumeMethod(),</span>
+<span class="d">-	): Promise&lt;readonly T[]&gt; {</span>
+<span class="d">-		// consume the decoder tokens based on specified</span>
+<span class="d">-		// (or randomly generated) tokens consume method</span>
+<span class="d">-		const receivedTokens: T[] = [];</span>
+<span class="d">-		switch (tokensConsumeMethod) {</span>
+<span class="d">-			// test the `async iterator` code path</span>
+<span class="d">-			case &#x27;async-generator&#x27;: {</span>
+<span class="d">-				for await (const token of this.decoder) {</span>
+<span class="d">-					if (token === null) {</span>
+<span class="d">-						break;</span>
+<span class="d">-					}</span>
+<span class="d">-</span>
+<span class="d">-					receivedTokens.push(token);</span>
+<span class="d">-				}</span>
+<span class="d">-</span>
+<span class="d">-				break;</span>
+<span class="d">-			}</span>
+<span class="d">-			// test the `.consumeAll()` method code path</span>
+<span class="d">-			case &#x27;consume-all-method&#x27;: {</span>
+<span class="d">-				receivedTokens.push(...(await this.decoder.consumeAll()));</span>
+<span class="d">-				break;</span>
+<span class="d">-			}</span>
+<span class="d">-			// test the `.onData()` event consume flow</span>
+<span class="d">-			case &#x27;on-data-event&#x27;: {</span>
+<span class="d">-				this.decoder.onData((token) =&gt; {</span>
+<span class="d">-					receivedTokens.push(token);</span>
+<span class="d">-				});</span>
+<span class="d">-</span>
+<span class="d">-				this.decoder.start();</span>
+<span class="d">-</span>
+<span class="d">-				// in this case we also test the `settled` promise of the decoder</span>
+<span class="d">-				await this.decoder.settled;</span>
+<span class="d">-</span>
+<span class="d">-				break;</span>
+<span class="d">-			}</span>
+<span class="d">-			// ensure that the switch block is exhaustive</span>
+<span class="d">-			default: {</span>
+<span class="d">-				throw new Error(`Unknown consume method &#x27;${tokensConsumeMethod}&#x27;.`);</span>
+<span class="d">-			}</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		return receivedTokens;</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	/**</span>
+<span class="d">-	 * Validate that received tokens list is equal to the expected one.</span>
+<span class="d">-	 */</span>
+<span class="d">-	private validateReceivedTokens(</span>
+<span class="d">-		receivedTokens: readonly T[],</span>
+<span class="d">-		expectedTokens: readonly T[],</span>
+<span class="d">-	) {</span>
+<span class="d">-		for (let i = 0; i &lt; expectedTokens.length; i++) {</span>
+<span class="d">-			const expectedToken = expectedTokens[i];</span>
+<span class="d">-			const receivedToken = receivedTokens[i];</span>
+<span class="d">-</span>
+<span class="d">-			assertDefined(</span>
+<span class="d">-				receivedToken,</span>
+<span class="d">-				`Expected token &#x27;${i}&#x27; to be &#x27;${expectedToken}&#x27;, got &#x27;undefined&#x27;.`,</span>
+<span class="d">-			);</span>
+<span class="d">-</span>
+<span class="d">-			const expectedTokenString = (expectedToken instanceof SimpleToken)</span>
+<span class="d">-				? `${expectedToken} `</span>
+<span class="d">-				: `\n  &quot;${expectedToken.text}&quot;(${expectedToken.range})\n`;</span>
+<span class="d">-</span>
+<span class="d">-			const receivedTokenString = (receivedToken instanceof SimpleToken)</span>
+<span class="d">-				? receivedToken.toString()</span>
+<span class="d">-				: `\n  &quot;${receivedToken.text}&quot;(${receivedToken.range})\n`;</span>
+<span class="d">-</span>
+<span class="d">-			assert(</span>
+<span class="d">-				receivedToken.equals(expectedToken),</span>
+<span class="d">-				`Expected token &#x27;${i}&#x27; to be: ${expectedTokenString}got: ${receivedTokenString}`,</span>
+<span class="d">-			);</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		if (receivedTokens.length === expectedTokens.length) {</span>
+<span class="d m">-			return;</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// sanity check - if received/expected list lengths are not equal, the received</span>
+<span class="d">-		// list must be longer than the expected one, because the other way around case</span>
+<span class="d">-		// must have been caught by the comparison loop above</span>
+<span class="d">-		assert(</span>
+<span class="d">-			receivedTokens.length &gt; expectedTokens.length,</span>
+<span class="d">-			&#x27;Must have received more tokens than expected.&#x27;,</span>
+<span class="d">-		);</span>
+<span class="d">-</span>
+<span class="d">-		const index = expectedTokens.length;</span>
+<span class="d">-		throw new Error(</span>
+<span class="d">-			[</span>
+<span class="d">-				`Expected no &#x27;${index}&#x27; token present, got &#x27;${receivedTokens[index]}&#x27;.`,</span>
+<span class="d">-				`(received ${receivedTokens.length} tokens in total)`,</span>
+<span class="d">-			].join(&#x27; &#x27;),</span>
+<span class="d">-		);</span>
+<span class="d">-	}</span>
+<span class="d">-}</span></pre></body></html>

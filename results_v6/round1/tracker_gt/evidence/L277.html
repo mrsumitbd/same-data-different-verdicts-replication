@@ -1,0 +1,233 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L277</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L277</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/glaredb_core/src/runtime/filesystem/glob.rs, line 190<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/e7414375e6bfc85b456080a7d57efe974639f0fe">e7414375e6</a> (2025-05-14T01:33:13)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">    path.contains([&#x27;*&#x27;, &#x27;?&#x27;, &#x27;[&#x27;, &#x27;{&#x27;])</span></pre><h2>File at the merge commit, lines 182 to 198</h2><pre>  182 | {
+  183 |     fn poll_next(&amp;mut self, cx: &amp;mut Context, out: &amp;mut Vec&lt;String&gt;) -&gt; Poll&lt;Result&lt;usize&gt;&gt; {
+  184 |         self.poll_expand(cx, out)
+  185 |     }
+  186 | }
+  187 | 
+  188 | /// If we should consider the given path a glob.
+  189 | pub fn is_glob(path: &amp;str) -&gt; bool {
+<span class="t">  190 |     path.contains([&#x27;*&#x27;, &#x27;?&#x27;, &#x27;[&#x27;, &#x27;{&#x27;])</span>
+  191 | }
+  192 | 
+  193 | /// Split a glob like &quot;data/2025-*/file-*.parquet&quot; into [&quot;data&quot;, &quot;2025-*&quot;,
+  194 | /// &quot;file-*.parquet&quot;]
+  195 | fn split_segments(pattern: &amp;str) -&gt; Vec&lt;&amp;str&gt; {
+  196 |     // TODO: &#x27;\&#x27; on windows?
+  197 |     pattern.split(&#x27;/&#x27;).filter(|s| !s.is_empty()).collect()
+  198 | }</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/59a286543e9934b6d0c903223cf2766728c47bbd">59a286543e</a> (2025-05-14T10:02:24-04:00)</h2><p class="k">chore: Add glob function tests (#3800)<br>Path after this commit: crates/glaredb_core/src/runtime/filesystem/glob.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/runtime/filesystem/glob.rs b/crates/glaredb_core/src/runtime/filesystem/glob.rs
+index 60d5b647..d66b2502 100644
+<span class="d">--- a/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="h">@@ -131,7 +131,9 @@ where</span>
+                             // And we don’t emit anything at this stage unless
+                             // &#x27;**&#x27; is the last segmentt, in which case
+                             // &quot;everything under here&quot; is a match.
+<span class="d">-                            if seg_idx + 1 == self.segments.len() {</span>
+<span class="a">+                            if seg_idx + 1 == self.segments.len() &amp;&amp; ent.file_type.is_file() {</span>
+<span class="a">+                                // TODO: Same as below, optionally emit</span>
+<span class="a">+                                // directories?</span>
+                                 expanded.push(ent.path.clone());
+                             }
+ </pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/0802fbe008429359ed33917ec8b7698e473b1d5c">0802fbe008</a> (2025-05-14T11:21:41-04:00)</h2><p class="k">fix: Handle no projections out of glob, have filesystems determine glob segments (#3801)<br>Path after this commit: crates/glaredb_core/src/runtime/filesystem/glob.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/runtime/filesystem/glob.rs b/crates/glaredb_core/src/runtime/filesystem/glob.rs
+index d66b2502..c16b4626 100644
+<span class="d">--- a/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="h">@@ -1,12 +1,38 @@</span>
+ use std::task::{Context, Poll};
+ 
+<span class="d">-use glaredb_error::{DbError, OptionExt, Result, ResultExt};</span>
+<span class="a">+use glaredb_error::{OptionExt, Result, ResultExt};</span>
+ use globset::{GlobBuilder, GlobMatcher};
+ 
+ use super::FileSystem;
+ use super::directory::{DirEntry, ReadDirHandle};
+ use super::file_provider::FileProvider;
+ 
+<span class="a">+/// If we should consider the given path a glob.</span>
+<span class="a">+pub fn is_glob(path: &amp;str) -&gt; bool {</span>
+<span class="a m">+    path.contains([&#x27;*&#x27;, &#x27;?&#x27;, &#x27;[&#x27;, &#x27;{&#x27;])</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+#[derive(Debug, Clone, PartialEq, Eq)]</span>
+<span class="a">+pub struct GlobSegments {</span>
+<span class="a">+    /// The &quot;root&quot; directory of the glob.</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// This should be the largest prefix path of the glob that itself does not</span>
+<span class="a">+    /// contain any glob characters.</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// `root_dir` will be passed into the filesystem&#x27;s `read_dir` method to</span>
+<span class="a">+    /// begin directory traversal, and should include the full path (e.g. the</span>
+<span class="a">+    /// path would be passed to `open`). That means for object stores, the root</span>
+<span class="a">+    /// dir will be something like `s3://bucket/dir/nested`.</span>
+<span class="a">+    pub root_dir: String,</span>
+<span class="a">+    /// The glob segments for each segment in the path.</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// This is essentially taking the remaining path (after getting the root</span>
+<span class="a">+    /// dir), and splitting on &#x27;/&#x27; (or some other path sep). No additional</span>
+<span class="a">+    /// processing should be done. Literal segments (segments containing no glob</span>
+<span class="a">+    /// chars) will be handled appropriately.</span>
+<span class="a">+    pub segments: Vec&lt;String&gt;,</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ #[derive(Debug)]
+ pub struct GlobHandle&lt;D: ReadDirHandle&gt; {
+     /// The raw segmens, e.g. [&quot;foo&quot;, &quot;*&quot;, &quot;bar-*.txt&quot;]
+<span class="h">@@ -27,29 +53,11 @@ where</span>
+     where
+         F: FileSystem&lt;ReadDirHandle = D&gt; + ?Sized,
+     {
+<span class="d">-        // TODO: For s3/gcs, we&#x27;ll need to ensure we don&#x27;t mess with the</span>
+<span class="d">-        // schemes. Tbh might need to tweak the auto-detect stuff too.</span>
+<span class="d">-</span>
+<span class="d">-        let mut segments = split_segments(glob);</span>
+<span class="d">-        if segments.is_empty() {</span>
+<span class="d">-            return Err(DbError::new(&quot;Missing segments for glob&quot;));</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        // Find the root dir to use.</span>
+<span class="d">-        let mut root = Vec::new();</span>
+<span class="d">-        while !segments.is_empty() &amp;&amp; !is_glob(segments[0]) {</span>
+<span class="d">-            root.push(segments.remove(0));</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        // TODO: Probably needs to be os/filesystem specific.</span>
+<span class="d">-        //</span>
+<span class="d">-        // E.g. for s3, always use &#x27;/&#x27;. If local and windows, use &#x27;\&#x27;.</span>
+<span class="d">-        let root = root.join(&quot;/&quot;);</span>
+<span class="d">-        let root_dir = fs.read_dir(&amp;root, state);</span>
+<span class="a">+        let glob_segments = F::glob_segments(glob)?;</span>
+ 
+         // Build matchers per segment.
+<span class="d">-        let mut matchers = Vec::with_capacity(segments.len());</span>
+<span class="d">-        for seg in &amp;segments {</span>
+<span class="a">+        let mut matchers = Vec::with_capacity(glob_segments.segments.len());</span>
+<span class="a">+        for seg in &amp;glob_segments.segments {</span>
+             if is_glob(seg) {
+                 let matcher = GlobBuilder::new(seg)
+                     .literal_separator(true)
+<span class="h">@@ -62,11 +70,11 @@ where</span>
+             }
+         }
+ 
+<span class="d">-        let segments = segments.into_iter().map(|s| s.to_string()).collect();</span>
+<span class="a">+        let root_dir = fs.read_dir(&amp;glob_segments.root_dir, state);</span>
+         let stack = vec![(root_dir, 0)];
+ 
+         Ok(GlobHandle {
+<span class="d">-            segments,</span>
+<span class="a">+            segments: glob_segments.segments,</span>
+             matchers,
+             stack,
+             buf: Vec::new(),
+<span class="h">@@ -186,52 +194,3 @@ where</span>
+         self.poll_expand(cx, out)
+     }
+ }
+<span class="d">-</span>
+<span class="d">-/// If we should consider the given path a glob.</span>
+<span class="d">-pub fn is_glob(path: &amp;str) -&gt; bool {</span>
+<span class="d m">-    path.contains([&#x27;*&#x27;, &#x27;?&#x27;, &#x27;[&#x27;, &#x27;{&#x27;])</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/// Split a glob like &quot;data/2025-*/file-*.parquet&quot; into [&quot;data&quot;, &quot;2025-*&quot;,</span>
+<span class="d">-/// &quot;file-*.parquet&quot;]</span>
+<span class="d">-fn split_segments(pattern: &amp;str) -&gt; Vec&lt;&amp;str&gt; {</span>
+<span class="d">-    // TODO: &#x27;\&#x27; on windows?</span>
+<span class="d">-    pattern.split(&#x27;/&#x27;).filter(|s| !s.is_empty()).collect()</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-#[cfg(test)]</span>
+<span class="d">-mod tests {</span>
+<span class="d">-    use super::*;</span>
+<span class="d">-</span>
+<span class="d">-    #[test]</span>
+<span class="d">-    fn split_segments_tests() {</span>
+<span class="d">-        struct TestCase {</span>
+<span class="d">-            input: &amp;&#x27;static str,</span>
+<span class="d">-            segments: Vec&lt;&amp;&#x27;static str&gt;,</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+<span class="d">-        let cases = [</span>
+<span class="d">-            TestCase {</span>
+<span class="d">-                input: &quot;*.parquet&quot;,</span>
+<span class="d">-                segments: vec![&quot;*.parquet&quot;],</span>
+<span class="d">-            },</span>
+<span class="d">-            TestCase {</span>
+<span class="d">-                input: &quot;./*.parquet&quot;,</span>
+<span class="d">-                segments: vec![&quot;.&quot;, &quot;*.parquet&quot;],</span>
+<span class="d">-            },</span>
+<span class="d">-            TestCase {</span>
+<span class="d">-                input: &quot;dir/**/file.parquet&quot;,</span>
+<span class="d">-                segments: vec![&quot;dir&quot;, &quot;**&quot;, &quot;file.parquet&quot;],</span>
+<span class="d">-            },</span>
+<span class="d">-            TestCase {</span>
+<span class="d">-                input: &quot;data/2025-*/file-*.parquet&quot;,</span>
+<span class="d">-                segments: vec![&quot;data&quot;, &quot;2025-*&quot;, &quot;file-*.parquet&quot;],</span>
+<span class="d">-            },</span>
+<span class="d">-        ];</span>
+<span class="d">-</span>
+<span class="d">-        for case in cases {</span>
+<span class="d">-            let segments: Vec&lt;_&gt; = split_segments(case.input);</span>
+<span class="d">-            assert_eq!(case.segments, segments);</span>
+<span class="d">-        }</span>
+<span class="d">-    }</span>
+<span class="d">-}</span></pre><h2>Commit #3: <a href="https://github.com/glaredb/glaredb/commit/6e85bab3e252ccc06a32ea30ac9d52909dbefc9c">6e85bab3e2</a> (2025-05-14T14:33:52-04:00)</h2><p class="k">feat: Initial S3 globbing (#3802)<br>Path after this commit: crates/glaredb_core/src/runtime/filesystem/glob.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/runtime/filesystem/glob.rs b/crates/glaredb_core/src/runtime/filesystem/glob.rs
+index c16b4626..f3c763c7 100644
+<span class="d">--- a/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="h">@@ -70,7 +70,7 @@ where</span>
+             }
+         }
+ 
+<span class="d">-        let root_dir = fs.read_dir(&amp;glob_segments.root_dir, state);</span>
+<span class="a">+        let root_dir = fs.read_dir(&amp;glob_segments.root_dir, state)?;</span>
+         let stack = vec![(root_dir, 0)];
+ 
+         Ok(GlobHandle {
+<span class="h">@@ -118,6 +118,8 @@ where</span>
+                     let mut temp_stack = Vec::new();
+ 
+                     for ent in self.buf.drain(..) {
+<span class="a">+                        // TODO: Path slicing logic probably needs</span>
+<span class="a">+                        // happen on the filesystem.</span>
+                         // Only match the final path component.
+                         let name = ent.path.rsplit(&#x27;/&#x27;).next().required(&quot;last path segment&quot;)?;
+ </pre><h2>Commit #4: <a href="https://github.com/glaredb/glaredb/commit/bb83651a6d03b94e0234fe1ba608e36895b95b0f">bb83651a6d</a> (2025-05-23T12:44:20-04:00)</h2><p class="k">feat: Multi-file scan (#3808)<br>Path after this commit: crates/glaredb_core/src/runtime/filesystem/glob.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/runtime/filesystem/glob.rs b/crates/glaredb_core/src/runtime/filesystem/glob.rs
+index f3c763c7..87e39180 100644
+<span class="d">--- a/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="h">@@ -138,6 +138,9 @@ where</span>
+                                 }
+                             }
+ 
+<span class="a">+                            // TODO: This needs to match the next segment for</span>
+<span class="a">+                            // the &quot;current&quot; directory.</span>
+<span class="a">+</span>
+                             // And we don’t emit anything at this stage unless
+                             // &#x27;**&#x27; is the last segmentt, in which case
+                             // &quot;everything under here&quot; is a match.</pre><h2>Commit #5: <a href="https://github.com/glaredb/glaredb/commit/327c8d1e16d49e3b65f4e9ef85a65e60f16ecafa">327c8d1e16</a> (2025-06-06T16:07:46-04:00)</h2><p class="k">chore: Detect if S3 bucket is in different region (#3917)<br>Path after this commit: crates/glaredb_core/src/runtime/filesystem/glob.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/runtime/filesystem/glob.rs b/crates/glaredb_core/src/runtime/filesystem/glob.rs
+index 87e39180..05254729 100644
+<span class="d">--- a/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/runtime/filesystem/glob.rs</span>
+<span class="h">@@ -49,7 +49,7 @@ impl&lt;D&gt; GlobHandle&lt;D&gt;</span>
+ where
+     D: ReadDirHandle,
+ {
+<span class="d">-    pub fn try_new&lt;F&gt;(fs: &amp;F, state: &amp;F::State, glob: &amp;str) -&gt; Result&lt;Self&gt;</span>
+<span class="a">+    pub async fn open&lt;F&gt;(fs: &amp;F, state: &amp;F::State, glob: &amp;str) -&gt; Result&lt;Self&gt;</span>
+     where
+         F: FileSystem&lt;ReadDirHandle = D&gt; + ?Sized,
+     {
+<span class="h">@@ -70,7 +70,7 @@ where</span>
+             }
+         }
+ 
+<span class="d">-        let root_dir = fs.read_dir(&amp;glob_segments.root_dir, state)?;</span>
+<span class="a">+        let root_dir = fs.read_dir(&amp;glob_segments.root_dir, state).await?;</span>
+         let stack = vec![(root_dir, 0)];
+ 
+         Ok(GlobHandle {</pre></body></html>

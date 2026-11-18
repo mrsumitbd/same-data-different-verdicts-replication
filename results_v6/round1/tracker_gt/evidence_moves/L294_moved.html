@@ -1,0 +1,186 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L294 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L294: after the move</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>Original file:</b> apps/web/client/src/server/api/routers/project/chat.ts (see L294.html)<br><b>Move commit:</b> <a href="https://github.com/onlook-dev/onlook/commit/829317a2ab28620aa85d1aa0e63ee4cbf67feb9e">829317a2ab</a> (commit #5 on L294.html)<br><b>Destination file (your label):</b> apps/web/client/src/server/api/routers/chat/message.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">            const conversationId = input.message.conversationId;</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 31).</p><h2>Destination file at the move commit, lines 23 to 39</h2><pre>   23 |             });
+   24 |             return result.map((message) =&gt; toMessage(message));
+   25 |         }),
+   26 |     upsert: protectedProcedure
+   27 |         .input(z.object({
+   28 |             message: messageInsertSchema
+   29 |         }))
+   30 |         .mutation(async ({ ctx, input }) =&gt; {
+<span class="t">   31 |             const conversationId = input.message.conversationId;</span>
+   32 |             if (conversationId) {
+   33 |                 const conversation = await ctx.db.query.conversations.findFirst({
+   34 |                     where: eq(conversations.id, conversationId),
+   35 |                 });
+   36 |                 if (!conversation) {
+   37 |                     throw new Error(`Conversation not found`);
+   38 |                 }
+   39 |             }</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/28cde759317368983426edc65c814d8039dd7472">28cde75931</a> (2025-08-12T11:43:27-07:00)</h2><p class="k">fix: snapshot type conflict and mastra can&#x27;t view image (#2656)<br>Path after this commit: apps/web/client/src/server/api/routers/chat/message.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/chat/message.ts b/apps/web/client/src/server/api/routers/chat/message.ts
+index 248daec7..1dafd93b 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="h">@@ -6,7 +6,7 @@ import {</span>
+     toMessage,
+     type Message
+ } from &#x27;@onlook/db&#x27;;
+<span class="d">-import { MessageSnapshotType, type ChatMessageRole } from &#x27;@onlook/models&#x27;;</span>
+<span class="a">+import { MessageCheckpointType, type ChatMessageRole } from &#x27;@onlook/models&#x27;;</span>
+ import { asc, eq, inArray } from &#x27;drizzle-orm&#x27;;
+ import { z } from &#x27;zod&#x27;;
+ import { createTRPCRouter, protectedProcedure } from &#x27;../../trpc&#x27;;
+<span class="h">@@ -68,18 +68,18 @@ export const messageRouter = createTRPCRouter({</span>
+                 parts: input.message.parts as Message[&#x27;parts&#x27;],
+             }).where(eq(messages.id, input.messageId));
+         }),
+<span class="d">-    updateSnapshot: protectedProcedure</span>
+<span class="a">+    updateCheckpoints: protectedProcedure</span>
+         .input(z.object({
+             messageId: z.string(),
+<span class="d">-            snapshots: z.array(z.object({</span>
+<span class="d">-                type: z.nativeEnum(MessageSnapshotType),</span>
+<span class="a">+            checkpoints: z.array(z.object({</span>
+<span class="a">+                type: z.nativeEnum(MessageCheckpointType),</span>
+                 oid: z.string(),
+                 createdAt: z.date(),
+             })),
+         }))
+         .mutation(async ({ ctx, input }) =&gt; {
+             await ctx.db.update(messages).set({
+<span class="d">-                snapshots: input.snapshots,</span>
+<span class="a">+                checkpoints: input.checkpoints,</span>
+             }).where(eq(messages.id, input.messageId));
+         }),
+     delete: protectedProcedure</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/891ac13c7d15eadf4c7f08e73dc5b183f0b9c69b">891ac13c7d</a> (2025-09-07T16:36:00-07:00)</h2><p class="k">feat: add branching  (#2763)<br>Path after this commit: apps/web/client/src/server/api/routers/chat/message.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/chat/message.ts b/apps/web/client/src/server/api/routers/chat/message.ts
+index 1dafd93b..c54dd178 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="h">@@ -3,7 +3,7 @@ import {</span>
+     messageInsertSchema,
+     messages,
+     messageUpdateSchema,
+<span class="d">-    toMessage,</span>
+<span class="a">+    fromDbMessage,</span>
+     type Message
+ } from &#x27;@onlook/db&#x27;;
+ import { MessageCheckpointType, type ChatMessageRole } from &#x27;@onlook/models&#x27;;
+<span class="h">@@ -21,7 +21,7 @@ export const messageRouter = createTRPCRouter({</span>
+                 where: eq(messages.conversationId, input.conversationId),
+                 orderBy: [asc(messages.createdAt)],
+             });
+<span class="d">-            return result.map((message) =&gt; toMessage(message));</span>
+<span class="a">+            return result.map((message) =&gt; fromDbMessage(message));</span>
+         }),
+     upsert: protectedProcedure
+         .input(z.object({</pre><h2>Commit #3: <a href="https://github.com/onlook-dev/onlook/commit/3932f9e78f86ceed4059deaa8fff2cfa1ae015c4">3932f9e78f</a> (2025-09-16T20:27:56-07:00)</h2><p class="k">feat: use single onlook message format and improve tools (#2852)<br>Path after this commit: apps/web/client/src/server/api/routers/chat/message.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/chat/message.ts b/apps/web/client/src/server/api/routers/chat/message.ts
+index c54dd178..f64d37b4 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="h">@@ -1,12 +1,11 @@</span>
+ import {
+     conversations,
+<span class="a">+    fromDbMessage,</span>
+     messageInsertSchema,
+     messages,
+<span class="d">-    messageUpdateSchema,</span>
+<span class="d">-    fromDbMessage,</span>
+<span class="d">-    type Message</span>
+<span class="a">+    messageUpdateSchema</span>
+ } from &#x27;@onlook/db&#x27;;
+<span class="d">-import { MessageCheckpointType, type ChatMessageRole } from &#x27;@onlook/models&#x27;;</span>
+<span class="a">+import { MessageCheckpointType } from &#x27;@onlook/models&#x27;;</span>
+ import { asc, eq, inArray } from &#x27;drizzle-orm&#x27;;
+ import { z } from &#x27;zod&#x27;;
+ import { createTRPCRouter, protectedProcedure } from &#x27;../../trpc&#x27;;
+<span class="h">@@ -64,15 +63,14 @@ export const messageRouter = createTRPCRouter({</span>
+         .mutation(async ({ ctx, input }) =&gt; {
+             await ctx.db.update(messages).set({
+                 ...input.message,
+<span class="d">-                role: input.message.role as ChatMessageRole,</span>
+<span class="d">-                parts: input.message.parts as Message[&#x27;parts&#x27;],</span>
+<span class="a">+                parts: input.message.parts</span>
+             }).where(eq(messages.id, input.messageId));
+         }),
+     updateCheckpoints: protectedProcedure
+         .input(z.object({
+             messageId: z.string(),
+             checkpoints: z.array(z.object({
+<span class="d">-                type: z.nativeEnum(MessageCheckpointType),</span>
+<span class="a">+                type: z.enum(MessageCheckpointType),</span>
+                 oid: z.string(),
+                 createdAt: z.date(),
+             })),
+<span class="h">@@ -94,8 +92,7 @@ export const messageRouter = createTRPCRouter({</span>
+ const normalizeMessage = (message: z.infer&lt;typeof messageInsertSchema&gt;) =&gt; {
+     return {
+         ...message,
+<span class="d">-        role: message.role as ChatMessageRole,</span>
+<span class="d">-        parts: message.parts as Message[&#x27;parts&#x27;],</span>
+<span class="a">+        parts: message.parts,</span>
+         createdAt: typeof message.createdAt === &#x27;string&#x27; ? new Date(message.createdAt) : message.createdAt,
+     };
+ };
+\ No newline at end of file</pre><h2>Commit #4: <a href="https://github.com/onlook-dev/onlook/commit/14a3e5433811b41213512f3f0a0d3a5bc43cebd5">14a3e54338</a> (2025-09-18T12:32:50-07:00)</h2><p class="k">improve sse performance (#2851)<br>Path after this commit: apps/web/client/src/server/api/routers/chat/message.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/chat/message.ts b/apps/web/client/src/server/api/routers/chat/message.ts
+index f64d37b4..30c9a64e 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="h">@@ -63,7 +63,6 @@ export const messageRouter = createTRPCRouter({</span>
+         .mutation(async ({ ctx, input }) =&gt; {
+             await ctx.db.update(messages).set({
+                 ...input.message,
+<span class="d">-                parts: input.message.parts</span>
+             }).where(eq(messages.id, input.messageId));
+         }),
+     updateCheckpoints: protectedProcedure
+<span class="h">@@ -87,12 +86,36 @@ export const messageRouter = createTRPCRouter({</span>
+         .mutation(async ({ ctx, input }) =&gt; {
+             await ctx.db.delete(messages).where(inArray(messages.id, input.messageIds));
+         }),
+<span class="a">+</span>
+<span class="a">+    // TODO: We&#x27;re just doing a full replacement here which is inefficient.</span>
+<span class="a">+    // To improve this, there&#x27;s basically two use-cases we need to support:</span>
+<span class="a">+    // 1) Add new messages (doesn&#x27;t need to delete + reinsert messages)</span>
+<span class="a">+    // 2) Edit a previous message (requires deleting all messages following the edited message and inserting new ones)</span>
+<span class="a">+    // Tool calls are supported in both cases by the fact that they result in new messages being added.</span>
+<span class="a">+    replaceConversationMessages: protectedProcedure</span>
+<span class="a">+        .input(z.object({</span>
+<span class="a">+            conversationId: z.string(),</span>
+<span class="a">+            messages: messageInsertSchema.array(),</span>
+<span class="a">+        }))</span>
+<span class="a">+        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="a">+            await ctx.db.transaction(async (tx) =&gt; {</span>
+<span class="a">+                await tx.delete(messages).where(eq(messages.conversationId, input.conversationId));</span>
+<span class="a">+</span>
+<span class="a">+                if (input.messages.length &gt; 0) {</span>
+<span class="a">+                    const normalizedMessages = input.messages.map(normalizeMessage);</span>
+<span class="a">+                    await tx.insert(messages).values(normalizedMessages);</span>
+<span class="a">+                }</span>
+<span class="a">+</span>
+<span class="a">+                await tx.update(conversations).set({</span>
+<span class="a">+                    updatedAt: new Date()</span>
+<span class="a">+                }).where(eq(conversations.id, input.conversationId));</span>
+<span class="a">+            });</span>
+<span class="a">+        }),</span>
+ })
+ 
+ const normalizeMessage = (message: z.infer&lt;typeof messageInsertSchema&gt;) =&gt; {
+     return {
+         ...message,
+<span class="d">-        parts: message.parts,</span>
+         createdAt: typeof message.createdAt === &#x27;string&#x27; ? new Date(message.createdAt) : message.createdAt,
+     };
+ };
+\ No newline at end of file</pre><h2>Commit #5: <a href="https://github.com/onlook-dev/onlook/commit/15f9f2aa8a30ca46487053d9c91965c1835e4692">15f9f2aa8a</a> (2025-10-08T10:02:30-07:00)</h2><p class="k">Feat: Allow for reverting arbitrary branches (#2971)<br>Path after this commit: apps/web/client/src/server/api/routers/chat/message.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/chat/message.ts b/apps/web/client/src/server/api/routers/chat/message.ts
+index 30c9a64e..a8ee15fa 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/chat/message.ts</span>
+<span class="h">@@ -71,6 +71,7 @@ export const messageRouter = createTRPCRouter({</span>
+             checkpoints: z.array(z.object({
+                 type: z.enum(MessageCheckpointType),
+                 oid: z.string(),
+<span class="a">+                branchId: z.string(),</span>
+                 createdAt: z.date(),
+             })),
+         }))</pre></body></html>

@@ -1,0 +1,105 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L096</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L096</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs, line 75<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/62d327752b854a18d0ea58363d23f1e58c22ec0d">62d327752b</a> (2025-05-03T22:08:15)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">            &amp;BitAnd::&lt;PhysicalU16&gt;::new(&amp;DataType::UInt16),</span></pre><h2>File at the merge commit, lines 67 to 83</h2><pre>   67 |             &amp;Signature::new(&amp;[DataTypeId::UInt8, DataTypeId::UInt8], DataTypeId::UInt8),
+   68 |             &amp;BitAnd::&lt;PhysicalU8&gt;::new(&amp;DataType::UInt8),
+   69 |         ),
+   70 |         RawScalarFunction::new(
+   71 |             &amp;Signature::new(
+   72 |                 &amp;[DataTypeId::UInt16, DataTypeId::UInt16],
+   73 |                 DataTypeId::UInt16,
+   74 |             ),
+<span class="t">   75 |             &amp;BitAnd::&lt;PhysicalU16&gt;::new(&amp;DataType::UInt16),</span>
+   76 |         ),
+   77 |         RawScalarFunction::new(
+   78 |             &amp;Signature::new(
+   79 |                 &amp;[DataTypeId::UInt32, DataTypeId::UInt32],
+   80 |                 DataTypeId::UInt32,
+   81 |             ),
+   82 |             &amp;BitAnd::&lt;PhysicalU32&gt;::new(&amp;DataType::UInt32),
+   83 |         ),</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/fe02cd69dcc6789c22c66ebb1da5e5e5137c199d">fe02cd69dc</a> (2025-05-03T23:20:55+00:00)</h2><p class="k">feat: Add other bit ops (#3770)<br>Path after this commit: crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs b/crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs
+index 5410154a..f2a28cb2 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs</span>
+<span class="h">@@ -27,6 +27,8 @@ use crate::functions::documentation::{Category, Documentation, Example};</span>
+ use crate::functions::function_set::ScalarFunctionSet;
+ use crate::functions::scalar::{BindState, RawScalarFunction, ScalarFunction};
+ 
+<span class="a">+// Note this should not be part of default function list to avoid potential</span>
+<span class="a">+// conflict with the aggregate function.</span>
+ pub const FUNCTION_SET_BITAND: ScalarFunctionSet = ScalarFunctionSet {
+     name: &quot;bitand&quot;,
+     aliases: &amp;[],</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/a16d42451749180f30a91623be0e35247371c081">a16d424517</a> (2025-05-06T09:44:07-04:00)</h2><p class="k">chore: Refactor DataType (#3776)<br>Path after this commit: crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs b/crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs
+index f2a28cb2..9dfe257e 100644
+<span class="d">--- a/crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs</span>
+<span class="a">+++ b/crates/glaredb_core/src/functions/scalar/builtin/binary/bitand.rs</span>
+<span class="h">@@ -44,58 +44,58 @@ pub const FUNCTION_SET_BITAND: ScalarFunctionSet = ScalarFunctionSet {</span>
+     functions: &amp;[
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Int8, DataTypeId::Int8], DataTypeId::Int8),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalI8&gt;::new(&amp;DataType::Int8),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalI8&gt;::new(DataType::INT8),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Int16, DataTypeId::Int16], DataTypeId::Int16),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalI16&gt;::new(&amp;DataType::Int16),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalI16&gt;::new(DataType::INT16),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Int32, DataTypeId::Int32], DataTypeId::Int32),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalI32&gt;::new(&amp;DataType::Int32),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalI32&gt;::new(DataType::INT32),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::Int64, DataTypeId::Int64], DataTypeId::Int64),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalI64&gt;::new(&amp;DataType::Int64),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalI64&gt;::new(DataType::INT64),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(
+                 &amp;[DataTypeId::Int128, DataTypeId::Int128],
+                 DataTypeId::Int128,
+             ),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalI128&gt;::new(&amp;DataType::Int128),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalI128&gt;::new(DataType::INT128),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(&amp;[DataTypeId::UInt8, DataTypeId::UInt8], DataTypeId::UInt8),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalU8&gt;::new(&amp;DataType::UInt8),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalU8&gt;::new(DataType::UINT8),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(
+                 &amp;[DataTypeId::UInt16, DataTypeId::UInt16],
+                 DataTypeId::UInt16,
+             ),
+<span class="d m">-            &amp;BitAnd::&lt;PhysicalU16&gt;::new(&amp;DataType::UInt16),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalU16&gt;::new(DataType::UINT16),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(
+                 &amp;[DataTypeId::UInt32, DataTypeId::UInt32],
+                 DataTypeId::UInt32,
+             ),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalU32&gt;::new(&amp;DataType::UInt32),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalU32&gt;::new(DataType::UINT32),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(
+                 &amp;[DataTypeId::UInt64, DataTypeId::UInt64],
+                 DataTypeId::UInt64,
+             ),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalU64&gt;::new(&amp;DataType::UInt64),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalU64&gt;::new(DataType::UINT64),</span>
+         ),
+         RawScalarFunction::new(
+             &amp;Signature::new(
+                 &amp;[DataTypeId::UInt128, DataTypeId::UInt128],
+                 DataTypeId::UInt128,
+             ),
+<span class="d">-            &amp;BitAnd::&lt;PhysicalU128&gt;::new(&amp;DataType::UInt128),</span>
+<span class="a">+            &amp;BitAnd::&lt;PhysicalU128&gt;::new(DataType::UINT128),</span>
+         ),
+     ],
+ };</pre></body></html>

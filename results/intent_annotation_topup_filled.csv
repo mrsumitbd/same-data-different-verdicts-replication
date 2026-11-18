@@ -1,0 +1,149 @@
+sample_id,commit_url,human_label,notes
+T001,https://github.com/jlowin/fastmcp/commit/f36b147f60aa776655bae12223d60a64128be9fd,perfective,"Unify component storage refactor (managers -> LocalProvider); patch unavailable, decided from file list"
+T002,https://github.com/lingodotdev/lingo.dev/commit/a8d318cf7a77f55e44ef04d9ccbb305efb3aee77,perfective,"Code-style fixes, no functional change; could read preventive (lint compliance)"
+T003,https://github.com/onlook-dev/onlook/commit/5a2664d48806b4c2dd2bed51d91daac9286f2ffa,adaptive,New capability: AI image tools (view/upload) for project operations
+T004,https://github.com/stephendev0/stikdebug/commit/7c85bd6b16860e24b1e9e19430086ece15153911,adaptive,New theming options/light-dark-system assets; feature addition
+T005,https://github.com/elsa-workflows/elsa-core/commit/bbce6b6747a39efc784b8d02a5fba34e2520743f,adaptive,"Release-branch merge (3.5.0): resilience-strategies API, serializer options; merge of feature work"
+T006,https://github.com/crewaiinc/crewai/commit/06c991d8c32261c397ad718df7c4e9979c7d9ef9,corrective,Fixes #2945: env var ignored when set after import; singleton re-init fault
+T007,https://github.com/wandb/weave/commit/083c4bb173a39991d3ad49e108a266d3e157fec3,perfective,Makes wandb optional via wandb_thin shim; decoupling cleanup; could read adaptive (packaging)
+T008,https://github.com/marimo-team/marimo/commit/0540232f5cdf783a22ce14414446746bcab78498,adaptive,Feature: explicit aggregation column selection in Group By; prevents nonsense aggregation
+T009,https://github.com/elsa-workflows/elsa-core/commit/2eec542f507eb95c7245ca58acd9dfa8ff331043,adaptive,Release merge rc/3.4.0: removals + client/feature changes; merge of release work
+T010,https://github.com/celestiaorg/celestia-core/commit/092d3ad8506c67c3d138c06206cd2c41586cc1be,adaptive,Restores BlockAPI naming for celestia-core v0.38 parity; external-interface alignment; could read corrective
+T011,https://github.com/crewaiinc/crewai/commit/5b9606e8b6b46ecfe95913234ac7e14083a94fbf,corrective,Context-window handling fix in llm.py; typo'd commit message
+T012,https://github.com/crewaiinc/crewai/commit/fbf87327841dd7b92bb04a23fd1575881a3ad3fa,corrective,Type-issue fix in token counter callback
+T013,https://github.com/dagster-io/dagster/commit/56b2e0d1566fb042a87c76535e70f3d0c196128f,perfective,Improves default ad hoc job name (project/env names over IDs)
+T014,https://github.com/crewaiinc/crewai/commit/e0600e3bb96199a7050054cb5887c48187986ae4,corrective,Fixes #1869: Anthropic message formatting
+T015,https://github.com/dlt-hub/dlt/commit/b75e4aa721cc18a2cd6e131457dfe29e8c90d053,adaptive,"Mixed: multi-schema support, pipeline overview additions, minor fixes; new capabilities dominate"
+T016,https://github.com/awslabs/mcp/commit/466cf7fc457289c925f04c535d843524cd344b6a,perfective,Single-line label switch (column_metadata for column name)
+T017,https://github.com/onlook-dev/onlook/commit/e11c5f4fed2a2783a065b4e2ea4028eae78df051,adaptive,New feature: AI chat settings context menu; minor fixes alongside
+T018,https://github.com/crewaiinc/crewai/commit/c205d2e8de6f7c9fe47d22cc91e5852fdf211fe1,adaptive,New capability: before/after LLM call hooks with contexts and tests
+T019,https://github.com/glaredb/glaredb/commit/912e0dfe1a397b7fa8d5c30f3c7b52ee766b1c4c,adaptive,Adds Iceberg REST catalog endpoints/client; new integration capability
+T020,https://github.com/onlook-dev/onlook/commit/0e43ffd5575ddc8aa9f58c624237d6a6c45d1b60,adaptive,"New capability: i18n (react-i18next) for pricing page, ja translations"
+T021,https://github.com/gofiber/fiber/commit/16fd8edbf15d9ba14b0575d2bfcef4872f5160b8,corrective,Fixes benchmark panic: index out of range in Benchmark_MemoryLock
+T022,https://github.com/crewaiinc/crewai/commit/467ee2917ea477d83b74d198a44b4a6fa0ca0732,perfective,"Refactor/simplify EventListener, TraceCollectionListener, ConsoleFormatter; large dead-code removal"
+T023,https://github.com/bespokelabsai/curator/commit/b2cb361e1beae7241e67f46b73b097a73bcc9c2d,preventive,"Lint tooling migration (black->Ruff) + pre-commit hooks; mass reformat; patch unavailable, decided from file list"
+T024,https://github.com/ericlbuehler/mistral.rs/commit/a8ab6c83917a3eb2ce3b082e30f7908a1d19e312,perfective,Removes debug prints; cleanup
+T025,https://github.com/dlt-hub/dlt/commit/718b636045c3118c1479b5085c6ca796ed76f3b9,corrective,Fixes .to_ibis() query normalization; docs updates alongside
+T026,https://github.com/kanisterio/kanister/commit/583ae4feb1621aecc975e89acf91d2ea0b350b07,corrective,Fixes exit-code handling from child processes
+T027,https://github.com/lingodotdev/lingo.dev/commit/6d4e9439487469df0d77bd229986aa7ca98a50e9,adaptive,Extends TypeScript loader: nested fields and arrays support
+T028,https://github.com/elsa-workflows/elsa-core/commit/eb7a76a8c05f2ad583f3dd0ac6f6b41d203147c0,adaptive,Mixed: token-handling refactor + new merge modes (None/Converge/Stream/Race) + default change; capability changes dominate
+T029,https://github.com/marimo-team/marimo/commit/e8febb519b93a08c8912d36aa5acdb8a313107ed,corrective,Fixes potential rtc deadlock
+T030,https://github.com/elsa-workflows/elsa-core/commit/7120f9f2a0af9d960f33efbf3b7d783c28a1ca0e,preventive,Adds Func converter across serializers so delegates aren't serialized/rehydrated; robustness hardening; could read corrective
+T031,https://github.com/onlook-dev/onlook/commit/c38538f6b3de9e33ec4112e6c000b5bf455f3baa,perfective,"Store cleanup: removes unused token store, small additions"
+T032,https://github.com/crewaiinc/crewai/commit/8c76bad50f5bb72b061500910dfb14c4defe7185,corrective,"Fixes litellm issue handling in executor, broadened; could read preventive"
+T033,https://github.com/langchain-ai/langgraph/commit/9105e60a3469b6c3850d6428378ecd9daa897f51,perfective,Improves generics on StateGraph etc; moves typing utils to private file
+T034,https://github.com/onlook-dev/onlook/commit/52f520d1de9873c06f2bb85c0045f71ebae65fde,adaptive,New feature: create project from prompt (UI + electron create flow)
+T035,https://github.com/crewaiinc/crewai/commit/169d3233e826ae971ee591f95573094812088ec5,perfective,Console formatter/logging improvements
+T036,https://github.com/onlook-dev/onlook/commit/31cc81263e8592d3e1059a993a8e5ad8befed8f6,adaptive,New feature: DevTab editor panel with resizable UI
+T037,https://github.com/latitude-dev/latitude-llm/commit/0780f55cd9104f3a77bef730874cd4eca1222fc3,adaptive,New capability: persistent/shareable Latte sessions with live streaming
+T038,https://github.com/onlook-dev/onlook/commit/de83645d66624ed8b96511cbd884ffc4372793ad,adaptive,Disables Bun runtime on Intel Macs; platform accommodation
+T039,https://github.com/onlook-dev/onlook/commit/6503195bfb739c653edbc520ef50c31099dbc937,perfective,"Mixed: hosting fixes + performance work (memoize, callbacks); perf dominates"
+T040,https://github.com/jmberesford/retrom/commit/45a470f4fd2087301743efdfd4d0240f0eb3c37f,perfective,Vendored shadcn component style updates; could read adaptive (upstream sync)
+T041,https://github.com/onlook-dev/onlook/commit/22e2238ca960fc9c991f98907660c5d954050656,adaptive,Adds action/code error surfacing to chat (catch + toast); new error-display capability
+T042,https://github.com/awslabs/mcp/commit/54ab15249835fe832e7d6d553df524526d6ec1f9,corrective,Supports HTTP(S)_PROXY env vars for k8s client; fix-framed env accommodation
+T043,https://github.com/awslabs/mcp/commit/aacccd017faedfa9a4b7a03d05dbf123387fdcd9,perfective,Removes unused param; cleanup
+T044,https://github.com/jina-ai/node-deepresearch/commit/a179807c5ae27c6825e6e0433a8204ef197179c5,corrective,Logger fix; terse message
+T045,https://github.com/logancyang/obsidian-copilot/commit/14f805c6b9236f517fd17e1a2c1c4b26ce0388d3,corrective,Fixes chat input responsiveness; fix-framed perf
+T046,https://github.com/bespokelabsai/curator/commit/0ae417e5cab5891bb39d8c0afeb1e13aa71a3bb1,perfective,"Perf: lazy download batch, memory footprint, chunk streaming"
+T047,https://github.com/langchain-ai/langsmith-sdk/commit/1064b47757fb63b460ea4c6e78aa1ac036cc5cce,adaptive,New capability: OTEL support in JS SDK with tests
+T048,https://github.com/dagster-io/dagster/commit/d4a0384e0a115c630182ddc73b683882979dd0b7,perfective,Extracts asset methods into AssetMixin; organization/maintainability refactor
+T049,https://github.com/crewaiinc/crewai/commit/000bab4cf5b96cac99d08936a09483eb77e44ac4,perfective,"Enhances event listener visualization/logging, verbose flag; improvement of existing feature; could read adaptive"
+T050,https://github.com/crewaiinc/crewai/commit/e4c4b81e63a61670cbe04330a308969e64d1bbe6,perfective,"Parser/constants refactor, tools_handler improvement, test updates"
+T051,https://github.com/latitude-dev/latitude-llm/commit/fb4ed7390ebaeedbfd0343b39de5e8967aeace9b,adaptive,"Editor QA batch: new File/Image nodes, parser rework, fixes; new capabilities present"
+T052,https://github.com/openpipe/art/commit/d92af81cd98b99c4b213a482034a726b19b5f44f,perfective,Small patches.py refactor
+T053,https://github.com/willccbb/verifiers/commit/b314ce724dc26bcaf6fc68ea52c1a3003625fc3f,corrective,Disables default max-turns cap in multiturn env; could read perfective (default tweak)
+T054,https://github.com/onlook-dev/onlook/commit/00dfd6e22a7ac6d8bd84b5d93d5f0c969c7c29ed,corrective,Fixes Japanese IME text input in ChatInput on macOS
+T055,https://github.com/glaredb/glaredb/commit/5a6e2cff82dc5b0954294dcac6be076630c8414a,perfective,Static references for function sets in catalog entries; mechanical TODO-addressing refactor
+T056,https://github.com/glaredb/glaredb/commit/289dcf8bdc42d1b4ff1e2ac5636a10c205a53582,corrective,Fixes early row-ptr clearing in row scan; enables more debug SLTs alongside
+T057,https://github.com/crewaiinc/crewai/commit/34c3075fdb2c130cc2fedbf83cadb6834e3380df,corrective,"Fixes Mem0 memory support: agent_id handling, OR-operator queries"
+T058,https://github.com/onlook-dev/onlook/commit/ee7dde55c4b406ca7770b45b5f55e286026a4a7e,corrective,Fixes default brand color issue
+T059,https://github.com/onlook-dev/onlook/commit/23216bacc94cad4fd3113cea35c9593483a6a957,adaptive,"Web-version iteration: webframe, click, hover, scroll-refresh functionality"
+T060,https://github.com/hotovo/aider-desk/commit/9bc7317485cbadfb566d6dee57b9f0fad8d75761,perfective,Revamped prompt field for better autocompletion; improvement of existing feature
+T061,https://github.com/crewaiinc/crewai/commit/e43c7debbd444486df77c83fc604641e18f1cd8a,corrective,Adds idx for task ordering in planning handler; fix-framed; could read perfective
+T062,https://github.com/crewaiinc/crewai/commit/633e279b51a090799635166bcff4c2947f123043,adaptive,"New capability: async support for tools and agent executor, with tests"
+T063,https://github.com/onlook-dev/onlook/commit/0fce59f4e5a674131e0f3ab0d79f96ad0537b614,perfective,Downgrades preload errors to warnings across webview scripts; could read corrective (false-positive errors)
+T064,https://github.com/glaredb/glaredb/commit/71abe438d9788da6dbe4b8cdf6b432ed036c1efa,perfective,"Removes tokio from runtime interface, stubs DynIoRuntime; decoupling refactor"
+T065,https://github.com/wix/react-native-ui-lib/commit/4158f3fa30a0ac2795649969c8ea37636647162f,adaptive,Enables LiveCode block interaction in table cells (pointerEvents wrapper); docs UI capability
+T066,https://github.com/marimo-team/marimo/commit/189667475406709ec37571463e016ffda0078e04,adaptive,"Uses islands as local asset server, working around broken quarto 0.14.7; env accommodation; could read corrective"
+T067,https://github.com/tinygrad/tinygrad/commit/2da02f1ae1b9dbcfd8652795d2bffd138617e2bb,perfective,Codegen change: adds loads at the end; late-load restructure with test updates
+T068,https://github.com/logancyang/obsidian-copilot/commit/b1a1c539b38dc0883e5baadb0b821791f48bf8f0,adaptive,Updates Bedrock model support/constants; provider lineup adaptation
+T069,https://github.com/glaredb/glaredb/commit/b24e6ebdf703f431bc057095c13fa1c9dee4980b,corrective,Fixes order-by ties logic; adds order_by_many SLT
+T070,https://github.com/crewaiinc/crewai/commit/4e0ce9adfe0dac156d977c99547a5717b3ee7a14,corrective,Unspecified fixes in llm.py/agent_utils; terse message
+T071,https://github.com/onlook-dev/onlook/commit/6c7f919ee8b19b3ad1df857cbdaff6359267def9,corrective,Updates failing sandbox tests + adds locale messages; test fixes; could read preventive
+T072,https://github.com/jmberesford/retrom/commit/dbd559269a8112e69c6c194de3f92e8d188a3d8b,perfective,UI tweaks across modals + new button-group component; improvement work
+T073,https://github.com/openpipe/art/commit/ae6ef5490086abd946b553cfc538422236935f7e,perfective,Moves free_memory into train flow; restructure
+T074,https://github.com/stephendev0/stikdebug/commit/fd84c42d2cdb2e7b1b60b38a8d13d18d35f273d7,perfective,Optimizes home view
+T075,https://github.com/azure/azure-sdk-for-rust/commit/d94c11e47a60388de424c1a4792006b5cca0881d,perfective,Mass rename BearerTokenCredentialPolicy -> BearerTokenAuthorizationPolicy
+T076,https://github.com/dagster-io/dagster/commit/f5da792bc331a850f91e806c81b07674e9c491be,adaptive,Implements DbtCloudJobRunResults.to_default_asset_events; new capability with tests
+T077,https://github.com/afadil/wealthfolio/commit/e1cb2a6f94267f3a163d737298951c125aaa4f91,adaptive,Branch merge: v2 testing + API fixes; mixed content
+T078,https://github.com/crewaiinc/crewai/commit/ab39753a7513dd3c7abf25798cae56572eb6eeef,adaptive,Introduces MemoryEvents to monitor memory usage; new capability with tests
+T079,https://github.com/onlook-dev/onlook/commit/fbffedc2aff0e12c53d248c28cefb20d7b44cf11,adaptive,Re-enables subscriptions page + version bump; functionality release; could read corrective (restore)
+T080,https://github.com/azure/azure-sdk-for-python/commit/d0d6eb93d898d7f81b569047342d957f0053be5d,corrective,Fixes VerifySdist CI failure: dev-version tooling + classification update
+T081,https://github.com/onlook-dev/onlook/commit/59df63f7d8ee59d0af79ab5ba489858ee86a0e70,corrective,Fixes chat panel performance during streaming; also pins bun version to dodge bun 1.3 issues
+T082,https://github.com/onlook-dev/onlook/commit/740ec31f67605e18bbadeb33df55e0e908b6c87e,corrective,Fixes gpt-5 chat stuttering; message-list restructure
+T083,https://github.com/ericlbuehler/mistral.rs/commit/c116ce421dcb86daabbeb7677a22c89cbbfe4e96,adaptive,Disables mmap on CUDA; platform accommodation; could read corrective
+T084,https://github.com/bespokelabsai/curator/commit/00ce9759ad69a1442ccc0b90bbaaa871dd78d255,adaptive,Adds deepseek structured-output support in OpenAI online processor + examples
+T085,https://github.com/jlowin/fastmcp/commit/12f2422e18485b814207ba9c1c940645caa9ebea,perfective,ResourceContent canonical-type restructure + meta support; refactor dominates; could read adaptive
+T086,https://github.com/onlook-dev/onlook/commit/bded419eceea75cab59dafa74fe827088c25f5b4,adaptive,New feature: duplicate/delete web frame
+T087,https://github.com/jlowin/fastmcp/commit/b05801d66f166eebb551927ee1c9efe52332225e,perfective,Consolidates execution method chains into single public API
+T088,https://github.com/onlook-dev/onlook/commit/1ee8e3efee163cf5e8857282853107fcb5826048,corrective,Fixes pages overflow (single line)
+T089,https://github.com/crewaiinc/crewai/commit/d4aa676195fa0ddcb7cb599033ff08e4cf3e14d7,adaptive,"New capability: configurable search params (limit, score_threshold) for RAG/knowledge/memory"
+T090,https://github.com/onlook-dev/onlook/commit/0a161a8af205da42361b725d571c4417a64eb7fe,corrective,Fixes chat context dependencies; terse message
+T091,https://github.com/crewaiinc/crewai/commit/d3b398ed526213c28781e1082c0c07a654c66d8a,perfective,Release prep: mechanical version bumps across pyprojects/templates
+T092,https://github.com/gitbookio/gitbook/commit/10ded437f07889ddb7722f9a2eafcdcab7d9b6c8,preventive,Enables noUncheckedIndexedAccess across TS configs + fixes fallout; type-safety hardening
+T093,https://github.com/crewaiinc/crewai/commit/b126ab22dd61dff16ca667303c92c4a340ec0a71,perfective,"Telemetry module refactor: utility functions, modern typing"
+T094,https://github.com/celestiaorg/celestia-core/commit/f1a0c9eb86d75c2c1d4967fbd050268b052e2a29,adaptive,go-square v3.0.0 upgrade (required bump); dependency adaptation
+T095,https://github.com/awslabs/mcp/commit/620db3f8eed60caa0c2baff77624e9fbb41058f1,corrective,Fixes tool name snake_case->camelCase conversion
+T096,https://github.com/onlook-dev/onlook/commit/fcd2f597550703c2ea801ba9650de165605087be,adaptive,Adds autosave (git commit) before applying code; new behavior with guards
+T097,https://github.com/crewaiinc/crewai/commit/ddb7958da7d24336e152d9b6f34aa0a3bcc04221,perfective,Cleanup to match enterprise edition; feedback prompting tweak
+T098,https://github.com/crewaiinc/crewai/commit/5235442a5b786e2b57d621bedb27884659bbeb96,perfective,Decouples telemetry from Crew; span tracking; test coverage; could read adaptive
+T099,https://github.com/tinygrad/tinygrad/commit/a95159d579e409f591fa0fa92043cd494534bd52,preventive,Removes TestShapeSpec (depends on removed ShapeTracker); test-suite maintenance
+T100,https://github.com/jmberesford/retrom/commit/e05fcaac16f863f44deb33418553525d576b1dba,corrective,Fixes sidebar load times; component restructure for perf
+T101,https://github.com/crewaiinc/crewai/commit/739eb72fd086724efa085c9499d9f1644ead905f,adaptive,Adds guardrail support for direct kickoff calls; refactor + py3.10 fix alongside
+T102,https://github.com/microsoft/testfx/commit/85eb997e242035e855abc04a4f7da27c68d417c9,perfective,Non-generic Assert.ContainsSingle overload; test-framework API improvement
+T103,https://github.com/onlook-dev/onlook/commit/89e074033a1cd1632830b48d7a3d896cbf64e506,corrective,Fixes drag issue: deadzone + correct termination
+T104,https://github.com/azure/azure-sdk-for-python/commit/e9396e18e1ef3784212d3201abf6dfb3a1784afc,preventive,Adds black format-enforcement CI to azure-sdk-tools; formats package; lint/CI hardening
+T105,https://github.com/skyvern-ai/skyvern/commit/039fce0bb37f74850cafb60ea0b0e13536c52d7a,adaptive,New feature: browser task block flippable with code editor
+T106,https://github.com/logancyang/obsidian-copilot/commit/e12f4b7a4035563649e3606002ffc613862fd5c3,adaptive,Updates default chat model + settings chores; model lineup adaptation
+T107,https://github.com/onlook-dev/onlook/commit/e6067d97fc24d771e282c1b1bdfb7c95c3847e8f,adaptive,New feature: image background support
+T108,https://github.com/azure/azure-sdk-for-python/commit/0e4a03bb568daba870fd3370819a103a1b1a4ee9,corrective,Fixes CI Analyze step + get_version_py bug
+T109,https://github.com/blaizzy/mlx-vlm/commit/ecf41c88cb441016bf5331851c1c6a255fe3ad78,adaptive,Adds stopping criteria + custom EOS tokens to generation
+T110,https://github.com/onlook-dev/onlook/commit/b378a132a4f7ee8fb3a25e124c816b0b98ff4596,adaptive,New features: border-radius controller + skip-build option
+T111,https://github.com/elsa-workflows/elsa-core/commit/9e6144922c50b77fabb1ad64baaeac511541941a,perfective,"Adds ILoggerFactory to converters, better logging; consistency refactors; could read adaptive"
+T112,https://github.com/colinhacks/zod/commit/309f3584fd9a3856c3e0c813196210ba4b11d2a9,corrective,Fixes toJSONSchema exclusive-range numbers for openapi-3.0
+T113,https://github.com/onlook-dev/onlook/commit/d9a3f0c31630892ceed69a8c76eeb062597ee83a,perfective,Updates import warning (UI); could read corrective
+T114,https://github.com/wandb/weave/commit/90661ddc2d984dfcbebf8f2d2bf01cf3f9c20828,perfective,Adds call-part size warning; observability improvement; could read preventive
+T115,https://github.com/crewaiinc/crewai/commit/79d65e55a1886a5353123342d30e97a91216a395,perfective,Type annotations + docstrings for langgraph adapters; code quality
+T116,https://github.com/jlowin/fastmcp/commit/7b845a81cf01eb890882032eb34c6da53ce7dfeb,perfective,Removes deprecated settings import path + tests; deprecation cleanup
+T117,https://github.com/logancyang/obsidian-copilot/commit/60b380117d48dd4ad25036d7ef71c67f70e2c269,perfective,Removes dead autocomplete subsystem; README privacy disclosure; cleanup dominates
+T118,https://github.com/jlowin/fastmcp/commit/aef1ccc02605ee452813ae06c203e763206a24a6,adaptive,Type-prefixed component keys for global uniqueness; API/behavior change with upgrade guide; could read perfective
+T119,https://github.com/jlowin/fastmcp/commit/9c5c4f51137eb360e1d998b652e28b2b98bfea15,perfective,Consolidates server loading into FileSystemSource abstraction
+T120,https://github.com/jlowin/fastmcp/commit/41ec7ee06d6d1b68e57768423181195d41c53289,adaptive,"SEP-1577: sampling with tools; ctx.sample() tools/result_type, handlers, docs, examples"
+T121,https://github.com/jina-ai/node-deepresearch/commit/22be63abe1b7c0dc17decbfc6b1c5896a4a4e78f,preventive,Adds request body validation; hardening; could read adaptive
+T122,https://github.com/onlook-dev/onlook/commit/07f811abda775157ee7a9ad960a6cce91b17a485,perfective,Restructures/simplifies bun command API
+T123,https://github.com/microsoft/testfx/commit/ec3ac2a49a69a602278fd94f7d21659b0e154c46,perfective,Moves WinUI-specific resources to extensions assembly; code/resource move
+T124,https://github.com/reflex-dev/reflex/commit/684ca96482dfc211bf187dfa312fd38d4e13cb96,adaptive,Dependency bumps before prerelease; version pins
+T125,https://github.com/elsa-workflows/elsa-core/commit/f24b4394cfc2d4e6fdc9e1926b3a88020efc3916,adaptive,Mixed: WorkflowStateCommitted notification (new) + vuln-driven Proto.Cluster.Kubernetes removal + docker/CI changes
+T126,https://github.com/crewaiinc/crewai/commit/db3c8a49bd42342fbc6f5a569248bb51ff42364d,perfective,Docs + logging/feedback improvements for CLI multi-org; quality/UX polish
+T127,https://github.com/microsoft/onnxruntime-genai/commit/02580c63ba9ed1709275109f7daaddbf2ee533e6,adaptive,Supports new ORT-extensions tokenizer options API; dependency-feature adaptation
+T128,https://github.com/elsa-workflows/elsa-core/commit/60db7cb96479b8f4f8d6531e985dd671b31ab6e1,perfective,Disables multitenancy by default (simplify config) + trims publish workflow; could read preventive (CI)
+T129,https://github.com/crewaiinc/crewai/commit/fe0813e831bf930146b7ad12356eaecfcf600b49,perfective,Typing improvement on MethodExecutionFailedEvent.error; small
+T130,https://github.com/elsa-workflows/elsa-core/commit/181038fb7182cbd7d78b6b80ede060018fffd071,adaptive,"Feature merge: workflow restart on interruption; migrations, stores, tests"
+T131,https://github.com/onlook-dev/onlook/commit/07684385836e0abaa3df2847e0692c020248c205,corrective,Fixes project list refetch on delete; carousel image max-height fix
+T132,https://github.com/dlt-hub/dlt/commit/06bc05848bb94c07c54422291f29a3800bb2261f,adaptive,"Adds hub extra packaging, CLI pipeline listing, profile configs; mixed feature/packaging work"
+T133,https://github.com/glaredb/glaredb/commit/c25230bc011ab13b1f40c05c1e9429e0e99b4cf8,perfective,Perf: wires up new hash table (3/n)
+T134,https://github.com/onlook-dev/onlook/commit/82e71d44cde664bb73ea6693becb49b687f1740a,perfective,Improves install message
+T135,https://github.com/mlflow/mlflow/commit/cbde7a8a7f7c4b8364df65403cf593fade34586a,perfective,Auto-generates clint rule IDs via __init_subclass__; simplification refactor
+T136,https://github.com/jina-ai/node-deepresearch/commit/20f5a94e88e505e01a537da418b8464bbbce0f21,adaptive,Merge with main; substantial server/type additions
+T137,https://github.com/crewaiinc/crewai/commit/1b00cc71ef1b9540dfee811796b234db684ceb34,corrective,"Reworks Mem0 storage metadata: drops message metadata, stores latest interaction directly; could read perfective"
+T138,https://github.com/marimo-team/marimo/commit/1451a895ec5424eeb191c2331a8b62644e579497,corrective,Fixes expansion of collapsed cells
+T139,https://github.com/crewaiinc/crewai/commit/55ed91e313593d2429da85a7b0fa03f2df2f0327,perfective,Adds LLM tool-usage logging/console output; observability; could read adaptive (feat-framed)
+T140,https://github.com/elsa-workflows/elsa-core/commit/54af5ea7143af1cf7bba1b3b06b47645f680ae32,adaptive,Release patch merge (3.5.2 -> 3.6.0): converter/trigger changes + tests
+T141,https://github.com/crewaiinc/crewai/commit/4336e945b85b04e1fc9c86ad77930728a2bd4299,adaptive,"Dependency + version bumps (crewai-tools 0.71, CrewAI 0.186, templates, uv.lock)"
+T142,https://github.com/onlook-dev/onlook/commit/be973adcde593c54da22001443c304df2c67e115,perfective,"Mixed UI batch: drag refactor, editing UX improvements, misc updates; improvement work dominates"
+T143,https://github.com/onlook-dev/onlook/commit/7f11890d34dbeb8f1de3a9f229926d65c3df609e,adaptive,"New feature: feedback form + table (DB schema, API router, email, uploads)"
+T144,https://github.com/glaredb/glaredb/commit/6cf872550a9d83df9e3b1bb9038af91a71fc74e0,preventive,Adds missing function documentation (doc comments on scalar/table functions)
+T145,https://github.com/langchain-ai/langgraph/commit/cb918601d172bbc1938c588a0247e03df45dc75a,preventive,"Release prep for langgraph v0.6: docs sync, checkpoint cleanups, version pins; docs dominate; patch unavailable, decided from file list"
+T146,https://github.com/elsa-workflows/elsa-core/commit/2ce5bbfbf1f5e74255d23e45612c629393fa377e,perfective,Incident creation refactor: NodeId context + dedup of LogExceptionAndTransition
+T147,https://github.com/openpipe/art/commit/5ac71a391de4766892a85de236a3711ee5324330,perfective,"Example/eval code tweaks: adds models list, removes o3-error script, cleanup; fix-framed but cleanup dominates"
+T148,https://github.com/onlook-dev/onlook/commit/9e37ee73b9b6c5dd0431a78087b14e9968aaf9fd,adaptive,Adds hard_break line-break support to text editor; new capability resolving #2065

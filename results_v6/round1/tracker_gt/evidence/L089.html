@@ -1,0 +1,275 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L089</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L089</h1><p><b>Repository:</b> <a href="https://github.com/effekseer/effekseer">effekseer/effekseer</a><br><b>File at merge:</b> build.py, line 178<br><b>Merge commit (birth):</b> <a href="https://github.com/effekseer/effekseer/commit/2169a163aca9ee7bf027c7c34c2e1fb9726c603f">2169a163ac</a> (2025-05-25T09:43:21)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/effekseer/effekseer/tree/60773191ef30c0c21ba3285a4bb310c4eb63a35d">60773191ef</a>)</p><p><b>The line:</b></p><pre><span class="t">        mkdir(&#x27;Mac/Effekseer.app/Contents/MacOS/&#x27;)</span></pre><h2>File at the merge commit, lines 170 to 186</h2><pre>  170 |             run_command(&#x27;cp -r Dev/release/linux-x64/publish/* Dev/release/&#x27;)
+  171 |             run_command(&#x27;rm -rf -r Dev/release/linux-x64&#x27;)
+  172 | 
+  173 |     if env[&#x27;PACKAGEING_FOR_MAC&#x27;] == &#x27;1&#x27; and is_mac():
+  174 |         cd(&#x27;Dev&#x27;)
+  175 |         mkdir(&#x27;Mac/Effekseer.app/Contents/Resources/&#x27;)
+  176 |         copy_tree(&#x27;release/&#x27;, &#x27;Mac/Effekseer.app/Contents/Resources/&#x27;)
+  177 | 
+<span class="t">  178 |         mkdir(&#x27;Mac/Effekseer.app/Contents/MacOS/&#x27;)</span>
+  179 |         shutil.copy(&#x27;../Tool/EffekseerLauncher/build_macosx/EffekseerLauncher&#x27;, &#x27;Mac/Effekseer.app/Contents/MacOS/&#x27;)
+  180 | 
+  181 |         run_command(&#x27;chmod +x Mac/Effekseer.app/Contents/Resources/tools/fbxToEffekseerCurveConverter&#x27;)
+  182 |         run_command(&#x27;chmod +x Mac/Effekseer.app/Contents/Resources/tools/fbxToEffekseerModelConverter&#x27;)
+  183 | 
+  184 |         os.makedirs(&#x27;Mac/Package&#x27;, exist_ok=True)
+  185 | 
+  186 |         copy_tree(&#x27;Mac/Effekseer.app&#x27;, &#x27;Mac/Package/Effekseer.app&#x27;)</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/effekseer/effekseer/commit/2662db8dfcef1db0bc44782acfbd15ef91f81e2a">2662db8dfc</a> (2025-05-25T21:08:17+09:00)</h2><p class="k">fix mac packaging symlink<br>Path after this commit: build.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/build.py b/build.py
+index 152698606..e8995fb3a 100755
+<span class="d">--- a/build.py</span>
+<span class="a">+++ b/build.py</span>
+<span class="h">@@ -184,8 +184,11 @@ def main():</span>
+         os.makedirs(&#x27;Mac/Package&#x27;, exist_ok=True)
+ 
+         copy_tree(&#x27;Mac/Effekseer.app&#x27;, &#x27;Mac/Package/Effekseer.app&#x27;)
+<span class="d">-        run_command(&#x27;ln -s /Applications Applications &gt; /dev/null 2&gt;&amp;1&#x27;)</span>
+<span class="d">-        run_command(&#x27;mv Applications Mac/Package/&#x27;)</span>
+<span class="a">+        link = Path(&#x27;Applications&#x27;)</span>
+<span class="a">+        if link.exists() or link.is_symlink():</span>
+<span class="a">+            link.unlink()</span>
+<span class="a">+        link.symlink_to(&#x27;/Applications&#x27;, target_is_directory=True)</span>
+<span class="a">+        shutil.move(&#x27;Applications&#x27;, &#x27;Mac/Package/&#x27;)</span>
+         run_command(&#x27;hdiutil create Effekseer.dmg -volname &quot;Effekseer&quot; -srcfolder &quot;Mac/Package&quot;&#x27;)
+ 
+         cd(&#x27;../&#x27;)</pre><h2>Commit #2: <a href="https://github.com/effekseer/effekseer/commit/8bfac29a40de93286d4b6a621de236dc255a6fc8">8bfac29a40</a> (2025-05-28T20:48:11+09:00)</h2><p class="k">Add Linux build support for EffekseerLauncher<br>Path after this commit: build.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/build.py b/build.py
+index e8995fb3a..5426def79 100755
+<span class="d">--- a/build.py</span>
+<span class="a">+++ b/build.py</span>
+<span class="h">@@ -123,6 +123,10 @@ def main():</span>
+         with CurrentDir(&#x27;Tool/EffekseerLauncher&#x27;):
+             run_command(&#x27;sh build_macosx.sh&#x27;)
+ 
+<span class="a">+    if is_linux():</span>
+<span class="a">+        with CurrentDir(&#x27;Tool/EffekseerLauncher&#x27;):</span>
+<span class="a">+            run_command(&#x27;sh build_linux.sh&#x27;)</span>
+<span class="a">+</span>
+     if env[&#x27;IGNORE_BUILD&#x27;] == &#x27;0&#x27;:
+         os.makedirs(&#x27;build&#x27;, exist_ok=True)
+ </pre><h2>Commit #3: <a href="https://github.com/effekseer/effekseer/commit/319163cba9dd607c6255738b1aa8730b44483233">319163cba9</a> (2025-09-21T14:28:33+09:00)</h2><p class="k">Support .net9 (#1078)<br>Path after this commit: build.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/build.py b/build.py
+index 5426def79..28729ac2f 100755
+<span class="d">--- a/build.py</span>
+<span class="a">+++ b/build.py</span>
+<span class="h">@@ -154,9 +154,10 @@ def main():</span>
+ 
+         if is_mac():
+             run_command(&#x27;dotnet build Dev/Editor/Effekseer/Effekseer.csproj&#x27;)
+<span class="d">-            run_command(&#x27;dotnet publish Dev/Editor/Effekseer/Effekseer.csproj -c Release --self-contained -r osx.10.11-x64&#x27;)</span>
+<span class="d">-            run_command(&#x27;cp -r Dev/release/osx.10.11-x64/publish/* Dev/release/&#x27;)</span>
+<span class="d">-            run_command(&#x27;rm -rf -r Dev/release/osx.10.11-x64&#x27;)</span>
+<span class="a">+            runtime_identifier = &#x27;osx-x64&#x27;</span>
+<span class="a">+            run_command(f&#x27;dotnet publish Dev/Editor/Effekseer/Effekseer.csproj -c Release --self-contained -r {runtime_identifier}&#x27;)</span>
+<span class="a">+            run_command(f&#x27;cp -r Dev/release/{runtime_identifier}/publish/* Dev/release/&#x27;)</span>
+<span class="a">+            run_command(f&#x27;rm -rf -r Dev/release/{runtime_identifier}&#x27;)</span>
+ 
+         elif is_windows():
+             run_command(&#x27;dotnet build Dev/Editor/Effekseer/Effekseer.csproj&#x27;)</pre><h2>Commit #4: <a href="https://github.com/effekseer/effekseer/commit/33606960b84de120ea5af305efebe434545fcdde">33606960b8</a> (2025-11-23T03:01:39+09:00)</h2><p class="k">Add Tools to Cmake<br>Path after this commit: build.py. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/build.py b/build.py
+index 28729ac2f..8f263fcd0 100755
+<span class="d">--- a/build.py</span>
+<span class="a">+++ b/build.py</span>
+<span class="h">@@ -6,8 +6,8 @@ import sys</span>
+ import urllib.request
+ from pathlib import Path
+ 
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ def run_command(cmd, env=None):
+     &quot;&quot;&quot;Run a shell command and raise an exception if it fails.&quot;&quot;&quot;
+ 
+<span class="h">@@ -15,8 +15,8 @@ def run_command(cmd, env=None):</span>
+     completed = subprocess.run(cmd, shell=True, env=env)
+     if completed.returncode != 0:
+         raise RuntimeError(f&quot;Failed {cmd}&quot;)
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ def copytree_with_ext(src, dst, exts):
+     &quot;&quot;&quot;Copy files from *src* to *dst* filtering by extension.&quot;&quot;&quot;
+ 
+<span class="h">@@ -29,50 +29,50 @@ def copytree_with_ext(src, dst, exts):</span>
+         dest.parent.mkdir(parents=True, exist_ok=True)
+         print(f&quot;{file}\t:\t{dest}&quot;)
+         shutil.copy(file, dest)
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ def is_windows():
+     return platform.system() == &#x27;Windows&#x27;
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ def is_mac():
+     return platform.system() == &#x27;Darwin&#x27;
+ 
+ def is_linux():
+     return platform.system() == &#x27;Linux&#x27;
+<span class="d">-</span>
+<span class="d">-def wget(address):</span>
+<span class="d">-    urllib.request.urlretrieve(address, os.path.basename(address))</span>
+<span class="d">-</span>
+<span class="d">-def rm(path):</span>
+<span class="d">-    if os.path.exists(path):</span>
+<span class="d">-        os.remove(path)</span>
+<span class="d">-</span>
+<span class="d">-def rmdir(path):</span>
+<span class="d">-    if os.path.exists(path):</span>
+<span class="d">-        print(&quot;rmdir : &quot; + path)</span>
+<span class="d">-        shutil.rmtree(path)</span>
+<span class="d">-    else:</span>
+<span class="d">-        print(&quot;rmdir : not found &quot; + path)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def cd(path):</span>
+<span class="d">-    os.chdir(path)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def cdToScript():</span>
+<span class="d">-    cd(os.path.dirname(os.path.abspath(__file__)))</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def mkdir(path):</span>
+<span class="d">-    if not os.path.exists(path):</span>
+<span class="d">-        os.mkdir(path)</span>
+<span class="d">-</span>
+<span class="d">-def copy(src, dst):</span>
+<span class="d">-    print(&quot;copying from {0} to {1}&quot;.format(src, dst))</span>
+<span class="d">-    shutil.copy(src, dst)</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="a">+</span>
+<span class="a">+def wget(address):</span>
+<span class="a">+    urllib.request.urlretrieve(address, os.path.basename(address))</span>
+<span class="a">+</span>
+<span class="a">+def rm(path):</span>
+<span class="a">+    if os.path.exists(path):</span>
+<span class="a">+        os.remove(path)</span>
+<span class="a">+</span>
+<span class="a">+def rmdir(path):</span>
+<span class="a">+    if os.path.exists(path):</span>
+<span class="a">+        print(&quot;rmdir : &quot; + path)</span>
+<span class="a">+        shutil.rmtree(path)</span>
+<span class="a">+    else:</span>
+<span class="a">+        print(&quot;rmdir : not found &quot; + path)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def cd(path):</span>
+<span class="a">+    os.chdir(path)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def cdToScript():</span>
+<span class="a">+    cd(os.path.dirname(os.path.abspath(__file__)))</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+def mkdir(path):</span>
+<span class="a">+    if not os.path.exists(path):</span>
+<span class="a">+        os.mkdir(path)</span>
+<span class="a">+</span>
+<span class="a">+def copy(src, dst):</span>
+<span class="a">+    print(&quot;copying from {0} to {1}&quot;.format(src, dst))</span>
+<span class="a">+    shutil.copy(src, dst)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+ def copy_tree(src, dst, change=False, ignore=None):
+     &quot;&quot;&quot;Recursively copy *src* to *dst*, overwriting existing files.&quot;&quot;&quot;
+ 
+<span class="h">@@ -81,33 +81,33 @@ def copy_tree(src, dst, change=False, ignore=None):</span>
+         rmdir(dst)
+ 
+     shutil.copytree(src, dst, dirs_exist_ok=True, ignore=ignore)
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-class CurrentDir:</span>
+<span class="d">-    def __init__(self, path):</span>
+<span class="d">-        self.prev = os.getcwd()</span>
+<span class="d">-        self.path = path</span>
+<span class="d">-</span>
+<span class="d">-    def __enter__(self):</span>
+<span class="d">-        cd(self.path)</span>
+<span class="d">-        #print(&quot;cd: &quot; + os.getcwd())</span>
+<span class="d">-        return self</span>
+<span class="d">-</span>
+<span class="d">-    def __exit__(self, type, value, traceback):</span>
+<span class="d">-        cd(self.prev)</span>
+<span class="d">-        #print(&quot;cd: &quot; + os.getcwd())</span>
+<span class="d">-</span>
+<span class="d">-env = os.environ.copy()</span>
+<span class="d">-env[&quot;PKG_CONFIG_PATH&quot;] = os.getenv(</span>
+<span class="d">-    &#x27;PKG_CONFIG_PATH&#x27;, &#x27;/Library/Frameworks/Mono.framework/Versions/Current/lib/pkgconfig&#x27;)</span>
+<span class="d">-env[&quot;AS&quot;] = os.getenv(&#x27;AS&#x27;, &#x27;as -arch i386&#x27;)</span>
+<span class="d">-env[&quot;CC&quot;] = os.getenv(&#x27;CC&#x27;, &#x27;clang -arch i386 -mmacosx-version-min=10.6&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-env[&quot;MONO_SDK_PATH&quot;] = os.getenv(</span>
+<span class="d">-    &#x27;MONO_SDK_PATH&#x27;, &#x27;/Library/Frameworks/Mono.framework/Versions/Current&#x27;)</span>
+<span class="d">-env[&quot;PACKAGEING_FOR_MAC&quot;] = os.getenv(&#x27;PACKAGEING_FOR_MAC&#x27;, &#x27;0&#x27;)</span>
+<span class="d">-env[&quot;PACKAGEING_FOR_LINUX&quot;] = os.getenv(&#x27;PACKAGEING_FOR_LINUX&#x27;, &#x27;0&#x27;)</span>
+<span class="d">-env[&#x27;X86&#x27;] = os.getenv(&#x27;X86&#x27;, &#x27;0&#x27;)</span>
+<span class="a">+</span>
+<span class="a">+</span>
+<span class="a">+class CurrentDir:</span>
+<span class="a">+    def __init__(self, path):</span>
+<span class="a">+        self.prev = os.getcwd()</span>
+<span class="a">+        self.path = path</span>
+<span class="a">+</span>
+<span class="a">+    def __enter__(self):</span>
+<span class="a">+        cd(self.path)</span>
+<span class="a">+        #print(&quot;cd: &quot; + os.getcwd())</span>
+<span class="a">+        return self</span>
+<span class="a">+</span>
+<span class="a">+    def __exit__(self, type, value, traceback):</span>
+<span class="a">+        cd(self.prev)</span>
+<span class="a">+        #print(&quot;cd: &quot; + os.getcwd())</span>
+<span class="a">+</span>
+<span class="a">+env = os.environ.copy()</span>
+<span class="a">+env[&quot;PKG_CONFIG_PATH&quot;] = os.getenv(</span>
+<span class="a">+    &#x27;PKG_CONFIG_PATH&#x27;, &#x27;/Library/Frameworks/Mono.framework/Versions/Current/lib/pkgconfig&#x27;)</span>
+<span class="a">+env[&quot;AS&quot;] = os.getenv(&#x27;AS&#x27;, &#x27;as -arch i386&#x27;)</span>
+<span class="a">+env[&quot;CC&quot;] = os.getenv(&#x27;CC&#x27;, &#x27;clang -arch i386 -mmacosx-version-min=10.6&#x27;)</span>
+<span class="a">+</span>
+<span class="a">+env[&quot;MONO_SDK_PATH&quot;] = os.getenv(</span>
+<span class="a">+    &#x27;MONO_SDK_PATH&#x27;, &#x27;/Library/Frameworks/Mono.framework/Versions/Current&#x27;)</span>
+<span class="a">+env[&quot;PACKAGEING_FOR_MAC&quot;] = os.getenv(&#x27;PACKAGEING_FOR_MAC&#x27;, &#x27;0&#x27;)</span>
+<span class="a">+env[&quot;PACKAGEING_FOR_LINUX&quot;] = os.getenv(&#x27;PACKAGEING_FOR_LINUX&#x27;, &#x27;0&#x27;)</span>
+<span class="a">+env[&#x27;X86&#x27;] = os.getenv(&#x27;X86&#x27;, &#x27;0&#x27;)</span>
+ env[&quot;IGNORE_BUILD&quot;] = os.getenv(&#x27;IGNORE_BUILD&#x27;, &#x27;0&#x27;)
+ 
+ 
+<span class="h">@@ -169,9 +169,10 @@ def main():</span>
+             run_command(&#x27;dotnet publish Dev/Editor/Effekseer/Effekseer.csproj -c Release --self-contained -r linux-x64&#x27;)
+             run_command(&#x27;chmod +x Dev/release/Effekseer&#x27;)
+             run_command(&#x27;chmod +x Dev/release/EffekseerMaterialEditor&#x27;)
+<span class="d">-            run_command(&#x27;chmod +x Dev/release/tools/fbxToEffekseerCurveConverter&#x27;)</span>
+<span class="d">-            run_command(&#x27;chmod +x Dev/release/tools/fbxToEffekseerModelConverter&#x27;)</span>
+<span class="d">-            run_command(&#x27;chmod +x Dev/release/tools/libfbxsdk.so&#x27;)</span>
+<span class="a">+            run_command(&#x27;chmod +x Dev/release/tools/EffekseerResourceConverter&#x27;)</span>
+<span class="a">+            # run_command(&#x27;chmod +x Dev/release/tools/fbxToEffekseerCurveConverter&#x27;)</span>
+<span class="a">+            # run_command(&#x27;chmod +x Dev/release/tools/fbxToEffekseerModelConverter&#x27;)</span>
+<span class="a">+            # run_command(&#x27;chmod +x Dev/release/tools/libfbxsdk.so&#x27;)</span>
+             run_command(&#x27;cp -r Dev/release/linux-x64/publish/* Dev/release/&#x27;)
+             run_command(&#x27;rm -rf -r Dev/release/linux-x64&#x27;)
+ 
+<span class="h">@@ -183,8 +184,9 @@ def main():</span>
+<span class=" m">         mkdir(&#x27;Mac/Effekseer.app/Contents/MacOS/&#x27;)</span>
+         shutil.copy(&#x27;../Tool/EffekseerLauncher/build_macosx/EffekseerLauncher&#x27;, &#x27;Mac/Effekseer.app/Contents/MacOS/&#x27;)
+ 
+<span class="d">-        run_command(&#x27;chmod +x Mac/Effekseer.app/Contents/Resources/tools/fbxToEffekseerCurveConverter&#x27;)</span>
+<span class="d">-        run_command(&#x27;chmod +x Mac/Effekseer.app/Contents/Resources/tools/fbxToEffekseerModelConverter&#x27;)</span>
+<span class="a">+        run_command(&#x27;chmod +x Mac/Effekseer.app/Contents/Resources/tools/EffekseerResourceConverter&#x27;)</span>
+<span class="a">+        # run_command(&#x27;chmod +x Mac/Effekseer.app/Contents/Resources/tools/fbxToEffekseerCurveConverter&#x27;)</span>
+<span class="a">+        # run_command(&#x27;chmod +x Mac/Effekseer.app/Contents/Resources/tools/fbxToEffekseerModelConverter&#x27;)</span>
+ 
+         os.makedirs(&#x27;Mac/Package&#x27;, exist_ok=True)
+ 
+<span class="h">@@ -212,4 +214,4 @@ def main():</span>
+ 
+ if __name__ == &#x27;__main__&#x27;:
+     main()
+<span class="d">-</span>
+<span class="a">+</span></pre></body></html>

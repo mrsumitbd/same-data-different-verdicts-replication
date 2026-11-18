@@ -1,0 +1,395 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L018</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L018</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/vscode-pull-request-github">microsoft/vscode-pull-request-github</a><br><b>File at merge:</b> src/notifications/notificationsManager.ts, line 17<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/vscode-pull-request-github/commit/8caae6d817649002ba8dde3d811545f435d6a3a6">8caae6d817</a> (2025-07-17T12:44:34)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/vscode-pull-request-github/tree/84e03ea42a75ad90564fb00c57b70a4caf0f73d3">84e03ea42a</a>)</p><p><b>The line:</b></p><pre><span class="t">import { isNotificationTreeItem, NotificationTreeDataItem, NotificationTreeItem } from &#x27;./notificationItem&#x27;;</span></pre><h2>File at the merge commit, lines 9 to 25</h2><pre>    9 | import { EventType, TimelineEvent } from &#x27;../common/timelineEvent&#x27;;
+   10 | import { toNotificationUri } from &#x27;../common/uri&#x27;;
+   11 | import { CredentialStore } from &#x27;../github/credentials&#x27;;
+   12 | import { NotificationSubjectType } from &#x27;../github/interface&#x27;;
+   13 | import { IssueModel } from &#x27;../github/issueModel&#x27;;
+   14 | import { issueMarkdown } from &#x27;../github/markdownUtils&#x27;;
+   15 | import { PullRequestModel } from &#x27;../github/pullRequestModel&#x27;;
+   16 | import { RepositoriesManager } from &#x27;../github/repositoriesManager&#x27;;
+<span class="t">   17 | import { isNotificationTreeItem, NotificationTreeDataItem, NotificationTreeItem } from &#x27;./notificationItem&#x27;;</span>
+   18 | import { NotificationsProvider } from &#x27;./notificationsProvider&#x27;;
+   19 | 
+   20 | export interface INotificationTreeItems {
+   21 | 	readonly notifications: NotificationTreeItem[];
+   22 | 	readonly hasNextPage: boolean
+   23 | }
+   24 | 
+   25 | export enum NotificationsSortMethod {</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/vscode-pull-request-github/commit/12746df421233fafe259a3e4540830b86c59c0db">12746df421</a> (2025-08-29T12:47:20+02:00)</h2><p class="k">github-pull-request_activePullRequest returns empty comments array (#7708)<br>Path after this commit: src/notifications/notificationsManager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/notifications/notificationsManager.ts b/src/notifications/notificationsManager.ts
+index 912dba50..121a26fc 100644
+<span class="d">--- a/src/notifications/notificationsManager.ts</span>
+<span class="a">+++ b/src/notifications/notificationsManager.ts</span>
+<span class="h">@@ -320,7 +320,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 
+ 	public async markPullRequests(markAsDone: boolean = false): Promise&lt;void&gt; {
+ 		const filteredNotifications = Array.from(this._notifications.values()).filter(notification =&gt; notification.notification.subject.type === NotificationSubjectType.PullRequest);
+<span class="d">-		const timlines = await Promise.all(filteredNotifications.map(notification =&gt; (notification.model as PullRequestModel).getTimelineEvents(notification.model as PullRequestModel)));</span>
+<span class="a">+		const timlines = await Promise.all(filteredNotifications.map(notification =&gt; (notification.model as PullRequestModel).getTimelineEvents()));</span>
+ 
+ 		const markPromises: Promise&lt;void&gt;[] = [];
+ </pre><h2>Commit #2: <a href="https://github.com/microsoft/vscode-pull-request-github/commit/84b0372fd258baf430702a9bf3794553235be35a">84b0372fd2</a> (2025-10-07T15:00:16+02:00)</h2><p class="k">Update to use eslint9 (#7876)<br>Path after this commit: src/notifications/notificationsManager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/notifications/notificationsManager.ts b/src/notifications/notificationsManager.ts
+index 121a26fc..ac4fa77b 100644
+<span class="d">--- a/src/notifications/notificationsManager.ts</span>
+<span class="a">+++ b/src/notifications/notificationsManager.ts</span>
+<span class="h">@@ -4,6 +4,8 @@</span>
+  *--------------------------------------------------------------------------------------------*/
+ 
+ import * as vscode from &#x27;vscode&#x27;;
+<span class="a m">+import { isNotificationTreeItem, NotificationTreeDataItem, NotificationTreeItem } from &#x27;./notificationItem&#x27;;</span>
+<span class="a">+import { NotificationsProvider } from &#x27;./notificationsProvider&#x27;;</span>
+ import { commands, contexts } from &#x27;../common/executeCommands&#x27;;
+ import { Disposable } from &#x27;../common/lifecycle&#x27;;
+ import { EventType, TimelineEvent } from &#x27;../common/timelineEvent&#x27;;
+<span class="h">@@ -14,8 +16,6 @@ import { IssueModel } from &#x27;../github/issueModel&#x27;;</span>
+ import { issueMarkdown } from &#x27;../github/markdownUtils&#x27;;
+ import { PullRequestModel } from &#x27;../github/pullRequestModel&#x27;;
+ import { RepositoriesManager } from &#x27;../github/repositoriesManager&#x27;;
+<span class="d m">-import { isNotificationTreeItem, NotificationTreeDataItem, NotificationTreeItem } from &#x27;./notificationItem&#x27;;</span>
+<span class="d">-import { NotificationsProvider } from &#x27;./notificationsProvider&#x27;;</span>
+ 
+ export interface INotificationTreeItems {
+ 	readonly notifications: NotificationTreeItem[];</pre><h2>Commit #3: <a href="https://github.com/microsoft/vscode-pull-request-github/commit/14671a14a43aa997898dbd591509e7beb8127607">14671a14a4</a> (2025-10-09T16:00:25+02:00)</h2><p class="k">Begin merging Copilot and PR notifications (#7957)<br>Path after this commit: src/notifications/notificationsManager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/notifications/notificationsManager.ts b/src/notifications/notificationsManager.ts
+index ac4fa77b..e7d064e4 100644
+<span class="d">--- a/src/notifications/notificationsManager.ts</span>
+<span class="a">+++ b/src/notifications/notificationsManager.ts</span>
+<span class="h">@@ -8,6 +8,8 @@ import { isNotificationTreeItem, NotificationTreeDataItem, NotificationTreeItem</span>
+ import { NotificationsProvider } from &#x27;./notificationsProvider&#x27;;
+ import { commands, contexts } from &#x27;../common/executeCommands&#x27;;
+ import { Disposable } from &#x27;../common/lifecycle&#x27;;
+<span class="a">+import Logger from &#x27;../common/logger&#x27;;</span>
+<span class="a">+import { NOTIFICATION_SETTING, NotificationVariants, PR_SETTINGS_NAMESPACE } from &#x27;../common/settingKeys&#x27;;</span>
+ import { EventType, TimelineEvent } from &#x27;../common/timelineEvent&#x27;;
+ import { toNotificationUri } from &#x27;../common/uri&#x27;;
+ import { CredentialStore } from &#x27;../github/credentials&#x27;;
+<span class="h">@@ -15,11 +17,14 @@ import { NotificationSubjectType } from &#x27;../github/interface&#x27;;</span>
+ import { IssueModel } from &#x27;../github/issueModel&#x27;;
+ import { issueMarkdown } from &#x27;../github/markdownUtils&#x27;;
+ import { PullRequestModel } from &#x27;../github/pullRequestModel&#x27;;
+<span class="a">+import { PullRequestOverviewPanel } from &#x27;../github/pullRequestOverview&#x27;;</span>
+ import { RepositoriesManager } from &#x27;../github/repositoriesManager&#x27;;
+ 
+ export interface INotificationTreeItems {
+ 	readonly notifications: NotificationTreeItem[];
+ 	readonly hasNextPage: boolean
+<span class="a">+	readonly pollInterval: number;</span>
+<span class="a">+	readonly lastModified: string;</span>
+ }
+ 
+ export enum NotificationsSortMethod {
+<span class="h">@@ -28,6 +33,8 @@ export enum NotificationsSortMethod {</span>
+ }
+ 
+ export class NotificationsManager extends Disposable implements vscode.TreeDataProvider&lt;NotificationTreeDataItem&gt; {
+<span class="a">+	private static ID = &#x27;NotificationsManager&#x27;;</span>
+<span class="a">+</span>
+ 	private _onDidChangeTreeData: vscode.EventEmitter&lt;NotificationTreeDataItem | undefined | void&gt; = this._register(new vscode.EventEmitter&lt;NotificationTreeDataItem | undefined | void&gt;());
+ 	readonly onDidChangeTreeData: vscode.Event&lt;NotificationTreeDataItem | undefined | void&gt; = this._onDidChangeTreeData.event;
+ 
+<span class="h">@@ -40,6 +47,10 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 	private _fetchNotifications: boolean = false;
+ 	private _notifications = new Map&lt;string, NotificationTreeItem&gt;();
+ 
+<span class="a">+	private _pollingDuration: number = 60; // Default polling duration</span>
+<span class="a">+	private _pollingHandler: NodeJS.Timeout | null;</span>
+<span class="a">+	private _pollingLastModified: string;</span>
+<span class="a">+</span>
+ 	private _sortingMethod: NotificationsSortMethod = NotificationsSortMethod.Timestamp;
+ 	get sortingMethod(): NotificationsSortMethod { return this._sortingMethod; }
+ 
+<span class="h">@@ -52,6 +63,17 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 		super();
+ 		this._register(this._onDidChangeTreeData);
+ 		this._register(this._onDidChangeNotifications);
+<span class="a">+		this._startPolling();</span>
+<span class="a">+		this._register(vscode.workspace.onDidChangeConfiguration(e =&gt; {</span>
+<span class="a">+			if (e.affectsConfiguration(`${PR_SETTINGS_NAMESPACE}.${NOTIFICATION_SETTING}`)) {</span>
+<span class="a">+				if (this._isPRNotificationsOn() &amp;&amp; !this._pollingHandler) {</span>
+<span class="a">+					this._startPolling();</span>
+<span class="a">+				}</span>
+<span class="a">+			}</span>
+<span class="a">+		}));</span>
+<span class="a">+		this._register(PullRequestOverviewPanel.onVisible(e =&gt; {</span>
+<span class="a">+			this.markPrNotificationsAsRead(e);</span>
+<span class="a">+		}));</span>
+ 	}
+ 
+ 	//#region TreeDataProvider
+<span class="h">@@ -169,12 +191,16 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 	//#endregion
+ 
+ 	public async getNotifications(): Promise&lt;INotificationTreeItems | undefined&gt; {
+<span class="a">+		let pollInterval = this._pollingDuration;</span>
+<span class="a">+		let lastModified = this._pollingLastModified;</span>
+ 		if (this._fetchNotifications) {
+ 			// Get raw notifications
+ 			const notificationsData = await this._notificationProvider.getNotifications(this._dateTime.toISOString(), this._pageCount);
+ 			if (!notificationsData) {
+ 				return undefined;
+ 			}
+<span class="a">+			pollInterval = notificationsData.pollInterval;</span>
+<span class="a">+			lastModified = notificationsData.lastModified;</span>
+ 
+ 			// Resolve notifications
+ 			const notificationTreeItems = new Map&lt;string, NotificationTreeItem&gt;();
+<span class="h">@@ -224,7 +250,9 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 
+ 		return {
+ 			notifications: this._sortNotifications(notifications),
+<span class="d">-			hasNextPage: this._hasNextPage</span>
+<span class="a">+			hasNextPage: this._hasNextPage,</span>
+<span class="a">+			pollInterval,</span>
+<span class="a">+			lastModified</span>
+ 		};
+ 	}
+ 
+<span class="h">@@ -375,4 +403,79 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 
+ 		return notifications;
+ 	}
+<span class="a">+</span>
+<span class="a">+	private _isPRNotificationsOn() {</span>
+<span class="a">+		return (vscode.workspace.getConfiguration(PR_SETTINGS_NAMESPACE).get&lt;NotificationVariants&gt;(NOTIFICATION_SETTING) === &#x27;pullRequests&#x27;);</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	private async _pollForNewNotifications() {</span>
+<span class="a">+		this._pageCount = 1;</span>
+<span class="a">+		this._dateTime = new Date();</span>
+<span class="a">+		this._notifications.clear();</span>
+<span class="a">+		this._fetchNotifications = true;</span>
+<span class="a">+</span>
+<span class="a">+		const response = await this.getNotifications();</span>
+<span class="a">+		if (!response) {</span>
+<span class="a">+			return;</span>
+<span class="a">+		}</span>
+<span class="a">+</span>
+<span class="a">+		// Adapt polling interval if it has changed.</span>
+<span class="a">+		if (response.pollInterval !== this._pollingDuration) {</span>
+<span class="a">+			this._pollingDuration = response.pollInterval;</span>
+<span class="a">+			if (this._pollingHandler &amp;&amp; this._isPRNotificationsOn()) {</span>
+<span class="a">+				Logger.appendLine(&#x27;Notifications: Clearing interval&#x27;, NotificationsManager.ID);</span>
+<span class="a">+				clearInterval(this._pollingHandler);</span>
+<span class="a">+				Logger.appendLine(`Notifications: Starting new polling interval with ${this._pollingDuration}`, NotificationsManager.ID);</span>
+<span class="a">+				this._startPolling();</span>
+<span class="a">+			}</span>
+<span class="a">+		}</span>
+<span class="a">+		if (response.lastModified !== this._pollingLastModified) {</span>
+<span class="a">+			this._pollingLastModified = response.lastModified;</span>
+<span class="a">+			this._onDidChangeTreeData.fire();</span>
+<span class="a">+		}</span>
+<span class="a">+		// this._onDidChangeNotifications.fire(oldPRNodesToUpdate);</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	private _startPolling() {</span>
+<span class="a">+		if (!this._isPRNotificationsOn()) {</span>
+<span class="a">+			return;</span>
+<span class="a">+		}</span>
+<span class="a">+		this._pollForNewNotifications();</span>
+<span class="a">+		this._pollingHandler = setInterval(</span>
+<span class="a">+			function (notificationProvider: NotificationsManager) {</span>
+<span class="a">+				notificationProvider._pollForNewNotifications();</span>
+<span class="a">+			},</span>
+<span class="a">+			this._pollingDuration * 1000,</span>
+<span class="a">+			this</span>
+<span class="a">+		);</span>
+<span class="a">+		this._register({ dispose: () =&gt; clearInterval(this._pollingHandler!) });</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	private _findNotificationKeyForIssueModel(issueModel: IssueModel | PullRequestModel | { owner: string; repo: string; number: number }): string | undefined {</span>
+<span class="a">+		for (const [key, notification] of this._notifications.entries()) {</span>
+<span class="a">+			if ((issueModel instanceof IssueModel || issueModel instanceof PullRequestModel)) {</span>
+<span class="a">+				if (notification.model.equals(issueModel)) {</span>
+<span class="a">+					return key;</span>
+<span class="a">+				}</span>
+<span class="a">+			} else {</span>
+<span class="a">+				if (notification.notification.owner === issueModel.owner &amp;&amp;</span>
+<span class="a">+					notification.notification.name === issueModel.repo &amp;&amp;</span>
+<span class="a">+					notification.model.number === issueModel.number) {</span>
+<span class="a">+					return key;</span>
+<span class="a">+				}</span>
+<span class="a">+			}</span>
+<span class="a">+		}</span>
+<span class="a">+		return undefined;</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	public markPrNotificationsAsRead(issueModel: IssueModel): void {</span>
+<span class="a">+		const notificationKey = this._findNotificationKeyForIssueModel(issueModel);</span>
+<span class="a">+		if (notificationKey) {</span>
+<span class="a">+			this.markAsRead({ threadId: this._notifications.get(notificationKey)!.notification.id, notificationKey });</span>
+<span class="a">+		}</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	public hasNotification(issueModel: IssueModel | PullRequestModel | { owner: string; repo: string; number: number }): boolean {</span>
+<span class="a">+		return this._findNotificationKeyForIssueModel(issueModel) !== undefined;</span>
+<span class="a">+	}</span>
+ }
+\ No newline at end of file</pre><h2>Commit #4: <a href="https://github.com/microsoft/vscode-pull-request-github/commit/eee287dd1e6674bcba97c5a45f6fec18e24efe41">eee287dd1e</a> (2025-10-10T11:18:13+02:00)</h2><p class="k">Finish unifying notifications (#7971)<br>Path after this commit: src/notifications/notificationsManager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/notifications/notificationsManager.ts b/src/notifications/notificationsManager.ts
+index e7d064e4..86fdfcae 100644
+<span class="d">--- a/src/notifications/notificationsManager.ts</span>
+<span class="a">+++ b/src/notifications/notificationsManager.ts</span>
+<span class="h">@@ -66,7 +66,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 		this._startPolling();
+ 		this._register(vscode.workspace.onDidChangeConfiguration(e =&gt; {
+ 			if (e.affectsConfiguration(`${PR_SETTINGS_NAMESPACE}.${NOTIFICATION_SETTING}`)) {
+<span class="d">-				if (this._isPRNotificationsOn() &amp;&amp; !this._pollingHandler) {</span>
+<span class="a">+				if (this.isPRNotificationsOn() &amp;&amp; !this._pollingHandler) {</span>
+ 					this._startPolling();
+ 				}
+ 			}
+<span class="h">@@ -182,7 +182,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 		markdown.appendMarkdown(`[${ownerName}](https://github.com/${ownerName})  \n`);
+ 		markdown.appendMarkdown(`**${notification.subject.title}**  \n`);
+ 		markdown.appendMarkdown(`Type: ${notification.subject.type}  \n`);
+<span class="d">-		markdown.appendMarkdown(`Updated: ${notification.updatedAd.toLocaleString()}  \n`);</span>
+<span class="a">+		markdown.appendMarkdown(`Updated: ${notification.updatedAt.toLocaleString()}  \n`);</span>
+ 		markdown.appendMarkdown(`Reason: ${notification.reason}  \n`);
+ 
+ 		return markdown;
+<span class="h">@@ -190,6 +190,10 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 
+ 	//#endregion
+ 
+<span class="a">+	public get prNotifications(): PullRequestModel[] {</span>
+<span class="a">+		return Array.from(this._notifications.values()).filter(notification =&gt; notification.notification.subject.type === NotificationSubjectType.PullRequest).map(n =&gt; n.model) as PullRequestModel[];</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+ 	public async getNotifications(): Promise&lt;INotificationTreeItems | undefined&gt; {
+ 		let pollInterval = this._pollingDuration;
+ 		let lastModified = this._pollingLastModified;
+<span class="h">@@ -396,7 +400,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 
+ 	private _sortNotifications(notifications: NotificationTreeItem[]): NotificationTreeItem[] {
+ 		if (this._sortingMethod === NotificationsSortMethod.Timestamp) {
+<span class="d">-			return notifications.sort((n1, n2) =&gt; n2.notification.updatedAd.getTime() - n1.notification.updatedAd.getTime());</span>
+<span class="a">+			return notifications.sort((n1, n2) =&gt; n2.notification.updatedAt.getTime() - n1.notification.updatedAt.getTime());</span>
+ 		} else if (this._sortingMethod === NotificationsSortMethod.Priority) {
+ 			return notifications.sort((n1, n2) =&gt; Number(n2.priority) - Number(n1.priority));
+ 		}
+<span class="h">@@ -404,7 +408,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 		return notifications;
+ 	}
+ 
+<span class="d">-	private _isPRNotificationsOn() {</span>
+<span class="a">+	public isPRNotificationsOn() {</span>
+ 		return (vscode.workspace.getConfiguration(PR_SETTINGS_NAMESPACE).get&lt;NotificationVariants&gt;(NOTIFICATION_SETTING) === &#x27;pullRequests&#x27;);
+ 	}
+ 
+<span class="h">@@ -422,7 +426,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 		// Adapt polling interval if it has changed.
+ 		if (response.pollInterval !== this._pollingDuration) {
+ 			this._pollingDuration = response.pollInterval;
+<span class="d">-			if (this._pollingHandler &amp;&amp; this._isPRNotificationsOn()) {</span>
+<span class="a">+			if (this._pollingHandler &amp;&amp; this.isPRNotificationsOn()) {</span>
+ 				Logger.appendLine(&#x27;Notifications: Clearing interval&#x27;, NotificationsManager.ID);
+ 				clearInterval(this._pollingHandler);
+ 				Logger.appendLine(`Notifications: Starting new polling interval with ${this._pollingDuration}`, NotificationsManager.ID);
+<span class="h">@@ -437,7 +441,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 	}
+ 
+ 	private _startPolling() {
+<span class="d">-		if (!this._isPRNotificationsOn()) {</span>
+<span class="a">+		if (!this.isPRNotificationsOn()) {</span>
+ 			return;
+ 		}
+ 		this._pollForNewNotifications();</pre><h2>Commit #5: <a href="https://github.com/microsoft/vscode-pull-request-github/commit/666fb140edebf82432960be567df5220379cd6c8">666fb140ed</a> (2025-12-12T14:51:48+01:00)</h2><p class="k">Fix closed issue color in notifications view (#8305)<br>Path after this commit: src/notifications/notificationsManager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/notifications/notificationsManager.ts b/src/notifications/notificationsManager.ts
+index 86fdfcae..f552a836 100644
+<span class="d">--- a/src/notifications/notificationsManager.ts</span>
+<span class="a">+++ b/src/notifications/notificationsManager.ts</span>
+<span class="h">@@ -121,7 +121,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 		if (notification.subject.type === NotificationSubjectType.Issue &amp;&amp; model instanceof IssueModel) {
+ 			item.iconPath = element.model.isOpen
+ 				? new vscode.ThemeIcon(&#x27;issues&#x27;, new vscode.ThemeColor(&#x27;issues.open&#x27;))
+<span class="d">-				: new vscode.ThemeIcon(&#x27;issue-closed&#x27;, new vscode.ThemeColor(&#x27;issues.closed&#x27;));</span>
+<span class="a">+				: new vscode.ThemeIcon(&#x27;issue-closed&#x27;, new vscode.ThemeColor(&#x27;github.issues.closed&#x27;));</span>
+ 		}
+ 		if (notification.subject.type === NotificationSubjectType.PullRequest &amp;&amp; model instanceof PullRequestModel) {
+ 			item.iconPath = model.isOpen</pre><h2>Commit #6: <a href="https://github.com/microsoft/vscode-pull-request-github/commit/09cab6b10b29f7b0ff6544ce86233054c1417e6e">09cab6b10b</a> (2025-12-15T11:18:36+00:00)</h2><p class="k">Fix notification marking for merged PRs with bot comments (#8281)<br>Path after this commit: src/notifications/notificationsManager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/notifications/notificationsManager.ts b/src/notifications/notificationsManager.ts
+index f552a836..417edd54 100644
+<span class="d">--- a/src/notifications/notificationsManager.ts</span>
+<span class="a">+++ b/src/notifications/notificationsManager.ts</span>
+<span class="h">@@ -13,7 +13,7 @@ import { NOTIFICATION_SETTING, NotificationVariants, PR_SETTINGS_NAMESPACE } fro</span>
+ import { EventType, TimelineEvent } from &#x27;../common/timelineEvent&#x27;;
+ import { toNotificationUri } from &#x27;../common/uri&#x27;;
+ import { CredentialStore } from &#x27;../github/credentials&#x27;;
+<span class="d">-import { NotificationSubjectType } from &#x27;../github/interface&#x27;;</span>
+<span class="a">+import { AccountType, NotificationSubjectType } from &#x27;../github/interface&#x27;;</span>
+ import { IssueModel } from &#x27;../github/issueModel&#x27;;
+ import { issueMarkdown } from &#x27;../github/markdownUtils&#x27;;
+ import { PullRequestModel } from &#x27;../github/pullRequestModel&#x27;;
+<span class="h">@@ -35,6 +35,9 @@ export enum NotificationsSortMethod {</span>
+ export class NotificationsManager extends Disposable implements vscode.TreeDataProvider&lt;NotificationTreeDataItem&gt; {
+ 	private static ID = &#x27;NotificationsManager&#x27;;
+ 
+<span class="a">+	// List of automated users that should be ignored when determining meaningful events</span>
+<span class="a">+	private static readonly AUTOMATED_USERS = [&#x27;vs-code-engineering&#x27;];</span>
+<span class="a">+</span>
+ 	private _onDidChangeTreeData: vscode.EventEmitter&lt;NotificationTreeDataItem | undefined | void&gt; = this._register(new vscode.EventEmitter&lt;NotificationTreeDataItem | undefined | void&gt;());
+ 	readonly onDidChangeTreeData: vscode.Event&lt;NotificationTreeDataItem | undefined | void&gt; = this._onDidChangeTreeData.event;
+ 
+<span class="h">@@ -323,6 +326,22 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 		}
+ 	}
+ 
+<span class="a">+	private _isBot(user: { login: string, accountType?: AccountType }): boolean {</span>
+<span class="a">+		// Check if accountType indicates this is a bot</span>
+<span class="a">+		if (user.accountType === AccountType.Bot) {</span>
+<span class="a">+			return true;</span>
+<span class="a">+		}</span>
+<span class="a">+		// Check for common bot naming patterns</span>
+<span class="a">+		if (user.login.endsWith(&#x27;[bot]&#x27;)) {</span>
+<span class="a">+			return true;</span>
+<span class="a">+		}</span>
+<span class="a">+		// Check for specific automated users</span>
+<span class="a">+		if (NotificationsManager.AUTOMATED_USERS.includes(user.login)) {</span>
+<span class="a">+			return true;</span>
+<span class="a">+		}</span>
+<span class="a">+		return false;</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+ 	private _getMeaningfulEventTime(event: TimelineEvent, currentUser: string, isCurrentUser: boolean): Date | undefined {
+ 		const userCheck = (testUser?: string) =&gt; {
+ 			if (isCurrentUser) {
+<span class="h">@@ -333,17 +352,17 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 		};
+ 
+ 		if (event.event === EventType.Committed) {
+<span class="d">-			if (userCheck(event.author.login)) {</span>
+<span class="a">+			if (!this._isBot(event.author) &amp;&amp; userCheck(event.author.login)) {</span>
+ 				return new Date(event.committedDate);
+ 			}
+ 		} else if (event.event === EventType.Commented) {
+<span class="d">-			if (userCheck(event.user?.login)) {</span>
+<span class="a">+			if (event.user &amp;&amp; !this._isBot(event.user) &amp;&amp; userCheck(event.user.login)) {</span>
+ 				return new Date(event.createdAt);
+ 			}
+ 		} else if (event.event === EventType.Reviewed) {
+ 			// We only count empty reviews as meaningful if the user is the current user
+ 			if (isCurrentUser || (event.comments.length &gt; 0 || event.body.length &gt; 0)) {
+<span class="d">-				if (userCheck(event.user?.login)) {</span>
+<span class="a">+				if (event.user &amp;&amp; !this._isBot(event.user) &amp;&amp; userCheck(event.user.login)) {</span>
+ 					return new Date(event.submittedAt);
+ 				}
+ 			}</pre><h2>Commit #7: <a href="https://github.com/microsoft/vscode-pull-request-github/commit/d3b9fd3ab3adad7a293e20f0bbe751092591e5ba">d3b9fd3ab3</a> (2025-12-18T04:05:47-08:00)</h2><p class="k">Make mark PRs as done less expensive (#8318)<br>Path after this commit: src/notifications/notificationsManager.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/notifications/notificationsManager.ts b/src/notifications/notificationsManager.ts
+index 417edd54..049e2346 100644
+<span class="d">--- a/src/notifications/notificationsManager.ts</span>
+<span class="a">+++ b/src/notifications/notificationsManager.ts</span>
+<span class="h">@@ -371,7 +371,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 
+ 	public async markPullRequests(markAsDone: boolean = false): Promise&lt;void&gt; {
+ 		const filteredNotifications = Array.from(this._notifications.values()).filter(notification =&gt; notification.notification.subject.type === NotificationSubjectType.PullRequest);
+<span class="d">-		const timlines = await Promise.all(filteredNotifications.map(notification =&gt; (notification.model as PullRequestModel).getTimelineEvents()));</span>
+<span class="a">+		const timelines = await Promise.all(filteredNotifications.map(notification =&gt; (notification.model as PullRequestModel).getActivityTimelineEvents()));</span>
+ 
+ 		const markPromises: Promise&lt;void&gt;[] = [];
+ 
+<span class="h">@@ -379,7 +379,7 @@ export class NotificationsManager extends Disposable implements vscode.TreeDataP</span>
+ 			const currentUser = await this._credentialStore.getCurrentUser(notification.model.remote.authProviderId);
+ 
+ 			// Check that there have been no comments, reviews, or commits, since last read
+<span class="d">-			const timeline = timlines[index];</span>
+<span class="a">+			const timeline = timelines[index];</span>
+ 			let userLastEvent: Date | undefined = undefined;
+ 			let nonUserLastEvent: Date | undefined = undefined;
+ 			for (let i = timeline.length - 1; i &gt;= 0; i--) {</pre></body></html>

@@ -1,0 +1,88 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L060</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L060</h1><p><b>Repository:</b> <a href="https://github.com/openai/codex">openai/codex</a><br><b>File at merge:</b> codex-cli/src/utils/file-tag-utils.ts, line 43<br><b>Merge commit (birth):</b> <a href="https://github.com/openai/codex/commit/bc4e6db7496ba3265e79e0f2ffb55b197d646f8a">bc4e6db749</a> (2025-04-30T23:19:55)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/openai/codex/tree/13c42a077c88a0d04ae7680a9891d2daf4558577">13c42a077c</a>)</p><p><b>The line:</b></p><pre><span class="t"> * This is the reverse operation of expandFileTags.</span></pre><h2>File at the merge commit, lines 35 to 51</h2><pre>   35 |       // If path invalid, leave token as is
+   36 |     }
+   37 |   }
+   38 |   return out;
+   39 | }
+   40 | 
+   41 | /**
+   42 |  * Collapses &lt;path&gt;content&lt;/path&gt; XML blocks back to @path format.
+<span class="t">   43 |  * This is the reverse operation of expandFileTags.</span>
+   44 |  * Only collapses blocks where the path points to a valid file; invalid paths remain unchanged.
+   45 |  */
+   46 | export function collapseXmlBlocks(text: string): string {
+   47 |   return text.replace(
+   48 |     /&lt;([^\n&gt;]+)&gt;([\s\S]*?)&lt;\/\1&gt;/g,
+   49 |     (match, path1: string) =&gt; {
+   50 |       const filePath = path.normalize(path1.trim());
+   51 | </pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/openai/codex/commit/408c7ca142689136d887676def1bf41ea80bb2a9">408c7ca142</a> (2025-08-08T16:09:39-07:00)</h2><p class="k">chore: remove the TypeScript code from the repository (#2048)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/codex-cli/src/utils/file-tag-utils.ts b/codex-cli/src/utils/file-tag-utils.ts
+deleted file mode 100644
+index f57e2fdb8d..0000000000
+<span class="d">--- a/codex-cli/src/utils/file-tag-utils.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,62 +0,0 @@</span>
+<span class="d">-import fs from &quot;fs&quot;;</span>
+<span class="d">-import path from &quot;path&quot;;</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * Replaces @path tokens in the input string with &lt;path&gt;file contents&lt;/path&gt; XML blocks for LLM context.</span>
+<span class="d">- * Only replaces if the path points to a file; directories are ignored.</span>
+<span class="d">- */</span>
+<span class="d">-export async function expandFileTags(raw: string): Promise&lt;string&gt; {</span>
+<span class="d">-  const re = /@([\w./~-]+)/g;</span>
+<span class="d">-  let out = raw;</span>
+<span class="d">-  type MatchInfo = { index: number; length: number; path: string };</span>
+<span class="d">-  const matches: Array&lt;MatchInfo&gt; = [];</span>
+<span class="d">-</span>
+<span class="d">-  for (const m of raw.matchAll(re) as IterableIterator&lt;RegExpMatchArray&gt;) {</span>
+<span class="d">-    const idx = m.index;</span>
+<span class="d">-    const captured = m[1];</span>
+<span class="d">-    if (idx !== undefined &amp;&amp; captured) {</span>
+<span class="d">-      matches.push({ index: idx, length: m[0].length, path: captured });</span>
+<span class="d">-    }</span>
+<span class="d">-  }</span>
+<span class="d">-</span>
+<span class="d">-  // Process in reverse to avoid index shifting.</span>
+<span class="d">-  for (let i = matches.length - 1; i &gt;= 0; i--) {</span>
+<span class="d">-    const { index, length, path: p } = matches[i]!;</span>
+<span class="d">-    const resolved = path.resolve(process.cwd(), p);</span>
+<span class="d">-    try {</span>
+<span class="d">-      const st = fs.statSync(resolved);</span>
+<span class="d">-      if (st.isFile()) {</span>
+<span class="d">-        const content = fs.readFileSync(resolved, &quot;utf-8&quot;);</span>
+<span class="d">-        const rel = path.relative(process.cwd(), resolved);</span>
+<span class="d">-        const xml = `&lt;${rel}&gt;\n${content}\n&lt;/${rel}&gt;`;</span>
+<span class="d">-        out = out.slice(0, index) + xml + out.slice(index + length);</span>
+<span class="d">-      }</span>
+<span class="d">-    } catch {</span>
+<span class="d">-      // If path invalid, leave token as is</span>
+<span class="d">-    }</span>
+<span class="d">-  }</span>
+<span class="d">-  return out;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * Collapses &lt;path&gt;content&lt;/path&gt; XML blocks back to @path format.</span>
+<span class="d m">- * This is the reverse operation of expandFileTags.</span>
+<span class="d">- * Only collapses blocks where the path points to a valid file; invalid paths remain unchanged.</span>
+<span class="d">- */</span>
+<span class="d">-export function collapseXmlBlocks(text: string): string {</span>
+<span class="d">-  return text.replace(</span>
+<span class="d">-    /&lt;([^\n&gt;]+)&gt;([\s\S]*?)&lt;\/\1&gt;/g,</span>
+<span class="d">-    (match, path1: string) =&gt; {</span>
+<span class="d">-      const filePath = path.normalize(path1.trim());</span>
+<span class="d">-</span>
+<span class="d">-      try {</span>
+<span class="d">-        // Only convert to @path format if it&#x27;s a valid file</span>
+<span class="d">-        return fs.statSync(path.resolve(process.cwd(), filePath)).isFile()</span>
+<span class="d">-          ? &quot;@&quot; + filePath</span>
+<span class="d">-          : match;</span>
+<span class="d">-      } catch {</span>
+<span class="d">-        return match; // Keep XML block if path is invalid</span>
+<span class="d">-      }</span>
+<span class="d">-    },</span>
+<span class="d">-  );</span>
+<span class="d">-}</span></pre></body></html>

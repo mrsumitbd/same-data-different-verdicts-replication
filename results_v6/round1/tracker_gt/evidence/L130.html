@@ -1,0 +1,450 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L130</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L130</h1><p><b>Repository:</b> <a href="https://github.com/latitude-dev/latitude-llm">latitude-dev/latitude-llm</a><br><b>File at merge:</b> apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts, line 165<br><b>Merge commit (birth):</b> <a href="https://github.com/latitude-dev/latitude-llm/commit/2b6cb6fdb9e2deac671eaaee3847b9472daab23d">2b6cb6fdb9</a> (2025-06-16T13:41:31)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/latitude-dev/latitude-llm/tree/704cd3a72ae686ebe885dce69ebb53916889edad">704cd3a72a</a>)</p><p><b>The line:</b></p><pre><span class="t">      dataset,</span></pre><h2>File at the merge commit, lines 157 to 173</h2><pre>  157 |           mappedInputs: resolvedData.mappedInputs,
+  158 |           datasetRowId: row.id,
+  159 |         },
+  160 |       })
+  161 |     },
+  162 |     [
+  163 |       emptyInputs,
+  164 |       document.linkedDatasetAndRow,
+<span class="t">  165 |       dataset,</span>
+  166 |       metadataParameters,
+  167 |       ds,
+  168 |     ],
+  169 |   )
+  170 | 
+  171 |   const { data: datasetRows, isLoading: isLoadingRow } = useDatasetRows(
+  172 |     {
+  173 |       dataset: position === undefined ? undefined : dataset,</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/latitude-dev/latitude-llm/commit/ed26e53cee33199d215de2aff3b3e9dcc0bcc774">ed26e53cee</a> (2025-06-16T16:59:14+02:00)</h2><p class="k">quickfix: datasets infinite loop<br>Path after this commit: apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts
+index 68fb61bd7..540bd2ed7 100644
+<span class="d">--- a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="a">+++ b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="h">@@ -159,12 +159,15 @@ export function useDatasetRowsForParameters({</span>
+         },
+       })
+     },
+<span class="a">+    // FIXME: Fixing this dependency array declaration causes an infinite loop</span>
+<span class="a">+    // eslint-disable-next-line react-hooks/exhaustive-deps</span>
+     [
+       emptyInputs,
+<span class="a">+      ds.setDataset,</span>
+<span class="a">+      ds.assignedDatasets,</span>
+       document.linkedDatasetAndRow,
+<span class="d m">-      dataset,</span>
+<span class="a">+      dataset?.id,</span>
+       metadataParameters,
+<span class="d">-      ds,</span>
+     ],
+   )
+ 
+<span class="h">@@ -187,7 +190,9 @@ export function useDatasetRowsForParameters({</span>
+ 
+       setPosition(position)
+     },
+<span class="d">-    [isLoadingRow, setPosition],</span>
+<span class="a">+    // FIXME: Fixing this dependency array declaration causes an infinite loop</span>
+<span class="a">+    // eslint-disable-next-line react-hooks/exhaustive-deps</span>
+<span class="a">+    [isLoadingRow],</span>
+   )
+ 
+   const onNextPage = useCallback(
+<span class="h">@@ -220,13 +225,17 @@ export function useDatasetRowsForParameters({</span>
+         },
+       })
+     },
+<span class="d">-    [dataset, datasetRow, ds],</span>
+<span class="a">+    // FIXME: Fixing this dependency array declaration causes an infinite loop</span>
+<span class="a">+    // eslint-disable-next-line react-hooks/exhaustive-deps</span>
+<span class="a">+    [ds.setDataset, ds.inputs, ds.mappedInputs, dataset?.id, datasetRow],</span>
+   )
+ 
+   useEffect(() =&gt; {
+     // React to fresh fetched rows
+     onRowsFetched(datasetRows ?? [])
+<span class="d">-  }, [datasetRows, onRowsFetched])</span>
+<span class="a">+    // FIXME: Fixing this dependency array declaration causes an infinite loop</span>
+<span class="a">+    // eslint-disable-next-line react-hooks/exhaustive-deps</span>
+<span class="a">+  }, [datasetRows])</span>
+ 
+   return {
+     isLoading: isLoadingDatasetRowsCount || isLoadingRow,</pre><h2>Commit #2: <a href="https://github.com/latitude-dev/latitude-llm/commit/2f7511a947eb50486768749156c1dbcd727b4a19">2f7511a947</a> (2025-08-07T09:20:40+02:00)</h2><p class="k">feat(prettier): auto import sorting (#1544)<br>Path after this commit: apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts
+index 540bd2ed7..f14f161a5 100644
+<span class="d">--- a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="a">+++ b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="h">@@ -1,19 +1,19 @@</span>
+<span class="d">-import { useCallback, useEffect, useMemo } from &#x27;react&#x27;</span>
+<span class="d">-import useDatasetRowsCount from &#x27;$/stores/datasetRowsCount&#x27;</span>
+<span class="a">+import { useDocumentParameters } from &#x27;$/hooks/useDocumentParameters&#x27;</span>
+<span class="a">+import { useMetadataParameters } from &#x27;$/hooks/useDocumentParameters/metadataParametersStore&#x27;</span>
+ import useDatasetRows from &#x27;$/stores/datasetRows&#x27;
+<span class="a">+import { ClientDatasetRow } from &#x27;$/stores/datasetRows/rowSerializationHelpers&#x27;</span>
+<span class="a">+import useDatasetRowsCount from &#x27;$/stores/datasetRowsCount&#x27;</span>
+ import {
+<span class="d">-  DatasetRow,</span>
+   Dataset,
+<span class="a">+  DatasetRow,</span>
+   DocumentVersion,
+   Inputs,
+   LinkedDatasetRow,
+   parseRowCell,
+ } from &#x27;@latitude-data/core/browser&#x27;
+<span class="d">-import { useDocumentParameters } from &#x27;$/hooks/useDocumentParameters&#x27;</span>
+ import { SelectOption } from &#x27;@latitude-data/web-ui/atoms/Select&#x27;
+ import { ReactStateDispatch } from &#x27;@latitude-data/web-ui/commonTypes&#x27;
+<span class="d">-import { useMetadataParameters } from &#x27;$/hooks/useDocumentParameters/metadataParametersStore&#x27;</span>
+<span class="d">-import { ClientDatasetRow } from &#x27;$/stores/datasetRows/rowSerializationHelpers&#x27;</span>
+<span class="a">+import { useCallback, useEffect, useMemo } from &#x27;react&#x27;</span>
+ 
+ function mapDatasetColumnsToParameters({
+   parameters,</pre><h2>Commit #3: <a href="https://github.com/latitude-dev/latitude-llm/commit/10bf93976aa02b4a0bd2ae432001323d0997f36b">10bf93976a</a> (2025-08-07T10:27:03+02:00)</h2><p class="k">Revert &quot;feat(prettier): auto import sorting (#1544)&quot;<br>Path after this commit: apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts
+index f14f161a5..540bd2ed7 100644
+<span class="d">--- a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="a">+++ b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="h">@@ -1,19 +1,19 @@</span>
+<span class="d">-import { useDocumentParameters } from &#x27;$/hooks/useDocumentParameters&#x27;</span>
+<span class="d">-import { useMetadataParameters } from &#x27;$/hooks/useDocumentParameters/metadataParametersStore&#x27;</span>
+<span class="d">-import useDatasetRows from &#x27;$/stores/datasetRows&#x27;</span>
+<span class="d">-import { ClientDatasetRow } from &#x27;$/stores/datasetRows/rowSerializationHelpers&#x27;</span>
+<span class="a">+import { useCallback, useEffect, useMemo } from &#x27;react&#x27;</span>
+ import useDatasetRowsCount from &#x27;$/stores/datasetRowsCount&#x27;
+<span class="a">+import useDatasetRows from &#x27;$/stores/datasetRows&#x27;</span>
+ import {
+<span class="d">-  Dataset,</span>
+   DatasetRow,
+<span class="a">+  Dataset,</span>
+   DocumentVersion,
+   Inputs,
+   LinkedDatasetRow,
+   parseRowCell,
+ } from &#x27;@latitude-data/core/browser&#x27;
+<span class="a">+import { useDocumentParameters } from &#x27;$/hooks/useDocumentParameters&#x27;</span>
+ import { SelectOption } from &#x27;@latitude-data/web-ui/atoms/Select&#x27;
+ import { ReactStateDispatch } from &#x27;@latitude-data/web-ui/commonTypes&#x27;
+<span class="d">-import { useCallback, useEffect, useMemo } from &#x27;react&#x27;</span>
+<span class="a">+import { useMetadataParameters } from &#x27;$/hooks/useDocumentParameters/metadataParametersStore&#x27;</span>
+<span class="a">+import { ClientDatasetRow } from &#x27;$/stores/datasetRows/rowSerializationHelpers&#x27;</span>
+ 
+ function mapDatasetColumnsToParameters({
+   parameters,</pre><h2>Commit #4: <a href="https://github.com/latitude-dev/latitude-llm/commit/5417033ebef9f9a79574a4907f6c72960646394f">5417033ebe</a> (2025-10-02T14:21:25+02:00)</h2><p class="k">feat: improve types and deprecate old API (#1744)<br>Path after this commit: apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts
+index 540bd2ed7..fa10fe322 100644
+<span class="d">--- a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="a">+++ b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="h">@@ -1,19 +1,21 @@</span>
+ import { useCallback, useEffect, useMemo } from &#x27;react&#x27;
+ import useDatasetRowsCount from &#x27;$/stores/datasetRowsCount&#x27;
+ import useDatasetRows from &#x27;$/stores/datasetRows&#x27;
+<span class="a">+import { useDocumentParameters } from &#x27;$/hooks/useDocumentParameters&#x27;</span>
+<span class="a">+import { SelectOption } from &#x27;@latitude-data/web-ui/atoms/Select&#x27;</span>
+<span class="a">+import { ReactStateDispatch } from &#x27;@latitude-data/web-ui/commonTypes&#x27;</span>
+<span class="a">+import { useMetadataParameters } from &#x27;$/hooks/useDocumentParameters/metadataParametersStore&#x27;</span>
+<span class="a">+import { ClientDatasetRow } from &#x27;$/stores/datasetRows/rowSerializationHelpers&#x27;</span>
+ import {
+   DatasetRow,
+   Dataset,
+   DocumentVersion,
+<span class="a">+} from &#x27;@latitude-data/core/schema/types&#x27;</span>
+<span class="a">+import {</span>
+   Inputs,
+   LinkedDatasetRow,
+<span class="d">-  parseRowCell,</span>
+<span class="d">-} from &#x27;@latitude-data/core/browser&#x27;</span>
+<span class="d">-import { useDocumentParameters } from &#x27;$/hooks/useDocumentParameters&#x27;</span>
+<span class="d">-import { SelectOption } from &#x27;@latitude-data/web-ui/atoms/Select&#x27;</span>
+<span class="d">-import { ReactStateDispatch } from &#x27;@latitude-data/web-ui/commonTypes&#x27;</span>
+<span class="d">-import { useMetadataParameters } from &#x27;$/hooks/useDocumentParameters/metadataParametersStore&#x27;</span>
+<span class="d">-import { ClientDatasetRow } from &#x27;$/stores/datasetRows/rowSerializationHelpers&#x27;</span>
+<span class="a">+} from &#x27;@latitude-data/core/lib/documentPersistedInputs&#x27;</span>
+<span class="a">+import { parseRowCell } from &#x27;@latitude-data/core/services/datasetRows/utils&#x27;</span>
+ 
+ function mapDatasetColumnsToParameters({
+   parameters,</pre><h2>Commit #5: <a href="https://github.com/latitude-dev/latitude-llm/commit/51aeec2ac5228c85fc602463ac062e2011c22729">51aeec2ac5</a> (2025-10-17T14:01:11+02:00)</h2><p class="k">feat: remove schema/types part #1 (#1818)<br>Path after this commit: apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts
+index fa10fe322..77d040bf9 100644
+<span class="d">--- a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="a">+++ b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="h">@@ -6,17 +6,16 @@ import { SelectOption } from &#x27;@latitude-data/web-ui/atoms/Select&#x27;</span>
+ import { ReactStateDispatch } from &#x27;@latitude-data/web-ui/commonTypes&#x27;
+ import { useMetadataParameters } from &#x27;$/hooks/useDocumentParameters/metadataParametersStore&#x27;
+ import { ClientDatasetRow } from &#x27;$/stores/datasetRows/rowSerializationHelpers&#x27;
+<span class="d">-import {</span>
+<span class="d">-  DatasetRow,</span>
+<span class="d">-  Dataset,</span>
+<span class="d">-  DocumentVersion,</span>
+<span class="d">-} from &#x27;@latitude-data/core/schema/types&#x27;</span>
+<span class="a">+</span>
+<span class="a">+import { Dataset } from &#x27;@latitude-data/core/schema/models/types/Dataset&#x27;</span>
+ import {
+   Inputs,
+   LinkedDatasetRow,
+ } from &#x27;@latitude-data/core/lib/documentPersistedInputs&#x27;
+ import { parseRowCell } from &#x27;@latitude-data/core/services/datasetRows/utils&#x27;
+ 
+<span class="a">+import { DocumentVersion } from &#x27;@latitude-data/core/schema/models/types/DocumentVersion&#x27;</span>
+<span class="a">+import { DatasetRow } from &#x27;@latitude-data/core/schema/models/types/DatasetRow&#x27;</span>
+ function mapDatasetColumnsToParameters({
+   parameters,
+<span class=" m">   dataset,</span></pre><h2>Commit #6: <a href="https://github.com/latitude-dev/latitude-llm/commit/d2c3bd0ee8274cbee00fc6c54233b7eb1a0162db">d2c3bd0ee8</a> (2025-10-27T14:08:47+01:00)</h2><p class="k">feat: spans keyset pagination (#1873)<br>Path after this commit: apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/V2Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/V2Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts
+similarity index 100%
+rename from apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts
+rename to apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/V2Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</pre><h2>Commit #7: <a href="https://github.com/latitude-dev/latitude-llm/commit/296db495d01d82ad9fbe8a76882e8e1803b20be1">296db495d0</a> (2025-11-28T12:33:35+01:00)</h2><p class="k">feat: Simplify DocumentParams UI by removing complex useDocumentParameters hook (#1987)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/V2Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts b/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/V2Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts
+deleted file mode 100644
+index 77d040bf9..000000000
+<span class="d">--- a/apps/web/src/app/(private)/projects/[projectId]/versions/[commitUuid]/documents/[documentUuid]/_components/DocumentEditor/Editor/V2Playground/DocumentParams/DatasetParams/useDatasetRowsForParameters/index.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,254 +0,0 @@</span>
+<span class="d">-import { useCallback, useEffect, useMemo } from &#x27;react&#x27;</span>
+<span class="d">-import useDatasetRowsCount from &#x27;$/stores/datasetRowsCount&#x27;</span>
+<span class="d">-import useDatasetRows from &#x27;$/stores/datasetRows&#x27;</span>
+<span class="d">-import { useDocumentParameters } from &#x27;$/hooks/useDocumentParameters&#x27;</span>
+<span class="d">-import { SelectOption } from &#x27;@latitude-data/web-ui/atoms/Select&#x27;</span>
+<span class="d">-import { ReactStateDispatch } from &#x27;@latitude-data/web-ui/commonTypes&#x27;</span>
+<span class="d">-import { useMetadataParameters } from &#x27;$/hooks/useDocumentParameters/metadataParametersStore&#x27;</span>
+<span class="d">-import { ClientDatasetRow } from &#x27;$/stores/datasetRows/rowSerializationHelpers&#x27;</span>
+<span class="d">-</span>
+<span class="d">-import { Dataset } from &#x27;@latitude-data/core/schema/models/types/Dataset&#x27;</span>
+<span class="d">-import {</span>
+<span class="d">-  Inputs,</span>
+<span class="d">-  LinkedDatasetRow,</span>
+<span class="d">-} from &#x27;@latitude-data/core/lib/documentPersistedInputs&#x27;</span>
+<span class="d">-import { parseRowCell } from &#x27;@latitude-data/core/services/datasetRows/utils&#x27;</span>
+<span class="d">-</span>
+<span class="d">-import { DocumentVersion } from &#x27;@latitude-data/core/schema/models/types/DocumentVersion&#x27;</span>
+<span class="d">-import { DatasetRow } from &#x27;@latitude-data/core/schema/models/types/DatasetRow&#x27;</span>
+<span class="d">-function mapDatasetColumnsToParameters({</span>
+<span class="d">-  parameters,</span>
+<span class="d m">-  dataset,</span>
+<span class="d">-}: {</span>
+<span class="d">-  parameters: string[]</span>
+<span class="d">-  dataset: Dataset</span>
+<span class="d">-}) {</span>
+<span class="d">-  return Object.fromEntries(</span>
+<span class="d">-    dataset.columns</span>
+<span class="d">-      .filter((col) =&gt; parameters.includes(col.name))</span>
+<span class="d">-      .map((col) =&gt; [col.name, col.identifier]),</span>
+<span class="d">-  )</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-function resolveDatasetDataRow({</span>
+<span class="d">-  parameters,</span>
+<span class="d">-  datasetRowId,</span>
+<span class="d">-  localData,</span>
+<span class="d">-  serverData,</span>
+<span class="d m">-  dataset,</span>
+<span class="d">-  emptyInputs,</span>
+<span class="d">-}: {</span>
+<span class="d">-  parameters: string[]</span>
+<span class="d">-  datasetRowId: number</span>
+<span class="d">-  serverData: LinkedDatasetRow | undefined</span>
+<span class="d">-  localData: LinkedDatasetRow | undefined</span>
+<span class="d">-  dataset: Dataset</span>
+<span class="d">-  emptyInputs: Inputs&lt;&#x27;datasetV2&#x27;&gt; | undefined</span>
+<span class="d">-}): LinkedDatasetRow {</span>
+<span class="d">-  let linkedDatasetRow: LinkedDatasetRow = {</span>
+<span class="d">-    datasetRowId,</span>
+<span class="d">-    inputs: {},</span>
+<span class="d">-    mappedInputs: {},</span>
+<span class="d">-  }</span>
+<span class="d">-  const inputs = localData?.inputs ?? serverData?.inputs ?? emptyInputs ?? {}</span>
+<span class="d">-  const mappedInputsFromDataset = mapDatasetColumnsToParameters({</span>
+<span class="d">-    parameters,</span>
+<span class="d m">-    dataset,</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  return {</span>
+<span class="d">-    ...linkedDatasetRow,</span>
+<span class="d">-    inputs,</span>
+<span class="d">-    mappedInputs: {</span>
+<span class="d">-      ...mappedInputsFromDataset,</span>
+<span class="d">-      ...(serverData?.mappedInputs ?? {}),</span>
+<span class="d">-      ...(localData?.mappedInputs ?? {}),</span>
+<span class="d">-    },</span>
+<span class="d">-  }</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-function mapInputs({</span>
+<span class="d">-  inputs,</span>
+<span class="d">-  mappedInputs,</span>
+<span class="d">-  row,</span>
+<span class="d">-}: {</span>
+<span class="d">-  inputs: Inputs&lt;&#x27;datasetV2&#x27;&gt;</span>
+<span class="d">-  mappedInputs: Record&lt;string, string&gt;</span>
+<span class="d">-  row: DatasetRow</span>
+<span class="d">-}) {</span>
+<span class="d">-  const mapped = Object.entries(mappedInputs).reduce((acc, [key, value]) =&gt; {</span>
+<span class="d">-    const rawCell = row.rowData[value] ?? &#x27;&#x27;</span>
+<span class="d">-    const cell = parseRowCell({ cell: rawCell })</span>
+<span class="d">-    acc[key] = {</span>
+<span class="d">-      value: cell,</span>
+<span class="d">-      metadata: {</span>
+<span class="d">-        includeInPrompt: true,</span>
+<span class="d">-      },</span>
+<span class="d">-    }</span>
+<span class="d">-    return acc</span>
+<span class="d">-  }, {} as Inputs&lt;&#x27;datasetV2&#x27;&gt;)</span>
+<span class="d">-</span>
+<span class="d">-  return Object.entries(inputs).reduce((acc, [key, value]) =&gt; {</span>
+<span class="d">-    const newInput = mapped[key]</span>
+<span class="d">-    const newValue = newInput ? newInput : value</span>
+<span class="d">-    acc[key] = newValue</span>
+<span class="d">-    return acc</span>
+<span class="d">-  }, {} as Inputs&lt;&#x27;datasetV2&#x27;&gt;)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-/**</span>
+<span class="d">- * This hook is responsible of fetching the dataset rows and the</span>
+<span class="d">- * total amount of dataset rows for a dataset (v2).</span>
+<span class="d">- * This way we can paginate in document parameters all the rows</span>
+<span class="d">- */</span>
+<span class="d">-export function useDatasetRowsForParameters({</span>
+<span class="d">-  document,</span>
+<span class="d">-  commitVersionUuid,</span>
+<span class="d">-  dataset: originalDataset,</span>
+<span class="d">-  position,</span>
+<span class="d">-  setPosition,</span>
+<span class="d">-}: {</span>
+<span class="d">-  position: number | undefined</span>
+<span class="d">-  setPosition: ReactStateDispatch&lt;number | undefined&gt;</span>
+<span class="d">-  document: DocumentVersion</span>
+<span class="d">-  commitVersionUuid: string</span>
+<span class="d">-  dataset: Dataset | null | undefined</span>
+<span class="d">-}) {</span>
+<span class="d">-  const emptyInputs = useMetadataParameters().emptyInputs?.datasetV2</span>
+<span class="d">-  const dataset = useMemo(() =&gt; originalDataset, [originalDataset])</span>
+<span class="d">-  const rowCellOptions = useMemo&lt;SelectOption&lt;string&gt;[]&gt;(</span>
+<span class="d">-    () =&gt;</span>
+<span class="d">-      dataset?.columns.map((c) =&gt; ({ value: c.identifier, label: c.name })) ??</span>
+<span class="d">-      [],</span>
+<span class="d">-    [dataset],</span>
+<span class="d">-  )</span>
+<span class="d">-  const { data: count, isLoading: isLoadingDatasetRowsCount } =</span>
+<span class="d">-    useDatasetRowsCount({ dataset })</span>
+<span class="d">-</span>
+<span class="d">-  const { metadataParameters, datasetV2: ds } = useDocumentParameters({</span>
+<span class="d">-    document,</span>
+<span class="d">-    commitVersionUuid,</span>
+<span class="d">-  })</span>
+<span class="d">-</span>
+<span class="d">-  const onRowsFetched = useCallback(</span>
+<span class="d">-    async (data: ClientDatasetRow[]) =&gt; {</span>
+<span class="d">-      const row = data[0]</span>
+<span class="d">-      if (!row || !dataset || !metadataParameters) return</span>
+<span class="d">-</span>
+<span class="d">-      const localData = ds.assignedDatasets?.[row.datasetId]</span>
+<span class="d">-      const serverData = document.linkedDatasetAndRow?.[row.datasetId]</span>
+<span class="d">-      const resolvedData = resolveDatasetDataRow({</span>
+<span class="d">-        parameters: metadataParameters,</span>
+<span class="d">-        datasetRowId: row.id,</span>
+<span class="d">-        localData,</span>
+<span class="d">-        serverData,</span>
+<span class="d">-        emptyInputs,</span>
+<span class="d m">-        dataset,</span>
+<span class="d">-      })</span>
+<span class="d">-      const inputs = mapInputs({</span>
+<span class="d">-        inputs: resolvedData.inputs,</span>
+<span class="d">-        mappedInputs: resolvedData.mappedInputs,</span>
+<span class="d">-        row,</span>
+<span class="d">-      })</span>
+<span class="d">-</span>
+<span class="d">-      await ds.setDataset({</span>
+<span class="d">-        datasetId: row.datasetId,</span>
+<span class="d">-        data: {</span>
+<span class="d">-          inputs,</span>
+<span class="d">-          mappedInputs: resolvedData.mappedInputs,</span>
+<span class="d">-          datasetRowId: row.id,</span>
+<span class="d">-        },</span>
+<span class="d">-      })</span>
+<span class="d">-    },</span>
+<span class="d">-    // FIXME: Fixing this dependency array declaration causes an infinite loop</span>
+<span class="d">-    // eslint-disable-next-line react-hooks/exhaustive-deps</span>
+<span class="d">-    [</span>
+<span class="d">-      emptyInputs,</span>
+<span class="d">-      ds.setDataset,</span>
+<span class="d">-      ds.assignedDatasets,</span>
+<span class="d">-      document.linkedDatasetAndRow,</span>
+<span class="d">-      dataset?.id,</span>
+<span class="d">-      metadataParameters,</span>
+<span class="d">-    ],</span>
+<span class="d">-  )</span>
+<span class="d">-</span>
+<span class="d">-  const { data: datasetRows, isLoading: isLoadingRow } = useDatasetRows(</span>
+<span class="d">-    {</span>
+<span class="d">-      dataset: position === undefined ? undefined : dataset,</span>
+<span class="d">-      page: position === undefined ? undefined : String(position),</span>
+<span class="d">-      pageSize: &#x27;1&#x27;, // Paginatinate one by one in document parameters</span>
+<span class="d">-    },</span>
+<span class="d">-    {</span>
+<span class="d">-      keepPreviousData: true,</span>
+<span class="d">-      revalidateIfStale: false,</span>
+<span class="d">-    },</span>
+<span class="d">-  )</span>
+<span class="d">-</span>
+<span class="d">-  const datasetRow = datasetRows?.[0]</span>
+<span class="d">-  const updatePosition = useCallback(</span>
+<span class="d">-    (position: number) =&gt; {</span>
+<span class="d">-      if (isLoadingRow) return</span>
+<span class="d">-</span>
+<span class="d">-      setPosition(position)</span>
+<span class="d">-    },</span>
+<span class="d">-    // FIXME: Fixing this dependency array declaration causes an infinite loop</span>
+<span class="d">-    // eslint-disable-next-line react-hooks/exhaustive-deps</span>
+<span class="d">-    [isLoadingRow],</span>
+<span class="d">-  )</span>
+<span class="d">-</span>
+<span class="d">-  const onNextPage = useCallback(</span>
+<span class="d">-    (position: number) =&gt; updatePosition(position + 1),</span>
+<span class="d">-    [updatePosition],</span>
+<span class="d">-  )</span>
+<span class="d">-</span>
+<span class="d">-  const onPrevPage = useCallback(</span>
+<span class="d">-    (position: number) =&gt; updatePosition(position - 1),</span>
+<span class="d">-    [updatePosition],</span>
+<span class="d">-  )</span>
+<span class="d">-</span>
+<span class="d">-  const onSelectRowCell = useCallback(</span>
+<span class="d">-    (param: string) =&gt; (columnIdentifier: string) =&gt; {</span>
+<span class="d">-      if (!dataset || !datasetRow) return</span>
+<span class="d">-</span>
+<span class="d">-      const prevMapped = ds.mappedInputs ?? {}</span>
+<span class="d">-      const mapped = { ...prevMapped, [param]: columnIdentifier }</span>
+<span class="d">-      const inputs = mapInputs({</span>
+<span class="d">-        inputs: ds.inputs,</span>
+<span class="d">-        mappedInputs: mapped,</span>
+<span class="d">-        row: datasetRow,</span>
+<span class="d">-      })</span>
+<span class="d">-      ds.setDataset({</span>
+<span class="d">-        datasetId: dataset.id,</span>
+<span class="d">-        data: {</span>
+<span class="d">-          datasetRowId: datasetRow.id,</span>
+<span class="d">-          inputs,</span>
+<span class="d">-          mappedInputs: mapped,</span>
+<span class="d">-        },</span>
+<span class="d">-      })</span>
+<span class="d">-    },</span>
+<span class="d">-    // FIXME: Fixing this dependency array declaration causes an infinite loop</span>
+<span class="d">-    // eslint-disable-next-line react-hooks/exhaustive-deps</span>
+<span class="d">-    [ds.setDataset, ds.inputs, ds.mappedInputs, dataset?.id, datasetRow],</span>
+<span class="d">-  )</span>
+<span class="d">-</span>
+<span class="d">-  useEffect(() =&gt; {</span>
+<span class="d">-    // React to fresh fetched rows</span>
+<span class="d">-    onRowsFetched(datasetRows ?? [])</span>
+<span class="d">-    // FIXME: Fixing this dependency array declaration causes an infinite loop</span>
+<span class="d">-    // eslint-disable-next-line react-hooks/exhaustive-deps</span>
+<span class="d">-  }, [datasetRows])</span>
+<span class="d">-</span>
+<span class="d">-  return {</span>
+<span class="d">-    isLoading: isLoadingDatasetRowsCount || isLoadingRow,</span>
+<span class="d">-    loadingState: {</span>
+<span class="d">-      rows: isLoadingRow,</span>
+<span class="d">-      count: isLoadingDatasetRowsCount,</span>
+<span class="d">-    },</span>
+<span class="d">-    rowCellOptions,</span>
+<span class="d">-    onSelectRowCell,</span>
+<span class="d">-    position,</span>
+<span class="d">-    count: count ?? 0,</span>
+<span class="d">-    onNextPage,</span>
+<span class="d">-    onPrevPage,</span>
+<span class="d">-  }</span>
+<span class="d">-}</span></pre></body></html>

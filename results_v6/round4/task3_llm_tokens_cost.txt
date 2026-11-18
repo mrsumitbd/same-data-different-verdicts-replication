@@ -1,0 +1,19 @@
+TASK 3. Tokens and cost of the full-corpus LLM intent runs (from the cached outputs)
+
+all cached rows:
+  deepseek-ai/DeepSeek-V4.1-Flash     7686 commits  in 105,142,392  out 2,325,566  $ 34.33  (mean 13,680 in / 303 out per commit; 0.3/1.2 USD per 1M)
+  MiniMaxAI/MiniMax-M3.1-Flash        7686 commits  in 101,017,193  out 2,501,402  $ 16.65  (mean 13,143 in / 325 out per commit; 0.15/0.6 USD per 1M)
+  openai/gpt-oss-120b                 7686 commits  in  99,289,562  out 1,398,642  $ 15.73  (mean 12,918 in / 182 out per commit; 0.15/0.6 USD per 1M)
+  total                                             in 305,449,147  out 6,225,610  $ 66.72
+analysed corpus:
+  deepseek-ai/DeepSeek-V4.1-Flash     5303 commits  in  74,394,006  out 1,689,265  $ 24.35  (mean 14,029 in / 319 out per commit; 0.3/1.2 USD per 1M)
+  MiniMaxAI/MiniMax-M3.1-Flash        5303 commits  in  71,517,443  out 1,798,373  $ 11.81  (mean 13,486 in / 339 out per commit; 0.15/0.6 USD per 1M)
+  openai/gpt-oss-120b                 5303 commits  in  70,310,214  out   988,598  $ 11.14  (mean 13,259 in / 186 out per commit; 0.15/0.6 USD per 1M)
+  total                                             in 216,221,663  out 4,476,236  $ 47.29
+
+Wall time (only runs with a log; concurrency 4, sequential models; US Eastern):
+  2026-10-29 v5 top-up (1,226-1,227 commits per model): deepseek 12:10:24-12:42:49 (32 min), gpt-oss 12:42:49-12:59:39 (17 min), minimax 12:59:39-13:25:30 (26 min, end = log mtime); 75 min total
+  2026-11-03 v6conf (2,396-2,397 commits per model): deepseek 17:07:00-18:01:13 (54 min), gpt-oss 18:01:13-18:24:14 (23 min), minimax 18:24:14-19:24:13 (60 min, end = log mtime); deepseek retry of 4 commits ~19:24; 137 min total
+  The first ~4,064 cached commits per model come from earlier runs with no log in the repository: wall time unknown.
+  Logged cost (run logs / RUN_LOG.md): 2026-10-29 deepseek $5.11, gpt-oss $2.33, minimax $2.48; 2026-11-03 deepseek $11.69 (+$0.03 retry), gpt-oss $5.35, minimax $5.67.
+  Per-commit API timestamps are not stored in the full-corpus CSVs (only in the round-1 message-only reruns).

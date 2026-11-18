@@ -1,0 +1,251 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L247 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L247: after the move</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>Original file:</b> apps/web/client/src/components/store/editor/engine/state/index.ts (see L247.html)<br><b>Move commit:</b> <a href="https://github.com/onlook-dev/onlook/commit/f7a8060cc456b1968464e5bde9d8fca16648eb1e">f7a8060cc4</a> (commit #1 on L247.html)<br><b>Destination file (your label):</b> apps/web/client/src/components/store/editor/state/index.ts<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">    leftPanelTab: LeftPanelTabValue | null = null;</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 24).</p><h2>Destination file at the move commit, lines 16 to 32</h2><pre>   16 |     hotkeysOpen = false;
+   17 |     publishOpen = false;
+   18 |     leftPanelLocked = false;
+   19 |     canvasPanning = false;
+   20 | 
+   21 |     editorMode: EditorMode = EditorMode.DESIGN;
+   22 |     settingsTab: SettingsTabValue | string = SettingsTabValue.PREFERENCES;
+   23 | 
+<span class="t">   24 |     leftPanelTab: LeftPanelTabValue | null = null;</span>
+   25 |     rightPanelTab: EditorTabValue = EditorTabValue.CHAT;
+   26 |     brandTab: BrandTabValue | null = null;
+   27 | 
+   28 |     constructor() {
+   29 |         makeAutoObservable(this);
+   30 |     }
+   31 | 
+   32 |     set canvasScrolling(value: boolean) {</pre><p class="k">Below are all 10 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/be973adcde593c54da22001443c304df2c67e115">be973adcde</a> (2025-05-16T14:44:19-04:00)</h2><p class="k">update drag absolute element (#1852)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index 0fa45f07..7c459a06 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -35,7 +35,7 @@ export class StateManager {</span>
+     }
+ 
+     get shouldHideOverlay() {
+<span class="d">-        return this._canvasScrolling || this.canvasPanning;</span>
+<span class="a">+        return this._canvasScrolling || this.canvasPanning</span>
+     }
+ 
+     get plansOpen() {</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/63b8675af75479429840caa6e3df9c15c88f3720">63b8675af7</a> (2025-06-18T14:05:19-04:00)</h2><p class="k">feat: restore pricing modal (#2230)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index 7c459a06..0932e845 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -1,4 +1,3 @@</span>
+<span class="d">-import { sendAnalytics } from &#x27;@/utils/analytics&#x27;;</span>
+ import {
+     type BrandTabValue,
+     EditorMode,
+<span class="h">@@ -10,13 +9,13 @@ import { debounce } from &#x27;lodash&#x27;;</span>
+ import { makeAutoObservable } from &#x27;mobx&#x27;;
+ 
+ export class StateManager {
+<span class="d">-    private _plansOpen = false;</span>
+     private _canvasScrolling = false;
+     settingsOpen = false;
+     hotkeysOpen = false;
+     publishOpen = false;
+     leftPanelLocked = false;
+     canvasPanning = false;
+<span class="a">+    plansOpen = false;</span>
+ 
+     editorMode: EditorMode = EditorMode.DESIGN;
+     settingsTab: SettingsTabValue | string = SettingsTabValue.PREFERENCES;
+<span class="h">@@ -38,17 +37,6 @@ export class StateManager {</span>
+         return this._canvasScrolling || this.canvasPanning
+     }
+ 
+<span class="d">-    get plansOpen() {</span>
+<span class="d">-        return this._plansOpen;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    set plansOpen(open: boolean) {</span>
+<span class="d">-        this._plansOpen = open;</span>
+<span class="d">-        if (open) {</span>
+<span class="d">-            sendAnalytics(&#x27;open pro checkout&#x27;);</span>
+<span class="d">-        }</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+     private resetCanvasScrolling() {
+         this.resetCanvasScrollingDebounced();
+     }</pre><h2>Commit #3: <a href="https://github.com/onlook-dev/onlook/commit/8130d896343703be418003dd74bcf8657a17f2bf">8130d89634</a> (2025-06-24T22:28:32-07:00)</h2><p class="k">feat: subscription integration (#2243)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index 0932e845..8649f709 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -15,7 +15,6 @@ export class StateManager {</span>
+     publishOpen = false;
+     leftPanelLocked = false;
+     canvasPanning = false;
+<span class="d">-    plansOpen = false;</span>
+ 
+     editorMode: EditorMode = EditorMode.DESIGN;
+     settingsTab: SettingsTabValue | string = SettingsTabValue.PREFERENCES;
+<span class="h">@@ -46,7 +45,6 @@ export class StateManager {</span>
+     }, 150);
+ 
+     clear() {
+<span class="d">-        this.plansOpen = false;</span>
+         this.settingsOpen = false;
+         this.hotkeysOpen = false;
+         this.publishOpen = false;</pre><h2>Commit #4: <a href="https://github.com/onlook-dev/onlook/commit/6f65bfc8fbbf0c32e051d3163f50f08385e5b8a2">6f65bfc8fb</a> (2025-06-25T15:39:09-07:00)</h2><p class="k">feat: add modal settings (#2231)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index 8649f709..af450a68 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -17,7 +17,7 @@ export class StateManager {</span>
+     canvasPanning = false;
+ 
+     editorMode: EditorMode = EditorMode.DESIGN;
+<span class="d">-    settingsTab: SettingsTabValue | string = SettingsTabValue.PREFERENCES;</span>
+<span class="a">+    settingsTab: SettingsTabValue | string = SettingsTabValue.SITE;</span>
+ 
+<span class=" m">     leftPanelTab: LeftPanelTabValue | null = null;</span>
+     rightPanelTab: EditorTabValue = EditorTabValue.CHAT;</pre><h2>Commit #5: <a href="https://github.com/onlook-dev/onlook/commit/ebb8ed45ac6c08c56dd95c901271d6263db062d0">ebb8ed45ac</a> (2025-06-28T19:28:36-07:00)</h2><p class="k">fix: remove managers in favor of queries (#2302)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index af450a68..4e796c5a 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -2,23 +2,19 @@ import {</span>
+     type BrandTabValue,
+     EditorMode,
+     EditorTabValue,
+<span class="d">-    type LeftPanelTabValue,</span>
+<span class="d">-    SettingsTabValue,</span>
+<span class="a">+    type LeftPanelTabValue</span>
+ } from &#x27;@onlook/models&#x27;;
+ import { debounce } from &#x27;lodash&#x27;;
+ import { makeAutoObservable } from &#x27;mobx&#x27;;
+ 
+ export class StateManager {
+     private _canvasScrolling = false;
+<span class="d">-    settingsOpen = false;</span>
+     hotkeysOpen = false;
+     publishOpen = false;
+     leftPanelLocked = false;
+     canvasPanning = false;
+ 
+     editorMode: EditorMode = EditorMode.DESIGN;
+<span class="d">-    settingsTab: SettingsTabValue | string = SettingsTabValue.SITE;</span>
+<span class="d">-</span>
+<span class=" m">     leftPanelTab: LeftPanelTabValue | null = null;</span>
+     rightPanelTab: EditorTabValue = EditorTabValue.CHAT;
+     brandTab: BrandTabValue | null = null;
+<span class="h">@@ -45,7 +41,6 @@ export class StateManager {</span>
+     }, 150);
+ 
+     clear() {
+<span class="d">-        this.settingsOpen = false;</span>
+         this.hotkeysOpen = false;
+         this.publishOpen = false;
+         this.resetCanvasScrollingDebounced.cancel();</pre><h2>Commit #6: <a href="https://github.com/onlook-dev/onlook/commit/1f6e0258f461c3ca9a72ccb989c78d1cbff9de29">1f6e0258f4</a> (2025-08-27T10:58:03-07:00)</h2><p class="k">feat: update ai sdk from v4 to v5 (#2718)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index 4e796c5a..9658d621 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -2,7 +2,8 @@ import {</span>
+     type BrandTabValue,
+     EditorMode,
+     EditorTabValue,
+<span class="d">-    type LeftPanelTabValue</span>
+<span class="a">+    type LeftPanelTabValue,</span>
+<span class="a">+    ChatType</span>
+ } from &#x27;@onlook/models&#x27;;
+ import { debounce } from &#x27;lodash&#x27;;
+ import { makeAutoObservable } from &#x27;mobx&#x27;;
+<span class="h">@@ -18,6 +19,8 @@ export class StateManager {</span>
+<span class=" m">     leftPanelTab: LeftPanelTabValue | null = null;</span>
+     rightPanelTab: EditorTabValue = EditorTabValue.CHAT;
+     brandTab: BrandTabValue | null = null;
+<span class="a">+    </span>
+<span class="a">+    chatMode: ChatType = ChatType.EDIT;</span>
+ 
+     constructor() {
+         makeAutoObservable(this);</pre><h2>Commit #7: <a href="https://github.com/onlook-dev/onlook/commit/891ac13c7d15eadf4c7f08e73dc5b183f0b9c69b">891ac13c7d</a> (2025-09-07T16:36:00-07:00)</h2><p class="k">feat: add branching  (#2763)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index 9658d621..e6613a5f 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -1,5 +1,6 @@</span>
+ import {
+     type BrandTabValue,
+<span class="a">+    type BranchTabValue,</span>
+     EditorMode,
+     EditorTabValue,
+     type LeftPanelTabValue,
+<span class="h">@@ -19,6 +20,8 @@ export class StateManager {</span>
+<span class=" m">     leftPanelTab: LeftPanelTabValue | null = null;</span>
+     rightPanelTab: EditorTabValue = EditorTabValue.CHAT;
+     brandTab: BrandTabValue | null = null;
+<span class="a">+    branchTab: BranchTabValue | null = null;</span>
+<span class="a">+    manageBranchId: string | null = null;</span>
+     
+     chatMode: ChatType = ChatType.EDIT;
+ 
+<span class="h">@@ -46,6 +49,8 @@ export class StateManager {</span>
+     clear() {
+         this.hotkeysOpen = false;
+         this.publishOpen = false;
+<span class="a">+        this.branchTab = null;</span>
+<span class="a">+        this.manageBranchId = null;</span>
+         this.resetCanvasScrollingDebounced.cancel();
+     }
+ }</pre><h2>Commit #8: <a href="https://github.com/onlook-dev/onlook/commit/f7092a49ad3262872643441db68ac531579b70d4">f7092a49ad</a> (2025-09-17T15:52:18-07:00)</h2><p class="k">feat: add drag-to-select for multiple webframes (#2853)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index e6613a5f..23667f82 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -15,6 +15,7 @@ export class StateManager {</span>
+     publishOpen = false;
+     leftPanelLocked = false;
+     canvasPanning = false;
+<span class="a">+    isDragSelecting = false;</span>
+ 
+     editorMode: EditorMode = EditorMode.DESIGN;
+<span class=" m">     leftPanelTab: LeftPanelTabValue | null = null;</span></pre><h2>Commit #9: <a href="https://github.com/onlook-dev/onlook/commit/0ee79597e8d7fd0de87ce430469178975431488a">0ee79597e8</a> (2025-10-08T19:42:43-07:00)</h2><p class="k">feat: code mode (#2975)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index 23667f82..856c2ed4 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -1,10 +1,9 @@</span>
+ import {
+<span class="d">-    type BrandTabValue,</span>
+     type BranchTabValue,
+<span class="a">+    type BrandTabValue,</span>
+<span class="a">+    ChatType,</span>
+     EditorMode,
+<span class="d">-    EditorTabValue,</span>
+<span class="d">-    type LeftPanelTabValue,</span>
+<span class="d">-    ChatType</span>
+<span class="a">+    type LeftPanelTabValue</span>
+ } from &#x27;@onlook/models&#x27;;
+ import { debounce } from &#x27;lodash&#x27;;
+ import { makeAutoObservable } from &#x27;mobx&#x27;;
+<span class="h">@@ -19,11 +18,10 @@ export class StateManager {</span>
+ 
+     editorMode: EditorMode = EditorMode.DESIGN;
+<span class=" m">     leftPanelTab: LeftPanelTabValue | null = null;</span>
+<span class="d">-    rightPanelTab: EditorTabValue = EditorTabValue.CHAT;</span>
+     brandTab: BrandTabValue | null = null;
+     branchTab: BranchTabValue | null = null;
+     manageBranchId: string | null = null;
+<span class="d">-    </span>
+<span class="a">+</span>
+     chatMode: ChatType = ChatType.EDIT;
+ 
+     constructor() {</pre><h2>Commit #10: <a href="https://github.com/onlook-dev/onlook/commit/fadafe121703e5a1e6dd8a039b771782f87e9d3e">fadafe1217</a> (2025-10-08T21:42:39-07:00)</h2><p class="k">fix: insert modes (#2982)<br>Path after this commit: apps/web/client/src/components/store/editor/state/index.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/components/store/editor/state/index.ts b/apps/web/client/src/components/store/editor/state/index.ts
+index 856c2ed4..a0f4ff72 100644
+<span class="d">--- a/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="a">+++ b/apps/web/client/src/components/store/editor/state/index.ts</span>
+<span class="h">@@ -3,6 +3,7 @@ import {</span>
+     type BrandTabValue,
+     ChatType,
+     EditorMode,
+<span class="a">+    InsertMode,</span>
+     type LeftPanelTabValue
+ } from &#x27;@onlook/models&#x27;;
+ import { debounce } from &#x27;lodash&#x27;;
+<span class="h">@@ -17,6 +18,7 @@ export class StateManager {</span>
+     isDragSelecting = false;
+ 
+     editorMode: EditorMode = EditorMode.DESIGN;
+<span class="a">+    insertMode: InsertMode | null = null;</span>
+<span class=" m">     leftPanelTab: LeftPanelTabValue | null = null;</span>
+     brandTab: BrandTabValue | null = null;
+     branchTab: BranchTabValue | null = null;</pre></body></html>

@@ -1,0 +1,322 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L246</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L246</h1><p><b>Repository:</b> <a href="https://github.com/azure/azure-storage-azcopy">azure/azure-storage-azcopy</a><br><b>File at merge:</b> cmd/copyUtil.go, line 62<br><b>Merge commit (birth):</b> <a href="https://github.com/azure/azure-storage-azcopy/commit/7114d2cd37c58530eec54b83896123f21e8c18b6">7114d2cd37</a> (2025-03-10T16:51:36)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/azure/azure-storage-azcopy/tree/ffcdb9e082d96f5ce020c3019963c80e1acbfd00">ffcdb9e082</a>)</p><p><b>The line:</b></p><pre><span class="t">		return</span></pre><h2>File at the merge commit, lines 54 to 70</h2><pre>   54 | // if nothing happens, the original source is returned
+   55 | func stripTrailingWildcardOnRemoteSource(source string, location common.Location) (result string, stripTopDir bool, err error) {
+   56 | 	result = source
+   57 | 	resourceURL, err := url.Parse(result)
+   58 | 	gURLParts := common.NewGenericResourceURLParts(*resourceURL, location)
+   59 | 
+   60 | 	if err != nil {
+   61 | 		err = fmt.Errorf(&quot;failed to parse url %s; %w&quot;, result, err)
+<span class="t">   62 | 		return</span>
+   63 | 	}
+   64 | 
+   65 | 	if strings.Contains(gURLParts.GetContainerName(), &quot;*&quot;) {
+   66 | 		// Disallow container name search and object specifics
+   67 | 		if gURLParts.GetObjectName() != &quot;&quot; {
+   68 | 			err = errors.New(&quot;cannot combine a specific object name with an account-level search&quot;)
+   69 | 			return
+   70 | 		}</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/azure/azure-storage-azcopy/commit/159928f6f21f04af1bba17f570927ab9e146ce6b">159928f6f2</a> (2025-06-11T12:08:39-07:00)</h2><p class="k">Support for Azure Files NFS in AzCopy [Phase-1] (#3010)<br>Path after this commit: cmd/copyUtil.go. Lines with exactly this text in the file after the commit: 3. Identical text added in other files in this commit: cmd/flagsValidation.go, cmd/zc_traverser_local.go, cmd/zc_traverser_local_other.go, e2etest/newe2e_resource_managers_local_linux.go, e2etest/newe2e_resource_managers_local_windows.go.</p><pre>diff --git a/cmd/copyUtil.go b/cmd/copyUtil.go
+index 3da0dc46..d7b9d4f5 100644
+<span class="d">--- a/cmd/copyUtil.go</span>
+<span class="a">+++ b/cmd/copyUtil.go</span>
+<span class="h">@@ -23,17 +23,14 @@ package cmd</span>
+ import (
+ 	&quot;errors&quot;
+ 	&quot;fmt&quot;
+<span class="d">-	&quot;github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blob&quot;</span>
+ 	&quot;net/url&quot;
+ 	&quot;os&quot;
+ 	&quot;strings&quot;
+ 	&quot;sync&quot;
+ 
+<span class="d">-	&quot;github.com/Azure/azure-storage-azcopy/v10/common&quot;</span>
+<span class="d">-)</span>
+<span class="a">+	&quot;github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blob&quot;</span>
+ 
+<span class="d">-const (</span>
+<span class="d">-	NumOfFilesPerDispatchJobPart = 10000</span>
+<span class="a">+	&quot;github.com/Azure/azure-storage-azcopy/v10/common&quot;</span>
+ )
+ 
+ func parsePatterns(pattern string) (cookedPatterns []string) {
+<span class="h">@@ -205,7 +202,7 @@ func startsWith(s string, t string) bool {</span>
+ 	return len(s) &gt;= len(t) &amp;&amp; strings.EqualFold(s[0:len(t)], t)
+ }
+ 
+<span class="d">-/////////////////////////////////////////////////////////////////////////////////////////////////</span>
+<span class="a">+// ///////////////////////////////////////////////////////////////////////////////////////////////</span>
+ type s3URLPartsExtension struct {
+ 	common.S3URLParts
+ }</pre><h2>Commit #2: <a href="https://github.com/azure/azure-storage-azcopy/commit/9ab0c5ad757bb131926cc9f75c12b760f534d38f">9ab0c5ad75</a> (2025-06-18T13:52:58-07:00)</h2><p class="k">Copy command code refactor (#3090)<br>Path after this commit: cmd/copyUtil.go. Lines with exactly this text in the file after the commit: 3. Identical text added in other files in this commit: cmd/copyValidation.go.</p><pre>diff --git a/cmd/copyUtil.go b/cmd/copyUtil.go
+index d7b9d4f5..8803a646 100644
+<span class="d">--- a/cmd/copyUtil.go</span>
+<span class="a">+++ b/cmd/copyUtil.go</span>
+<span class="h">@@ -33,6 +33,23 @@ import (</span>
+ 	&quot;github.com/Azure/azure-storage-azcopy/v10/common&quot;
+ )
+ 
+<span class="a">+type boolDefaultTrue struct {</span>
+<span class="a">+	value         bool</span>
+<span class="a">+	isManuallySet bool // whether the variable was manually set by the user</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+func (b boolDefaultTrue) Value() bool {</span>
+<span class="a">+	return b.value</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+func (b boolDefaultTrue) ValueToValidate() bool {</span>
+<span class="a">+	if b.isManuallySet {</span>
+<span class="a">+		return b.value</span>
+<span class="a">+	} else {</span>
+<span class="a">+		return false</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func parsePatterns(pattern string) (cookedPatterns []string) {
+ 	cookedPatterns = make([]string, 0)
+ 	rawPatterns := strings.Split(pattern, &quot;;&quot;)
+<span class="h">@@ -88,6 +105,12 @@ func stripTrailingWildcardOnRemoteSource(source string, location common.Location</span>
+<span class=" m"> 	return</span>
+ }
+ 
+<span class="a">+func warnIfAnyHasWildcard(oncer *sync.Once, paramName string, value []string) {</span>
+<span class="a">+	for _, v := range value {</span>
+<span class="a">+		warnIfHasWildcard(oncer, paramName, v)</span>
+<span class="a">+	}</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func warnIfHasWildcard(oncer *sync.Once, paramName string, value string) {
+ 	if strings.Contains(value, &quot;*&quot;) || strings.Contains(value, &quot;?&quot;) {
+ 		oncer.Do(func() {</pre><h2>Commit #3: <a href="https://github.com/azure/azure-storage-azcopy/commit/fd70daa3db382ee393d4c9f04b8592b2fcbd1168">fd70daa3db</a> (2025-10-15T09:35:20-07:00)</h2><p class="k">Refactored and reorganized traverser code (#3251)<br>Path after this commit: cmd/copyUtil.go. Lines with exactly this text in the file after the commit: 3. Identical text added in other files in this commit: traverser/pathUtils.go.</p><pre>diff --git a/cmd/copyUtil.go b/cmd/copyUtil.go
+index 8803a646..2bcd5d14 100644
+<span class="d">--- a/cmd/copyUtil.go</span>
+<span class="a">+++ b/cmd/copyUtil.go</span>
+<span class="h">@@ -28,8 +28,6 @@ import (</span>
+ 	&quot;strings&quot;
+ 	&quot;sync&quot;
+ 
+<span class="d">-	&quot;github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blob&quot;</span>
+<span class="d">-</span>
+ 	&quot;github.com/Azure/azure-storage-azcopy/v10/common&quot;
+ )
+ 
+<span class="h">@@ -121,72 +119,16 @@ func warnIfHasWildcard(oncer *sync.Once, paramName string, value string) {</span>
+ 	}
+ }
+ 
+<span class="d">-type copyHandlerUtil struct{}</span>
+<span class="d">-</span>
+<span class="d">-// TODO: Need be replaced with anonymous embedded field technique.</span>
+<span class="d">-var gCopyUtil = copyHandlerUtil{}</span>
+<span class="d">-</span>
+<span class="d">-// checks if a given url points to a container or virtual directory, as opposed to a blob or prefix match</span>
+<span class="d">-func (util copyHandlerUtil) urlIsContainerOrVirtualDirectory(rawURL string) bool {</span>
+<span class="d">-	parsedURL, err := url.Parse(rawURL)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		return false</span>
+<span class="d">-	}</span>
+<span class="d">-	blobURLParts, err := blob.ParseURL(rawURL)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		return false</span>
+<span class="d">-	}</span>
+<span class="d">-	if blobURLParts.IPEndpointStyleInfo.AccountName == &quot;&quot; {</span>
+<span class="d">-		// Typical endpoint style</span>
+<span class="d">-		// If there&#x27;s no slashes after the first, it&#x27;s a container.</span>
+<span class="d">-		// If there&#x27;s a slash on the end, it&#x27;s a virtual directory/container.</span>
+<span class="d">-		// Otherwise, it&#x27;s just a blob.</span>
+<span class="d">-		if len(parsedURL.Path) == 0 {</span>
+<span class="d">-			return true // We know for SURE that it&#x27;s a account level URL</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		return strings.HasSuffix(parsedURL.Path, &quot;/&quot;) || strings.Count(parsedURL.Path[1:], &quot;/&quot;) == 0</span>
+<span class="d">-	} else {</span>
+<span class="d">-		// IP endpoint style: https://IP:port/accountname/container</span>
+<span class="d">-		// If there&#x27;s 2 or less slashes after the first, it&#x27;s a container.</span>
+<span class="d">-		// OR If there&#x27;s a slash on the end, it&#x27;s a virtual directory/container.</span>
+<span class="d">-		// Otherwise, it&#x27;s just a blob.</span>
+<span class="d">-		return strings.HasSuffix(parsedURL.Path, &quot;/&quot;) || strings.Count(parsedURL.Path[1:], &quot;/&quot;) &lt;= 1</span>
+<span class="d">-	}</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-// redactSigQueryParam checks for the signature in the given rawquery part of the url</span>
+<span class="d">-// If the signature exists, it replaces the value of the signature with &quot;REDACTED&quot;</span>
+<span class="d">-// This api is used when SAS is written to log file to avoid exposing the user given SAS</span>
+<span class="d">-// TODO: remove this, redactSigQueryParam could be added in SDK</span>
+<span class="d">-func (util copyHandlerUtil) redactSigQueryParam(rawQuery string) (bool, string) {</span>
+<span class="d">-	rawQuery = strings.ToLower(rawQuery) // lowercase the string so we can look for ?sig= and &amp;sig=</span>
+<span class="d">-	sigFound := strings.Contains(rawQuery, &quot;?&quot;+common.SigAzure+&quot;=&quot;)</span>
+<span class="d">-	if !sigFound {</span>
+<span class="d">-		sigFound = strings.Contains(rawQuery, &quot;&amp;&quot;+common.SigAzure+&quot;=&quot;)</span>
+<span class="d">-		if !sigFound {</span>
+<span class="d">-			return sigFound, rawQuery // [?|&amp;]sig= not found; return same rawQuery passed in (no memory allocation)</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-	// [?|&amp;]sig= found, redact its value</span>
+<span class="d">-	values, _ := url.ParseQuery(rawQuery)</span>
+<span class="d">-	for name := range values {</span>
+<span class="d">-		if strings.EqualFold(name, common.SigAzure) {</span>
+<span class="d">-			values[name] = []string{&quot;REDACTED&quot;}</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-	return sigFound, values.Encode()</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ // ConstructCommandStringFromArgs creates the user given commandString from the os Arguments
+ // If any argument passed is an http Url and contains the signature, then the signature is redacted
+<span class="d">-func (util copyHandlerUtil) ConstructCommandStringFromArgs() string {</span>
+<span class="a">+func ConstructCommandStringFromArgs() string {</span>
+ 	// Get the os Args and strip away the first argument since it will be the path of Azcopy executable
+ 	args := os.Args[1:]
+ 	if len(args) == 0 {
+ 		return &quot;&quot;
+ 	}
+ 	s := strings.Builder{}
+<span class="a">+	sanitizer := common.NewAzCopyLogSanitizer()</span>
+ 	for _, arg := range args {
+ 		// If the argument starts with http, it is either the remote source or remote destination
+ 		// If there exists a signature in the argument string it needs to be redacted
+<span class="h">@@ -198,8 +140,7 @@ func (util copyHandlerUtil) ConstructCommandStringFromArgs() string {</span>
+ 				panic(fmt.Errorf(&quot;error parsing the url %s. Failed with error %s&quot;, arg, err.Error()))
+ 			}
+ 			// Check for the signature query parameter
+<span class="d">-			_, rawQuery := util.redactSigQueryParam(argUrl.RawQuery)</span>
+<span class="d">-			argUrl.RawQuery = rawQuery</span>
+<span class="a">+			argUrl.RawQuery = sanitizer.SanitizeLogMessage(argUrl.RawQuery)</span>
+ 			s.WriteString(argUrl.String())
+ 		} else {
+ 			s.WriteString(arg)
+<span class="h">@@ -209,23 +150,6 @@ func (util copyHandlerUtil) ConstructCommandStringFromArgs() string {</span>
+ 	return s.String()
+ }
+ 
+<span class="d">-// doesBlobRepresentAFolder verifies whether blob is valid or not.</span>
+<span class="d">-// Used to handle special scenarios or conditions.</span>
+<span class="d">-func (util copyHandlerUtil) doesBlobRepresentAFolder(metadata map[string]*string) bool {</span>
+<span class="d">-	// this condition is to handle the WASB V1 directory structure.</span>
+<span class="d">-	// HDFS driver creates a blob for the empty directories (let’s call it ‘myfolder’)</span>
+<span class="d">-	// and names all the blobs under ‘myfolder’ as such: ‘myfolder/myblob’</span>
+<span class="d">-	// The empty directory has meta-data &#x27;hdi_isfolder = true&#x27;</span>
+<span class="d">-	// Note: GoLang sometimes sets metadata keys with the first letter capitalized</span>
+<span class="d">-	v, ok := common.TryReadMetadata(metadata, common.POSIXFolderMeta)</span>
+<span class="d">-	return ok &amp;&amp; v != nil &amp;&amp; strings.ToLower(*v) == &quot;true&quot;</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ func startsWith(s string, t string) bool {
+ 	return len(s) &gt;= len(t) &amp;&amp; strings.EqualFold(s[0:len(t)], t)
+ }
+<span class="d">-</span>
+<span class="d">-// ///////////////////////////////////////////////////////////////////////////////////////////////</span>
+<span class="d">-type s3URLPartsExtension struct {</span>
+<span class="d">-	common.S3URLParts</span>
+<span class="d">-}</span></pre><h2>Commit #4: <a href="https://github.com/azure/azure-storage-azcopy/commit/a0712a65c1acf86d5043a67640d2e9dff222512a">a0712a65c1</a> (2025-11-20T08:54:20-08:00)</h2><p class="k">Cleanup before sync migration (#3292)<br>Path after this commit: cmd/copyUtil.go. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/cmd/copyUtil.go b/cmd/copyUtil.go
+index 2bcd5d14..a1096a7a 100644
+<span class="d">--- a/cmd/copyUtil.go</span>
+<span class="a">+++ b/cmd/copyUtil.go</span>
+<span class="h">@@ -28,6 +28,7 @@ import (</span>
+ 	&quot;strings&quot;
+ 	&quot;sync&quot;
+ 
+<span class="a">+	&quot;github.com/Azure/azure-storage-azcopy/v10/azcopy&quot;</span>
+ 	&quot;github.com/Azure/azure-storage-azcopy/v10/common&quot;
+ )
+ 
+<span class="h">@@ -132,7 +133,7 @@ func ConstructCommandStringFromArgs() string {</span>
+ 	for _, arg := range args {
+ 		// If the argument starts with http, it is either the remote source or remote destination
+ 		// If there exists a signature in the argument string it needs to be redacted
+<span class="d">-		if startsWith(arg, &quot;http&quot;) {</span>
+<span class="a">+		if azcopy.StartsWith(arg, &quot;http&quot;) {</span>
+ 			// parse the url
+ 			argUrl, err := url.Parse(arg)
+ 			// If there is an error parsing the url, then throw the error
+<span class="h">@@ -149,7 +150,3 @@ func ConstructCommandStringFromArgs() string {</span>
+ 	}
+ 	return s.String()
+ }
+<span class="d">-</span>
+<span class="d">-func startsWith(s string, t string) bool {</span>
+<span class="d">-	return len(s) &gt;= len(t) &amp;&amp; strings.EqualFold(s[0:len(t)], t)</span>
+<span class="d">-}</span></pre><h2>Commit #5: <a href="https://github.com/azure/azure-storage-azcopy/commit/a7f6c745214360ba39b4566946937c38a4f119f0">a7f6c74521</a> (2025-11-25T11:12:15-08:00)</h2><p class="k">Cleanup before copy migration (#3301)<br>Path after this commit: cmd/copyUtil.go. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: azcopy/pathUtils.go.</p><pre>diff --git a/cmd/copyUtil.go b/cmd/copyUtil.go
+index a1096a7a..703980f1 100644
+<span class="d">--- a/cmd/copyUtil.go</span>
+<span class="a">+++ b/cmd/copyUtil.go</span>
+<span class="h">@@ -21,12 +21,10 @@</span>
+ package cmd
+ 
+ import (
+<span class="d">-	&quot;errors&quot;</span>
+ 	&quot;fmt&quot;
+ 	&quot;net/url&quot;
+ 	&quot;os&quot;
+ 	&quot;strings&quot;
+<span class="d">-	&quot;sync&quot;</span>
+ 
+ 	&quot;github.com/Azure/azure-storage-azcopy/v10/azcopy&quot;
+ 	&quot;github.com/Azure/azure-storage-azcopy/v10/common&quot;
+<span class="h">@@ -63,63 +61,6 @@ func parsePatterns(pattern string) (cookedPatterns []string) {</span>
+<span class=" m"> 	return</span>
+ }
+ 
+<span class="d">-// returns result of stripping and if striptopdir is enabled</span>
+<span class="d">-// if nothing happens, the original source is returned</span>
+<span class="d">-func stripTrailingWildcardOnRemoteSource(source string, location common.Location) (result string, stripTopDir bool, err error) {</span>
+<span class="d">-	result = source</span>
+<span class="d">-	resourceURL, err := url.Parse(result)</span>
+<span class="d">-	gURLParts := common.NewGenericResourceURLParts(*resourceURL, location)</span>
+<span class="d">-</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		err = fmt.Errorf(&quot;failed to parse url %s; %w&quot;, result, err)</span>
+<span class="d m">-		return</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if strings.Contains(gURLParts.GetContainerName(), &quot;*&quot;) {</span>
+<span class="d">-		// Disallow container name search and object specifics</span>
+<span class="d">-		if gURLParts.GetObjectName() != &quot;&quot; {</span>
+<span class="d">-			err = errors.New(&quot;cannot combine a specific object name with an account-level search&quot;)</span>
+<span class="d m">-			return</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		// Return immediately here because we know this will be safe.</span>
+<span class="d m">-		return</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// Trim the trailing /*.</span>
+<span class="d">-	if strings.HasSuffix(resourceURL.RawPath, &quot;/*&quot;) {</span>
+<span class="d">-		resourceURL.RawPath = strings.TrimSuffix(resourceURL.RawPath, &quot;/*&quot;)</span>
+<span class="d">-		resourceURL.Path = strings.TrimSuffix(resourceURL.Path, &quot;/*&quot;)</span>
+<span class="d">-		stripTopDir = true</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// Ensure there aren&#x27;t any extra *s floating around.</span>
+<span class="d">-	if strings.Contains(resourceURL.RawPath, &quot;*&quot;) {</span>
+<span class="d">-		err = errors.New(&quot;cannot use wildcards in the path section of the URL except in trailing \&quot;/*\&quot;. If you wish to use * in your URL, manually encode it to %2A&quot;)</span>
+<span class="d m">-		return</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	result = resourceURL.String()</span>
+<span class="d">-</span>
+<span class="d m">-	return</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func warnIfAnyHasWildcard(oncer *sync.Once, paramName string, value []string) {</span>
+<span class="d">-	for _, v := range value {</span>
+<span class="d">-		warnIfHasWildcard(oncer, paramName, v)</span>
+<span class="d">-	}</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func warnIfHasWildcard(oncer *sync.Once, paramName string, value string) {</span>
+<span class="d">-	if strings.Contains(value, &quot;*&quot;) || strings.Contains(value, &quot;?&quot;) {</span>
+<span class="d">-		oncer.Do(func() {</span>
+<span class="d">-			glcm.Warn(fmt.Sprintf(&quot;*** Warning *** The %s parameter does not support wildcards. The wildcard &quot;+</span>
+<span class="d">-				&quot;character provided will be interpreted literally and will not have any wildcard effect. To use wildcards &quot;+</span>
+<span class="d">-				&quot;(in filenames only, not paths) use include-pattern or exclude-pattern&quot;, paramName))</span>
+<span class="d">-		})</span>
+<span class="d">-	}</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+ // ConstructCommandStringFromArgs creates the user given commandString from the os Arguments
+ // If any argument passed is an http Url and contains the signature, then the signature is redacted
+ func ConstructCommandStringFromArgs() string {</pre></body></html>

@@ -1,0 +1,15 @@
+E7. Identification rule (commit unit, full window, majority birth group)
+
+API metadata for 5,291 of 5,300 commits; author login agrees with modifier_authors.csv for 5,209; API message equals the cached message for 5,243
+Most frequent committer logins: web-flow 4693, hanxiao 120, jamesgpearce 54, legomushroom 27, sfmskywalker 26, mogery 25, nickscamara 19, StephenDev0 18
+Commits with a Co-authored-by trailer naming a coding agent: 439 (any Co-authored-by trailer: 1094)
+Matched trailer identities (name <email>, count): claude <noreply@anthropic.com> 205; copilot-swe-agent[bot] <198982749+copilot@users.noreply.github.com> 177; copilot <175728472+copilot@users.noreply.github.com> 150; devin ai <158243242+devin-ai-integration[bot]@users.noreply.github.com> 136; claude opus 4.5 <noreply@anthropic.com> 12; copilot <198982749+copilot@users.noreply.github.com> 8; devin-ai-integration[bot] <158243242+devin-ai-integration[bot]@users.noreply.github.com> 4; cursor agent <cursoragent@cursor.com> 2; claude[bot] <41898282+claude[bot]@users.noreply.github.com> 2; claude[bot] <209825114+claude[bot]@users.noreply.github.com> 1; claude (via conductor) <noreply@conductor.build> 1; github copilot <copilot@github.com> 1; claude sonnet 4.5 <noreply@anthropic.com> 1
+
+author (default)             | Human-supervised agent  11.4% (166/1453) self  9.9% (144) | Devin            agent  14.3% (88/617) self 13.8% (85) | Human            agent   3.1% (100/3230) self  0.2% (7) | both tiers       agent  12.3% (254/2070) self 11.1% (229)
+committer                    | Human-supervised agent   0.0% (0/1449) self  0.0% (0) | Devin            agent   0.0% (0/617) self  0.0% (0) | Human            agent   0.0% (0/3225) self  0.0% (0) | both tiers       agent   0.0% (0/2066) self  0.0% (0)
+author or co-author trailer  | Human-supervised agent  16.3% (237/1453) self 12.9% (188) | Devin            agent  16.2% (100/617) self 14.6% (90) | Human            agent   5.5% (177/3230) self  0.4% (14) | both tiers       agent  16.3% (337/2070) self 13.4% (278)
+
+Agents named in trailers on agent-code commits: GitHub Copilot 164, Devin 81, Claude Code 49, Cursor 1
+Not counted as a coding agent: "Copilot Autofix powered by AI" (github-advanced-security[bot]) trailers, which come from code-scanning autofix rather than the Copilot coding agent: 5 commits.
+API author login missing for some commits (deleted or unlinked accounts); where the API returns a login it never changes the agent/human class of modifier_authors.csv.
+Note: the committer of a PR merged through the GitHub web interface is web-flow, which the rule classifies as human (not an agent login).

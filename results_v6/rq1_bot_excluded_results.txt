@@ -1,0 +1,24 @@
+=== STEP 1: Pooled vs human (bot-excluded) ===
+                     label  n_agent  n_human  mod_rate_agent  mod_rate_human  median_agent  median_human     hr  ci_low  ci_high    p_cox logrank_p
+pooled_all_agents_bot_excl   265421   378080            20.6            25.0           inf           inf 0.8965   0.887    0.906 1.92e-90  1.21e-90
+
+=== STEP 2: Two-tier (bot-excluded) ===
+                    label  n_agent  n_human  mod_rate_agent  mod_rate_human  median_agent  median_human     hr  ci_low  ci_high    p_cox logrank_p
+human_supervised_bot_excl   177787   378080            20.1            25.0           inf           inf 0.8889  0.8781   0.8999 1.37e-78  3.78e-79
+fully_autonomous_bot_excl    87634   378080            21.5            25.0           inf           inf 0.8965  0.8826   0.9106 1.53e-42  3.41e-42
+
+=== STEP 3: AST structural (bot-excluded) ===
+                        label  n_agent  n_human  mod_rate_agent  mod_rate_human  median_agent  median_human     hr  ci_low  ci_high    p_cox logrank_p
+human_supervised_ast_bot_excl   177787   378080            15.7            18.9           inf           inf 0.9197  0.9070   0.9327 9.92e-32  3.40e-32
+fully_autonomous_ast_bot_excl    87634   378080            15.3            18.9           inf           inf 0.8477  0.8322   0.8635 7.85e-69  1.17e-68
+
+=== STEP 4: Repo-stratified + bootstrap (bot-excluded) ===
+                    label  n_contributing_strata  n_total_strata  hr_analytic p_analytic  boot_median_hr  boot_ci_low  boot_ci_high  boot_n_valid
+human_supervised_bot_excl                    128             215       0.8106   1.69e-01          0.7993       0.5461        1.0420           500
+fully_autonomous_bot_excl                     31             193       1.0600   8.77e-01          1.1180       0.4089        2.0784           500
+
+=== COMPARISON: Original vs Bot-excluded (Step 1 pooled) ===
+  Original:     HR=0.8959, mod_rate_agent=20.6%, mod_rate_human=25.0%
+  Bot-excluded: HR=0.8965, mod_rate_agent=20.6%, mod_rate_human=25.0%
+  Change in human mod_rate: +0.0pp
+  Change in HR: +0.0006

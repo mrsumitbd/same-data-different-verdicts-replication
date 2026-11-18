@@ -1,0 +1,234 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L087</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L087</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/vscode">microsoft/vscode</a><br><b>File at merge:</b> src/vs/workbench/services/themes/common/workbenchThemeService.ts, line 284<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/vscode/commit/c02c34fb43279b1c9424eb86348685ed3ad6411c">c02c34fb43</a> (2025-07-07T14:32:59)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/vscode/tree/99d8a2706e687a31c8d147586668454d399bb208">99d8a2706e</a>)</p><p><b>The line:</b></p><pre><span class="t">	&#x27;statusBarItem.compactHoverBackground&#x27;: &#x27;#CCCCCC&#x27;,</span></pre><h2>File at the merge commit, lines 276 to 292</h2><pre>  276 | 	&#x27;sideBarSectionHeader.background&#x27;: &#x27;#F8F8F8&#x27;,
+  277 | 	&#x27;sideBarSectionHeader.border&#x27;: &#x27;#E5E5E5&#x27;,
+  278 | 	&#x27;sideBarSectionHeader.foreground&#x27;: &#x27;#3B3B3B&#x27;,
+  279 | 	&#x27;sideBarTitle.foreground&#x27;: &#x27;#3B3B3B&#x27;,
+  280 | 	&#x27;statusBar.background&#x27;: &#x27;#F8F8F8&#x27;,
+  281 | 	&#x27;statusBar.foreground&#x27;: &#x27;#3B3B3B&#x27;,
+  282 | 	&#x27;statusBar.border&#x27;: &#x27;#E5E5E5&#x27;,
+  283 | 	&#x27;statusBarItem.hoverBackground&#x27;: &#x27;#B8B8B850&#x27;,
+<span class="t">  284 | 	&#x27;statusBarItem.compactHoverBackground&#x27;: &#x27;#CCCCCC&#x27;,</span>
+  285 | 	&#x27;statusBar.debuggingBackground&#x27;: &#x27;#FD716C&#x27;,
+  286 | 	&#x27;statusBar.debuggingForeground&#x27;: &#x27;#000000&#x27;,
+  287 | 	&#x27;statusBar.focusBorder&#x27;: &#x27;#005FB8&#x27;,
+  288 | 	&#x27;statusBar.noFolderBackground&#x27;: &#x27;#F8F8F8&#x27;,
+  289 | 	&#x27;statusBarItem.errorBackground&#x27;: &#x27;#C72E0F&#x27;,
+  290 | 	&#x27;statusBarItem.focusBorder&#x27;: &#x27;#005FB8&#x27;,
+  291 | 	&#x27;statusBarItem.prominentBackground&#x27;: &#x27;#6E768166&#x27;,
+  292 | 	&#x27;statusBarItem.remoteBackground&#x27;: &#x27;#005FB8&#x27;,</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/vscode/commit/b88394f67ff3e248f4ac8124934a264962eaddd4">b88394f67f</a> (2025-07-08T09:38:35+02:00)</h2><p class="k">themes - define more default colors based on theme values (#254580)<br>Path after this commit: src/vs/workbench/services/themes/common/workbenchThemeService.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/services/themes/common/workbenchThemeService.ts b/src/vs/workbench/services/themes/common/workbenchThemeService.ts
+index 4ec328971cd..6ba25af1b33 100644
+<span class="d">--- a/src/vs/workbench/services/themes/common/workbenchThemeService.ts</span>
+<span class="a">+++ b/src/vs/workbench/services/themes/common/workbenchThemeService.ts</span>
+<span class="h">@@ -52,6 +52,7 @@ export enum ThemeSettingDefaults {</span>
+ }
+ 
+ export const COLOR_THEME_DARK_INITIAL_COLORS = {
+<span class="a">+	&#x27;actionBar.toggledBackground&#x27;: &#x27;#383a49&#x27;,</span>
+ 	&#x27;activityBar.activeBorder&#x27;: &#x27;#0078D4&#x27;,
+ 	&#x27;activityBar.background&#x27;: &#x27;#181818&#x27;,
+ 	&#x27;activityBar.border&#x27;: &#x27;#2B2B2B&#x27;,
+<span class="h">@@ -82,12 +83,16 @@ export const COLOR_THEME_DARK_INITIAL_COLORS = {</span>
+ 	&#x27;editor.background&#x27;: &#x27;#1F1F1F&#x27;,
+ 	&#x27;editor.findMatchBackground&#x27;: &#x27;#9E6A03&#x27;,
+ 	&#x27;editor.foreground&#x27;: &#x27;#CCCCCC&#x27;,
+<span class="a">+	&#x27;editor.inactiveSelectionBackground&#x27;: &#x27;#3A3D41&#x27;,</span>
+<span class="a">+	&#x27;editor.selectionHighlightBackground&#x27;: &#x27;#ADD6FF26&#x27;,</span>
+ 	&#x27;editorGroup.border&#x27;: &#x27;#FFFFFF17&#x27;,
+ 	&#x27;editorGroupHeader.tabsBackground&#x27;: &#x27;#181818&#x27;,
+ 	&#x27;editorGroupHeader.tabsBorder&#x27;: &#x27;#2B2B2B&#x27;,
+ 	&#x27;editorGutter.addedBackground&#x27;: &#x27;#2EA043&#x27;,
+ 	&#x27;editorGutter.deletedBackground&#x27;: &#x27;#F85149&#x27;,
+ 	&#x27;editorGutter.modifiedBackground&#x27;: &#x27;#0078D4&#x27;,
+<span class="a">+	&#x27;editorIndentGuide.activeBackground1&#x27;: &#x27;#707070&#x27;,</span>
+<span class="a">+	&#x27;editorIndentGuide.background1&#x27;: &#x27;#404040&#x27;,</span>
+ 	&#x27;editorLineNumber.activeForeground&#x27;: &#x27;#CCCCCC&#x27;,
+ 	&#x27;editorLineNumber.foreground&#x27;: &#x27;#6E7681&#x27;,
+ 	&#x27;editorOverviewRuler.border&#x27;: &#x27;#010409&#x27;,
+<span class="h">@@ -103,8 +108,13 @@ export const COLOR_THEME_DARK_INITIAL_COLORS = {</span>
+ 	&#x27;inputOption.activeBackground&#x27;: &#x27;#2489DB82&#x27;,
+ 	&#x27;inputOption.activeBorder&#x27;: &#x27;#2488DB&#x27;,
+ 	&#x27;keybindingLabel.foreground&#x27;: &#x27;#CCCCCC&#x27;,
+<span class="a">+	&#x27;list.activeSelectionIconForeground&#x27;: &#x27;#FFF&#x27;,</span>
+<span class="a">+	&#x27;list.dropBackground&#x27;: &#x27;#383B3D&#x27;,</span>
+ 	&#x27;menu.background&#x27;: &#x27;#1F1F1F&#x27;,
+<span class="a">+	&#x27;menu.border&#x27;: &#x27;#454545&#x27;,</span>
+<span class="a">+	&#x27;menu.foreground&#x27;: &#x27;#CCCCCC&#x27;,</span>
+ 	&#x27;menu.selectionBackground&#x27;: &#x27;#0078d4&#x27;,
+<span class="a">+	&#x27;menu.separatorBackground&#x27;: &#x27;#454545&#x27;,</span>
+ 	&#x27;notificationCenterHeader.background&#x27;: &#x27;#1F1F1F&#x27;,
+ 	&#x27;notificationCenterHeader.foreground&#x27;: &#x27;#CCCCCC&#x27;,
+ 	&#x27;notifications.background&#x27;: &#x27;#1F1F1F&#x27;,
+<span class="h">@@ -121,6 +131,7 @@ export const COLOR_THEME_DARK_INITIAL_COLORS = {</span>
+ 	&#x27;peekViewResult.background&#x27;: &#x27;#1F1F1F&#x27;,
+ 	&#x27;peekViewResult.matchHighlightBackground&#x27;: &#x27;#BB800966&#x27;,
+ 	&#x27;pickerGroup.border&#x27;: &#x27;#3C3C3C&#x27;,
+<span class="a">+	&#x27;ports.iconRunningProcessForeground&#x27;: &#x27;#369432&#x27;,</span>
+ 	&#x27;progressBar.background&#x27;: &#x27;#0078D4&#x27;,
+ 	&#x27;quickInput.background&#x27;: &#x27;#222222&#x27;,
+ 	&#x27;quickInput.foreground&#x27;: &#x27;#CCCCCC&#x27;,
+<span class="h">@@ -150,35 +161,40 @@ export const COLOR_THEME_DARK_INITIAL_COLORS = {</span>
+ 	&#x27;tab.activeBorder&#x27;: &#x27;#1F1F1F&#x27;,
+ 	&#x27;tab.activeBorderTop&#x27;: &#x27;#0078D4&#x27;,
+ 	&#x27;tab.activeForeground&#x27;: &#x27;#FFFFFF&#x27;,
+<span class="d">-	&#x27;tab.selectedBorderTop&#x27;: &#x27;#6caddf&#x27;,</span>
+ 	&#x27;tab.border&#x27;: &#x27;#2B2B2B&#x27;,
+ 	&#x27;tab.hoverBackground&#x27;: &#x27;#1F1F1F&#x27;,
+ 	&#x27;tab.inactiveBackground&#x27;: &#x27;#181818&#x27;,
+ 	&#x27;tab.inactiveForeground&#x27;: &#x27;#9D9D9D&#x27;,
+<span class="a">+	&#x27;tab.lastPinnedBorder&#x27;: &#x27;#ccc3&#x27;,</span>
+<span class="a">+	&#x27;tab.selectedBackground&#x27;: &#x27;#222222&#x27;,</span>
+<span class="a">+	&#x27;tab.selectedBorderTop&#x27;: &#x27;#6caddf&#x27;,</span>
+<span class="a">+	&#x27;tab.selectedForeground&#x27;: &#x27;#ffffffa0&#x27;,</span>
+ 	&#x27;tab.unfocusedActiveBorder&#x27;: &#x27;#1F1F1F&#x27;,
+ 	&#x27;tab.unfocusedActiveBorderTop&#x27;: &#x27;#2B2B2B&#x27;,
+ 	&#x27;tab.unfocusedHoverBackground&#x27;: &#x27;#1F1F1F&#x27;,
+ 	&#x27;terminal.foreground&#x27;: &#x27;#CCCCCC&#x27;,
+<span class="a">+	&#x27;terminal.inactiveSelectionBackground&#x27;: &#x27;#3A3D41&#x27;,</span>
+ 	&#x27;terminal.tab.activeBorder&#x27;: &#x27;#0078D4&#x27;,
+ 	&#x27;textBlockQuote.background&#x27;: &#x27;#2B2B2B&#x27;,
+ 	&#x27;textBlockQuote.border&#x27;: &#x27;#616161&#x27;,
+ 	&#x27;textCodeBlock.background&#x27;: &#x27;#2B2B2B&#x27;,
+ 	&#x27;textLink.activeForeground&#x27;: &#x27;#4daafc&#x27;,
+ 	&#x27;textLink.foreground&#x27;: &#x27;#4daafc&#x27;,
+<span class="d">-	&#x27;textPreformat.foreground&#x27;: &#x27;#D0D0D0&#x27;,</span>
+ 	&#x27;textPreformat.background&#x27;: &#x27;#3C3C3C&#x27;,
+<span class="a">+	&#x27;textPreformat.foreground&#x27;: &#x27;#D0D0D0&#x27;,</span>
+ 	&#x27;textSeparator.foreground&#x27;: &#x27;#21262D&#x27;,
+ 	&#x27;titleBar.activeBackground&#x27;: &#x27;#181818&#x27;,
+ 	&#x27;titleBar.activeForeground&#x27;: &#x27;#CCCCCC&#x27;,
+ 	&#x27;titleBar.border&#x27;: &#x27;#2B2B2B&#x27;,
+ 	&#x27;titleBar.inactiveBackground&#x27;: &#x27;#1F1F1F&#x27;,
+ 	&#x27;titleBar.inactiveForeground&#x27;: &#x27;#9D9D9D&#x27;,
+<span class="d">-	&#x27;welcomePage.tileBackground&#x27;: &#x27;#2B2B2B&#x27;,</span>
+ 	&#x27;welcomePage.progress.foreground&#x27;: &#x27;#0078D4&#x27;,
+<span class="a">+	&#x27;welcomePage.tileBackground&#x27;: &#x27;#2B2B2B&#x27;,</span>
+ 	&#x27;widget.border&#x27;: &#x27;#313131&#x27;
+ };
+ 
+ export const COLOR_THEME_LIGHT_INITIAL_COLORS = {
+<span class="a">+	&#x27;actionBar.toggledBackground&#x27;: &#x27;#dddddd&#x27;,</span>
+ 	&#x27;activityBar.activeBorder&#x27;: &#x27;#005FB8&#x27;,
+ 	&#x27;activityBar.background&#x27;: &#x27;#F8F8F8&#x27;,
+ 	&#x27;activityBar.border&#x27;: &#x27;#E5E5E5&#x27;,
+<span class="h">@@ -201,6 +217,7 @@ export const COLOR_THEME_LIGHT_INITIAL_COLORS = {</span>
+ 	&#x27;checkbox.background&#x27;: &#x27;#F8F8F8&#x27;,
+ 	&#x27;checkbox.border&#x27;: &#x27;#CECECE&#x27;,
+ 	&#x27;descriptionForeground&#x27;: &#x27;#3B3B3B&#x27;,
+<span class="a">+	&#x27;diffEditor.unchangedRegionBackground&#x27;: &#x27;#f8f8f8&#x27;,</span>
+ 	&#x27;dropdown.background&#x27;: &#x27;#FFFFFF&#x27;,
+ 	&#x27;dropdown.border&#x27;: &#x27;#CECECE&#x27;,
+ 	&#x27;dropdown.foreground&#x27;: &#x27;#3B3B3B&#x27;,
+<span class="h">@@ -215,6 +232,7 @@ export const COLOR_THEME_LIGHT_INITIAL_COLORS = {</span>
+ 	&#x27;editorGutter.addedBackground&#x27;: &#x27;#2EA043&#x27;,
+ 	&#x27;editorGutter.deletedBackground&#x27;: &#x27;#F85149&#x27;,
+ 	&#x27;editorGutter.modifiedBackground&#x27;: &#x27;#005FB8&#x27;,
+<span class="a">+	&#x27;editorIndentGuide.activeBackground1&#x27;: &#x27;#939393&#x27;,</span>
+ 	&#x27;editorIndentGuide.background1&#x27;: &#x27;#D3D3D3&#x27;,
+ 	&#x27;editorLineNumber.activeForeground&#x27;: &#x27;#171184&#x27;,
+ 	&#x27;editorLineNumber.foreground&#x27;: &#x27;#6E7681&#x27;,
+<span class="h">@@ -236,8 +254,8 @@ export const COLOR_THEME_LIGHT_INITIAL_COLORS = {</span>
+ 	&#x27;list.activeSelectionBackground&#x27;: &#x27;#E8E8E8&#x27;,
+ 	&#x27;list.activeSelectionForeground&#x27;: &#x27;#000000&#x27;,
+ 	&#x27;list.activeSelectionIconForeground&#x27;: &#x27;#000000&#x27;,
+<span class="d">-	&#x27;list.hoverBackground&#x27;: &#x27;#F2F2F2&#x27;,</span>
+ 	&#x27;list.focusAndSelectionOutline&#x27;: &#x27;#005FB8&#x27;,
+<span class="a">+	&#x27;list.hoverBackground&#x27;: &#x27;#F2F2F2&#x27;,</span>
+ 	&#x27;menu.border&#x27;: &#x27;#CECECE&#x27;,
+ 	&#x27;menu.selectionBackground&#x27;: &#x27;#005FB8&#x27;,
+ 	&#x27;menu.selectionForeground&#x27;: &#x27;#ffffff&#x27;,
+<span class="h">@@ -278,16 +296,16 @@ export const COLOR_THEME_LIGHT_INITIAL_COLORS = {</span>
+ 	&#x27;sideBarSectionHeader.foreground&#x27;: &#x27;#3B3B3B&#x27;,
+ 	&#x27;sideBarTitle.foreground&#x27;: &#x27;#3B3B3B&#x27;,
+ 	&#x27;statusBar.background&#x27;: &#x27;#F8F8F8&#x27;,
+<span class="d">-	&#x27;statusBar.foreground&#x27;: &#x27;#3B3B3B&#x27;,</span>
+ 	&#x27;statusBar.border&#x27;: &#x27;#E5E5E5&#x27;,
+<span class="d">-	&#x27;statusBarItem.hoverBackground&#x27;: &#x27;#B8B8B850&#x27;,</span>
+<span class="d m">-	&#x27;statusBarItem.compactHoverBackground&#x27;: &#x27;#CCCCCC&#x27;,</span>
+ 	&#x27;statusBar.debuggingBackground&#x27;: &#x27;#FD716C&#x27;,
+ 	&#x27;statusBar.debuggingForeground&#x27;: &#x27;#000000&#x27;,
+ 	&#x27;statusBar.focusBorder&#x27;: &#x27;#005FB8&#x27;,
+<span class="a">+	&#x27;statusBar.foreground&#x27;: &#x27;#3B3B3B&#x27;,</span>
+ 	&#x27;statusBar.noFolderBackground&#x27;: &#x27;#F8F8F8&#x27;,
+<span class="a m">+	&#x27;statusBarItem.compactHoverBackground&#x27;: &#x27;#CCCCCC&#x27;,</span>
+ 	&#x27;statusBarItem.errorBackground&#x27;: &#x27;#C72E0F&#x27;,
+ 	&#x27;statusBarItem.focusBorder&#x27;: &#x27;#005FB8&#x27;,
+<span class="a">+	&#x27;statusBarItem.hoverBackground&#x27;: &#x27;#B8B8B850&#x27;,</span>
+ 	&#x27;statusBarItem.prominentBackground&#x27;: &#x27;#6E768166&#x27;,
+ 	&#x27;statusBarItem.remoteBackground&#x27;: &#x27;#005FB8&#x27;,
+ 	&#x27;statusBarItem.remoteForeground&#x27;: &#x27;#FFFFFF&#x27;,
+<span class="h">@@ -295,26 +313,28 @@ export const COLOR_THEME_LIGHT_INITIAL_COLORS = {</span>
+ 	&#x27;tab.activeBorder&#x27;: &#x27;#F8F8F8&#x27;,
+ 	&#x27;tab.activeBorderTop&#x27;: &#x27;#005FB8&#x27;,
+ 	&#x27;tab.activeForeground&#x27;: &#x27;#3B3B3B&#x27;,
+<span class="d">-	&#x27;tab.selectedBorderTop&#x27;: &#x27;#68a3da&#x27;,</span>
+ 	&#x27;tab.border&#x27;: &#x27;#E5E5E5&#x27;,
+ 	&#x27;tab.hoverBackground&#x27;: &#x27;#FFFFFF&#x27;,
+ 	&#x27;tab.inactiveBackground&#x27;: &#x27;#F8F8F8&#x27;,
+ 	&#x27;tab.inactiveForeground&#x27;: &#x27;#868686&#x27;,
+ 	&#x27;tab.lastPinnedBorder&#x27;: &#x27;#D4D4D4&#x27;,
+<span class="a">+	&#x27;tab.selectedBackground&#x27;: &#x27;#ffffffa5&#x27;,</span>
+<span class="a">+	&#x27;tab.selectedBorderTop&#x27;: &#x27;#68a3da&#x27;,</span>
+<span class="a">+	&#x27;tab.selectedForeground&#x27;: &#x27;#333333b3&#x27;,</span>
+ 	&#x27;tab.unfocusedActiveBorder&#x27;: &#x27;#F8F8F8&#x27;,
+ 	&#x27;tab.unfocusedActiveBorderTop&#x27;: &#x27;#E5E5E5&#x27;,
+ 	&#x27;tab.unfocusedHoverBackground&#x27;: &#x27;#F8F8F8&#x27;,
+<span class="d">-	&#x27;terminalCursor.foreground&#x27;: &#x27;#005FB8&#x27;,</span>
+ 	&#x27;terminal.foreground&#x27;: &#x27;#3B3B3B&#x27;,
+ 	&#x27;terminal.inactiveSelectionBackground&#x27;: &#x27;#E5EBF1&#x27;,
+ 	&#x27;terminal.tab.activeBorder&#x27;: &#x27;#005FB8&#x27;,
+<span class="a">+	&#x27;terminalCursor.foreground&#x27;: &#x27;#005FB8&#x27;,</span>
+ 	&#x27;textBlockQuote.background&#x27;: &#x27;#F8F8F8&#x27;,
+ 	&#x27;textBlockQuote.border&#x27;: &#x27;#E5E5E5&#x27;,
+ 	&#x27;textCodeBlock.background&#x27;: &#x27;#F8F8F8&#x27;,
+ 	&#x27;textLink.activeForeground&#x27;: &#x27;#005FB8&#x27;,
+ 	&#x27;textLink.foreground&#x27;: &#x27;#005FB8&#x27;,
+<span class="d">-	&#x27;textPreformat.foreground&#x27;: &#x27;#3B3B3B&#x27;,</span>
+ 	&#x27;textPreformat.background&#x27;: &#x27;#0000001F&#x27;,
+<span class="a">+	&#x27;textPreformat.foreground&#x27;: &#x27;#3B3B3B&#x27;,</span>
+ 	&#x27;textSeparator.foreground&#x27;: &#x27;#21262D&#x27;,
+ 	&#x27;titleBar.activeBackground&#x27;: &#x27;#F8F8F8&#x27;,
+ 	&#x27;titleBar.activeForeground&#x27;: &#x27;#1E1E1E&#x27;,</pre><h2>Commit #2: <a href="https://github.com/microsoft/vscode/commit/9553c0719cb72f4cd86e02039c3dfaed8d558122">9553c0719c</a> (2025-10-09T14:36:20-07:00)</h2><p class="k">Merge pull request #270651 from mjbvz/dev/mjbvz/semantic-swan<br>Path after this commit: src/vs/workbench/services/themes/common/workbenchThemeService.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/services/themes/common/workbenchThemeService.ts b/src/vs/workbench/services/themes/common/workbenchThemeService.ts
+index 6ba25af1b33..9c0f9e254d3 100644
+<span class="d">--- a/src/vs/workbench/services/themes/common/workbenchThemeService.ts</span>
+<span class="a">+++ b/src/vs/workbench/services/themes/common/workbenchThemeService.ts</span>
+<span class="h">@@ -380,7 +380,7 @@ export interface IWorkbenchThemeService extends IThemeService {</span>
+ 	getColorTheme(): IWorkbenchColorTheme;
+ 	getColorThemes(): Promise&lt;IWorkbenchColorTheme[]&gt;;
+ 	getMarketplaceColorThemes(publisher: string, name: string, version: string): Promise&lt;IWorkbenchColorTheme[]&gt;;
+<span class="d">-	onDidColorThemeChange: Event&lt;IWorkbenchColorTheme&gt;;</span>
+<span class="a">+	readonly onDidColorThemeChange: Event&lt;IWorkbenchColorTheme&gt;;</span>
+ 
+ 	getPreferredColorScheme(): ColorScheme | undefined;
+ 
+<span class="h">@@ -388,13 +388,13 @@ export interface IWorkbenchThemeService extends IThemeService {</span>
+ 	getFileIconTheme(): IWorkbenchFileIconTheme;
+ 	getFileIconThemes(): Promise&lt;IWorkbenchFileIconTheme[]&gt;;
+ 	getMarketplaceFileIconThemes(publisher: string, name: string, version: string): Promise&lt;IWorkbenchFileIconTheme[]&gt;;
+<span class="d">-	onDidFileIconThemeChange: Event&lt;IWorkbenchFileIconTheme&gt;;</span>
+<span class="a">+	readonly onDidFileIconThemeChange: Event&lt;IWorkbenchFileIconTheme&gt;;</span>
+ 
+ 	setProductIconTheme(iconThemeId: string | undefined | IWorkbenchProductIconTheme, settingsTarget: ThemeSettingTarget): Promise&lt;IWorkbenchProductIconTheme&gt;;
+ 	getProductIconTheme(): IWorkbenchProductIconTheme;
+ 	getProductIconThemes(): Promise&lt;IWorkbenchProductIconTheme[]&gt;;
+ 	getMarketplaceProductIconThemes(publisher: string, name: string, version: string): Promise&lt;IWorkbenchProductIconTheme[]&gt;;
+<span class="d">-	onDidProductIconThemeChange: Event&lt;IWorkbenchProductIconTheme&gt;;</span>
+<span class="a">+	readonly onDidProductIconThemeChange: Event&lt;IWorkbenchProductIconTheme&gt;;</span>
+ }
+ 
+ export interface IThemeScopedColorCustomizations {</pre><h2>Commit #3: <a href="https://github.com/microsoft/vscode/commit/79e3994280ff914844114eb9a28a725a4f16780a">79e3994280</a> (2025-12-16T12:44:11+01:00)</h2><p class="k">Adding font info in colorTokenCustomization (#263403)<br>Path after this commit: src/vs/workbench/services/themes/common/workbenchThemeService.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/vs/workbench/services/themes/common/workbenchThemeService.ts b/src/vs/workbench/services/themes/common/workbenchThemeService.ts
+index 9c0f9e254d3..679f93e9385 100644
+<span class="d">--- a/src/vs/workbench/services/themes/common/workbenchThemeService.ts</span>
+<span class="a">+++ b/src/vs/workbench/services/themes/common/workbenchThemeService.ts</span>
+<span class="h">@@ -477,6 +477,9 @@ export interface ITokenColorizationSetting {</span>
+ 	foreground?: string;
+ 	background?: string;
+ 	fontStyle?: string; /* [italic|bold|underline|strikethrough] */
+<span class="a">+	fontFamily?: string;</span>
+<span class="a">+	fontSize?: string;</span>
+<span class="a">+	lineHeight?: number;</span>
+ }
+ 
+ export interface ISemanticTokenColorizationSetting {</pre></body></html>

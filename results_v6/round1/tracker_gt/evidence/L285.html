@@ -1,0 +1,99 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L285</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L285</h1><p><b>Repository:</b> <a href="https://github.com/sam-goodwin/alchemy">sam-goodwin/alchemy</a><br><b>File at merge:</b> alchemy/src/stripe/entitlements-feature.ts, line 145<br><b>Merge commit (birth):</b> <a href="https://github.com/sam-goodwin/alchemy/commit/18ae67ad817abf3ce41849f2a5c3d4b36a211516">18ae67ad81</a> (2025-06-05T05:06:15)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/sam-goodwin/alchemy/tree/ff4155941fe13145370a52fb222d74cdd7247fb8">ff4155941f</a>)</p><p><b>The line:</b></p><pre><span class="t">                updateParams,</span></pre><h2>File at the merge commit, lines 137 to 153</h2><pre>  137 |             if (existingFeatures.data.length &gt; 0) {
+  138 |               const existingFeature = existingFeatures.data[0];
+  139 |               const updateParams: Stripe.Entitlements.FeatureUpdateParams = {
+  140 |                 name: props.name,
+  141 |                 metadata: props.metadata,
+  142 |               };
+  143 |               feature = await stripe.entitlements.features.update(
+  144 |                 existingFeature.id,
+<span class="t">  145 |                 updateParams,</span>
+  146 |               );
+  147 |             } else {
+  148 |               throw error;
+  149 |             }
+  150 |           } else {
+  151 |             throw error;
+  152 |           }
+  153 |         }</pre><p class="k">Below are all 4 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/sam-goodwin/alchemy/commit/5efac1842a6230d1c924350611d0c1c3392b3efb">5efac1842a</a> (2025-06-08T21:35:10-07:00)</h2><p class="k">feat: add fancy deployment CLI (#315)<br>Path after this commit: alchemy/src/stripe/entitlements-feature.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/entitlements-feature.ts b/alchemy/src/stripe/entitlements-feature.ts
+index b1a6a9dac..a68e4de56 100644
+<span class="d">--- a/alchemy/src/stripe/entitlements-feature.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/entitlements-feature.ts</span>
+<span class="h">@@ -2,6 +2,7 @@ import type Stripe from &quot;stripe&quot;;</span>
+ import type { Context } from &quot;../context.ts&quot;;
+ import { Resource } from &quot;../resource.ts&quot;;
+ import type { Secret } from &quot;../secret.ts&quot;;
+<span class="a">+import { logger } from &quot;../util/logger.ts&quot;;</span>
+ import { createStripeClient, isStripeConflictError } from &quot;./client.ts&quot;;
+ 
+ /**
+<span class="h">@@ -162,7 +163,7 @@ export const EntitlementsFeature = Resource(</span>
+         livemode: feature.livemode,
+       });
+     } catch (error) {
+<span class="d">-      console.error(&quot;Error creating/updating entitlements feature:&quot;, error);</span>
+<span class="a">+      logger.error(&quot;Error creating/updating entitlements feature:&quot;, error);</span>
+       throw error;
+     }
+   },</pre><h2>Commit #2: <a href="https://github.com/sam-goodwin/alchemy/commit/ca5c6e2b108dd0c209da9cfad67d6708e3b45c66">ca5c6e2b10</a> (2025-08-19T17:04:57-04:00)</h2><p class="k">chore: remove unused resources and dependencies (#869)<br>Path after this commit: alchemy/src/stripe/entitlements-feature.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/entitlements-feature.ts b/alchemy/src/stripe/entitlements-feature.ts
+index a68e4de56..3734d2e51 100644
+<span class="d">--- a/alchemy/src/stripe/entitlements-feature.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/entitlements-feature.ts</span>
+<span class="h">@@ -101,7 +101,7 @@ export const EntitlementsFeature = Resource(</span>
+     _id: string,
+     props: EntitlementsFeatureProps,
+   ): Promise&lt;EntitlementsFeature&gt; {
+<span class="d">-    const stripe = createStripeClient({ apiKey: props.apiKey });</span>
+<span class="a">+    const stripe = await createStripeClient({ apiKey: props.apiKey });</span>
+ 
+     if (this.phase === &quot;delete&quot;) {
+       return this.destroy();</pre><h2>Commit #3: <a href="https://github.com/sam-goodwin/alchemy/commit/50a84fde99fec4aa179dcc14083e4a661b52fe7b">50a84fde99</a> (2025-08-25T16:46:48-07:00)</h2><p class="k">feat(cli): support --adopt flag to blanket adopt resources (#900)<br>Path after this commit: alchemy/src/stripe/entitlements-feature.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/entitlements-feature.ts b/alchemy/src/stripe/entitlements-feature.ts
+index 3734d2e51..4b9a00029 100644
+<span class="d">--- a/alchemy/src/stripe/entitlements-feature.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/entitlements-feature.ts</span>
+<span class="h">@@ -130,7 +130,10 @@ export const EntitlementsFeature = Resource(</span>
+         try {
+           feature = await stripe.entitlements.features.create(createParams);
+         } catch (error) {
+<span class="d">-          if (isStripeConflictError(error) &amp;&amp; props.adopt) {</span>
+<span class="a">+          if (</span>
+<span class="a">+            isStripeConflictError(error) &amp;&amp;</span>
+<span class="a">+            (props.adopt ?? this.scope.adopt)</span>
+<span class="a">+          ) {</span>
+             const existingFeatures = await stripe.entitlements.features.list({
+               lookup_key: props.lookupKey,
+               limit: 1,</pre><h2>Commit #4: <a href="https://github.com/sam-goodwin/alchemy/commit/d967c0dc121f9da47270869e6e6ca34ff77dcb58">d967c0dc12</a> (2025-09-24T16:31:03-07:00)</h2><p class="k">feat: remove Resource symbols and this(..) syntax (#1003)<br>Path after this commit: alchemy/src/stripe/entitlements-feature.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/alchemy/src/stripe/entitlements-feature.ts b/alchemy/src/stripe/entitlements-feature.ts
+index 4b9a00029..b8b110f08 100644
+<span class="d">--- a/alchemy/src/stripe/entitlements-feature.ts</span>
+<span class="a">+++ b/alchemy/src/stripe/entitlements-feature.ts</span>
+<span class="h">@@ -38,9 +38,7 @@ export interface EntitlementsFeatureProps {</span>
+ /**
+  * Output from the Stripe entitlements feature
+  */
+<span class="d">-export interface EntitlementsFeature</span>
+<span class="d">-  extends Resource&lt;&quot;stripe::EntitlementsFeature&quot;&gt;,</span>
+<span class="d">-    EntitlementsFeatureProps {</span>
+<span class="a">+export interface EntitlementsFeature extends EntitlementsFeatureProps {</span>
+   /**
+    * The ID of the feature
+    */
+<span class="h">@@ -157,14 +155,14 @@ export const EntitlementsFeature = Resource(</span>
+         }
+       }
+ 
+<span class="d">-      return this({</span>
+<span class="a">+      return {</span>
+         id: feature.id,
+         object: feature.object,
+         name: feature.name,
+         lookupKey: feature.lookup_key || undefined,
+         metadata: feature.metadata || undefined,
+         livemode: feature.livemode,
+<span class="d">-      });</span>
+<span class="a">+      };</span>
+     } catch (error) {
+       logger.error(&quot;Error creating/updating entitlements feature:&quot;, error);
+       throw error;</pre></body></html>

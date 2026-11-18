@@ -1,0 +1,248 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L263</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L263</h1><p><b>Repository:</b> <a href="https://github.com/pdfme/pdfme">pdfme/pdfme</a><br><b>File at merge:</b> packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx, line 113<br><b>Merge commit (birth):</b> <a href="https://github.com/pdfme/pdfme/commit/f5a0d016c5cf5ca804abde04a02e7542c0b6a064">f5a0d016c5</a> (2025-03-05T05:10:32)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/pdfme/pdfme/tree/69f6be160bc79b30cbdc1125e18f8a49d0e33929">69f6be160b</a>)</p><p><b>The line:</b></p><pre><span class="t">        (asWithSize.height || 0);</span></pre><h2>File at the merge commit, lines 105 to 121</h2><pre>  105 |         (as.position as unknown as { x: number; y: number }) : 
+  106 |         { x: 0, y: 0 };
+  107 |       const posValue = tgtPos === &#x27;x&#x27; ? position.x : position.y;
+  108 |       
+  109 |       // Safely access width/height with proper type assertion
+  110 |       const asWithSize = as as unknown as { width?: number; height?: number };
+  111 |       const sizeValue = tgtSize === &#x27;width&#x27; ? 
+  112 |         (asWithSize.width || 0) : 
+<span class="t">  113 |         (asWithSize.height || 0);</span>
+  114 |       
+  115 |       return posValue + sizeValue;
+  116 |     }));
+  117 | 
+  118 |     if (ass.length &lt; 3) return;
+  119 | 
+  120 |     const boxPos = min;
+  121 |     const boxSize = max - min;</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/pdfme/pdfme/commit/9fa60cba14da09e817440c51a187c9a2b5afa02a">9fa60cba14</a> (2025-03-06T11:18:13+09:00)</h2><p class="k">Refactor type definitions and improve type safety in dynamic template handling (#816)<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx
+index 43e180a3..3c4fb91b 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx</span>
+<span class="h">@@ -24,34 +24,44 @@ const AlignWidget = (props: PropPanelWidgetProps) =&gt; {</span>
+     const tgtSize = isVertical ? &#x27;width&#x27; : &#x27;height&#x27;;
+     const isSingle = ass.length === 1;
+     // Access pageSize property safely with proper type assertion
+<span class="d">-    const root = pageSize &amp;&amp; typeof pageSize === &#x27;object&#x27; ? </span>
+<span class="d">-      (tgtSize === &#x27;width&#x27; ? </span>
+<span class="d">-        (pageSize as unknown as { width: number }).width : </span>
+<span class="d">-        (pageSize as unknown as { height: number }).height) : 0;</span>
+<span class="a">+    const root =</span>
+<span class="a">+      pageSize &amp;&amp; typeof pageSize === &#x27;object&#x27;</span>
+<span class="a">+        ? tgtSize === &#x27;width&#x27;</span>
+<span class="a">+          ? (pageSize as unknown as { width: number }).width</span>
+<span class="a">+          : (pageSize as unknown as { height: number }).height</span>
+<span class="a">+        : 0;</span>
+ 
+     // Access position properties safely with proper type assertion
+<span class="d">-    const min = isSingle ? 0 : Math.min(...ass.map((as) =&gt; {</span>
+<span class="d">-      // Safely access position property with proper type assertion</span>
+<span class="d">-      const position = as.position &amp;&amp; typeof as.position === &#x27;object&#x27; ? </span>
+<span class="d">-        (as.position as unknown as { x: number; y: number }) : </span>
+<span class="d">-        { x: 0, y: 0 };</span>
+<span class="d">-      return tgtPos === &#x27;x&#x27; ? position.x : position.y;</span>
+<span class="d">-    }));</span>
+<span class="d">-    const max = isSingle ? root : Math.max(...ass.map((as) =&gt; {</span>
+<span class="d">-      // Safely access position and size properties with proper type assertion</span>
+<span class="d">-      const position = as.position &amp;&amp; typeof as.position === &#x27;object&#x27; ? </span>
+<span class="d">-        (as.position as unknown as { x: number; y: number }) : </span>
+<span class="d">-        { x: 0, y: 0 };</span>
+<span class="d">-      const posValue = tgtPos === &#x27;x&#x27; ? position.x : position.y;</span>
+<span class="d">-      </span>
+<span class="d">-      // Safely access width/height with proper type assertion</span>
+<span class="d">-      const asWithSize = as as unknown as { width?: number; height?: number };</span>
+<span class="d">-      const sizeValue = tgtSize === &#x27;width&#x27; ? </span>
+<span class="d">-        (asWithSize.width || 0) : </span>
+<span class="d m">-        (asWithSize.height || 0);</span>
+<span class="d">-      </span>
+<span class="d">-      return posValue + sizeValue;</span>
+<span class="d">-    }));</span>
+<span class="a">+    const min = isSingle</span>
+<span class="a">+      ? 0</span>
+<span class="a">+      : Math.min(</span>
+<span class="a">+          ...ass.map((as) =&gt; {</span>
+<span class="a">+            // Safely access position property with proper type assertion</span>
+<span class="a">+            const position =</span>
+<span class="a">+              as.position &amp;&amp; typeof as.position === &#x27;object&#x27;</span>
+<span class="a">+                ? (as.position as unknown as { x: number; y: number })</span>
+<span class="a">+                : { x: 0, y: 0 };</span>
+<span class="a">+            return tgtPos === &#x27;x&#x27; ? position.x : position.y;</span>
+<span class="a">+          }),</span>
+<span class="a">+        );</span>
+<span class="a">+    const max = isSingle</span>
+<span class="a">+      ? root</span>
+<span class="a">+      : Math.max(</span>
+<span class="a">+          ...ass.map((as) =&gt; {</span>
+<span class="a">+            // Safely access position and size properties with proper type assertion</span>
+<span class="a">+            const position =</span>
+<span class="a">+              as.position &amp;&amp; typeof as.position === &#x27;object&#x27;</span>
+<span class="a">+                ? (as.position as unknown as { x: number; y: number })</span>
+<span class="a">+                : { x: 0, y: 0 };</span>
+<span class="a">+            const posValue = tgtPos === &#x27;x&#x27; ? position.x : position.y;</span>
+<span class="a">+</span>
+<span class="a">+            // Safely access width/height with proper type assertion</span>
+<span class="a">+            const asWithSize = as as unknown as { width?: number; height?: number };</span>
+<span class="a">+            const sizeValue = tgtSize === &#x27;width&#x27; ? asWithSize.width || 0 : asWithSize.height || 0;</span>
+<span class="a">+</span>
+<span class="a">+            return posValue + sizeValue;</span>
+<span class="a">+          }),</span>
+<span class="a">+        );</span>
+ 
+     let basePos = min;
+     // Define adjust function with consistent parameter usage
+<span class="h">@@ -70,10 +80,8 @@ const AlignWidget = (props: PropPanelWidgetProps) =&gt; {</span>
+       ass.map((as) =&gt; {
+         // Safely access size property with proper type assertion
+         const asWithSize = as as unknown as { width?: number; height?: number; id: string };
+<span class="d">-        const sizeValue = tgtSize === &#x27;width&#x27; ? </span>
+<span class="d">-          (asWithSize.width || 0) : </span>
+<span class="d m">-          (asWithSize.height || 0);</span>
+<span class="d">-        </span>
+<span class="a">+        const sizeValue = tgtSize === &#x27;width&#x27; ? asWithSize.width || 0 : asWithSize.height || 0;</span>
+<span class="a">+</span>
+         return {
+           key: `position.${tgtPos}`,
+           value: round(basePos - adjust(sizeValue), 2),
+<span class="h">@@ -90,30 +98,34 @@ const AlignWidget = (props: PropPanelWidgetProps) =&gt; {</span>
+     const isVertical = type === &#x27;vertical&#x27;;
+     const tgtPos = isVertical ? &#x27;y&#x27; : &#x27;x&#x27;;
+     const tgtSize = isVertical ? &#x27;height&#x27; : &#x27;width&#x27;;
+<span class="d">-    </span>
+<span class="a">+</span>
+     // Safely access position property with proper type assertion
+<span class="d">-    const min = Math.min(...ass.map((as) =&gt; {</span>
+<span class="d">-      const position = as.position &amp;&amp; typeof as.position === &#x27;object&#x27; ? </span>
+<span class="d">-        (as.position as unknown as { x: number; y: number }) : </span>
+<span class="d">-        { x: 0, y: 0 };</span>
+<span class="d">-      return tgtPos === &#x27;x&#x27; ? position.x : position.y;</span>
+<span class="d">-    }));</span>
+<span class="d">-    </span>
+<span class="a">+    const min = Math.min(</span>
+<span class="a">+      ...ass.map((as) =&gt; {</span>
+<span class="a">+        const position =</span>
+<span class="a">+          as.position &amp;&amp; typeof as.position === &#x27;object&#x27;</span>
+<span class="a">+            ? (as.position as unknown as { x: number; y: number })</span>
+<span class="a">+            : { x: 0, y: 0 };</span>
+<span class="a">+        return tgtPos === &#x27;x&#x27; ? position.x : position.y;</span>
+<span class="a">+      }),</span>
+<span class="a">+    );</span>
+<span class="a">+</span>
+     // Safely access position and size properties with proper type assertion
+<span class="d">-    const max = Math.max(...ass.map((as) =&gt; {</span>
+<span class="d">-      const position = as.position &amp;&amp; typeof as.position === &#x27;object&#x27; ? </span>
+<span class="d">-        (as.position as unknown as { x: number; y: number }) : </span>
+<span class="d">-        { x: 0, y: 0 };</span>
+<span class="d">-      const posValue = tgtPos === &#x27;x&#x27; ? position.x : position.y;</span>
+<span class="d">-      </span>
+<span class="d">-      // Safely access width/height with proper type assertion</span>
+<span class="d">-      const asWithSize = as as unknown as { width?: number; height?: number };</span>
+<span class="d">-      const sizeValue = tgtSize === &#x27;width&#x27; ? </span>
+<span class="d">-        (asWithSize.width || 0) : </span>
+<span class="d m">-        (asWithSize.height || 0);</span>
+<span class="d">-      </span>
+<span class="d">-      return posValue + sizeValue;</span>
+<span class="d">-    }));</span>
+<span class="a">+    const max = Math.max(</span>
+<span class="a">+      ...ass.map((as) =&gt; {</span>
+<span class="a">+        const position =</span>
+<span class="a">+          as.position &amp;&amp; typeof as.position === &#x27;object&#x27;</span>
+<span class="a">+            ? (as.position as unknown as { x: number; y: number })</span>
+<span class="a">+            : { x: 0, y: 0 };</span>
+<span class="a">+        const posValue = tgtPos === &#x27;x&#x27; ? position.x : position.y;</span>
+<span class="a">+</span>
+<span class="a">+        // Safely access width/height with proper type assertion</span>
+<span class="a">+        const asWithSize = as as unknown as { width?: number; height?: number };</span>
+<span class="a">+        const sizeValue = tgtSize === &#x27;width&#x27; ? asWithSize.width || 0 : asWithSize.height || 0;</span>
+<span class="a">+</span>
+<span class="a">+        return posValue + sizeValue;</span>
+<span class="a">+      }),</span>
+<span class="a">+    );</span>
+ 
+     if (ass.length &lt; 3) return;
+ 
+<span class="h">@@ -122,9 +134,7 @@ const AlignWidget = (props: PropPanelWidgetProps) =&gt; {</span>
+     // Safely access size property with proper type assertion
+     const sum = ass.reduce((acc, cur) =&gt; {
+       const curWithSize = cur as unknown as { width?: number; height?: number };
+<span class="d">-      const sizeValue = tgtSize === &#x27;width&#x27; ? </span>
+<span class="d">-        (curWithSize.width || 0) : </span>
+<span class="d">-        (curWithSize.height || 0);</span>
+<span class="a">+      const sizeValue = tgtSize === &#x27;width&#x27; ? curWithSize.width || 0 : curWithSize.height || 0;</span>
+       return acc + sizeValue;
+     }, 0);
+     const remain = boxSize - sum;
+<span class="h">@@ -134,16 +144,17 @@ const AlignWidget = (props: PropPanelWidgetProps) =&gt; {</span>
+     changeSchemas(
+       ass.map((as, index) =&gt; {
+         // Safely access size property of previous element with proper type assertion
+<span class="d">-        const prevSize = index === 0 ? 0 : (() =&gt; {</span>
+<span class="d">-          const prevAs = ass[index - 1] as unknown as { width?: number; height?: number };</span>
+<span class="d">-          return tgtSize === &#x27;width&#x27; ? </span>
+<span class="d">-            (prevAs.width || 0) : </span>
+<span class="d">-            (prevAs.height || 0);</span>
+<span class="d">-        })();</span>
+<span class="d">-        </span>
+<span class="a">+        const prevSize =</span>
+<span class="a">+          index === 0</span>
+<span class="a">+            ? 0</span>
+<span class="a">+            : (() =&gt; {</span>
+<span class="a">+                const prevAs = ass[index - 1] as unknown as { width?: number; height?: number };</span>
+<span class="a">+                return tgtSize === &#x27;width&#x27; ? prevAs.width || 0 : prevAs.height || 0;</span>
+<span class="a">+              })();</span>
+<span class="a">+</span>
+         prev += index === 0 ? 0 : prevSize + unit;
+         const value = round(boxPos + prev, 2);
+<span class="d">-        </span>
+<span class="a">+</span>
+         // Safely access id with proper type assertion
+         const asWithId = as as unknown as { id: string };
+         return { key: `position.${tgtPos}`, value, schemaId: asWithId.id };</pre><h2>Commit #2: <a href="https://github.com/pdfme/pdfme/commit/c4d2da2a649b3689aeac5316830992428be1d34f">c4d2da2a64</a> (2025-03-07T10:52:46+09:00)</h2><p class="k">Replace Button.Group with Space.Compact in AlignWidget and ButtonGroupWidget for improved layout consistency<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx
+index 3c4fb91b..a9254ab6 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx</span>
+<span class="h">@@ -1,4 +1,4 @@</span>
+<span class="d">-import { Button, Form } from &#x27;antd&#x27;;</span>
+<span class="a">+import { Space, Button, Form } from &#x27;antd&#x27;;</span>
+ import React from &#x27;react&#x27;;
+ import type { PropPanelWidgetProps } from &#x27;@pdfme/common&#x27;;
+ import {
+<span class="h">@@ -210,7 +210,7 @@ const AlignWidget = (props: PropPanelWidgetProps) =&gt; {</span>
+ 
+   return (
+     &lt;Form.Item label={schema.title}&gt;
+<span class="d">-      &lt;Button.Group&gt;</span>
+<span class="a">+      &lt;Space.Compact&gt;</span>
+         {layoutBtns.map((btn) =&gt; (
+           &lt;Button
+             key={btn.id}
+<span class="h">@@ -219,7 +219,7 @@ const AlignWidget = (props: PropPanelWidgetProps) =&gt; {</span>
+             {...btn}
+           /&gt;
+         ))}
+<span class="d">-      &lt;/Button.Group&gt;</span>
+<span class="a">+      &lt;/Space.Compact&gt;</span>
+     &lt;/Form.Item&gt;
+   );
+ };</pre><h2>Commit #3: <a href="https://github.com/pdfme/pdfme/commit/b1fd15a9093d9fa99f290543b0a245bcd586500f">b1fd15a909</a> (2025-11-27T15:19:56+09:00)</h2><p class="k">Add HTML component classNames to Designer UI sections and buttons (#1243)<br>Path after this commit: packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx b/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx
+index a9254ab6..1edfd04a 100644
+<span class="d">--- a/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx</span>
+<span class="a">+++ b/packages/ui/src/components/Designer/RightSidebar/DetailView/AlignWidget.tsx</span>
+<span class="h">@@ -1,6 +1,7 @@</span>
+ import { Space, Button, Form } from &#x27;antd&#x27;;
+ import React from &#x27;react&#x27;;
+ import type { PropPanelWidgetProps } from &#x27;@pdfme/common&#x27;;
+<span class="a">+import { DESIGNER_CLASSNAME } from &#x27;../../../../constants.js&#x27;;</span>
+ import {
+   AlignStartVertical,
+   AlignStartHorizontal,
+<span class="h">@@ -213,6 +214,7 @@ const AlignWidget = (props: PropPanelWidgetProps) =&gt; {</span>
+       &lt;Space.Compact&gt;
+         {layoutBtns.map((btn) =&gt; (
+           &lt;Button
+<span class="a">+            className={DESIGNER_CLASSNAME + &#x27;align-&#x27; + btn.id}</span>
+             key={btn.id}
+             style={{ padding: 7 }}
+             disabled={activeElements.length &lt;= 2 &amp;&amp; [&#x27;vertical&#x27;, &#x27;horizontal&#x27;].includes(btn.id)}</pre></body></html>

@@ -1,0 +1,272 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L175</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L175</h1><p><b>Repository:</b> <a href="https://github.com/promptfoo/promptfoo">promptfoo/promptfoo</a><br><b>File at merge:</b> test/redteam/constants/metadata.test.ts, line 42<br><b>Merge commit (birth):</b> <a href="https://github.com/promptfoo/promptfoo/commit/355c18ba299d798467da5ce65c1af92dfcb6cd4f">355c18ba29</a> (2025-06-10T04:51:13)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/promptfoo/promptfoo/tree/6c1afb7d5e8232d9f7d594819ed8fd7bc8c903df">6c1afb7d5e</a>)</p><p><b>The line:</b></p><pre><span class="t">      expect(riskCategorySeverityMap[MEMORY_POISONING_PLUGIN_ID]).toBe(Severity.High);</span></pre><h2>File at the merge commit, lines 34 to 50</h2><pre>   34 |   describe(&#x27;Risk category severity map&#x27;, () =&gt; {
+   35 |     it(&#x27;should have valid severity levels&#x27;, () =&gt; {
+   36 |       Object.values(riskCategorySeverityMap).forEach((severity) =&gt; {
+   37 |         expect(Object.values(Severity)).toContain(severity);
+   38 |       });
+   39 |     });
+   40 | 
+   41 |     it(&#x27;should include memory poisoning plugin with high severity&#x27;, () =&gt; {
+<span class="t">   42 |       expect(riskCategorySeverityMap[MEMORY_POISONING_PLUGIN_ID]).toBe(Severity.High);</span>
+   43 |     });
+   44 |   });
+   45 | 
+   46 |   describe(&#x27;Risk categories&#x27;, () =&gt; {
+   47 |     it(&#x27;should have valid category descriptions&#x27;, () =&gt; {
+   48 |       Object.keys(riskCategories).forEach((category) =&gt; {
+   49 |         // @ts-expect-error: categoryDescriptions is only indexed by TopLevelCategory (not string)
+   50 |         expect(categoryDescriptions[category]).toBeDefined();</pre><p class="k">Below are all 9 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/promptfoo/promptfoo/commit/7a6ffb0d4f7b8f55768882e574b6b164da6a730a">7a6ffb0d4f</a> (2025-06-10T09:50:35-07:00)</h2><p class="k">test: add uniqueness check for risk category plugin IDs (#4390)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index a0127e756a..bd146b0657 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -65,6 +65,13 @@ describe(&#x27;metadata constants&#x27;, () =&gt; {</span>
+     it(&#x27;should have matching category labels&#x27;, () =&gt; {
+       expect(categoryLabels).toEqual(Object.keys(categoryMapReverse));
+     });
+<span class="a">+</span>
+<span class="a">+    it(&#x27;should not include duplicate plugin ids within a category&#x27;, () =&gt; {</span>
+<span class="a">+      Object.entries(riskCategories).forEach(([category, plugins]) =&gt; {</span>
+<span class="a">+        const uniquePlugins = new Set(plugins);</span>
+<span class="a">+        expect(uniquePlugins.size).toBe(plugins.length);</span>
+<span class="a">+      });</span>
+<span class="a">+    });</span>
+   });
+ 
+   describe(&#x27;Category aliases&#x27;, () =&gt; {</pre><h2>Commit #2: <a href="https://github.com/promptfoo/promptfoo/commit/799da3ca5a2f5b50d239083fc362bb7e8c2ea27d">799da3ca5a</a> (2025-07-07T20:52:47-07:00)</h2><p class="k">refactor: inline MEMORY_POISONING_PLUGIN_ID constant (#4794)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index bd146b0657..d9dba6b23e 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -18,7 +18,6 @@ import {</span>
+ } from &#x27;../../../src/redteam/constants/metadata&#x27;;
+ import type { Plugin } from &#x27;../../../src/redteam/constants/plugins&#x27;;
+ import type { Strategy } from &#x27;../../../src/redteam/constants/strategies&#x27;;
+<span class="d">-import { MEMORY_POISONING_PLUGIN_ID } from &#x27;../../../src/redteam/plugins/agentic/constants&#x27;;</span>
+ 
+ describe(&#x27;metadata constants&#x27;, () =&gt; {
+   describe(&#x27;Severity enum and display names&#x27;, () =&gt; {
+<span class="h">@@ -39,7 +38,7 @@ describe(&#x27;metadata constants&#x27;, () =&gt; {</span>
+     });
+ 
+     it(&#x27;should include memory poisoning plugin with high severity&#x27;, () =&gt; {
+<span class="d m">-      expect(riskCategorySeverityMap[MEMORY_POISONING_PLUGIN_ID]).toBe(Severity.High);</span>
+<span class="a">+      expect(riskCategorySeverityMap[&#x27;agentic:memory-poisoning&#x27;]).toBe(Severity.High);</span>
+     });
+   });
+ 
+<span class="h">@@ -122,7 +121,7 @@ describe(&#x27;metadata constants&#x27;, () =&gt; {</span>
+ 
+   describe(&#x27;Display name overrides&#x27;, () =&gt; {
+     it(&#x27;should have display names for memory poisoning plugin&#x27;, () =&gt; {
+<span class="d">-      expect(displayNameOverrides[MEMORY_POISONING_PLUGIN_ID]).toBe(&#x27;Agentic Memory Poisoning&#x27;);</span>
+<span class="a">+      expect(displayNameOverrides[&#x27;agentic:memory-poisoning&#x27;]).toBe(&#x27;Agentic Memory Poisoning&#x27;);</span>
+     });
+ 
+     it(&#x27;should have matching subcategory descriptions&#x27;, () =&gt; {</pre><h2>Commit #3: <a href="https://github.com/promptfoo/promptfoo/commit/193a8d3eabce80ef5df1ca04a277f44a0447a998">193a8d3eab</a> (2025-07-21T13:51:14-07:00)</h2><p class="k">chore: Sort imports and turn on rule against unused imports (#5010)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index d9dba6b23e..adac6dc330 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -1,21 +1,22 @@</span>
+ import {
+<span class="d">-  Severity,</span>
+<span class="d">-  severityDisplayNames,</span>
+<span class="d">-  riskCategorySeverityMap,</span>
+<span class="d">-  riskCategories,</span>
+<span class="d">-  categoryDescriptions,</span>
+<span class="d">-  categoryMapReverse,</span>
+<span class="d">-  categoryLabels,</span>
+   categoryAliases,
+   categoryAliasesReverse,
+<span class="a">+  categoryDescriptions,</span>
+<span class="a">+  categoryLabels,</span>
+<span class="a">+  categoryMapReverse,</span>
+<span class="a">+  DEFAULT_OUTPUT_PATH,</span>
+<span class="a">+  displayNameOverrides,</span>
+<span class="a">+  PLUGIN_PRESET_DESCRIPTIONS,</span>
+   pluginDescriptions,
+<span class="a">+  riskCategories,</span>
+<span class="a">+  riskCategorySeverityMap,</span>
+<span class="a">+  Severity,</span>
+<span class="a">+  severityDisplayNames,</span>
+   strategyDescriptions,
+   strategyDisplayNames,
+<span class="d">-  PLUGIN_PRESET_DESCRIPTIONS,</span>
+<span class="d">-  DEFAULT_OUTPUT_PATH,</span>
+<span class="d">-  displayNameOverrides,</span>
+   subCategoryDescriptions,
+ } from &#x27;../../../src/redteam/constants/metadata&#x27;;
+<span class="a">+</span>
+ import type { Plugin } from &#x27;../../../src/redteam/constants/plugins&#x27;;
+ import type { Strategy } from &#x27;../../../src/redteam/constants/strategies&#x27;;
+ </pre><h2>Commit #4: <a href="https://github.com/promptfoo/promptfoo/commit/aaedcbbaa43eacf07cb724ed26fa8cb7637314e4">aaedcbbaa4</a> (2025-09-11T19:10:22-07:00)</h2><p class="k">fix(redteam): add missing plugins to webui (#5546)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index adac6dc330..e16911006d 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -17,6 +17,15 @@ import {</span>
+   subCategoryDescriptions,
+ } from &#x27;../../../src/redteam/constants/metadata&#x27;;
+ 
+<span class="a">+import {</span>
+<span class="a">+  ADDITIONAL_PLUGINS,</span>
+<span class="a">+  BASE_PLUGINS,</span>
+<span class="a">+  BIAS_PLUGINS,</span>
+<span class="a">+  FINANCIAL_PLUGINS,</span>
+<span class="a">+  HARM_PLUGINS,</span>
+<span class="a">+  MEDICAL_PLUGINS,</span>
+<span class="a">+  PII_PLUGINS,</span>
+<span class="a">+} from &#x27;../../../src/redteam/constants/plugins&#x27;;</span>
+ import type { Plugin } from &#x27;../../../src/redteam/constants/plugins&#x27;;
+ import type { Strategy } from &#x27;../../../src/redteam/constants/strategies&#x27;;
+ 
+<span class="h">@@ -72,6 +81,60 @@ describe(&#x27;metadata constants&#x27;, () =&gt; {</span>
+         expect(uniquePlugins.size).toBe(plugins.length);
+       });
+     });
+<span class="a">+</span>
+<span class="a">+    it(&#x27;should include all defined plugins in risk categories&#x27;, () =&gt; {</span>
+<span class="a">+      // Get all plugins from risk categories</span>
+<span class="a">+      const riskCategoryPlugins = new Set&lt;Plugin&gt;();</span>
+<span class="a">+      Object.values(riskCategories).forEach((plugins) =&gt; {</span>
+<span class="a">+        plugins.forEach((plugin) =&gt; {</span>
+<span class="a">+          riskCategoryPlugins.add(plugin);</span>
+<span class="a">+        });</span>
+<span class="a">+      });</span>
+<span class="a">+</span>
+<span class="a">+      // Get all defined plugins from constants</span>
+<span class="a">+      const allDefinedPlugins = new Set&lt;Plugin&gt;();</span>
+<span class="a">+</span>
+<span class="a">+      // Add plugins from various constant arrays</span>
+<span class="a">+      [...BASE_PLUGINS].forEach((plugin) =&gt; allDefinedPlugins.add(plugin));</span>
+<span class="a">+      [...ADDITIONAL_PLUGINS].forEach((plugin) =&gt; allDefinedPlugins.add(plugin));</span>
+<span class="a">+      [...BIAS_PLUGINS].forEach((plugin) =&gt; allDefinedPlugins.add(plugin));</span>
+<span class="a">+      [...PII_PLUGINS].forEach((plugin) =&gt; allDefinedPlugins.add(plugin));</span>
+<span class="a">+      [...MEDICAL_PLUGINS].forEach((plugin) =&gt; allDefinedPlugins.add(plugin));</span>
+<span class="a">+      [...FINANCIAL_PLUGINS].forEach((plugin) =&gt; allDefinedPlugins.add(plugin));</span>
+<span class="a">+</span>
+<span class="a">+      // Add plugins from HARM_PLUGINS object</span>
+<span class="a">+      Object.keys(HARM_PLUGINS).forEach((plugin) =&gt; {</span>
+<span class="a">+        allDefinedPlugins.add(plugin as Plugin);</span>
+<span class="a">+      });</span>
+<span class="a">+</span>
+<span class="a">+      // Special plugins that shouldn&#x27;t be in risk categories (collections and custom plugins)</span>
+<span class="a">+      const excludedPlugins = new Set([</span>
+<span class="a">+        &#x27;intent&#x27;, // Custom intent plugin handled separately in UI</span>
+<span class="a">+        &#x27;policy&#x27;, // Custom policy plugin handled separately in UI</span>
+<span class="a">+        &#x27;default&#x27;, // Collection</span>
+<span class="a">+        &#x27;foundation&#x27;, // Collection</span>
+<span class="a">+        &#x27;harmful&#x27;, // Collection</span>
+<span class="a">+        &#x27;bias&#x27;, // Collection</span>
+<span class="a">+        &#x27;pii&#x27;, // Collection</span>
+<span class="a">+        &#x27;medical&#x27;, // Collection</span>
+<span class="a">+        &#x27;guardrails-eval&#x27;, // Collection</span>
+<span class="a">+      ]);</span>
+<span class="a">+</span>
+<span class="a">+      // Find plugins that are defined but missing from risk categories</span>
+<span class="a">+      const missingPlugins = Array.from(allDefinedPlugins).filter(</span>
+<span class="a">+        (plugin) =&gt; !riskCategoryPlugins.has(plugin) &amp;&amp; !excludedPlugins.has(plugin),</span>
+<span class="a">+      );</span>
+<span class="a">+</span>
+<span class="a">+      if (missingPlugins.length &gt; 0) {</span>
+<span class="a">+        fail(</span>
+<span class="a">+          `The following plugins are defined but missing from risk categories: ${missingPlugins.join(</span>
+<span class="a">+            &#x27;, &#x27;,</span>
+<span class="a">+          )}. Please add them to the appropriate category in riskCategories object in metadata.ts`,</span>
+<span class="a">+        );</span>
+<span class="a">+      }</span>
+<span class="a">+</span>
+<span class="a">+      expect(missingPlugins).toEqual([]);</span>
+<span class="a">+    });</span>
+   });
+ 
+   describe(&#x27;Category aliases&#x27;, () =&gt; {</pre><h2>Commit #5: <a href="https://github.com/promptfoo/promptfoo/commit/80e7e96581b419da7304e8a7006708a5e9f3d156">80e7e96581</a> (2025-09-25T10:36:06-07:00)</h2><p class="k">feat: iso 42001 mappings (#5724)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index e16911006d..9af151d6aa 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -11,7 +11,6 @@ import {</span>
+   riskCategories,
+   riskCategorySeverityMap,
+   Severity,
+<span class="d">-  severityDisplayNames,</span>
+   strategyDescriptions,
+   strategyDisplayNames,
+   subCategoryDescriptions,
+<span class="h">@@ -30,26 +29,12 @@ import type { Plugin } from &#x27;../../../src/redteam/constants/plugins&#x27;;</span>
+ import type { Strategy } from &#x27;../../../src/redteam/constants/strategies&#x27;;
+ 
+ describe(&#x27;metadata constants&#x27;, () =&gt; {
+<span class="d">-  describe(&#x27;Severity enum and display names&#x27;, () =&gt; {</span>
+<span class="d">-    it(&#x27;should have matching severity levels and display names&#x27;, () =&gt; {</span>
+<span class="d">-      expect(Object.keys(severityDisplayNames)).toEqual(Object.values(Severity));</span>
+<span class="d">-      expect(severityDisplayNames[Severity.Critical]).toBe(&#x27;Critical&#x27;);</span>
+<span class="d">-      expect(severityDisplayNames[Severity.High]).toBe(&#x27;High&#x27;);</span>
+<span class="d">-      expect(severityDisplayNames[Severity.Medium]).toBe(&#x27;Medium&#x27;);</span>
+<span class="d">-      expect(severityDisplayNames[Severity.Low]).toBe(&#x27;Low&#x27;);</span>
+<span class="d">-    });</span>
+<span class="d">-  });</span>
+<span class="d">-</span>
+   describe(&#x27;Risk category severity map&#x27;, () =&gt; {
+     it(&#x27;should have valid severity levels&#x27;, () =&gt; {
+       Object.values(riskCategorySeverityMap).forEach((severity) =&gt; {
+         expect(Object.values(Severity)).toContain(severity);
+       });
+     });
+<span class="d">-</span>
+<span class="d">-    it(&#x27;should include memory poisoning plugin with high severity&#x27;, () =&gt; {</span>
+<span class="d">-      expect(riskCategorySeverityMap[&#x27;agentic:memory-poisoning&#x27;]).toBe(Severity.High);</span>
+<span class="d">-    });</span>
+   });
+ 
+   describe(&#x27;Risk categories&#x27;, () =&gt; {</pre><h2>Commit #6: <a href="https://github.com/promptfoo/promptfoo/commit/fbdef5178a95df6114d0bf50f0841ac6f143987d">fbdef5178a</a> (2025-10-22T21:50:35-07:00)</h2><p class="k">feat: coppa plugin (#5997)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index 9af151d6aa..0e909f22b2 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -111,7 +111,7 @@ describe(&#x27;metadata constants&#x27;, () =&gt; {</span>
+       );
+ 
+       if (missingPlugins.length &gt; 0) {
+<span class="d">-        fail(</span>
+<span class="a">+        throw new Error(</span>
+           `The following plugins are defined but missing from risk categories: ${missingPlugins.join(
+             &#x27;, &#x27;,
+           )}. Please add them to the appropriate category in riskCategories object in metadata.ts`,</pre><h2>Commit #7: <a href="https://github.com/promptfoo/promptfoo/commit/43807a10136997f4bb0fa94f416ade97ede4a0c5">43807a1013</a> (2025-11-21T07:41:59-08:00)</h2><p class="k">chore(deps): update dependency @biomejs/cli-darwin-arm64 to v2.3.7 (#6307)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index 0e909f22b2..c670f673e9 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -61,7 +61,7 @@ describe(&#x27;metadata constants&#x27;, () =&gt; {</span>
+     });
+ 
+     it(&#x27;should not include duplicate plugin ids within a category&#x27;, () =&gt; {
+<span class="d">-      Object.entries(riskCategories).forEach(([category, plugins]) =&gt; {</span>
+<span class="a">+      Object.entries(riskCategories).forEach(([_category, plugins]) =&gt; {</span>
+         const uniquePlugins = new Set(plugins);
+         expect(uniquePlugins.size).toBe(plugins.length);
+       });</pre><h2>Commit #8: <a href="https://github.com/promptfoo/promptfoo/commit/51bf926eef65c74f8f02dca889a2451c3160ec30">51bf926eef</a> (2025-12-01T01:10:54-05:00)</h2><p class="k">test: migrate most tests to Vitest (#6417)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index c670f673e9..688f58dc6c 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -1,3 +1,4 @@</span>
+<span class="a">+import { describe, expect, it } from &#x27;vitest&#x27;;</span>
+ import {
+   categoryAliases,
+   categoryAliasesReverse,</pre><h2>Commit #9: <a href="https://github.com/promptfoo/promptfoo/commit/c628550469762d46c5bf2584f2926f594456612e">c628550469</a> (2025-12-18T09:29:32-08:00)</h2><p class="k">chore(biome): run linter (#6761)<br>Path after this commit: test/redteam/constants/metadata.test.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/test/redteam/constants/metadata.test.ts b/test/redteam/constants/metadata.test.ts
+index 688f58dc6c..ce5bb045d8 100644
+<span class="d">--- a/test/redteam/constants/metadata.test.ts</span>
+<span class="a">+++ b/test/redteam/constants/metadata.test.ts</span>
+<span class="h">@@ -16,7 +16,6 @@ import {</span>
+   strategyDisplayNames,
+   subCategoryDescriptions,
+ } from &#x27;../../../src/redteam/constants/metadata&#x27;;
+<span class="d">-</span>
+ import {
+   ADDITIONAL_PLUGINS,
+   BASE_PLUGINS,
+<span class="h">@@ -26,6 +25,7 @@ import {</span>
+   MEDICAL_PLUGINS,
+   PII_PLUGINS,
+ } from &#x27;../../../src/redteam/constants/plugins&#x27;;
+<span class="a">+</span>
+ import type { Plugin } from &#x27;../../../src/redteam/constants/plugins&#x27;;
+ import type { Strategy } from &#x27;../../../src/redteam/constants/strategies&#x27;;
+ </pre></body></html>

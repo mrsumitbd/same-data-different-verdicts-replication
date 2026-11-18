@@ -1,0 +1,122 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L140</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L140</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> tests/Aspire.Hosting.Azure.Tests/AzureApplicationInsightsExtensionsTests.cs, line 88<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/90e55c7152cac9b24dba2fc3a7b95ba0964ac3b4">90e55c7152</a> (2025-05-28T15:54:32)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">        var expectedManifest = &quot;&quot;&quot;</span></pre><h2>File at the merge commit, lines 80 to 96</h2><pre>   80 | 
+   81 |         var connectionStringResource = (IResourceWithConnectionString)appInsights.Resource;
+   82 | 
+   83 |         Assert.Equal(&quot;appInsights&quot;, appInsights.Resource.Name);
+   84 |         Assert.Equal(&quot;myinstrumentationkey&quot;, await connectionStringResource.GetConnectionStringAsync());
+   85 |         Assert.Equal(&quot;{appInsights.outputs.appInsightsConnectionString}&quot;, appInsights.Resource.ConnectionStringExpression.ValueExpression);
+   86 | 
+   87 |         var appInsightsManifest = await AzureManifestUtils.GetManifestWithBicep(appInsights.Resource);
+<span class="t">   88 |         var expectedManifest = &quot;&quot;&quot;</span>
+   89 |            {
+   90 |              &quot;type&quot;: &quot;azure.bicep.v0&quot;,
+   91 |              &quot;connectionString&quot;: &quot;{appInsights.outputs.appInsightsConnectionString}&quot;,
+   92 |              &quot;path&quot;: &quot;appInsights.module.bicep&quot;,
+   93 |              &quot;params&quot;: {
+   94 |                &quot;logAnalyticsWorkspaceId&quot;: &quot;{mylaw.outputs.logAnalyticsWorkspaceId}&quot;
+   95 |              }
+   96 |            }</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/662662456a0dda1c8aa2da8f4e46764ad5d6a458">662662456a</a> (2025-05-30T10:08:05-07:00)</h2><p class="k">Remove a few auto injected known parameters (#9590)<br>Path after this commit: tests/Aspire.Hosting.Azure.Tests/AzureApplicationInsightsExtensionsTests.cs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/tests/Aspire.Hosting.Azure.Tests/AzureApplicationInsightsExtensionsTests.cs b/tests/Aspire.Hosting.Azure.Tests/AzureApplicationInsightsExtensionsTests.cs
+index 0a7392c8e7..4ae582a2cb 100644
+<span class="d">--- a/tests/Aspire.Hosting.Azure.Tests/AzureApplicationInsightsExtensionsTests.cs</span>
+<span class="a">+++ b/tests/Aspire.Hosting.Azure.Tests/AzureApplicationInsightsExtensionsTests.cs</span>
+<span class="h">@@ -10,7 +10,7 @@ namespace Aspire.Hosting.Azure.Tests;</span>
+ public class AzureApplicationInsightsExtensionsTests
+ {
+     [Fact]
+<span class="d">-    public async Task AddApplicationInsightsWithoutExplicitLawGetsDefaultLawParameterInPublishMode()</span>
+<span class="a">+    public async Task AddApplicationInsightsWithoutExplicitLawGetsGeneratedLaw()</span>
+     {
+         using var builder = TestDistributedApplicationBuilder.Create(DistributedApplicationOperation.Publish);
+ 
+<span class="h">@@ -24,20 +24,10 @@ public class AzureApplicationInsightsExtensionsTests</span>
+         Assert.Equal(&quot;myinstrumentationkey&quot;, await connectionStringResource.GetConnectionStringAsync());
+         Assert.Equal(&quot;{appInsights.outputs.appInsightsConnectionString}&quot;, appInsights.Resource.ConnectionStringExpression.ValueExpression);
+ 
+<span class="d">-        var appInsightsManifest = await AzureManifestUtils.GetManifestWithBicep(appInsights.Resource);</span>
+<span class="d m">-        var expectedManifest = &quot;&quot;&quot;</span>
+<span class="d">-           {</span>
+<span class="d">-             &quot;type&quot;: &quot;azure.bicep.v0&quot;,</span>
+<span class="d">-             &quot;connectionString&quot;: &quot;{appInsights.outputs.appInsightsConnectionString}&quot;,</span>
+<span class="d">-             &quot;path&quot;: &quot;appInsights.module.bicep&quot;,</span>
+<span class="d">-             &quot;params&quot;: {</span>
+<span class="d">-               &quot;logAnalyticsWorkspaceId&quot;: &quot;&quot;</span>
+<span class="d">-             }</span>
+<span class="d">-           }</span>
+<span class="d">-           &quot;&quot;&quot;;</span>
+<span class="d">-        Assert.Equal(expectedManifest, appInsightsManifest.ManifestNode.ToString());</span>
+<span class="a">+        var (appInsightsManifest, bicep) = await AzureManifestUtils.GetManifestWithBicep(appInsights.Resource);</span>
+ 
+<span class="d">-        await Verify(appInsightsManifest.BicepText, extension: &quot;bicep&quot;);</span>
+<span class="a">+        await Verify(bicep, extension: &quot;bicep&quot;)</span>
+<span class="a">+              .AppendContentAsFile(appInsightsManifest.ToString(), &quot;json&quot;);</span>
+     }
+ 
+     [Fact]
+<span class="h">@@ -84,21 +74,11 @@ public class AzureApplicationInsightsExtensionsTests</span>
+         Assert.Equal(&quot;myinstrumentationkey&quot;, await connectionStringResource.GetConnectionStringAsync());
+         Assert.Equal(&quot;{appInsights.outputs.appInsightsConnectionString}&quot;, appInsights.Resource.ConnectionStringExpression.ValueExpression);
+ 
+<span class="d">-        var appInsightsManifest = await AzureManifestUtils.GetManifestWithBicep(appInsights.Resource);</span>
+<span class="d m">-        var expectedManifest = &quot;&quot;&quot;</span>
+<span class="d">-           {</span>
+<span class="d">-             &quot;type&quot;: &quot;azure.bicep.v0&quot;,</span>
+<span class="d">-             &quot;connectionString&quot;: &quot;{appInsights.outputs.appInsightsConnectionString}&quot;,</span>
+<span class="d">-             &quot;path&quot;: &quot;appInsights.module.bicep&quot;,</span>
+<span class="d">-             &quot;params&quot;: {</span>
+<span class="d">-               &quot;logAnalyticsWorkspaceId&quot;: &quot;{mylaw.outputs.logAnalyticsWorkspaceId}&quot;</span>
+<span class="d">-             }</span>
+<span class="d">-           }</span>
+<span class="d">-           &quot;&quot;&quot;;</span>
+<span class="d">-        Assert.Equal(expectedManifest, appInsightsManifest.ManifestNode.ToString());</span>
+<span class="a">+        var (appInsightsManifest, bicep) = await AzureManifestUtils.GetManifestWithBicep(appInsights.Resource);</span>
+ 
+<span class="d">-        await Verify(appInsightsManifest.BicepText, extension: &quot;bicep&quot;);            </span>
+<span class="d">-    }</span>
+<span class="a">+        await Verify(bicep, extension: &quot;bicep&quot;)</span>
+<span class="a">+              .AppendContentAsFile(appInsightsManifest.ToString(), &quot;json&quot;);</span>
+<span class="a">+      }</span>
+ 
+     [Fact]
+     public async Task WithReferenceAppInsightsSetsEnvironmentVariable()
+<span class="h">@@ -118,6 +98,38 @@ public class AzureApplicationInsightsExtensionsTests</span>
+         Assert.Equal(&quot;myinstrumentationkey&quot;, config[&quot;APPLICATIONINSIGHTS_CONNECTION_STRING&quot;]);
+     }
+ 
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task WithLogAnalyticsWorkspaceId_UsesProvidedWorkspaceId_VerifyBicep()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        // Doesn&#x27;t need to be ACA but this is a more real scenario</span>
+<span class="a">+        var env = builder.AddAzureContainerAppEnvironment(&quot;aca&quot;);</span>
+<span class="a">+</span>
+<span class="a">+        var appInsights = builder.AddAzureApplicationInsights(&quot;appInsights&quot;)</span>
+<span class="a">+                                 .WithLogAnalyticsWorkspace(env.GetOutput(&quot;AZURE_LOG_ANALYTICS_WORKSPACE_ID&quot;));</span>
+<span class="a">+</span>
+<span class="a">+        var (manifest, bicep) = await AzureManifestUtils.GetManifestWithBicep(appInsights.Resource);</span>
+<span class="a">+</span>
+<span class="a">+        await Verify(bicep, extension: &quot;bicep&quot;)</span>
+<span class="a">+            .AppendContentAsFile(manifest.ToString(), &quot;json&quot;);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    [Fact]</span>
+<span class="a">+    public async Task WithLogAnalyticsWorkspace_UsesWorkspaceResourceId_VerifyBicep()</span>
+<span class="a">+    {</span>
+<span class="a">+        using var builder = TestDistributedApplicationBuilder.Create();</span>
+<span class="a">+</span>
+<span class="a">+        var law = builder.AddAzureLogAnalyticsWorkspace(&quot;law&quot;);</span>
+<span class="a">+        var appInsights = builder.AddAzureApplicationInsights(&quot;appInsights&quot;);</span>
+<span class="a">+        appInsights.WithLogAnalyticsWorkspace(law);</span>
+<span class="a">+</span>
+<span class="a">+        var (manifest, bicep) = await AzureManifestUtils.GetManifestWithBicep(appInsights.Resource);</span>
+<span class="a">+</span>
+<span class="a">+        await Verify(bicep, extension: &quot;bicep&quot;)</span>
+<span class="a">+            .AppendContentAsFile(manifest.ToString(), &quot;json&quot;);</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+     private sealed class ProjectA : IProjectMetadata
+     {
+         public string ProjectPath =&gt; &quot;projectA&quot;;</pre></body></html>

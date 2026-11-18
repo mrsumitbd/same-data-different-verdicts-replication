@@ -1,0 +1,127 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L232</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L232</h1><p><b>Repository:</b> <a href="https://github.com/rqlite/rqlite">rqlite/rqlite</a><br><b>File at merge:</b> store/store_request_raft_index_test.go, line 101<br><b>Merge commit (birth):</b> <a href="https://github.com/rqlite/rqlite/commit/ca7cd1f65dca383e7fbdb00fe342800fa34def62">ca7cd1f65d</a> (2025-06-18T00:52:20)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/rqlite/rqlite/tree/953a6d69b54e79a59175375ae0972c32cfb8ce28">953a6d69b5</a>)</p><p><b>The line:</b></p><pre><span class="t">		t.Fatalf(&quot;expected non-zero Raft index for STRONG read request, got %d&quot;, strongReadIndex)</span></pre><h2>File at the merge commit, lines 93 to 105</h2><pre>   93 | 		t.Fatalf(&quot;failed to execute strong read request: %s&quot;, err4.Error())
+   94 | 	}
+   95 | 
+   96 | 	if results4 == nil {
+   97 | 		t.Fatalf(&quot;expected results for strong read request, got nil&quot;)
+   98 | 	}
+   99 | 
+  100 | 	if strongReadIndex == 0 {
+<span class="t">  101 | 		t.Fatalf(&quot;expected non-zero Raft index for STRONG read request, got %d&quot;, strongReadIndex)</span>
+  102 | 	}
+  103 | 
+  104 | 	t.Logf(&quot;Successfully executed STRONG read request and received Raft index: %d&quot;, strongReadIndex)
+  105 | }</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/rqlite/rqlite/commit/2474a79962edd8240c61bb49e7a2f340df7a6841">2474a79962</a> (2025-06-18T00:08:27-04:00)</h2><p class="k">Return Raft index in response<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: store/store_test.go.</p><pre>diff --git a/store/store_request_raft_index_test.go b/store/store_request_raft_index_test.go
+deleted file mode 100644
+index 1843c5a2..00000000
+<span class="d">--- a/store/store_request_raft_index_test.go</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,105 +0,0 @@</span>
+<span class="d">-package store</span>
+<span class="d">-</span>
+<span class="d">-import (</span>
+<span class="d">-	&quot;testing&quot;</span>
+<span class="d">-	&quot;time&quot;</span>
+<span class="d">-</span>
+<span class="d">-	&quot;github.com/rqlite/rqlite/v8/command/proto&quot;</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-// Test_StoreRequestRaftIndex tests that Store.Request returns the correct Raft index</span>
+<span class="d">-func Test_StoreRequestRaftIndex(t *testing.T) {</span>
+<span class="d">-	s, ln := mustNewStore(t)</span>
+<span class="d">-	defer ln.Close()</span>
+<span class="d">-	defer s.Close(true)</span>
+<span class="d">-</span>
+<span class="d">-	if err := s.Open(); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to open single-node store: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	if err := s.Bootstrap(NewServer(s.ID(), s.Addr(), true)); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to bootstrap single-node store: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-	if _, err := s.WaitForLeader(10 * time.Second); err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;Error waiting for leader: %s&quot;, err)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	// Test 1: Write request should return a non-zero index</span>
+<span class="d">-	writeReq := executeQueryRequestFromStrings([]string{</span>
+<span class="d">-		`CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name TEXT)`,</span>
+<span class="d">-	}, proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG, false, false)</span>
+<span class="d">-</span>
+<span class="d">-	results, raftIndex, err := s.Request(writeReq)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to execute write request: %s&quot;, err.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if results == nil {</span>
+<span class="d">-		t.Fatalf(&quot;expected results, got nil&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if raftIndex == 0 {</span>
+<span class="d">-		t.Fatalf(&quot;expected non-zero Raft index for write request, got %d&quot;, raftIndex)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	t.Logf(&quot;Successfully executed write request and received Raft index: %d&quot;, raftIndex)</span>
+<span class="d">-</span>
+<span class="d">-	// Test 2: Read-only request with NONE consistency should return index 0</span>
+<span class="d">-	readReq := executeQueryRequestFromStrings([]string{</span>
+<span class="d">-		`SELECT * FROM foo`,</span>
+<span class="d">-	}, proto.QueryRequest_QUERY_REQUEST_LEVEL_NONE, false, false)</span>
+<span class="d">-</span>
+<span class="d">-	results2, readIndex, err2 := s.Request(readReq)</span>
+<span class="d">-	if err2 != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to execute read request: %s&quot;, err2.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if results2 == nil {</span>
+<span class="d">-		t.Fatalf(&quot;expected results for read request, got nil&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if readIndex != 0 {</span>
+<span class="d">-		t.Fatalf(&quot;expected index 0 for read-only request, got %d&quot;, readIndex)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	t.Logf(&quot;Successfully executed read-only request and received index: %d&quot;, readIndex)</span>
+<span class="d">-</span>
+<span class="d">-	// Test 3: Another write request should return a higher index</span>
+<span class="d">-	writeReq2 := executeQueryRequestFromStrings([]string{</span>
+<span class="d">-		`INSERT INTO foo(id, name) VALUES(1, &quot;test&quot;)`,</span>
+<span class="d">-	}, proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG, false, false)</span>
+<span class="d">-</span>
+<span class="d">-	results3, raftIndex2, err3 := s.Request(writeReq2)</span>
+<span class="d">-	if err3 != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to execute second write request: %s&quot;, err3.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if results3 == nil {</span>
+<span class="d">-		t.Fatalf(&quot;expected results for second write request, got nil&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if raftIndex2 &lt;= raftIndex {</span>
+<span class="d">-		t.Fatalf(&quot;expected second Raft index (%d) to be greater than first (%d)&quot;, raftIndex2, raftIndex)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	t.Logf(&quot;Successfully executed second write request and received higher Raft index: %d&quot;, raftIndex2)</span>
+<span class="d">-</span>
+<span class="d">-	// Test 4: STRONG read should go through Raft and return a non-zero index</span>
+<span class="d">-	strongReadReq := executeQueryRequestFromStrings([]string{</span>
+<span class="d">-		`SELECT * FROM foo`,</span>
+<span class="d">-	}, proto.QueryRequest_QUERY_REQUEST_LEVEL_STRONG, false, false)</span>
+<span class="d">-</span>
+<span class="d">-	results4, strongReadIndex, err4 := s.Request(strongReadReq)</span>
+<span class="d">-	if err4 != nil {</span>
+<span class="d">-		t.Fatalf(&quot;failed to execute strong read request: %s&quot;, err4.Error())</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if results4 == nil {</span>
+<span class="d">-		t.Fatalf(&quot;expected results for strong read request, got nil&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if strongReadIndex == 0 {</span>
+<span class="d m">-		t.Fatalf(&quot;expected non-zero Raft index for STRONG read request, got %d&quot;, strongReadIndex)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	t.Logf(&quot;Successfully executed STRONG read request and received Raft index: %d&quot;, strongReadIndex)</span>
+<span class="d">-}</span></pre></body></html>

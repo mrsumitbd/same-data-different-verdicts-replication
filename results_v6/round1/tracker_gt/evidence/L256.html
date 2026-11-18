@@ -1,0 +1,123 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L256</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L256</h1><p><b>Repository:</b> <a href="https://github.com/crewaiinc/crewai">crewaiinc/crewai</a><br><b>File at merge:</b> tests/utilities/test_pydantic_schema_parser.py, line 55<br><b>Merge commit (birth):</b> <a href="https://github.com/crewaiinc/crewai/commit/b5779dca125b449d05dd489a46e3314e74e0d415">b5779dca12</a> (2025-01-16T16:28:58)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/crewaiinc/crewai/tree/f3c17a249b5a2da3a917784d9762421591c1cde5">f3c17a249b</a>)</p><p><b>The line:</b></p><pre><span class="t">    assert schema.strip() == expected_schema.strip()</span></pre><h2>File at the merge commit, lines 47 to 63</h2><pre>   47 |         list_field: List[int]
+   48 | 
+   49 |     parser = PydanticSchemaParser(model=ListModel)
+   50 |     schema = parser.get_schema()
+   51 | 
+   52 |     expected_schema = &quot;&quot;&quot;{
+   53 |     list_field: List[int]
+   54 | }&quot;&quot;&quot;
+<span class="t">   55 |     assert schema.strip() == expected_schema.strip()</span>
+   56 | 
+   57 | 
+   58 | def test_model_with_optional_field():
+   59 |     class OptionalModel(BaseModel):
+   60 |         optional_field: Optional[str]
+   61 | 
+   62 |     parser = PydanticSchemaParser(model=OptionalModel)
+   63 |     schema = parser.get_schema()</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/crewaiinc/crewai/commit/d1343b96ed6ebf94fedf6384731bae6a03c1c9e0">d1343b96ed</a> (2025-10-20T14:10:19-07:00)</h2><p class="k">Release/v1.0.0 (#3618)<br>Path after this commit: lib/crewai/tests/utilities/test_pydantic_schema_parser.py. Lines with exactly this text in the file after the commit: 6.</p><pre>diff --git a/tests/utilities/test_pydantic_schema_parser.py b/lib/crewai/tests/utilities/test_pydantic_schema_parser.py
+similarity index 100%
+rename from tests/utilities/test_pydantic_schema_parser.py
+rename to lib/crewai/tests/utilities/test_pydantic_schema_parser.py</pre><h2>Commit #2: <a href="https://github.com/crewaiinc/crewai/commit/38b0b125d3b2cd1534f49b7e071a9540307df2f7">38b0b125d3</a> (2025-12-11T15:50:19-05:00)</h2><p class="k">feat: use json schema for tool argument serialization<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/lib/crewai/tests/utilities/test_pydantic_schema_parser.py b/lib/crewai/tests/utilities/test_pydantic_schema_parser.py
+deleted file mode 100644
+index ee6d7e287..000000000
+<span class="d">--- a/lib/crewai/tests/utilities/test_pydantic_schema_parser.py</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,94 +0,0 @@</span>
+<span class="d">-from typing import Any, Dict, List, Optional, Set, Tuple, Union</span>
+<span class="d">-</span>
+<span class="d">-import pytest</span>
+<span class="d">-from pydantic import BaseModel, Field</span>
+<span class="d">-</span>
+<span class="d">-from crewai.utilities.pydantic_schema_parser import PydanticSchemaParser</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_simple_model():</span>
+<span class="d">-    class SimpleModel(BaseModel):</span>
+<span class="d">-        field1: int</span>
+<span class="d">-        field2: str</span>
+<span class="d">-</span>
+<span class="d">-    parser = PydanticSchemaParser(model=SimpleModel)</span>
+<span class="d">-    schema = parser.get_schema()</span>
+<span class="d">-</span>
+<span class="d">-    expected_schema = &quot;&quot;&quot;{</span>
+<span class="d">-    field1: int,</span>
+<span class="d">-    field2: str</span>
+<span class="d">-}&quot;&quot;&quot;</span>
+<span class="d m">-    assert schema.strip() == expected_schema.strip()</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_nested_model():</span>
+<span class="d">-    class NestedModel(BaseModel):</span>
+<span class="d">-        nested_field: int</span>
+<span class="d">-</span>
+<span class="d">-    class ParentModel(BaseModel):</span>
+<span class="d">-        parent_field: str</span>
+<span class="d">-        nested: NestedModel</span>
+<span class="d">-</span>
+<span class="d">-    parser = PydanticSchemaParser(model=ParentModel)</span>
+<span class="d">-    schema = parser.get_schema()</span>
+<span class="d">-</span>
+<span class="d">-    expected_schema = &quot;&quot;&quot;{</span>
+<span class="d">-    parent_field: str,</span>
+<span class="d">-    nested: NestedModel</span>
+<span class="d">-    {</span>
+<span class="d">-        nested_field: int</span>
+<span class="d">-    }</span>
+<span class="d">-}&quot;&quot;&quot;</span>
+<span class="d m">-    assert schema.strip() == expected_schema.strip()</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_model_with_list():</span>
+<span class="d">-    class ListModel(BaseModel):</span>
+<span class="d">-        list_field: List[int]</span>
+<span class="d">-</span>
+<span class="d">-    parser = PydanticSchemaParser(model=ListModel)</span>
+<span class="d">-    schema = parser.get_schema()</span>
+<span class="d">-</span>
+<span class="d">-    expected_schema = &quot;&quot;&quot;{</span>
+<span class="d">-    list_field: List[int]</span>
+<span class="d">-}&quot;&quot;&quot;</span>
+<span class="d m">-    assert schema.strip() == expected_schema.strip()</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_model_with_optional_field():</span>
+<span class="d">-    class OptionalModel(BaseModel):</span>
+<span class="d">-        optional_field: Optional[str]</span>
+<span class="d">-</span>
+<span class="d">-    parser = PydanticSchemaParser(model=OptionalModel)</span>
+<span class="d">-    schema = parser.get_schema()</span>
+<span class="d">-</span>
+<span class="d">-    expected_schema = &quot;&quot;&quot;{</span>
+<span class="d">-    optional_field: Optional[str]</span>
+<span class="d">-}&quot;&quot;&quot;</span>
+<span class="d m">-    assert schema.strip() == expected_schema.strip()</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_model_with_union():</span>
+<span class="d">-    class UnionModel(BaseModel):</span>
+<span class="d">-        union_field: Union[int, str]</span>
+<span class="d">-</span>
+<span class="d">-    parser = PydanticSchemaParser(model=UnionModel)</span>
+<span class="d">-    schema = parser.get_schema()</span>
+<span class="d">-</span>
+<span class="d">-    expected_schema = &quot;&quot;&quot;{</span>
+<span class="d">-    union_field: Union[int, str]</span>
+<span class="d">-}&quot;&quot;&quot;</span>
+<span class="d m">-    assert schema.strip() == expected_schema.strip()</span>
+<span class="d">-</span>
+<span class="d">-</span>
+<span class="d">-def test_model_with_dict():</span>
+<span class="d">-    class DictModel(BaseModel):</span>
+<span class="d">-        dict_field: Dict[str, int]</span>
+<span class="d">-</span>
+<span class="d">-    parser = PydanticSchemaParser(model=DictModel)</span>
+<span class="d">-    schema = parser.get_schema()</span>
+<span class="d">-</span>
+<span class="d">-    expected_schema = &quot;&quot;&quot;{</span>
+<span class="d">-    dict_field: Dict[str, int]</span>
+<span class="d">-}&quot;&quot;&quot;</span>
+<span class="d m">-    assert schema.strip() == expected_schema.strip()</span></pre></body></html>

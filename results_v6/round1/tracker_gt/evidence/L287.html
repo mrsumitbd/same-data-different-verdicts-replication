@@ -1,0 +1,157 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L287</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L287</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/perfview">microsoft/perfview</a><br><b>File at merge:</b> src/TraceEvent/Parsers/UniversalEventsTraceEventParser.cs, line 80<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/perfview/commit/43d89bea298669a21643bad4e9753c715c782487">43d89bea29</a> (2025-04-14T20:04:35)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/perfview/tree/de20568b9616c4f9a0bcae0d8682077e0fb9680b">de20568b96</a>)</p><p><b>The line:</b></p><pre><span class="t">            Action = action;</span></pre><h2>File at the merge commit, lines 72 to 88</h2><pre>   72 |     public sealed class SampleTraceData : TraceEvent
+   73 |     {
+   74 |         public Address Value { get { return GetVarUIntAt(0); } }
+   75 | 
+   76 |         #region Private
+   77 |         internal SampleTraceData(Action&lt;SampleTraceData&gt; action, int eventID, int task, string taskName, Guid taskGuid, int opcode, string opcodeName, Guid providerGuid, string providerName)
+   78 |             : base(eventID, task, taskName, taskGuid, opcode, opcodeName, providerGuid, providerName)
+   79 |         {
+<span class="t">   80 |             Action = action;</span>
+   81 |         }
+   82 |         protected internal override void Dispatch()
+   83 |         {
+   84 |             Action(this);
+   85 |         }
+   86 | 
+   87 |         protected internal override Delegate Target
+   88 |         {</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/perfview/commit/1a18deaf3f5353ada837e5c7942abb50e0f1f230">1a18deaf3f</a> (2025-06-20T10:17:41-07:00)</h2><p class="k">Extend PredefinedDynamicTraceEventParser to Support Dynamic Events from EventPipeEventSource (#2232)<br>Path after this commit: src/TraceEvent/Parsers/UniversalEventsTraceEventParser.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/TraceEvent/Parsers/UniversalEventsTraceEventParser.cs b/src/TraceEvent/Parsers/UniversalEventsTraceEventParser.cs
+index e41dd6f8..76bdad03 100644
+<span class="d">--- a/src/TraceEvent/Parsers/UniversalEventsTraceEventParser.cs</span>
+<span class="a">+++ b/src/TraceEvent/Parsers/UniversalEventsTraceEventParser.cs</span>
+<span class="h">@@ -9,7 +9,7 @@ namespace Microsoft.Diagnostics.Tracing.Parsers</span>
+ {
+     using Microsoft.Diagnostics.Tracing.Parsers.Universal.Events;
+ 
+<span class="d">-    public sealed class UniversalEventsTraceEventParser: TraceEventParser</span>
+<span class="a">+    public sealed class UniversalEventsTraceEventParser: PredefinedDynamicTraceEventParser</span>
+     {
+         public static string ProviderName = &quot;Universal.Events&quot;;
+         public static Guid ProviderGuid = new Guid(&quot;bc5e5d63-9799-5873-33d9-fba8316cef71&quot;);
+<span class="h">@@ -18,17 +18,25 @@ namespace Microsoft.Diagnostics.Tracing.Parsers</span>
+             None = 0x0,
+         };
+ 
+<span class="d">-        public UniversalEventsTraceEventParser(TraceEventSource source) : base(source) { }</span>
+<span class="a">+        public UniversalEventsTraceEventParser(TraceEventSource source) : base(source) </span>
+<span class="a">+        {</span>
+<span class="a">+            // Register templates for the universal events</span>
+<span class="a">+            RegisterTemplate(new SampleTraceData(&quot;cpu&quot;));</span>
+<span class="a">+            RegisterTemplate(new SampleTraceData(&quot;cswitch&quot;));</span>
+<span class="a">+        }</span>
+ 
+         public event Action&lt;SampleTraceData&gt; cpu
+         {
+             add
+             {
+<span class="d">-                source.RegisterEventTemplate(new SampleTraceData(value, 1, (int)TraceEventTask.Default, &quot;cpu&quot;, Guid.Empty, 0, &quot;Default&quot;, ProviderGuid, ProviderName));</span>
+<span class="a">+                AddCallbackForEvent(</span>
+<span class="a">+                    &quot;cpu&quot;,</span>
+<span class="a">+                    (TraceEvent data) =&gt; value((SampleTraceData)data)</span>
+<span class="a">+                );</span>
+             }
+             remove
+             {
+<span class="d">-                source.UnregisterEventTemplate(value, 1, Guid.Empty);</span>
+<span class="a">+                throw new NotImplementedException();</span>
+             }
+         }
+ 
+<span class="h">@@ -36,66 +44,34 @@ namespace Microsoft.Diagnostics.Tracing.Parsers</span>
+         {
+             add
+             {
+<span class="d">-                source.RegisterEventTemplate(new SampleTraceData(value, 2, (int)TraceEventTask.Default, &quot;cswitch&quot;, Guid.Empty, 0, &quot;Default&quot;, ProviderGuid, ProviderName));</span>
+<span class="a">+                AddCallbackForEvent(</span>
+<span class="a">+                    &quot;cswitch&quot;,</span>
+<span class="a">+                    (TraceEvent data) =&gt; value((SampleTraceData)data)</span>
+<span class="a">+                );</span>
+             }
+             remove
+             {
+<span class="d">-                source.UnregisterEventTemplate(value, 2, Guid.Empty);</span>
+<span class="a">+                throw new NotImplementedException();</span>
+             }
+         }
+ 
+         #region private
+         protected override string GetProviderName() { return ProviderName; }
+ 
+<span class="d">-        static private volatile TraceEvent[] s_templates;</span>
+<span class="d">-</span>
+<span class="d">-        protected internal override void EnumerateTemplates(Func&lt;string, string, EventFilterResponse&gt; eventsToObserve, Action&lt;TraceEvent&gt; callback)</span>
+<span class="d">-        {</span>
+<span class="d">-            if (s_templates == null)</span>
+<span class="d">-            {</span>
+<span class="d">-                var templates = new TraceEvent[2];</span>
+<span class="d">-                templates[0] = new SampleTraceData(null, 1, (int)TraceEventTask.Default, &quot;cpu&quot;, Guid.Empty, 0, &quot;Default&quot;, ProviderGuid, ProviderName);</span>
+<span class="d">-                templates[1] = new SampleTraceData(null, 2, (int)TraceEventTask.Default, &quot;cswitch&quot;, Guid.Empty, 0, &quot;Default&quot;, ProviderGuid, ProviderName);</span>
+<span class="d">-                s_templates = templates;</span>
+<span class="d">-            }</span>
+<span class="d">-            foreach (var template in s_templates)</span>
+<span class="d">-                if (eventsToObserve == null || eventsToObserve(template.ProviderName, template.EventName) == EventFilterResponse.AcceptEvent)</span>
+<span class="d">-                    callback(template);</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+         #endregion
+     }
+ }
+ 
+ namespace Microsoft.Diagnostics.Tracing.Parsers.Universal.Events
+ {
+<span class="d">-    public sealed class SampleTraceData : TraceEvent</span>
+<span class="a">+    public sealed class SampleTraceData : PredefinedDynamicEvent</span>
+     {
+<span class="d">-        public Address Value { get { return GetVarUIntAt(0); } }</span>
+<span class="d">-</span>
+<span class="d">-        #region Private</span>
+<span class="d">-        internal SampleTraceData(Action&lt;SampleTraceData&gt; action, int eventID, int task, string taskName, Guid taskGuid, int opcode, string opcodeName, Guid providerGuid, string providerName)</span>
+<span class="d">-            : base(eventID, task, taskName, taskGuid, opcode, opcodeName, providerGuid, providerName)</span>
+<span class="d">-        {</span>
+<span class="d m">-            Action = action;</span>
+<span class="d">-        }</span>
+<span class="d">-        protected internal override void Dispatch()</span>
+<span class="a">+        public SampleTraceData(string eventName)</span>
+<span class="a">+            : base(eventName, UniversalEventsTraceEventParser.ProviderGuid, UniversalEventsTraceEventParser.ProviderName)</span>
+         {
+<span class="d">-            Action(this);</span>
+         }
+ 
+<span class="d">-        protected internal override Delegate Target</span>
+<span class="d">-        {</span>
+<span class="d">-            get { return Action; }</span>
+<span class="d">-            set { Action = (Action&lt;SampleTraceData&gt;)value; }</span>
+<span class="d">-        }</span>
+<span class="d">-        public override StringBuilder ToXml(StringBuilder sb)</span>
+<span class="d">-        {</span>
+<span class="d">-            Prefix(sb);</span>
+<span class="d">-            XmlAttrib(sb, &quot;Value&quot;, Value);</span>
+<span class="d">-            sb.Append(&quot;/&gt;&quot;);</span>
+<span class="d">-            return sb;</span>
+<span class="d">-        }</span>
+<span class="a">+        public Address Value { get { return GetVarUIntAt(0); } }</span>
+ 
+         public override string[] PayloadNames
+         {
+<span class="h">@@ -119,10 +95,16 @@ namespace Microsoft.Diagnostics.Tracing.Parsers.Universal.Events</span>
+             }
+         }
+ 
+<span class="a">+        public override StringBuilder ToXml(StringBuilder sb)</span>
+<span class="a">+        {</span>
+<span class="a">+            Prefix(sb);</span>
+<span class="a">+            XmlAttrib(sb, &quot;Value&quot;, Value);</span>
+<span class="a">+            sb.Append(&quot;/&gt;&quot;);</span>
+<span class="a">+            return sb;</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         public static ulong GetKeywords() { return 0; }
+         public static string GetProviderName() { return UniversalEventsTraceEventParser.ProviderName; }
+         public static Guid GetProviderGuid() { return UniversalEventsTraceEventParser.ProviderGuid; }
+<span class="d">-        private event Action&lt;SampleTraceData&gt; Action;</span>
+<span class="d">-        #endregion</span>
+     }
+ }</pre></body></html>

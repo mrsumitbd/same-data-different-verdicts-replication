@@ -1,0 +1,184 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L238</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L238</h1><p><b>Repository:</b> <a href="https://github.com/go-vikunja/vikunja">go-vikunja/vikunja</a><br><b>File at merge:</b> magefile.go, line 399<br><b>Merge commit (birth):</b> <a href="https://github.com/go-vikunja/vikunja/commit/6671ce38a807936e49334489f331c1822433f491">6671ce38a8</a> (2025-06-13T08:23:17)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/go-vikunja/vikunja/tree/705e3468c0dd673a04167773a0305c79d8e67ade">705e3468c0</a>)</p><p><b>The line:</b></p><pre><span class="t">	runAndStreamOutput(&quot;go&quot;, &quot;test&quot;, Goflags[0], &quot;-p&quot;, &quot;1&quot;, &quot;-timeout&quot;, &quot;45m&quot;, PACKAGE+&quot;/pkg/webtests&quot;)</span></pre><h2>File at the merge commit, lines 391 to 407</h2><pre>  391 | 	mg.Deps(Test.Feature)
+  392 | 	runAndStreamOutput(&quot;go&quot;, &quot;tool&quot;, &quot;cover&quot;, &quot;-html=cover.out&quot;, &quot;-o&quot;, &quot;cover.html&quot;)
+  393 | }
+  394 | 
+  395 | // Runs the web tests
+  396 | func (Test) Web() {
+  397 | 	mg.Deps(initVars)
+  398 | 	// We run everything sequentially and not in parallel to prevent issues with real test databases
+<span class="t">  399 | 	runAndStreamOutput(&quot;go&quot;, &quot;test&quot;, Goflags[0], &quot;-p&quot;, &quot;1&quot;, &quot;-timeout&quot;, &quot;45m&quot;, PACKAGE+&quot;/pkg/webtests&quot;)</span>
+  400 | }
+  401 | 
+  402 | func (Test) All() {
+  403 | 	mg.Deps(initVars)
+  404 | 	mg.Deps(Test.Feature, Test.Web)
+  405 | }
+  406 | 
+  407 | type Check mg.Namespace</pre><p class="k">Below are all 7 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/go-vikunja/vikunja/commit/c402ee9b2363ea18b11464b219be9643e37d2a67">c402ee9b23</a> (2025-06-22T19:18:01+00:00)</h2><p class="k">fix(dev): ensure frontend assets before compile in magefile (#992)<br>Path after this commit: magefile.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/magefile.go b/magefile.go
+index 4accd3f7f..86d8ed9b3 100644
+<span class="d">--- a/magefile.go</span>
+<span class="a">+++ b/magefile.go</span>
+<span class="h">@@ -645,6 +645,26 @@ func (Build) Clean() error {</span>
+ // Builds a vikunja binary, ready to run
+ func (Build) Build() {
+ 	mg.Deps(initVars)
+<span class="a">+	// Check if the frontend dist folder exists</span>
+<span class="a">+	distPath := filepath.Join(RootPath, &quot;frontend&quot;, &quot;dist&quot;)</span>
+<span class="a">+	if _, err := os.Stat(distPath); os.IsNotExist(err) {</span>
+<span class="a">+		if err := os.MkdirAll(distPath, 0o755); err != nil {</span>
+<span class="a">+			fmt.Printf(&quot;Error creating %s: %s\n&quot;, distPath, err)</span>
+<span class="a">+			os.Exit(1)</span>
+<span class="a">+		}</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	indexFile := filepath.Join(distPath, &quot;index.html&quot;)</span>
+<span class="a">+	if _, err := os.Stat(indexFile); os.IsNotExist(err) {</span>
+<span class="a">+		f, err := os.Create(indexFile)</span>
+<span class="a">+		if err != nil {</span>
+<span class="a">+			fmt.Printf(&quot;Error creating %s: %s\n&quot;, indexFile, err)</span>
+<span class="a">+			os.Exit(1)</span>
+<span class="a">+		}</span>
+<span class="a">+		f.Close()</span>
+<span class="a">+		fmt.Printf(&quot;Warning: %s not found, created empty file\n&quot;, indexFile)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+ 	runAndStreamOutput(&quot;go&quot;, &quot;build&quot;, Goflags[0], &quot;-tags&quot;, Tags, &quot;-ldflags&quot;, &quot;-s -w &quot;+Ldflags, &quot;-o&quot;, Executable)
+ }
+ </pre><h2>Commit #2: <a href="https://github.com/go-vikunja/vikunja/commit/342bbd6192284059c18f45a8229d78a926efc638">342bbd6192</a> (2025-07-02T17:46:21+02:00)</h2><p class="k">fix: correct comments<br>Path after this commit: magefile.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/magefile.go b/magefile.go
+index 86d8ed9b3..380e25a2f 100644
+<span class="d">--- a/magefile.go</span>
+<span class="a">+++ b/magefile.go</span>
+<span class="h">@@ -310,7 +310,7 @@ func copyFile(src, dst string) error {</span>
+ }
+ 
+ // os.Rename has issues with moving files between docker volumes.
+<span class="d">-// Because of this limitaion, it fails in drone.</span>
+<span class="a">+// Because of this limitation, it fails in drone.</span>
+ // Source: https://gist.github.com/var23rav/23ae5d0d4d830aff886c3c970b8f6c6b
+ func moveFile(src, dst string) error {
+ 	inputFile, err := os.Open(src)
+<span class="h">@@ -612,7 +612,7 @@ func (Check) GolangciFix() {</span>
+ 	runAndStreamOutput(&quot;golangci-lint&quot;, &quot;run&quot;, &quot;--fix&quot;)
+ }
+ 
+<span class="d">-// Runs golangci and the swagger test in parralel</span>
+<span class="a">+// Runs golangci and the swagger test in parallel</span>
+ func (Check) All() {
+ 	mg.Deps(initVars)
+ 	mg.Deps(
+<span class="h">@@ -838,7 +838,7 @@ func (Release) Compress(ctx context.Context) error {</span>
+ 
+ 		// Runs compressing in parallel since upx is single-threaded
+ 		errs.Go(func() error {
+<span class="d">-			runAndStreamOutput(&quot;chmod&quot;, &quot;+x&quot;, path) // Make sure all binaries are executable. Sometimes the CI does weired things and they&#x27;re not.</span>
+<span class="a">+			runAndStreamOutput(&quot;chmod&quot;, &quot;+x&quot;, path) // Make sure all binaries are executable. Sometimes the CI does weird things and they&#x27;re not.</span>
+ 			runAndStreamOutput(&quot;upx&quot;, &quot;-9&quot;, path)
+ 			return nil
+ 		})</pre><h2>Commit #3: <a href="https://github.com/go-vikunja/vikunja/commit/e7a4d9f180dba91725d61a5896d7c76ca44f0631">e7a4d9f180</a> (2025-07-02T20:41:25+00:00)</h2><p class="k">Allow filtering tests from mage (#1072)<br>Path after this commit: magefile.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/magefile.go b/magefile.go
+index 380e25a2f..ce34a526e 100644
+<span class="d">--- a/magefile.go</span>
+<span class="a">+++ b/magefile.go</span>
+<span class="h">@@ -396,7 +396,16 @@ func (Test) Coverage() {</span>
+ func (Test) Web() {
+ 	mg.Deps(initVars)
+ 	// We run everything sequentially and not in parallel to prevent issues with real test databases
+<span class="d m">-	runAndStreamOutput(&quot;go&quot;, &quot;test&quot;, Goflags[0], &quot;-p&quot;, &quot;1&quot;, &quot;-timeout&quot;, &quot;45m&quot;, PACKAGE+&quot;/pkg/webtests&quot;)</span>
+<span class="a">+	args := []string{&quot;test&quot;, Goflags[0], &quot;-p&quot;, &quot;1&quot;, &quot;-timeout&quot;, &quot;45m&quot;, PACKAGE + &quot;/pkg/webtests&quot;}</span>
+<span class="a">+	runAndStreamOutput(&quot;go&quot;, args...)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+func (Test) Filter(filter string) {</span>
+<span class="a">+	mg.Deps(initVars)</span>
+<span class="a">+	setApiPackages()</span>
+<span class="a">+	// We run everything sequentially and not in parallel to prevent issues with real test databases</span>
+<span class="a">+	args := append([]string{&quot;test&quot;, Goflags[0], &quot;-p&quot;, &quot;1&quot;, &quot;-timeout&quot;, &quot;45m&quot;, &quot;-run&quot;, filter}, ApiPackages...)</span>
+<span class="a">+	runAndStreamOutput(&quot;go&quot;, args...)</span>
+ }
+ 
+ func (Test) All() {</pre><h2>Commit #4: <a href="https://github.com/go-vikunja/vikunja/commit/b08b43953b973426aa15153189d949a5298eb1e7">b08b43953b</a> (2025-08-01T17:06:02+02:00)</h2><p class="k">feat(plugins): add rudimentary plugin system<br>Path after this commit: magefile.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/magefile.go b/magefile.go
+index ce34a526e..0a2ea1b70 100644
+<span class="d">--- a/magefile.go</span>
+<span class="a">+++ b/magefile.go</span>
+<span class="h">@@ -73,6 +73,7 @@ var (</span>
+ 		&quot;dev:make-event&quot;:              Dev.MakeEvent,
+ 		&quot;dev:make-listener&quot;:           Dev.MakeListener,
+ 		&quot;dev:make-notification&quot;:       Dev.MakeNotification,
+<span class="a">+		&quot;plugins:build&quot;:               Plugins.Build,</span>
+ 		&quot;lint&quot;:                        Check.Golangci,
+ 		&quot;lint:fix&quot;:                    Check.GolangciFix,
+ 		&quot;generate:config-yaml&quot;:        Generate.ConfigYAML,
+<span class="h">@@ -1393,3 +1394,26 @@ func generateConfigYAMLFromJSON(yamlPath string, commented bool) {</span>
+ func (Generate) ConfigYAML(commented bool) {
+ 	generateConfigYAMLFromJSON(DefaultConfigYAMLSamplePath, commented)
+ }
+<span class="a">+</span>
+<span class="a">+type Plugins mg.Namespace</span>
+<span class="a">+</span>
+<span class="a">+// Build compiles a Go plugin at the provided path.</span>
+<span class="a">+func (Plugins) Build(pathToSourceFiles string) error {</span>
+<span class="a">+	mg.Deps(initVars)</span>
+<span class="a">+	if pathToSourceFiles == &quot;&quot; {</span>
+<span class="a">+		return fmt.Errorf(&quot;please provide a plugin path&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+	</span>
+<span class="a">+	// Convert relative path to absolute path</span>
+<span class="a">+	if !strings.HasPrefix(pathToSourceFiles, &quot;/&quot;) {</span>
+<span class="a">+		absPath, err := filepath.Abs(pathToSourceFiles)</span>
+<span class="a">+		if err != nil {</span>
+<span class="a">+			return fmt.Errorf(&quot;failed to resolve absolute path: %v&quot;, err)</span>
+<span class="a">+		}</span>
+<span class="a">+		pathToSourceFiles = absPath</span>
+<span class="a">+	}</span>
+<span class="a">+	</span>
+<span class="a">+	out := filepath.Join(RootPath, &quot;plugins&quot;, filepath.Base(pathToSourceFiles)+&quot;.so&quot;)</span>
+<span class="a">+	runAndStreamOutput(&quot;go&quot;, &quot;build&quot;, &quot;-buildmode=plugin&quot;, &quot;-o&quot;, out, pathToSourceFiles)</span>
+<span class="a">+	return nil</span>
+<span class="a">+}</span></pre><h2>Commit #5: <a href="https://github.com/go-vikunja/vikunja/commit/a81a3ee0e5a371773ba2fc12c058f4eb46b3dbcb">a81a3ee0e5</a> (2025-08-13T11:05:05+02:00)</h2><p class="k">feat!: rename right to permission (#1277)<br>Path after this commit: magefile.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/magefile.go b/magefile.go
+index 0a2ea1b70..6726a9fdf 100644
+<span class="d">--- a/magefile.go</span>
+<span class="a">+++ b/magefile.go</span>
+<span class="h">@@ -1403,7 +1403,7 @@ func (Plugins) Build(pathToSourceFiles string) error {</span>
+ 	if pathToSourceFiles == &quot;&quot; {
+ 		return fmt.Errorf(&quot;please provide a plugin path&quot;)
+ 	}
+<span class="d">-	</span>
+<span class="a">+</span>
+ 	// Convert relative path to absolute path
+ 	if !strings.HasPrefix(pathToSourceFiles, &quot;/&quot;) {
+ 		absPath, err := filepath.Abs(pathToSourceFiles)
+<span class="h">@@ -1412,7 +1412,7 @@ func (Plugins) Build(pathToSourceFiles string) error {</span>
+ 		}
+ 		pathToSourceFiles = absPath
+ 	}
+<span class="d">-	</span>
+<span class="a">+</span>
+ 	out := filepath.Join(RootPath, &quot;plugins&quot;, filepath.Base(pathToSourceFiles)+&quot;.so&quot;)
+ 	runAndStreamOutput(&quot;go&quot;, &quot;build&quot;, &quot;-buildmode=plugin&quot;, &quot;-o&quot;, out, pathToSourceFiles)
+ 	return nil</pre><h2>Commit #6: <a href="https://github.com/go-vikunja/vikunja/commit/74189b6cf9d58b8d6eba1c56c2109f0409b9e535">74189b6cf9</a> (2025-09-10T13:54:59+02:00)</h2><p class="k">chore: update magefile to reference up to date golangci lint<br>Path after this commit: magefile.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/magefile.go b/magefile.go
+index 6726a9fdf..f768565c1 100644
+<span class="d">--- a/magefile.go</span>
+<span class="a">+++ b/magefile.go</span>
+<span class="h">@@ -607,7 +607,7 @@ func checkGolangCiLintInstalled() {</span>
+ 	mg.Deps(initVars)
+ 	if err := exec.Command(&quot;golangci-lint&quot;).Run(); err != nil &amp;&amp; strings.Contains(err.Error(), &quot;executable file not found&quot;) {
+ 		fmt.Println(&quot;Please manually install golangci-lint by running&quot;)
+<span class="d">-		fmt.Println(&quot;curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.2&quot;)</span>
+<span class="a">+		fmt.Println(&quot;curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.4.0&quot;)</span>
+ 		os.Exit(1)
+ 	}
+ }</pre><h2>Commit #7: <a href="https://github.com/go-vikunja/vikunja/commit/541a38456ed076df5e15ffd12622ac7eb4c18eac">541a38456e</a> (2025-10-31T17:28:52+00:00)</h2><p class="k">chore(deps): update golangci-lint to 2.6.0 (#1737)<br>Path after this commit: magefile.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/magefile.go b/magefile.go
+index f768565c1..7bc0c79aa 100644
+<span class="d">--- a/magefile.go</span>
+<span class="a">+++ b/magefile.go</span>
+<span class="h">@@ -15,7 +15,6 @@</span>
+ // along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+ 
+ //go:build mage
+<span class="d">-// +build mage</span>
+ 
+ package main
+ </pre></body></html>

@@ -1,0 +1,50 @@
+==============================================================================
+C9b. Labelled (618) vs unlabelled corpus commits
+==============================================================================
+tier-mapped corpus commits 5,300: labelled 618, unlabelled 4,682
+
+1. Feature distributions (labelled vs unlabelled)
+  tier: chi-square p = 0.00011
+    labelled          unlabelled %  labelled %
+    tier                                      
+    fully_autonomous          11.3        14.1
+    human                     62.0        53.1
+    human_supervised          26.7        32.8
+  repo_grp: chi-square p = 0.29
+  month: chi-square p = 0.38
+  msg_len_q: chi-square p = 0.25
+    labelled   unlabelled %  labelled %
+    msg_len_q                          
+    Q1 short           25.1        24.8
+    Q2                 25.3        23.3
+    Q3                 25.1        23.8
+    Q4 long            24.5        28.2
+  agent: chi-square p = 0.0015
+  message length median: labelled 120, unlabelled 112 (Mann-Whitney p = 0.28)
+  top HS repositories, labelled: {'promptfoo/promptfoo': 0.108, 'dotnet/aspire': 0.108, 'microsoft/vscode-pull-request-github': 0.064}; unlabelled: {'dotnet/aspire': 0.122, 'promptfoo/promptfoo': 0.102, 'block/goose': 0.048}
+  labelled by round: {'topup_v6': 250, 'sample385': 224, 'topup148': 144}
+
+2. Corrective share (%) HS vs human, mv3 LLM label (and human label for the labelled commits)
+  labelled    mv3: HS 26.1 vs human 19.5   human label: HS 28.6 vs human 20.4   (n HS 203, human 328)
+  unlabelled  mv3: HS 22.5 vs human 22.8   (n HS 1250, human 2902)
+  all corpus  mv3: HS 23.0 vs human 22.4   (n HS 1453, human 3230)
+    round sample385 human label: HS 31.1 (n 90) vs human 23.5 (n 85)
+    round topup148  human label: HS 26.7 (n 30) vs human 23.4 (n 94)
+    round topup_v6  human label: HS 26.5 (n 83) vs human 16.8 (n 149)
+
+3. Labelled gap (HS minus human corrective, pp) after reweighting the labelled commits, within tier,
+   to the unlabelled distribution of one feature (weight = unlabelled share / labelled share of the cell)
+  none         human-label gap +8.1   mv3 gap +6.6
+  repo_grp     human-label gap +7.1   mv3 gap +5.1
+  slug         human-label gap +5.5   mv3 gap +2.9
+  month        human-label gap +8.7   mv3 gap +7.4
+  msg_len_q    human-label gap +8.1   mv3 gap +6.4
+  agent        human-label gap +8.3   mv3 gap +7.0
+
+4. Labelled human-label gap when one repository is left out (largest changes)
+  without promptfoo/promptfoo                 gap +6.5 pp (that repo: 22 labelled HS commits, 10 corrective)
+  without go-vikunja/vikunja                  gap +6.6 pp (that repo: 7 labelled HS commits, 5 corrective)
+  without azure/azure-sdk-for-python          gap +7.3 pp (that repo: 3 labelled HS commits, 2 corrective)
+  without odigos-io/odigos                    gap +7.4 pp (that repo: 2 labelled HS commits, 2 corrective)
+  without stephendev0/stikdebug               gap +7.4 pp (that repo: 3 labelled HS commits, 2 corrective)
+  without microsoft/testfx                    gap +7.5 pp (that repo: 6 labelled HS commits, 3 corrective)

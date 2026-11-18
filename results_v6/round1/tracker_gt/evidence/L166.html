@@ -1,0 +1,95 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L166</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L166</h1><p><b>Repository:</b> <a href="https://github.com/glaredb/glaredb">glaredb/glaredb</a><br><b>File at merge:</b> crates/ext_parquet/src/basic.rs, line 210<br><b>Merge commit (birth):</b> <a href="https://github.com/glaredb/glaredb/commit/e95c6f1c9a886f972c8f17336bd70c3cda10759f">e95c6f1c9a</a> (2025-06-04T18:39:43)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/glaredb/glaredb/tree/549b01cb39a953875224f83ca12bfefa771b3e7b">549b01cb39</a>)</p><p><b>The line:</b></p><pre><span class="t">    Variant,</span></pre><h2>File at the merge commit, lines 202 to 218</h2><pre>  202 |         bit_width: i8,
+  203 |         is_signed: bool,
+  204 |     },
+  205 |     Unknown,
+  206 |     Json,
+  207 |     Bson,
+  208 |     Uuid,
+  209 |     Float16,
+<span class="t">  210 |     Variant,</span>
+  211 |     Geometry,
+  212 |     Geography,
+  213 | }
+  214 | 
+  215 | // ----------------------------------------------------------------------
+  216 | // Mirrors `parquet::FieldRepetitionType`
+  217 | 
+  218 | /// Representation of field types in schema.</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/glaredb/glaredb/commit/1cf167ad859afaa50fc28db3ace6f546629769fb">1cf167ad85</a> (2025-06-19T15:56:10+00:00)</h2><p class="k">Rename all ext_* crates to glaredb_ext_* prefix (#3933)<br>Path after this commit: crates/glaredb_ext_parquet/src/basic.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/ext_parquet/src/basic.rs b/crates/glaredb_ext_parquet/src/basic.rs
+similarity index 100%
+rename from crates/ext_parquet/src/basic.rs
+rename to crates/glaredb_ext_parquet/src/basic.rs</pre><h2>Commit #2: <a href="https://github.com/glaredb/glaredb/commit/f2d0541b0490f4232f99724c1fd7608a30fb0855">f2d0541b04</a> (2025-06-29T20:44:28+00:00)</h2><p class="k">chore: Fix clippy lints added in 1.88 (#3967)<br>Path after this commit: crates/glaredb_ext_parquet/src/basic.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/crates/glaredb_ext_parquet/src/basic.rs b/crates/glaredb_ext_parquet/src/basic.rs
+index ac09d6bb..4486d03f 100644
+<span class="d">--- a/crates/glaredb_ext_parquet/src/basic.rs</span>
+<span class="a">+++ b/crates/glaredb_ext_parquet/src/basic.rs</span>
+<span class="h">@@ -336,7 +336,7 @@ impl FromStr for Encoding {</span>
+             &quot;DELTA_BYTE_ARRAY&quot; | &quot;delta_byte_array&quot; =&gt; Ok(Encoding::DELTA_BYTE_ARRAY),
+             &quot;RLE_DICTIONARY&quot; | &quot;rle_dictionary&quot; =&gt; Ok(Encoding::RLE_DICTIONARY),
+             &quot;BYTE_STREAM_SPLIT&quot; | &quot;byte_stream_split&quot; =&gt; Ok(Encoding::BYTE_STREAM_SPLIT),
+<span class="d">-            _ =&gt; Err(DbError::new(format!(&quot;unknown encoding: {}&quot;, s))),</span>
+<span class="a">+            _ =&gt; Err(DbError::new(format!(&quot;unknown encoding: {s}&quot;))),</span>
+         }
+     }
+ }
+<span class="h">@@ -379,7 +379,7 @@ fn split_compression_string(str_setting: &amp;str) -&gt; Result&lt;(&amp;str, Option&lt;u32&gt;)&gt; {</span>
+         Some((codec, level_str)) =&gt; {
+             let level = &amp;level_str[..level_str.len() - 1]
+                 .parse::&lt;u32&gt;()
+<span class="d">-                .map_err(|_| DbError::new(format!(&quot;invalid compression level: {}&quot;, level_str)))?;</span>
+<span class="a">+                .map_err(|_| DbError::new(format!(&quot;invalid compression level: {level_str}&quot;)))?;</span>
+             Ok((codec, Some(*level)))
+         }
+         None =&gt; Ok((str_setting, None)),
+<span class="h">@@ -395,7 +395,7 @@ fn check_level_is_none(level: &amp;Option&lt;u32&gt;) -&gt; Result&lt;()&gt; {</span>
+ }
+ 
+ fn require_level(codec: &amp;str, level: Option&lt;u32&gt;) -&gt; Result&lt;u32&gt; {
+<span class="d">-    level.ok_or(DbError::new(format!(&quot;{} require level&quot;, codec)))</span>
+<span class="a">+    level.ok_or(DbError::new(format!(&quot;{codec} require level&quot;)))</span>
+ }
+ 
+ impl FromStr for Compression {
+<span class="h">@@ -1069,10 +1069,7 @@ impl str::FromStr for Repetition {</span>
+             &quot;REQUIRED&quot; =&gt; Ok(Repetition::REQUIRED),
+             &quot;OPTIONAL&quot; =&gt; Ok(Repetition::OPTIONAL),
+             &quot;REPEATED&quot; =&gt; Ok(Repetition::REPEATED),
+<span class="d">-            other =&gt; Err(DbError::new(format!(</span>
+<span class="d">-                &quot;Invalid parquet repetition {}&quot;,</span>
+<span class="d">-                other</span>
+<span class="d">-            ))),</span>
+<span class="a">+            other =&gt; Err(DbError::new(format!(&quot;Invalid parquet repetition {other}&quot;))),</span>
+         }
+     }
+ }
+<span class="h">@@ -1090,7 +1087,7 @@ impl str::FromStr for Type {</span>
+             &quot;DOUBLE&quot; =&gt; Ok(Type::DOUBLE),
+             &quot;BYTE_ARRAY&quot; | &quot;BINARY&quot; =&gt; Ok(Type::BYTE_ARRAY),
+             &quot;FIXED_LEN_BYTE_ARRAY&quot; =&gt; Ok(Type::FIXED_LEN_BYTE_ARRAY),
+<span class="d">-            other =&gt; Err(DbError::new(format!(&quot;Invalid parquet type {}&quot;, other))),</span>
+<span class="a">+            other =&gt; Err(DbError::new(format!(&quot;Invalid parquet type {other}&quot;))),</span>
+         }
+     }
+ }
+<span class="h">@@ -1124,8 +1121,7 @@ impl str::FromStr for ConvertedType {</span>
+             &quot;BSON&quot; =&gt; Ok(ConvertedType::BSON),
+             &quot;INTERVAL&quot; =&gt; Ok(ConvertedType::INTERVAL),
+             other =&gt; Err(DbError::new(format!(
+<span class="d">-                &quot;Invalid parquet converted type {}&quot;,</span>
+<span class="d">-                other</span>
+<span class="a">+                &quot;Invalid parquet converted type {other}&quot;</span>
+             ))),
+         }
+     }
+<span class="h">@@ -1167,8 +1163,7 @@ impl str::FromStr for LogicalType {</span>
+             )),
+             &quot;FLOAT16&quot; =&gt; Ok(LogicalType::Float16),
+             other =&gt; Err(DbError::new(format!(
+<span class="d">-                &quot;Invalid parquet logical type {}&quot;,</span>
+<span class="d">-                other</span>
+<span class="a">+                &quot;Invalid parquet logical type {other}&quot;</span>
+             ))),
+         }
+     }</pre></body></html>

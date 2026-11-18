@@ -1,0 +1,17 @@
+======================================================================
+Held-out early churn, fully-autonomous vs human, repository-stratified
+======================================================================
+repositories with FA and human lines: 31; windows tried on half A: [3, 7, 14, 30] days
+
+full sample, 0-3 d: HR=1.763 [0.972, 3.196] p=0.062 (31 repos)
+full sample, 0-7 d: HR=1.719 [1.157, 2.555] p=0.0073 (31 repos)
+full sample, 0-14 d: HR=1.009 [0.380, 2.684] p=0.99 (31 repos)
+full sample, 0-30 d: HR=1.054 [0.420, 2.645] p=0.91 (31 repos)
+
+seed 42: half A picks 0-3 d (A: HR=2.182, p=0.0044, 15 repos) -> half B: HR=1.413 [0.531, 3.764] p=0.49 (16 repos) does not replicate
+seed  1: half A picks 0-7 d (A: HR=2.100, p=0.0026, 15 repos) -> half B: HR=1.304 [0.747, 2.277] p=0.35 (16 repos) does not replicate
+seed  2: half A picks 0-7 d (A: HR=1.766, p=0.013, 15 repos) -> half B: HR=1.688 [0.937, 3.041] p=0.081 (16 repos) does not replicate
+seed  3: half A picks 0-7 d (A: HR=1.778, p=0.0031, 15 repos) -> half B: HR=1.661 [0.823, 3.352] p=0.16 (16 repos) does not replicate
+seed  4: half A picks 0-3 d (A: HR=2.255, p=0.016, 15 repos) -> half B: HR=0.572 [0.119, 2.761] p=0.49 (16 repos) does not replicate
+
+replicated (half-B CI above 1) in 0 of 5 splits

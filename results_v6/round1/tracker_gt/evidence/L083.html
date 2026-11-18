@@ -1,0 +1,107 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L083</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L083</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/teams-ai">microsoft/teams-ai</a><br><b>File at merge:</b> book/langtabs.js, line 24<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/teams-ai/commit/9744bf013f84a89fe66de924e035bbb2c5985015">9744bf013f</a> (2025-05-05T21:46:12)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/teams-ai/tree/237bbc3ce2241af2e5f894048f8148500068e196">237bbc3ce2</a>)</p><p><b>The line:</b></p><pre><span class="t">    // Also handle theme changes when page hash changes (mdbook sometimes updates theme this way)</span></pre><h2>File at the merge commit, lines 16 to 32</h2><pre>   16 |             }
+   17 |         });
+   18 |     });
+   19 |     
+   20 |     observer.observe(document.documentElement, {
+   21 |         attributes: true
+   22 |     });
+   23 |     
+<span class="t">   24 |     // Also handle theme changes when page hash changes (mdbook sometimes updates theme this way)</span>
+   25 |     window.addEventListener(&#x27;hashchange&#x27;, function() {
+   26 |         setTimeout(initLangTabs, 100);
+   27 |     });
+   28 |     
+   29 |     // Handle page navigation
+   30 |     window.addEventListener(&#x27;load&#x27;, function() {
+   31 |         setTimeout(initLangTabs, 100);
+   32 |     });</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/teams-ai/commit/87caa715896ee142b180fb58e1d54b70c52cb830">87caa71589</a> (2025-05-07T09:24:50-07:00)</h2><p class="k">[docs] Add Clarity, Boilerplate files, and improve docs layout (#2445)<br>Path after this commit: book/theme/js/langtabs.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/book/langtabs.js b/book/theme/js/langtabs.js
+similarity index 100%
+rename from book/langtabs.js
+rename to book/theme/js/langtabs.js</pre><h2>Commit #2: <a href="https://github.com/microsoft/teams-ai/commit/00ba2fc028487b926da7f82c5410d25b931bf96c">00ba2fc028</a> (2025-05-23T09:23:04-07:00)</h2><p class="k">[docs] Remove `book` directory (#2484)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/book/theme/js/langtabs.js b/book/theme/js/langtabs.js
+deleted file mode 100644
+index 8c76c79e..00000000
+<span class="d">--- a/book/theme/js/langtabs.js</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,77 +0,0 @@</span>
+<span class="d">-(function loadDeviconCSS() {</span>
+<span class="d">-    const link = document.createElement(&#x27;link&#x27;);</span>
+<span class="d">-    link.rel = &#x27;stylesheet&#x27;;</span>
+<span class="d">-    link.href = &#x27;https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css&#x27;;</span>
+<span class="d">-    document.head.appendChild(link);</span>
+<span class="d">-})();</span>
+<span class="d">-</span>
+<span class="d">-document.addEventListener(&#x27;DOMContentLoaded&#x27;, function() {</span>
+<span class="d">-    initLangTabs();</span>
+<span class="d">-    </span>
+<span class="d">-    // Listen for theme changes to re-style tabs</span>
+<span class="d">-    const observer = new MutationObserver(function(mutations) {</span>
+<span class="d">-        mutations.forEach(function(mutation) {</span>
+<span class="d">-            if (mutation.attributeName === &#x27;class&#x27; &amp;&amp; mutation.target.nodeName === &#x27;HTML&#x27;) {</span>
+<span class="d">-                setTimeout(initLangTabs, 50);</span>
+<span class="d">-            }</span>
+<span class="d">-        });</span>
+<span class="d">-    });</span>
+<span class="d">-    </span>
+<span class="d">-    observer.observe(document.documentElement, {</span>
+<span class="d">-        attributes: true</span>
+<span class="d">-    });</span>
+<span class="d">-    </span>
+<span class="d m">-    // Also handle theme changes when page hash changes (mdbook sometimes updates theme this way)</span>
+<span class="d">-    window.addEventListener(&#x27;hashchange&#x27;, function() {</span>
+<span class="d">-        setTimeout(initLangTabs, 100);</span>
+<span class="d">-    });</span>
+<span class="d">-    </span>
+<span class="d">-    // Handle page navigation</span>
+<span class="d">-    window.addEventListener(&#x27;load&#x27;, function() {</span>
+<span class="d">-        setTimeout(initLangTabs, 100);</span>
+<span class="d">-    });</span>
+<span class="d">-});</span>
+<span class="d">-</span>
+<span class="d">-function initLangTabs() {</span>
+<span class="d">-    const langTabsContainers = document.querySelectorAll(&#x27;.langtabs&#x27;);</span>
+<span class="d">-    </span>
+<span class="d">-    langTabsContainers.forEach(function(container) {</span>
+<span class="d">-        const tabButtons = container.querySelectorAll(&#x27;.langtabs-tab&#x27;);</span>
+<span class="d">-        </span>
+<span class="d">-        tabButtons.forEach(function(button) {</span>
+<span class="d">-            button.removeEventListener(&#x27;click&#x27;, handleTabClick);</span>
+<span class="d">-            button.addEventListener(&#x27;click&#x27;, handleTabClick);</span>
+<span class="d">-        });</span>
+<span class="d">-        </span>
+<span class="d">-        // If no tab active select first</span>
+<span class="d">-        if (!container.querySelector(&#x27;.langtabs-tab.active&#x27;)) {</span>
+<span class="d">-            const firstButton = tabButtons[0];</span>
+<span class="d">-            if (firstButton) {</span>
+<span class="d">-                firstButton.click();</span>
+<span class="d">-            }</span>
+<span class="d">-        }</span>
+<span class="d">-    });</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-function handleTabClick() {</span>
+<span class="d">-    const container = this.closest(&#x27;.langtabs&#x27;);</span>
+<span class="d">-    const lang = this.getAttribute(&#x27;data-lang&#x27;);</span>
+<span class="d">-    </span>
+<span class="d">-    // Deactivate all tabs in this container</span>
+<span class="d">-    const tabButtons = container.querySelectorAll(&#x27;.langtabs-tab&#x27;);</span>
+<span class="d">-    const tabContents = container.querySelectorAll(&#x27;.langtabs-code&#x27;);</span>
+<span class="d">-    </span>
+<span class="d">-    tabButtons.forEach(function(btn) {</span>
+<span class="d">-        btn.classList.remove(&#x27;active&#x27;);</span>
+<span class="d">-    });</span>
+<span class="d">-    tabContents.forEach(function(content) {</span>
+<span class="d">-        content.classList.remove(&#x27;active&#x27;);</span>
+<span class="d">-    });</span>
+<span class="d">-    </span>
+<span class="d">-    // Activate selected tab</span>
+<span class="d">-    this.classList.add(&#x27;active&#x27;);</span>
+<span class="d">-    const activeContent = container.querySelector(`.langtabs-code[data-lang=&quot;${lang}&quot;]`);</span>
+<span class="d">-    if (activeContent) {</span>
+<span class="d">-        activeContent.classList.add(&#x27;active&#x27;);</span>
+<span class="d">-    }</span>
+<span class="d">-}</span>
+\ No newline at end of file</pre></body></html>

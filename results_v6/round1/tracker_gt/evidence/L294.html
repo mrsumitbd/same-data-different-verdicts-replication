@@ -1,0 +1,311 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L294</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L294</h1><p><b>Repository:</b> <a href="https://github.com/onlook-dev/onlook">onlook-dev/onlook</a><br><b>File at merge:</b> apps/web/client/src/server/api/routers/project/chat.ts, line 60<br><b>Merge commit (birth):</b> <a href="https://github.com/onlook-dev/onlook/commit/3c15e27ecb50d808a317d9ad582b9b7bdcbcd5dc">3c15e27ecb</a> (2025-06-28T02:02:04)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onlook-dev/onlook/tree/6962f87aadfeae72498151bdde799041301219cc">6962f87aad</a>)</p><p><b>The line:</b></p><pre><span class="t">            const conversationId = input.message.conversationId;</span></pre><h2>File at the merge commit, lines 52 to 68</h2><pre>   52 |                 where: eq(messages.conversationId, input.conversationId),
+   53 |                 orderBy: (messages, { asc }) =&gt; [asc(messages.createdAt)],
+   54 |             });
+   55 |             return dbMessages.map((message) =&gt; toMessage(message));
+   56 |         }),
+   57 |     upsert: protectedProcedure
+   58 |         .input(z.object({ message: messageInsertSchema }))
+   59 |         .mutation(async ({ ctx, input }) =&gt; {
+<span class="t">   60 |             const conversationId = input.message.conversationId;</span>
+   61 |             if (conversationId) {
+   62 |                 const conversation = await ctx.db.query.conversations.findFirst({
+   63 |                     where: eq(conversations.id, conversationId),
+   64 |                 });
+   65 |                 if (!conversation) {
+   66 |                     throw new Error(`Conversation not found`);
+   67 |                 }
+   68 |             }</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onlook-dev/onlook/commit/60395d9702f4c739ba791d825219dcf0c006398f">60395d9702</a> (2025-06-30T16:39:08-07:00)</h2><p class="k">fix: update conversation creation logic (#2311)<br>Path after this commit: apps/web/client/src/server/api/routers/project/chat.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/project/chat.ts b/apps/web/client/src/server/api/routers/project/chat.ts
+index 6f0c6a2a..704efb0a 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="h">@@ -22,6 +22,17 @@ const conversationRouter = createTRPCRouter({</span>
+             });
+             return dbConversations.map((conversation) =&gt; toConversation(conversation));
+         }),
+<span class="a">+    create: protectedProcedure</span>
+<span class="a">+        .input(z.object({ projectId: z.string() }))</span>
+<span class="a">+        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="a">+            const [conversation] = await ctx.db.insert(conversations).values({</span>
+<span class="a">+                projectId: input.projectId,</span>
+<span class="a">+            }).returning();</span>
+<span class="a">+            if (!conversation) {</span>
+<span class="a">+                throw new Error(&#x27;Failed to create conversation&#x27;);</span>
+<span class="a">+            }</span>
+<span class="a">+            return toConversation(conversation);</span>
+<span class="a">+        }),</span>
+     upsert: protectedProcedure
+         .input(z.object({ conversation: conversationInsertSchema }))
+         .mutation(async ({ ctx, input }) =&gt; {</pre><h2>Commit #2: <a href="https://github.com/onlook-dev/onlook/commit/93977f585b604481f49258327de15afaf8619b31">93977f585b</a> (2025-07-30T13:42:19-07:00)</h2><p class="k">feat: implement suggestion feature in chat API and UI (#2483)<br>Path after this commit: apps/web/client/src/server/api/routers/project/chat.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/project/chat.ts b/apps/web/client/src/server/api/routers/project/chat.ts
+index 704efb0a..84bdf66d 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="h">@@ -1,3 +1,5 @@</span>
+<span class="a">+import { initModel } from &#x27;@onlook/ai&#x27;;</span>
+<span class="a">+import { SUGGESTION_SYSTEM_PROMPT } from &#x27;@onlook/ai/src/prompt/suggest&#x27;;</span>
+ import {
+     conversationInsertSchema,
+     conversations,
+<span class="h">@@ -7,7 +9,11 @@ import {</span>
+     toMessage,
+     type Message,
+ } from &#x27;@onlook/db&#x27;;
+<span class="d">-import type { ChatMessageRole } from &#x27;@onlook/models&#x27;;</span>
+<span class="a">+import type { ChatMessageRole, ChatSuggestion } from &#x27;@onlook/models&#x27;;</span>
+<span class="a">+import { LLMProvider, OPENROUTER_MODELS } from &#x27;@onlook/models&#x27;;</span>
+<span class="a">+import { ChatSuggestionsSchema } from &#x27;@onlook/models/chat&#x27;;</span>
+<span class="a">+import type { CoreMessage } from &#x27;ai&#x27;;</span>
+<span class="a">+import { generateObject } from &#x27;ai&#x27;;</span>
+ import { eq, inArray } from &#x27;drizzle-orm&#x27;;
+ import { z } from &#x27;zod&#x27;;
+ import { createTRPCRouter, protectedProcedure } from &#x27;../../trpc&#x27;;
+<span class="h">@@ -77,7 +83,6 @@ const messageRouter = createTRPCRouter({</span>
+                     throw new Error(`Conversation not found`);
+                 }
+             }
+<span class="d">-</span>
+             const normalizedMessage = {
+                 ...input.message,
+                 role: input.message.role as ChatMessageRole,
+<span class="h">@@ -100,7 +105,49 @@ const messageRouter = createTRPCRouter({</span>
+         }),
+ })
+ 
+<span class="a">+const suggestionsRouter = createTRPCRouter({</span>
+<span class="a">+    generate: protectedProcedure</span>
+<span class="a">+        .input(z.object({</span>
+<span class="a">+            conversationId: z.string(),</span>
+<span class="a">+            messages: z.array(z.any()),</span>
+<span class="a">+        }))</span>
+<span class="a">+        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="a">+            const { model } = await initModel({</span>
+<span class="a">+                provider: LLMProvider.OPENROUTER,</span>
+<span class="a">+                model: OPENROUTER_MODELS.OPEN_AI_GPT_4_1_NANO,</span>
+<span class="a">+            });</span>
+<span class="a">+            const { object } = await generateObject({</span>
+<span class="a">+                model,</span>
+<span class="a">+                schema: ChatSuggestionsSchema,</span>
+<span class="a">+                messages: [</span>
+<span class="a">+                    {</span>
+<span class="a">+                        role: &#x27;system&#x27;,</span>
+<span class="a">+                        content: SUGGESTION_SYSTEM_PROMPT,</span>
+<span class="a">+                    },</span>
+<span class="a">+                    ...input.messages as CoreMessage[],</span>
+<span class="a">+                    {</span>
+<span class="a">+                        role: &#x27;user&#x27;,</span>
+<span class="a">+                        content: &#x27;Based on our conversation, what should I work on next to improve this page? Provide 3 specific, actionable suggestions.&#x27;,</span>
+<span class="a">+                    },</span>
+<span class="a">+                ],</span>
+<span class="a">+                maxTokens: 10000,</span>
+<span class="a">+            });</span>
+<span class="a">+            const suggestions = object.suggestions satisfies ChatSuggestion[];</span>
+<span class="a">+            try {</span>
+<span class="a">+                await ctx.db</span>
+<span class="a">+                    .update(conversations)</span>
+<span class="a">+                    .set({</span>
+<span class="a">+                        suggestions,</span>
+<span class="a">+                    }).where(eq(conversations.id, input.conversationId));</span>
+<span class="a">+            } catch (error) {</span>
+<span class="a">+                console.error(&#x27;Error updating conversation suggestions:&#x27;, error);</span>
+<span class="a">+            }</span>
+<span class="a">+            return suggestions;</span>
+<span class="a">+        }),</span>
+<span class="a">+});</span>
+<span class="a">+</span>
+ export const chatRouter = createTRPCRouter({
+     conversation: conversationRouter,
+     message: messageRouter,
+<span class="a">+    suggestions: suggestionsRouter,</span>
+ });</pre><h2>Commit #3: <a href="https://github.com/onlook-dev/onlook/commit/bd71362080c98e5e951dd6ded81f5a2253f98528">bd71362080</a> (2025-07-30T15:06:07-07:00)</h2><p class="k">refactor: make openrouter default in prod (#2563)<br>Path after this commit: apps/web/client/src/server/api/routers/project/chat.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/project/chat.ts b/apps/web/client/src/server/api/routers/project/chat.ts
+index 84bdf66d..37dd6b59 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="h">@@ -112,12 +112,13 @@ const suggestionsRouter = createTRPCRouter({</span>
+             messages: z.array(z.any()),
+         }))
+         .mutation(async ({ ctx, input }) =&gt; {
+<span class="d">-            const { model } = await initModel({</span>
+<span class="a">+            const { model, headers } = await initModel({</span>
+                 provider: LLMProvider.OPENROUTER,
+                 model: OPENROUTER_MODELS.OPEN_AI_GPT_4_1_NANO,
+             });
+             const { object } = await generateObject({
+                 model,
+<span class="a">+                headers,</span>
+                 schema: ChatSuggestionsSchema,
+                 messages: [
+                     {</pre><h2>Commit #4: <a href="https://github.com/onlook-dev/onlook/commit/d9e7deb5bb45a120bfc105e1af6ed41c12a401d7">d9e7deb5bb</a> (2025-08-09T22:33:20-07:00)</h2><p class="k">Feat: max token support (#2647)<br>Path after this commit: apps/web/client/src/server/api/routers/project/chat.ts. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/web/client/src/server/api/routers/project/chat.ts b/apps/web/client/src/server/api/routers/project/chat.ts
+index 37dd6b59..b730f570 100644
+<span class="d">--- a/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="a">+++ b/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="h">@@ -114,7 +114,7 @@ const suggestionsRouter = createTRPCRouter({</span>
+         .mutation(async ({ ctx, input }) =&gt; {
+             const { model, headers } = await initModel({
+                 provider: LLMProvider.OPENROUTER,
+<span class="d">-                model: OPENROUTER_MODELS.OPEN_AI_GPT_4_1_NANO,</span>
+<span class="a">+                model: OPENROUTER_MODELS.OPEN_AI_GPT_5_NANO,</span>
+             });
+             const { object } = await generateObject({
+                 model,</pre><h2>Commit #5: <a href="https://github.com/onlook-dev/onlook/commit/829317a2ab28620aa85d1aa0e63ee4cbf67feb9e">829317a2ab</a> (2025-08-12T10:29:01-07:00)</h2><p class="k">feat: mastra no storage (#2650)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: apps/web/client/src/server/api/routers/chat/message.ts.</p><pre>diff --git a/apps/web/client/src/server/api/routers/project/chat.ts b/apps/web/client/src/server/api/routers/project/chat.ts
+deleted file mode 100644
+index b730f570..00000000
+<span class="d">--- a/apps/web/client/src/server/api/routers/project/chat.ts</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,154 +0,0 @@</span>
+<span class="d">-import { initModel } from &#x27;@onlook/ai&#x27;;</span>
+<span class="d">-import { SUGGESTION_SYSTEM_PROMPT } from &#x27;@onlook/ai/src/prompt/suggest&#x27;;</span>
+<span class="d">-import {</span>
+<span class="d">-    conversationInsertSchema,</span>
+<span class="d">-    conversations,</span>
+<span class="d">-    messageInsertSchema,</span>
+<span class="d">-    messages,</span>
+<span class="d">-    toConversation,</span>
+<span class="d">-    toMessage,</span>
+<span class="d">-    type Message,</span>
+<span class="d">-} from &#x27;@onlook/db&#x27;;</span>
+<span class="d">-import type { ChatMessageRole, ChatSuggestion } from &#x27;@onlook/models&#x27;;</span>
+<span class="d">-import { LLMProvider, OPENROUTER_MODELS } from &#x27;@onlook/models&#x27;;</span>
+<span class="d">-import { ChatSuggestionsSchema } from &#x27;@onlook/models/chat&#x27;;</span>
+<span class="d">-import type { CoreMessage } from &#x27;ai&#x27;;</span>
+<span class="d">-import { generateObject } from &#x27;ai&#x27;;</span>
+<span class="d">-import { eq, inArray } from &#x27;drizzle-orm&#x27;;</span>
+<span class="d">-import { z } from &#x27;zod&#x27;;</span>
+<span class="d">-import { createTRPCRouter, protectedProcedure } from &#x27;../../trpc&#x27;;</span>
+<span class="d">-</span>
+<span class="d">-const conversationRouter = createTRPCRouter({</span>
+<span class="d">-    get: protectedProcedure</span>
+<span class="d">-        .input(z.object({ projectId: z.string() }))</span>
+<span class="d">-        .query(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            const dbConversations = await ctx.db.query.conversations.findMany({</span>
+<span class="d">-                where: eq(conversations.projectId, input.projectId),</span>
+<span class="d">-                orderBy: (conversations, { desc }) =&gt; [desc(conversations.updatedAt)],</span>
+<span class="d">-            });</span>
+<span class="d">-            return dbConversations.map((conversation) =&gt; toConversation(conversation));</span>
+<span class="d">-        }),</span>
+<span class="d">-    create: protectedProcedure</span>
+<span class="d">-        .input(z.object({ projectId: z.string() }))</span>
+<span class="d">-        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            const [conversation] = await ctx.db.insert(conversations).values({</span>
+<span class="d">-                projectId: input.projectId,</span>
+<span class="d">-            }).returning();</span>
+<span class="d">-            if (!conversation) {</span>
+<span class="d">-                throw new Error(&#x27;Failed to create conversation&#x27;);</span>
+<span class="d">-            }</span>
+<span class="d">-            return toConversation(conversation);</span>
+<span class="d">-        }),</span>
+<span class="d">-    upsert: protectedProcedure</span>
+<span class="d">-        .input(z.object({ conversation: conversationInsertSchema }))</span>
+<span class="d">-        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            return await ctx.db</span>
+<span class="d">-                .insert(conversations)</span>
+<span class="d">-                .values(input.conversation)</span>
+<span class="d">-                .onConflictDoUpdate({</span>
+<span class="d">-                    target: [conversations.id],</span>
+<span class="d">-                    set: {</span>
+<span class="d">-                        ...input.conversation,</span>
+<span class="d">-                    },</span>
+<span class="d">-                });</span>
+<span class="d">-        }),</span>
+<span class="d">-    delete: protectedProcedure</span>
+<span class="d">-        .input(z.object({ conversationId: z.string() }))</span>
+<span class="d">-        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            return await ctx.db</span>
+<span class="d">-                .delete(conversations)</span>
+<span class="d">-                .where(eq(conversations.id, input.conversationId));</span>
+<span class="d">-        }),</span>
+<span class="d">-});</span>
+<span class="d">-</span>
+<span class="d">-const messageRouter = createTRPCRouter({</span>
+<span class="d">-    get: protectedProcedure</span>
+<span class="d">-        .input(z.object({ conversationId: z.string() }))</span>
+<span class="d">-        .query(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            const dbMessages = await ctx.db.query.messages.findMany({</span>
+<span class="d">-                where: eq(messages.conversationId, input.conversationId),</span>
+<span class="d">-                orderBy: (messages, { asc }) =&gt; [asc(messages.createdAt)],</span>
+<span class="d">-            });</span>
+<span class="d">-            return dbMessages.map((message) =&gt; toMessage(message));</span>
+<span class="d">-        }),</span>
+<span class="d">-    upsert: protectedProcedure</span>
+<span class="d">-        .input(z.object({ message: messageInsertSchema }))</span>
+<span class="d">-        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="d m">-            const conversationId = input.message.conversationId;</span>
+<span class="d">-            if (conversationId) {</span>
+<span class="d">-                const conversation = await ctx.db.query.conversations.findFirst({</span>
+<span class="d">-                    where: eq(conversations.id, conversationId),</span>
+<span class="d">-                });</span>
+<span class="d">-                if (!conversation) {</span>
+<span class="d">-                    throw new Error(`Conversation not found`);</span>
+<span class="d">-                }</span>
+<span class="d">-            }</span>
+<span class="d">-            const normalizedMessage = {</span>
+<span class="d">-                ...input.message,</span>
+<span class="d">-                role: input.message.role as ChatMessageRole,</span>
+<span class="d">-                parts: input.message.parts as Message[&#x27;parts&#x27;],</span>
+<span class="d">-            };</span>
+<span class="d">-            return await ctx.db</span>
+<span class="d">-                .insert(messages)</span>
+<span class="d">-                .values(normalizedMessage)</span>
+<span class="d">-                .onConflictDoUpdate({</span>
+<span class="d">-                    target: [messages.id],</span>
+<span class="d">-                    set: {</span>
+<span class="d">-                        ...normalizedMessage,</span>
+<span class="d">-                    },</span>
+<span class="d">-                });</span>
+<span class="d">-        }),</span>
+<span class="d">-    delete: protectedProcedure</span>
+<span class="d">-        .input(z.object({ messageIds: z.array(z.string()) }))</span>
+<span class="d">-        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            return await ctx.db.delete(messages).where(inArray(messages.id, input.messageIds));</span>
+<span class="d">-        }),</span>
+<span class="d">-})</span>
+<span class="d">-</span>
+<span class="d">-const suggestionsRouter = createTRPCRouter({</span>
+<span class="d">-    generate: protectedProcedure</span>
+<span class="d">-        .input(z.object({</span>
+<span class="d">-            conversationId: z.string(),</span>
+<span class="d">-            messages: z.array(z.any()),</span>
+<span class="d">-        }))</span>
+<span class="d">-        .mutation(async ({ ctx, input }) =&gt; {</span>
+<span class="d">-            const { model, headers } = await initModel({</span>
+<span class="d">-                provider: LLMProvider.OPENROUTER,</span>
+<span class="d">-                model: OPENROUTER_MODELS.OPEN_AI_GPT_5_NANO,</span>
+<span class="d">-            });</span>
+<span class="d">-            const { object } = await generateObject({</span>
+<span class="d">-                model,</span>
+<span class="d">-                headers,</span>
+<span class="d">-                schema: ChatSuggestionsSchema,</span>
+<span class="d">-                messages: [</span>
+<span class="d">-                    {</span>
+<span class="d">-                        role: &#x27;system&#x27;,</span>
+<span class="d">-                        content: SUGGESTION_SYSTEM_PROMPT,</span>
+<span class="d">-                    },</span>
+<span class="d">-                    ...input.messages as CoreMessage[],</span>
+<span class="d">-                    {</span>
+<span class="d">-                        role: &#x27;user&#x27;,</span>
+<span class="d">-                        content: &#x27;Based on our conversation, what should I work on next to improve this page? Provide 3 specific, actionable suggestions.&#x27;,</span>
+<span class="d">-                    },</span>
+<span class="d">-                ],</span>
+<span class="d">-                maxTokens: 10000,</span>
+<span class="d">-            });</span>
+<span class="d">-            const suggestions = object.suggestions satisfies ChatSuggestion[];</span>
+<span class="d">-            try {</span>
+<span class="d">-                await ctx.db</span>
+<span class="d">-                    .update(conversations)</span>
+<span class="d">-                    .set({</span>
+<span class="d">-                        suggestions,</span>
+<span class="d">-                    }).where(eq(conversations.id, input.conversationId));</span>
+<span class="d">-            } catch (error) {</span>
+<span class="d">-                console.error(&#x27;Error updating conversation suggestions:&#x27;, error);</span>
+<span class="d">-            }</span>
+<span class="d">-            return suggestions;</span>
+<span class="d">-        }),</span>
+<span class="d">-});</span>
+<span class="d">-</span>
+<span class="d">-export const chatRouter = createTRPCRouter({</span>
+<span class="d">-    conversation: conversationRouter,</span>
+<span class="d">-    message: messageRouter,</span>
+<span class="d">-    suggestions: suggestionsRouter,</span>
+<span class="d">-});</span></pre></body></html>

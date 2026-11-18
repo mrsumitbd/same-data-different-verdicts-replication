@@ -1,0 +1,442 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L020</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L020</h1><p><b>Repository:</b> <a href="https://github.com/promptfoo/promptfoo">promptfoo/promptfoo</a><br><b>File at merge:</b> src/app/src/pages/eval/components/EvalSelectorDialog.tsx, line 221<br><b>Merge commit (birth):</b> <a href="https://github.com/promptfoo/promptfoo/commit/1b9fe6f7e91562b176172f481cc646188abd91b6">1b9fe6f7e9</a> (2025-02-22T19:34:31)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/promptfoo/promptfoo/tree/6c1afb7d5e8232d9f7d594819ed8fd7bc8c903df">6c1afb7d5e</a>)</p><p><b>The line:</b></p><pre><span class="t">          {filteredEvals.length &gt; rowsPerPage &amp;&amp; (</span></pre><h2>File at the merge commit, lines 213 to 229</h2><pre>  213 |                         &lt;/Typography&gt;
+  214 |                       &lt;/Box&gt;
+  215 |                     &lt;/TableCell&gt;
+  216 |                   &lt;/TableRow&gt;
+  217 |                 )}
+  218 |               &lt;/TableBody&gt;
+  219 |             &lt;/Table&gt;
+  220 |           &lt;/TableContainer&gt;
+<span class="t">  221 |           {filteredEvals.length &gt; rowsPerPage &amp;&amp; (</span>
+  222 |             &lt;TablePagination
+  223 |               component=&quot;div&quot;
+  224 |               count={filteredEvals.length}
+  225 |               page={page}
+  226 |               onPageChange={handleChangePage}
+  227 |               rowsPerPage={rowsPerPage}
+  228 |               rowsPerPageOptions={[ROWS_PER_PAGE]}
+  229 |             /&gt;</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/promptfoo/promptfoo/commit/ba9670a67046cab3b89fbb290e9feed8e76e69ae">ba9670a670</a> (2025-03-31T16:24:30-04:00)</h2><p class="k">feat(evals): Adds evals index page (#3554)<br>Path after this commit: src/app/src/pages/eval/components/EvalSelectorDialog.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx
+index e47ec7950c..b2805408fe 100644
+<span class="d">--- a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="h">@@ -1,237 +1,30 @@</span>
+<span class="d">-import React, { useState } from &#x27;react&#x27;;</span>
+<span class="d">-import ClearIcon from &#x27;@mui/icons-material/Clear&#x27;;</span>
+ import Box from &#x27;@mui/material/Box&#x27;;
+ import Button from &#x27;@mui/material/Button&#x27;;
+ import Dialog from &#x27;@mui/material/Dialog&#x27;;
+ import DialogActions from &#x27;@mui/material/DialogActions&#x27;;
+ import DialogContent from &#x27;@mui/material/DialogContent&#x27;;
+ import DialogTitle from &#x27;@mui/material/DialogTitle&#x27;;
+<span class="d">-import IconButton from &#x27;@mui/material/IconButton&#x27;;</span>
+<span class="d">-import InputAdornment from &#x27;@mui/material/InputAdornment&#x27;;</span>
+<span class="d">-import Paper from &#x27;@mui/material/Paper&#x27;;</span>
+<span class="d">-import Table from &#x27;@mui/material/Table&#x27;;</span>
+<span class="d">-import TableBody from &#x27;@mui/material/TableBody&#x27;;</span>
+<span class="d">-import TableCell from &#x27;@mui/material/TableCell&#x27;;</span>
+<span class="d">-import TableContainer from &#x27;@mui/material/TableContainer&#x27;;</span>
+<span class="d">-import TableHead from &#x27;@mui/material/TableHead&#x27;;</span>
+<span class="d">-import TablePagination from &#x27;@mui/material/TablePagination&#x27;;</span>
+<span class="d">-import TableRow from &#x27;@mui/material/TableRow&#x27;;</span>
+<span class="d">-import TextField from &#x27;@mui/material/TextField&#x27;;</span>
+<span class="d">-import Typography from &#x27;@mui/material/Typography&#x27;;</span>
+<span class="d">-import fuzzysearch from &#x27;fuzzysearch&#x27;;</span>
+<span class="d">-import type { ResultLightweightWithLabel } from &#x27;./types&#x27;;</span>
+<span class="a">+import EvalsDataGrid from &#x27;../../evals/components/EvalsDataGrid&#x27;;</span>
+ 
+<span class="d">-const ROWS_PER_PAGE = 50;</span>
+<span class="d">-</span>
+<span class="d">-interface EvalSelectorDialogProps {</span>
+<span class="a">+const EvalSelectorDialog: React.FC&lt;{</span>
+   open: boolean;
+   onClose: () =&gt; void;
+<span class="d">-  recentEvals: ResultLightweightWithLabel[];</span>
+<span class="d">-  onRecentEvalSelected: (evalId: string) =&gt; void;</span>
+<span class="a">+  onEvalSelected: (evalId: string) =&gt; void;</span>
+   title?: string;
+   description?: string;
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-const EvalSelectorDialog: React.FC&lt;EvalSelectorDialogProps&gt; = ({</span>
+<span class="d">-  open,</span>
+<span class="d">-  onClose,</span>
+<span class="d">-  recentEvals,</span>
+<span class="d">-  onRecentEvalSelected,</span>
+<span class="d">-  title,</span>
+<span class="d">-  description,</span>
+<span class="d">-}) =&gt; {</span>
+<span class="d">-  const [searchText, setSearchText] = useState&lt;string&gt;(&#x27;&#x27;);</span>
+<span class="d">-  const [focusedIndex, setFocusedIndex] = useState&lt;number&gt;(-1);</span>
+<span class="d">-  const [page, setPage] = useState(0);</span>
+<span class="d">-  const rowsPerPage = ROWS_PER_PAGE;</span>
+<span class="d">-  const searchInputRef = React.useRef&lt;HTMLInputElement&gt;(null);</span>
+<span class="d">-  const tableContainerRef = React.useRef&lt;HTMLDivElement&gt;(null);</span>
+<span class="d">-</span>
+<span class="d">-  const handleClose = () =&gt; {</span>
+<span class="d">-    onClose();</span>
+<span class="d">-    setSearchText(&#x27;&#x27;);</span>
+<span class="d">-    setFocusedIndex(-1);</span>
+<span class="d">-    setPage(0);</span>
+<span class="d">-  };</span>
+<span class="d">-</span>
+<span class="d">-  const filteredEvals = recentEvals.filter(</span>
+<span class="d">-    (_eval) =&gt;</span>
+<span class="d">-      fuzzysearch(searchText.toLowerCase(), String(_eval.label).toLowerCase()) ||</span>
+<span class="d">-      (typeof _eval.description === &#x27;string&#x27; &amp;&amp;</span>
+<span class="d">-        fuzzysearch(searchText.toLowerCase(), String(_eval.description).toLowerCase())),</span>
+<span class="d">-  );</span>
+<span class="d">-</span>
+<span class="d">-  const paginatedEvals = filteredEvals.slice(page * rowsPerPage, (page + 1) * rowsPerPage);</span>
+<span class="d">-</span>
+<span class="d">-  const handleSelectEval = (evalId: string) =&gt; {</span>
+<span class="d">-    onRecentEvalSelected(evalId);</span>
+<span class="d">-    handleClose();</span>
+<span class="d">-  };</span>
+<span class="d">-</span>
+<span class="d">-  const scrollToFocusedItem = React.useCallback(() =&gt; {</span>
+<span class="d">-    if (focusedIndex &gt;= 0 &amp;&amp; tableContainerRef.current) {</span>
+<span class="d">-      const tableRows = tableContainerRef.current.querySelectorAll(&#x27;tbody tr&#x27;);</span>
+<span class="d">-      const targetIndex = Math.min(focusedIndex + 3, tableRows.length - 1);</span>
+<span class="d">-      if (tableRows[targetIndex]) {</span>
+<span class="d">-        tableRows[targetIndex].scrollIntoView({</span>
+<span class="d">-          behavior: &#x27;smooth&#x27;,</span>
+<span class="d">-          block: &#x27;nearest&#x27;,</span>
+<span class="d">-        });</span>
+<span class="d">-      }</span>
+<span class="d">-    }</span>
+<span class="d">-  }, [focusedIndex]);</span>
+<span class="d">-</span>
+<span class="d">-  const handleKeyDown = (event: React.KeyboardEvent) =&gt; {</span>
+<span class="d">-    event.stopPropagation();</span>
+<span class="d">-    if (!open) {</span>
+<span class="d">-      return;</span>
+<span class="d">-    }</span>
+<span class="d">-</span>
+<span class="d">-    switch (event.key) {</span>
+<span class="d">-      case &#x27;ArrowDown&#x27;:</span>
+<span class="d">-        event.preventDefault();</span>
+<span class="d">-        setFocusedIndex((prevIndex) =&gt; Math.min(prevIndex + 1, filteredEvals.length - 1));</span>
+<span class="d">-        break;</span>
+<span class="d">-      case &#x27;ArrowUp&#x27;:</span>
+<span class="d">-        event.preventDefault();</span>
+<span class="d">-        setFocusedIndex((prevIndex) =&gt; Math.max(prevIndex - 1, 0));</span>
+<span class="d">-        break;</span>
+<span class="d">-      case &#x27;Enter&#x27;:</span>
+<span class="d">-        event.preventDefault();</span>
+<span class="d">-        if (focusedIndex &gt;= 0 &amp;&amp; focusedIndex &lt; filteredEvals.length) {</span>
+<span class="d">-          handleSelectEval(filteredEvals[focusedIndex].evalId);</span>
+<span class="d">-        } else if (filteredEvals.length &gt; 0) {</span>
+<span class="d">-          handleSelectEval(filteredEvals[0].evalId);</span>
+<span class="d">-        }</span>
+<span class="d">-        break;</span>
+<span class="d">-      case &#x27;Escape&#x27;:</span>
+<span class="d">-        event.preventDefault();</span>
+<span class="d">-        handleClose();</span>
+<span class="d">-        break;</span>
+<span class="d">-    }</span>
+<span class="d">-  };</span>
+<span class="d">-</span>
+<span class="d">-  const handleChangePage = (event: unknown, newPage: number) =&gt; {</span>
+<span class="d">-    setPage(newPage);</span>
+<span class="d">-    const newIndex = newPage * rowsPerPage;</span>
+<span class="d">-    setFocusedIndex(Math.min(newIndex, filteredEvals.length - 1));</span>
+<span class="d">-  };</span>
+<span class="d">-</span>
+<span class="d">-  React.useEffect(() =&gt; {</span>
+<span class="d">-    scrollToFocusedItem();</span>
+<span class="d">-  }, [scrollToFocusedItem]);</span>
+<span class="d">-</span>
+<span class="d">-  React.useEffect(() =&gt; {</span>
+<span class="d">-    if (open) {</span>
+<span class="d">-      setFocusedIndex(0);</span>
+<span class="d">-      setTimeout(() =&gt; {</span>
+<span class="d">-        searchInputRef.current?.focus();</span>
+<span class="d">-      }, 0);</span>
+<span class="d">-    }</span>
+<span class="d">-  }, [open]);</span>
+<span class="d">-</span>
+<span class="d">-  const dialogId = React.useId();</span>
+<span class="a">+  focusedEvalId?: string;</span>
+<span class="a">+}&gt; = ({ open, onClose, onEvalSelected, title, description, focusedEvalId }) =&gt; {</span>
+   return (
+<span class="d">-    &lt;Dialog open={open} onClose={handleClose} maxWidth=&quot;md&quot; fullWidth&gt;</span>
+<span class="a">+    &lt;Dialog open={open} onClose={onClose} maxWidth=&quot;md&quot; fullWidth&gt;</span>
+       {title ? &lt;DialogTitle&gt;{title}&lt;/DialogTitle&gt; : null}
+       &lt;DialogContent&gt;
+         {description ? &lt;Box sx={{ mb: 4 }}&gt;{description}&lt;/Box&gt; : null}
+         &lt;Box sx={{ width: &#x27;100%&#x27;, mt: 2 }}&gt;
+<span class="d">-          &lt;TextField</span>
+<span class="d">-            fullWidth</span>
+<span class="d">-            variant=&quot;outlined&quot;</span>
+<span class="d">-            placeholder=&quot;Search&quot;</span>
+<span class="d">-            value={searchText}</span>
+<span class="d">-            onChange={(e) =&gt; {</span>
+<span class="d">-              setSearchText(e.target.value);</span>
+<span class="d">-              setFocusedIndex(0);</span>
+<span class="d">-            }}</span>
+<span class="d">-            onKeyDown={handleKeyDown}</span>
+<span class="d">-            sx={{ mb: 2 }}</span>
+<span class="d">-            inputRef={searchInputRef}</span>
+<span class="d">-            id={`eval-selector-search-${dialogId}`}</span>
+<span class="d">-            InputProps={{</span>
+<span class="d">-              endAdornment: searchText ? (</span>
+<span class="d">-                &lt;InputAdornment position=&quot;end&quot;&gt;</span>
+<span class="d">-                  &lt;IconButton</span>
+<span class="d">-                    aria-label=&quot;clear search&quot;</span>
+<span class="d">-                    onClick={() =&gt; {</span>
+<span class="d">-                      setSearchText(&#x27;&#x27;);</span>
+<span class="d">-                      setFocusedIndex(0);</span>
+<span class="d">-                      searchInputRef.current?.focus();</span>
+<span class="d">-                    }}</span>
+<span class="d">-                    edge=&quot;end&quot;</span>
+<span class="d">-                    size=&quot;small&quot;</span>
+<span class="d">-                  &gt;</span>
+<span class="d">-                    &lt;ClearIcon /&gt;</span>
+<span class="d">-                  &lt;/IconButton&gt;</span>
+<span class="d">-                &lt;/InputAdornment&gt;</span>
+<span class="d">-              ) : null,</span>
+<span class="d">-            }}</span>
+<span class="d">-          /&gt;</span>
+<span class="d">-          &lt;TableContainer</span>
+<span class="d">-            component={Paper}</span>
+<span class="d">-            sx={{ height: &#x27;600px&#x27;, overflow: &#x27;auto&#x27; }}</span>
+<span class="d">-            ref={tableContainerRef}</span>
+<span class="d">-          &gt;</span>
+<span class="d">-            &lt;Table stickyHeader&gt;</span>
+<span class="d">-              &lt;TableHead&gt;</span>
+<span class="d">-                &lt;TableRow&gt;</span>
+<span class="d">-                  &lt;TableCell&gt;Created&lt;/TableCell&gt;</span>
+<span class="d">-                  &lt;TableCell&gt;Description&lt;/TableCell&gt;</span>
+<span class="d">-                  &lt;TableCell&gt;# Tests&lt;/TableCell&gt;</span>
+<span class="d">-                &lt;/TableRow&gt;</span>
+<span class="d">-              &lt;/TableHead&gt;</span>
+<span class="d">-              &lt;TableBody&gt;</span>
+<span class="d">-                {paginatedEvals.length &gt; 0 ? (</span>
+<span class="d">-                  paginatedEvals.map((_eval, index) =&gt; (</span>
+<span class="d">-                    &lt;TableRow</span>
+<span class="d">-                      key={_eval.evalId}</span>
+<span class="d">-                      hover</span>
+<span class="d">-                      onClick={() =&gt; handleSelectEval(_eval.evalId)}</span>
+<span class="d">-                      sx={{</span>
+<span class="d">-                        cursor: &#x27;pointer&#x27;,</span>
+<span class="d">-                        backgroundColor:</span>
+<span class="d">-                          index === focusedIndex ? &#x27;rgba(255, 255, 0, 0.1)&#x27; : &#x27;inherit&#x27;,</span>
+<span class="d">-                      }}</span>
+<span class="d">-                    &gt;</span>
+<span class="d">-                      &lt;TableCell&gt;{new Date(_eval.createdAt).toLocaleString()}&lt;/TableCell&gt;</span>
+<span class="d">-                      &lt;TableCell&gt;{_eval.description || _eval.label}&lt;/TableCell&gt;</span>
+<span class="d">-                      &lt;TableCell&gt;{_eval.numTests}&lt;/TableCell&gt;</span>
+<span class="d">-                    &lt;/TableRow&gt;</span>
+<span class="d">-                  ))</span>
+<span class="d">-                ) : (</span>
+<span class="d">-                  &lt;TableRow&gt;</span>
+<span class="d">-                    &lt;TableCell colSpan={3} align=&quot;center&quot; sx={{ py: 4 }}&gt;</span>
+<span class="d">-                      &lt;Box sx={{ textAlign: &#x27;center&#x27;, color: &#x27;text.secondary&#x27; }}&gt;</span>
+<span class="d">-                        &lt;Box sx={{ fontSize: &#x27;3rem&#x27;, mb: 2 }}&gt;🔍&lt;/Box&gt;</span>
+<span class="d">-                        &lt;Typography variant=&quot;h6&quot; gutterBottom&gt;</span>
+<span class="d">-                          No evaluations found</span>
+<span class="d">-                        &lt;/Typography&gt;</span>
+<span class="d">-                        &lt;Typography variant=&quot;body2&quot;&gt;</span>
+<span class="d">-                          Try adjusting your search or create a new evaluation</span>
+<span class="d">-                        &lt;/Typography&gt;</span>
+<span class="d">-                      &lt;/Box&gt;</span>
+<span class="d">-                    &lt;/TableCell&gt;</span>
+<span class="d">-                  &lt;/TableRow&gt;</span>
+<span class="d">-                )}</span>
+<span class="d">-              &lt;/TableBody&gt;</span>
+<span class="d">-            &lt;/Table&gt;</span>
+<span class="d">-          &lt;/TableContainer&gt;</span>
+<span class="d m">-          {filteredEvals.length &gt; rowsPerPage &amp;&amp; (</span>
+<span class="d">-            &lt;TablePagination</span>
+<span class="d">-              component=&quot;div&quot;</span>
+<span class="d">-              count={filteredEvals.length}</span>
+<span class="d">-              page={page}</span>
+<span class="d">-              onPageChange={handleChangePage}</span>
+<span class="d">-              rowsPerPage={rowsPerPage}</span>
+<span class="d">-              rowsPerPageOptions={[ROWS_PER_PAGE]}</span>
+<span class="d">-            /&gt;</span>
+<span class="d">-          )}</span>
+<span class="a">+          &lt;EvalsDataGrid onEvalSelected={onEvalSelected} focusedEvalId={focusedEvalId} /&gt;</span>
+         &lt;/Box&gt;
+       &lt;/DialogContent&gt;
+       &lt;DialogActions&gt;
+<span class="d">-        &lt;Button onClick={handleClose}&gt;Cancel&lt;/Button&gt;</span>
+<span class="a">+        &lt;Button onClick={onClose}&gt;Cancel&lt;/Button&gt;</span>
+       &lt;/DialogActions&gt;
+     &lt;/Dialog&gt;
+   );</pre><h2>Commit #2: <a href="https://github.com/promptfoo/promptfoo/commit/18cbb7180ab220e896038bfffc4bd04ed70484f1">18cbb7180a</a> (2025-04-11T14:33:00-04:00)</h2><p class="k">fix(webui): fix eval comparison mode filter (#3671)<br>Path after this commit: src/app/src/pages/eval/components/EvalSelectorDialog.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx
+index b2805408fe..0199250140 100644
+<span class="d">--- a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="h">@@ -13,14 +13,19 @@ const EvalSelectorDialog: React.FC&lt;{</span>
+   title?: string;
+   description?: string;
+   focusedEvalId?: string;
+<span class="d">-}&gt; = ({ open, onClose, onEvalSelected, title, description, focusedEvalId }) =&gt; {</span>
+<span class="a">+  filterByDatasetId?: boolean;</span>
+<span class="a">+}&gt; = ({ open, onClose, onEvalSelected, title, description, focusedEvalId, filterByDatasetId }) =&gt; {</span>
+   return (
+     &lt;Dialog open={open} onClose={onClose} maxWidth=&quot;md&quot; fullWidth&gt;
+       {title ? &lt;DialogTitle&gt;{title}&lt;/DialogTitle&gt; : null}
+       &lt;DialogContent&gt;
+         {description ? &lt;Box sx={{ mb: 4 }}&gt;{description}&lt;/Box&gt; : null}
+         &lt;Box sx={{ width: &#x27;100%&#x27;, mt: 2 }}&gt;
+<span class="d">-          &lt;EvalsDataGrid onEvalSelected={onEvalSelected} focusedEvalId={focusedEvalId} /&gt;</span>
+<span class="a">+          &lt;EvalsDataGrid</span>
+<span class="a">+            onEvalSelected={onEvalSelected}</span>
+<span class="a">+            focusedEvalId={focusedEvalId}</span>
+<span class="a">+            filterByDatasetId={filterByDatasetId}</span>
+<span class="a">+          /&gt;</span>
+         &lt;/Box&gt;
+       &lt;/DialogContent&gt;
+       &lt;DialogActions&gt;</pre><h2>Commit #3: <a href="https://github.com/promptfoo/promptfoo/commit/d6d72f5f8cbd3ed78ec5a1a6c5b9c263c9556b8b">d6d72f5f8c</a> (2025-04-17T14:59:13-04:00)</h2><p class="k">chore(webui): Eval Quick Selector (cmd+k) improvements (#3742)<br>Path after this commit: src/app/src/pages/eval/components/EvalSelectorDialog.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx
+index 0199250140..ade93afc7a 100644
+<span class="d">--- a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="h">@@ -6,7 +6,7 @@ import DialogContent from &#x27;@mui/material/DialogContent&#x27;;</span>
+ import DialogTitle from &#x27;@mui/material/DialogTitle&#x27;;
+ import EvalsDataGrid from &#x27;../../evals/components/EvalsDataGrid&#x27;;
+ 
+<span class="d">-const EvalSelectorDialog: React.FC&lt;{</span>
+<span class="a">+type Props = {</span>
+   open: boolean;
+   onClose: () =&gt; void;
+   onEvalSelected: (evalId: string) =&gt; void;
+<span class="h">@@ -14,7 +14,19 @@ const EvalSelectorDialog: React.FC&lt;{</span>
+   description?: string;
+   focusedEvalId?: string;
+   filterByDatasetId?: boolean;
+<span class="d">-}&gt; = ({ open, onClose, onEvalSelected, title, description, focusedEvalId, filterByDatasetId }) =&gt; {</span>
+<span class="a">+  onOpenFocusSearch?: boolean;</span>
+<span class="a">+};</span>
+<span class="a">+</span>
+<span class="a">+const EvalSelectorDialog: React.FC&lt;Props&gt; = ({</span>
+<span class="a">+  open,</span>
+<span class="a">+  onClose,</span>
+<span class="a">+  onEvalSelected,</span>
+<span class="a">+  title,</span>
+<span class="a">+  description,</span>
+<span class="a">+  focusedEvalId,</span>
+<span class="a">+  filterByDatasetId,</span>
+<span class="a">+  onOpenFocusSearch = false,</span>
+<span class="a">+}) =&gt; {</span>
+   return (
+     &lt;Dialog open={open} onClose={onClose} maxWidth=&quot;md&quot; fullWidth&gt;
+       {title ? &lt;DialogTitle&gt;{title}&lt;/DialogTitle&gt; : null}
+<span class="h">@@ -25,6 +37,7 @@ const EvalSelectorDialog: React.FC&lt;{</span>
+             onEvalSelected={onEvalSelected}
+             focusedEvalId={focusedEvalId}
+             filterByDatasetId={filterByDatasetId}
+<span class="a">+            focusQuickFilterOnMount={onOpenFocusSearch}</span>
+           /&gt;
+         &lt;/Box&gt;
+       &lt;/DialogContent&gt;</pre><h2>Commit #4: <a href="https://github.com/promptfoo/promptfoo/commit/e08874d30066424c1137eba8fc9f160e463ac5a8">e08874d300</a> (2025-09-11T22:55:57-07:00)</h2><p class="k">chore(webui): remove React.FC type annotations for React 19 compatibility (#5572)<br>Path after this commit: src/app/src/pages/eval/components/EvalSelectorDialog.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx
+index ade93afc7a..187609dfc6 100644
+<span class="d">--- a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="h">@@ -17,7 +17,7 @@ type Props = {</span>
+   onOpenFocusSearch?: boolean;
+ };
+ 
+<span class="d">-const EvalSelectorDialog: React.FC&lt;Props&gt; = ({</span>
+<span class="a">+const EvalSelectorDialog = ({</span>
+   open,
+   onClose,
+   onEvalSelected,
+<span class="h">@@ -26,7 +26,7 @@ const EvalSelectorDialog: React.FC&lt;Props&gt; = ({</span>
+   focusedEvalId,
+   filterByDatasetId,
+   onOpenFocusSearch = false,
+<span class="d">-}) =&gt; {</span>
+<span class="a">+}: Props) =&gt; {</span>
+   return (
+     &lt;Dialog open={open} onClose={onClose} maxWidth=&quot;md&quot; fullWidth&gt;
+       {title ? &lt;DialogTitle&gt;{title}&lt;/DialogTitle&gt; : null}</pre><h2>Commit #5: <a href="https://github.com/promptfoo/promptfoo/commit/26edf6a5fefa73fd07af556b5b9a6a4b9d9a61ec">26edf6a5fe</a> (2025-10-31T16:19:56-07:00)</h2><p class="k">chore(app): larger eval selector dialog (#6063)<br>Path after this commit: src/app/src/pages/eval/components/EvalSelectorDialog.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx
+index 187609dfc6..831d3b788f 100644
+<span class="d">--- a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="h">@@ -28,7 +28,7 @@ const EvalSelectorDialog = ({</span>
+   onOpenFocusSearch = false,
+ }: Props) =&gt; {
+   return (
+<span class="d">-    &lt;Dialog open={open} onClose={onClose} maxWidth=&quot;md&quot; fullWidth&gt;</span>
+<span class="a">+    &lt;Dialog open={open} onClose={onClose} maxWidth=&quot;lg&quot; fullWidth&gt;</span>
+       {title ? &lt;DialogTitle&gt;{title}&lt;/DialogTitle&gt; : null}
+       &lt;DialogContent&gt;
+         {description ? &lt;Box sx={{ mb: 4 }}&gt;{description}&lt;/Box&gt; : null}</pre><h2>Commit #6: <a href="https://github.com/promptfoo/promptfoo/commit/c5c698bc97b3927b023eff623b9b73d6fa9d5940">c5c698bc97</a> (2025-12-25T23:37:04-08:00)</h2><p class="k">feat: Introduce promptfoo design system, new nav, model audit, eval creator, and more (#6823)<br>Path after this commit: src/app/src/pages/eval/components/EvalSelectorDialog.tsx. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx
+index 831d3b788f..a2251971f9 100644
+<span class="d">--- a/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="a">+++ b/src/app/src/pages/eval/components/EvalSelectorDialog.tsx</span>
+<span class="h">@@ -1,49 +1,45 @@</span>
+<span class="d">-import Box from &#x27;@mui/material/Box&#x27;;</span>
+<span class="d">-import Button from &#x27;@mui/material/Button&#x27;;</span>
+<span class="d">-import Dialog from &#x27;@mui/material/Dialog&#x27;;</span>
+<span class="d">-import DialogActions from &#x27;@mui/material/DialogActions&#x27;;</span>
+<span class="d">-import DialogContent from &#x27;@mui/material/DialogContent&#x27;;</span>
+<span class="d">-import DialogTitle from &#x27;@mui/material/DialogTitle&#x27;;</span>
+<span class="d">-import EvalsDataGrid from &#x27;../../evals/components/EvalsDataGrid&#x27;;</span>
+<span class="a">+import {</span>
+<span class="a">+  Dialog,</span>
+<span class="a">+  DialogContent,</span>
+<span class="a">+  DialogDescription,</span>
+<span class="a">+  DialogHeader,</span>
+<span class="a">+  DialogTitle,</span>
+<span class="a">+} from &#x27;@app/components/ui/dialog&#x27;;</span>
+<span class="a">+import EvalsTable from &#x27;../../evals/components/EvalsTable&#x27;;</span>
+ 
+ type Props = {
+   open: boolean;
+   onClose: () =&gt; void;
+   onEvalSelected: (evalId: string) =&gt; void;
+<span class="d">-  title?: string;</span>
+<span class="d">-  description?: string;</span>
+   focusedEvalId?: string;
+   filterByDatasetId?: boolean;
+<span class="d">-  onOpenFocusSearch?: boolean;</span>
+<span class="a">+  description?: string;</span>
+ };
+ 
+ const EvalSelectorDialog = ({
+   open,
+   onClose,
+   onEvalSelected,
+<span class="d">-  title,</span>
+<span class="d">-  description,</span>
+   focusedEvalId,
+   filterByDatasetId,
+<span class="d">-  onOpenFocusSearch = false,</span>
+<span class="a">+  description = &#x27;Choose an evaluation to view&#x27;,</span>
+ }: Props) =&gt; {
+   return (
+<span class="d">-    &lt;Dialog open={open} onClose={onClose} maxWidth=&quot;lg&quot; fullWidth&gt;</span>
+<span class="d">-      {title ? &lt;DialogTitle&gt;{title}&lt;/DialogTitle&gt; : null}</span>
+<span class="d">-      &lt;DialogContent&gt;</span>
+<span class="d">-        {description ? &lt;Box sx={{ mb: 4 }}&gt;{description}&lt;/Box&gt; : null}</span>
+<span class="d">-        &lt;Box sx={{ width: &#x27;100%&#x27;, mt: 2 }}&gt;</span>
+<span class="d">-          &lt;EvalsDataGrid</span>
+<span class="a">+    &lt;Dialog open={open} onOpenChange={(isOpen) =&gt; !isOpen &amp;&amp; onClose()}&gt;</span>
+<span class="a">+      &lt;DialogContent className=&quot;max-w-5xl h-[80vh] p-0 gap-0 flex flex-col overflow-hidden&quot;&gt;</span>
+<span class="a">+        &lt;DialogHeader className=&quot;px-6 pt-6 pb-2&quot;&gt;</span>
+<span class="a">+          &lt;DialogTitle&gt;Select Evaluation&lt;/DialogTitle&gt;</span>
+<span class="a">+          &lt;DialogDescription&gt;{description}&lt;/DialogDescription&gt;</span>
+<span class="a">+        &lt;/DialogHeader&gt;</span>
+<span class="a">+        &lt;div className=&quot;flex-1 min-h-0 flex flex-col overflow-hidden px-4 pb-2&quot;&gt;</span>
+<span class="a">+          &lt;EvalsTable</span>
+             onEvalSelected={onEvalSelected}
+             focusedEvalId={focusedEvalId}
+             filterByDatasetId={filterByDatasetId}
+<span class="d">-            focusQuickFilterOnMount={onOpenFocusSearch}</span>
+<span class="a">+            showUtilityButtons</span>
+           /&gt;
+<span class="d">-        &lt;/Box&gt;</span>
+<span class="a">+        &lt;/div&gt;</span>
+       &lt;/DialogContent&gt;
+<span class="d">-      &lt;DialogActions&gt;</span>
+<span class="d">-        &lt;Button onClick={onClose}&gt;Cancel&lt;/Button&gt;</span>
+<span class="d">-      &lt;/DialogActions&gt;</span>
+     &lt;/Dialog&gt;
+   );
+ };</pre></body></html>

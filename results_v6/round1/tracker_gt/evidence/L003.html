@@ -1,0 +1,679 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L003</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L003</h1><p><b>Repository:</b> <a href="https://github.com/tobikodata/sqlmesh">tobikodata/sqlmesh</a><br><b>File at merge:</b> vscode/extension/tests/completions.spec.ts, line 116<br><b>Merge commit (birth):</b> <a href="https://github.com/tobikodata/sqlmesh/commit/7dd52c59dc4c82e174ae9115ccb227ce85a3fa83">7dd52c59dc</a> (2025-06-09T13:05:24)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/tobikodata/sqlmesh/tree/3fd4dd984773e7e986c72426e4e5a28262e36df6">3fd4dd9847</a>)</p><p><b>The line:</b></p><pre><span class="t">      path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;),</span></pre><h2>File at the merge commit, lines 108 to 124</h2><pre>  108 |       await close()
+  109 |     } finally {
+  110 |       await fs.remove(tempDir)
+  111 |     }
+  112 |   })
+  113 | 
+  114 |   test(&#x27;Completion for custom macros&#x27;, async () =&gt; {
+  115 |     const tempDir = await fs.mkdtemp(
+<span class="t">  116 |       path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;),</span>
+  117 |     )
+  118 |     await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+  119 | 
+  120 |     try {
+  121 |       const { window, close } = await startVSCode(tempDir)
+  122 | 
+  123 |       // Wait for the models folder to be visible
+  124 |       await window.waitForSelector(&#x27;text=models&#x27;)</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/tobikodata/sqlmesh/commit/3c155a6b43af5919ce05d62ca479980d5714afad">3c155a6b43</a> (2025-06-30T20:16:40+01:00)</h2><p class="k">ci: move all e2e vscode tests to run in ci (#4841)<br>Path after this commit: vscode/extension/tests/completions.spec.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/vscode/extension/tests/completions.spec.ts b/vscode/extension/tests/completions.spec.ts
+index 3c22e388..02ad2a2b 100644
+<span class="d">--- a/vscode/extension/tests/completions.spec.ts</span>
+<span class="a">+++ b/vscode/extension/tests/completions.spec.ts</span>
+<span class="h">@@ -2,163 +2,183 @@ import { test, expect } from &#x27;@playwright/test&#x27;</span>
+ import path from &#x27;path&#x27;
+ import fs from &#x27;fs-extra&#x27;
+ import os from &#x27;os&#x27;
+<span class="d">-import { startVSCode, SUSHI_SOURCE_PATH } from &#x27;./utils&#x27;</span>
+<span class="a">+import { SUSHI_SOURCE_PATH } from &#x27;./utils&#x27;</span>
+<span class="a">+import { startCodeServer, stopCodeServer } from &#x27;./utils_code_server&#x27;</span>
+ 
+<span class="d">-test(&#x27;Autocomplete for model names&#x27;, async () =&gt; {</span>
+<span class="a">+test(&#x27;Autocomplete for model names&#x27;, async ({ page }) =&gt; {</span>
+   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;))
+   await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+ 
+<span class="a">+  const context = await startCodeServer({</span>
+<span class="a">+    tempDir,</span>
+<span class="a">+    placeFileWithPythonInterpreter: true,</span>
+<span class="a">+  })</span>
+<span class="a">+</span>
+   try {
+<span class="d">-    const { window, close } = await startVSCode(tempDir)</span>
+<span class="a">+    await page.goto(`http://127.0.0.1:${context.codeServerPort}`)</span>
+ 
+     // Wait for the models folder to be visible
+<span class="d">-    await window.waitForSelector(&#x27;text=models&#x27;)</span>
+<span class="a">+    await page.waitForSelector(&#x27;text=models&#x27;)</span>
+ 
+     // Click on the models folder
+<span class="d">-    await window</span>
+<span class="a">+    await page</span>
+       .getByRole(&#x27;treeitem&#x27;, { name: &#x27;models&#x27;, exact: true })
+       .locator(&#x27;a&#x27;)
+       .click()
+ 
+     // Open the top_waiters model
+<span class="d">-    await window</span>
+<span class="a">+    await page</span>
+       .getByRole(&#x27;treeitem&#x27;, { name: &#x27;top_waiters.sql&#x27;, exact: true })
+       .locator(&#x27;a&#x27;)
+       .click()
+ 
+<span class="d">-    await window.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="d">-    await window.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="a">+    await page.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="a">+    await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+ 
+<span class="d">-    await window.locator(&#x27;text=grain&#x27;).first().click()</span>
+<span class="a">+    await page.locator(&#x27;text=grain&#x27;).first().click()</span>
+ 
+     // Move to the end of the file
+<span class="d">-    await window.keyboard.press(&#x27;Control+End&#x27;)</span>
+<span class="a">+    for (let i = 0; i &lt; 100; i++) {</span>
+<span class="a">+      await page.keyboard.press(&#x27;ArrowDown&#x27;)</span>
+<span class="a">+    }</span>
+ 
+     // Add a new line
+<span class="d">-    await window.keyboard.press(&#x27;Enter&#x27;)</span>
+<span class="a">+    await page.keyboard.press(&#x27;Enter&#x27;)</span>
+ 
+     // Type the beginning of sushi.customers to trigger autocomplete
+<span class="d">-    await window.keyboard.type(&#x27;sushi.waiter_as_customer&#x27;)</span>
+<span class="a">+    await page.keyboard.type(&#x27;sushi.waiter_as_customer&#x27;)</span>
+ 
+     // Wait a moment for autocomplete to appear
+<span class="d">-    await window.waitForTimeout(500)</span>
+<span class="a">+    await page.waitForTimeout(500)</span>
+ 
+     // Check if the autocomplete suggestion for sushi.customers is visible
+     expect(
+<span class="d">-      await window.locator(&#x27;text=sushi.waiter_as_customer_by_day&#x27;).count(),</span>
+<span class="d">-    ).toBe(1)</span>
+<span class="d">-    expect(await window.locator(&#x27;text=SQLMesh Model&#x27;).count()).toBe(1)</span>
+<span class="d">-</span>
+<span class="d">-    await close()</span>
+<span class="a">+      await page.locator(&#x27;text=sushi.waiter_as_customer_by_day&#x27;).count(),</span>
+<span class="a">+    ).toBeGreaterThanOrEqual(1)</span>
+<span class="a">+    expect(</span>
+<span class="a">+      await page.locator(&#x27;text=SQLMesh Model&#x27;).count(),</span>
+<span class="a">+    ).toBeGreaterThanOrEqual(1)</span>
+   } finally {
+<span class="d">-    await fs.remove(tempDir)</span>
+<span class="a">+    await stopCodeServer(context)</span>
+   }
+ })
+ 
+ // Skip the macro completions test as regular checks because they are flaky and
+ // covered in other non-integration tests.
+ test.describe(&#x27;Macro Completions&#x27;, () =&gt; {
+<span class="d">-  test(&#x27;Completion for inbuilt macros&#x27;, async () =&gt; {</span>
+<span class="a">+  test(&#x27;Completion for inbuilt macros&#x27;, async ({ page }) =&gt; {</span>
+     const tempDir = await fs.mkdtemp(
+<span class=" m">       path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;),</span>
+     )
+     await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+ 
+<span class="a">+    const context = await startCodeServer({</span>
+<span class="a">+      tempDir,</span>
+<span class="a">+      placeFileWithPythonInterpreter: true,</span>
+<span class="a">+    })</span>
+<span class="a">+</span>
+     try {
+<span class="d">-      const { window, close } = await startVSCode(tempDir)</span>
+<span class="a">+      await page.goto(`http://127.0.0.1:${context.codeServerPort}`)</span>
+ 
+       // Wait for the models folder to be visible
+<span class="d">-      await window.waitForSelector(&#x27;text=models&#x27;)</span>
+<span class="a">+      await page.waitForSelector(&#x27;text=models&#x27;)</span>
+ 
+       // Click on the models folder
+<span class="d">-      await window</span>
+<span class="a">+      await page</span>
+         .getByRole(&#x27;treeitem&#x27;, { name: &#x27;models&#x27;, exact: true })
+         .locator(&#x27;a&#x27;)
+         .click()
+ 
+       // Open the top_waiters model
+<span class="d">-      await window</span>
+<span class="a">+      await page</span>
+         .getByRole(&#x27;treeitem&#x27;, { name: &#x27;customers.sql&#x27;, exact: true })
+         .locator(&#x27;a&#x27;)
+         .click()
+ 
+<span class="d">-      await window.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="d">-      await window.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="a">+      await page.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="a">+      await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+ 
+<span class="d">-      await window.locator(&#x27;text=grain&#x27;).first().click()</span>
+<span class="a">+      await page.locator(&#x27;text=grain&#x27;).first().click()</span>
+ 
+       // Move to the end of the file
+<span class="d">-      await window.keyboard.press(&#x27;Control+End&#x27;)</span>
+<span class="a">+      for (let i = 0; i &lt; 100; i++) {</span>
+<span class="a">+        await page.keyboard.press(&#x27;ArrowDown&#x27;)</span>
+<span class="a">+      }</span>
+ 
+       // Add a new line
+<span class="d">-      await window.keyboard.press(&#x27;Enter&#x27;)</span>
+<span class="a">+      await page.keyboard.press(&#x27;Enter&#x27;)</span>
+ 
+<span class="d">-      await window.waitForTimeout(500)</span>
+<span class="a">+      await page.waitForTimeout(500)</span>
+ 
+       // Hit the &#x27;@&#x27; key to trigger autocomplete for inbuilt macros
+<span class="d">-      await window.keyboard.press(&#x27;@&#x27;)</span>
+<span class="d">-      await window.keyboard.type(&#x27;eac&#x27;)</span>
+<span class="a">+      await page.keyboard.press(&#x27;@&#x27;)</span>
+<span class="a">+      await page.keyboard.type(&#x27;eac&#x27;)</span>
+ 
+       // Wait a moment for autocomplete to appear
+<span class="d">-      await window.waitForTimeout(500)</span>
+<span class="a">+      await page.waitForTimeout(500)</span>
+ 
+       // Check if the autocomplete suggestion for inbuilt macros is visible
+<span class="d">-      expect(await window.locator(&#x27;text=@each&#x27;).count()).toBe(1)</span>
+<span class="d">-</span>
+<span class="d">-      await close()</span>
+<span class="a">+      expect(await page.locator(&#x27;text=@each&#x27;).count()).toBeGreaterThanOrEqual(1)</span>
+     } finally {
+<span class="d">-      await fs.remove(tempDir)</span>
+<span class="a">+      await stopCodeServer(context)</span>
+     }
+   })
+ 
+<span class="d">-  test(&#x27;Completion for custom macros&#x27;, async () =&gt; {</span>
+<span class="a">+  test(&#x27;Completion for custom macros&#x27;, async ({ page }) =&gt; {</span>
+     const tempDir = await fs.mkdtemp(
+<span class=" m">       path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;),</span>
+     )
+     await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+ 
+<span class="a">+    const context = await startCodeServer({</span>
+<span class="a">+      tempDir,</span>
+<span class="a">+      placeFileWithPythonInterpreter: true,</span>
+<span class="a">+    })</span>
+<span class="a">+</span>
+     try {
+<span class="d">-      const { window, close } = await startVSCode(tempDir)</span>
+<span class="a">+      await page.goto(`http://127.0.0.1:${context.codeServerPort}`)</span>
+ 
+       // Wait for the models folder to be visible
+<span class="d">-      await window.waitForSelector(&#x27;text=models&#x27;)</span>
+<span class="a">+      await page.waitForSelector(&#x27;text=models&#x27;)</span>
+ 
+       // Click on the models folder
+<span class="d">-      await window</span>
+<span class="a">+      await page</span>
+         .getByRole(&#x27;treeitem&#x27;, { name: &#x27;models&#x27;, exact: true })
+         .locator(&#x27;a&#x27;)
+         .click()
+ 
+       // Open the top_waiters model
+<span class="d">-      await window</span>
+<span class="a">+      await page</span>
+         .getByRole(&#x27;treeitem&#x27;, { name: &#x27;customers.sql&#x27;, exact: true })
+         .locator(&#x27;a&#x27;)
+         .click()
+ 
+<span class="d">-      await window.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="d">-      await window.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="a">+      await page.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="a">+      await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+ 
+<span class="d">-      await window.locator(&#x27;text=grain&#x27;).first().click()</span>
+<span class="a">+      await page.locator(&#x27;text=grain&#x27;).first().click()</span>
+ 
+       // Move to the end of the file
+<span class="d">-      await window.keyboard.press(&#x27;Control+End&#x27;)</span>
+<span class="a">+      for (let i = 0; i &lt; 100; i++) {</span>
+<span class="a">+        await page.keyboard.press(&#x27;ArrowDown&#x27;)</span>
+<span class="a">+      }</span>
+ 
+       // Add a new line
+<span class="d">-      await window.keyboard.press(&#x27;Enter&#x27;)</span>
+<span class="a">+      await page.keyboard.press(&#x27;Enter&#x27;)</span>
+ 
+       // Type the beginning of a macro to trigger autocomplete
+<span class="d">-      await window.keyboard.press(&#x27;@&#x27;)</span>
+<span class="d">-      await window.keyboard.type(&#x27;add_o&#x27;)</span>
+<span class="a">+      await page.keyboard.press(&#x27;@&#x27;)</span>
+<span class="a">+      await page.keyboard.type(&#x27;add_o&#x27;)</span>
+ 
+       // Wait a moment for autocomplete to appear
+<span class="d">-      await window.waitForTimeout(500)</span>
+<span class="a">+      await page.waitForTimeout(500)</span>
+ 
+       // Check if the autocomplete suggestion for custom macros is visible
+<span class="d">-      expect(await window.locator(&#x27;text=@add_one&#x27;).count()).toBe(1)</span>
+<span class="d">-</span>
+<span class="d">-      await close()</span>
+<span class="a">+      expect(</span>
+<span class="a">+        await page.locator(&#x27;text=@add_one&#x27;).count(),</span>
+<span class="a">+      ).toBeGreaterThanOrEqual(1)</span>
+     } finally {
+<span class="d">-      await fs.remove(tempDir)</span>
+<span class="a">+      await stopCodeServer(context)</span>
+     }
+   })
+ })</pre><h2>Commit #2: <a href="https://github.com/tobikodata/sqlmesh/commit/bdaf6d6da4bdecbd837644bcbc7c4d4a3a21bb5f">bdaf6d6da4</a> (2025-07-07T14:13:27+01:00)</h2><p class="k">chore(vscode): separate out building of settings for test (#4919)<br>Path after this commit: vscode/extension/tests/completions.spec.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/vscode/extension/tests/completions.spec.ts b/vscode/extension/tests/completions.spec.ts
+index 02ad2a2b..c5921204 100644
+<span class="d">--- a/vscode/extension/tests/completions.spec.ts</span>
+<span class="a">+++ b/vscode/extension/tests/completions.spec.ts</span>
+<span class="h">@@ -3,7 +3,11 @@ import path from &#x27;path&#x27;</span>
+ import fs from &#x27;fs-extra&#x27;
+ import os from &#x27;os&#x27;
+ import { SUSHI_SOURCE_PATH } from &#x27;./utils&#x27;
+<span class="d">-import { startCodeServer, stopCodeServer } from &#x27;./utils_code_server&#x27;</span>
+<span class="a">+import {</span>
+<span class="a">+  createPythonInterpreterSettingsSpecifier,</span>
+<span class="a">+  startCodeServer,</span>
+<span class="a">+  stopCodeServer,</span>
+<span class="a">+} from &#x27;./utils_code_server&#x27;</span>
+ 
+ test(&#x27;Autocomplete for model names&#x27;, async ({ page }) =&gt; {
+   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;))
+<span class="h">@@ -11,8 +15,8 @@ test(&#x27;Autocomplete for model names&#x27;, async ({ page }) =&gt; {</span>
+ 
+   const context = await startCodeServer({
+     tempDir,
+<span class="d">-    placeFileWithPythonInterpreter: true,</span>
+   })
+<span class="a">+  await createPythonInterpreterSettingsSpecifier(tempDir)</span>
+ 
+   try {
+     await page.goto(`http://127.0.0.1:${context.codeServerPort}`)
+<span class="h">@@ -74,8 +78,8 @@ test.describe(&#x27;Macro Completions&#x27;, () =&gt; {</span>
+ 
+     const context = await startCodeServer({
+       tempDir,
+<span class="d">-      placeFileWithPythonInterpreter: true,</span>
+     })
+<span class="a">+    await createPythonInterpreterSettingsSpecifier(tempDir)</span>
+ 
+     try {
+       await page.goto(`http://127.0.0.1:${context.codeServerPort}`)
+<span class="h">@@ -132,8 +136,8 @@ test.describe(&#x27;Macro Completions&#x27;, () =&gt; {</span>
+ 
+     const context = await startCodeServer({
+       tempDir,
+<span class="d">-      placeFileWithPythonInterpreter: true,</span>
+     })
+<span class="a">+    await createPythonInterpreterSettingsSpecifier(tempDir)</span>
+ 
+     try {
+       await page.goto(`http://127.0.0.1:${context.codeServerPort}`)</pre><h2>Commit #3: <a href="https://github.com/tobikodata/sqlmesh/commit/ba4a8fb94f8fa386d7741640bb10950a05a08c47">ba4a8fb94f</a> (2025-07-07T15:56:51+01:00)</h2><p class="k">chore(vscode): sharing server instance between tests (#4920)<br>Path after this commit: vscode/extension/tests/completions.spec.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/vscode/extension/tests/completions.spec.ts b/vscode/extension/tests/completions.spec.ts
+index c5921204..693934d4 100644
+<span class="d">--- a/vscode/extension/tests/completions.spec.ts</span>
+<span class="a">+++ b/vscode/extension/tests/completions.spec.ts</span>
+<span class="h">@@ -1,25 +1,75 @@</span>
+<span class="d">-import { test, expect } from &#x27;@playwright/test&#x27;</span>
+<span class="a">+import { test, expect } from &#x27;./fixtures&#x27;</span>
+ import path from &#x27;path&#x27;
+ import fs from &#x27;fs-extra&#x27;
+ import os from &#x27;os&#x27;
+ import { SUSHI_SOURCE_PATH } from &#x27;./utils&#x27;
+<span class="d">-import {</span>
+<span class="d">-  createPythonInterpreterSettingsSpecifier,</span>
+<span class="d">-  startCodeServer,</span>
+<span class="d">-  stopCodeServer,</span>
+<span class="d">-} from &#x27;./utils_code_server&#x27;</span>
+<span class="a">+import { createPythonInterpreterSettingsSpecifier } from &#x27;./utils_code_server&#x27;</span>
+ 
+<span class="d">-test(&#x27;Autocomplete for model names&#x27;, async ({ page }) =&gt; {</span>
+<span class="a">+test(&#x27;Autocomplete for model names&#x27;, async ({ page, sharedCodeServer }) =&gt; {</span>
+   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;))
+   await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+ 
+<span class="d">-  const context = await startCodeServer({</span>
+<span class="d">-    tempDir,</span>
+<span class="d">-  })</span>
+   await createPythonInterpreterSettingsSpecifier(tempDir)
+<span class="a">+  await page.goto(</span>
+<span class="a">+    `http://127.0.0.1:${sharedCodeServer.codeServerPort}/?folder=${tempDir}`,</span>
+<span class="a">+  )</span>
+<span class="a">+</span>
+<span class="a">+  // Wait for the models folder to be visible</span>
+<span class="a">+  await page.waitForSelector(&#x27;text=models&#x27;)</span>
+<span class="a">+</span>
+<span class="a">+  // Click on the models folder</span>
+<span class="a">+  await page</span>
+<span class="a">+    .getByRole(&#x27;treeitem&#x27;, { name: &#x27;models&#x27;, exact: true })</span>
+<span class="a">+    .locator(&#x27;a&#x27;)</span>
+<span class="a">+    .click()</span>
+<span class="a">+</span>
+<span class="a">+  // Open the top_waiters model</span>
+<span class="a">+  await page</span>
+<span class="a">+    .getByRole(&#x27;treeitem&#x27;, { name: &#x27;top_waiters.sql&#x27;, exact: true })</span>
+<span class="a">+    .locator(&#x27;a&#x27;)</span>
+<span class="a">+    .click()</span>
+<span class="a">+</span>
+<span class="a">+  await page.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="a">+  await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="a">+</span>
+<span class="a">+  await page.locator(&#x27;text=grain&#x27;).first().click()</span>
+<span class="a">+</span>
+<span class="a">+  // Move to the end of the file</span>
+<span class="a">+  for (let i = 0; i &lt; 100; i++) {</span>
+<span class="a">+    await page.keyboard.press(&#x27;ArrowDown&#x27;)</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+<span class="a">+  // Add a new line</span>
+<span class="a">+  await page.keyboard.press(&#x27;Enter&#x27;)</span>
+<span class="a">+</span>
+<span class="a">+  // Type the beginning of sushi.customers to trigger autocomplete</span>
+<span class="a">+  await page.keyboard.type(&#x27;sushi.waiter_as_customer&#x27;)</span>
+<span class="a">+</span>
+<span class="a">+  // Wait a moment for autocomplete to appear</span>
+<span class="a">+  await page.waitForTimeout(500)</span>
+<span class="a">+</span>
+<span class="a">+  // Check if the autocomplete suggestion for sushi.customers is visible</span>
+<span class="a">+  expect(</span>
+<span class="a">+    await page.locator(&#x27;text=sushi.waiter_as_customer_by_day&#x27;).count(),</span>
+<span class="a">+  ).toBeGreaterThanOrEqual(1)</span>
+<span class="a">+  expect(</span>
+<span class="a">+    await page.locator(&#x27;text=SQLMesh Model&#x27;).count(),</span>
+<span class="a">+  ).toBeGreaterThanOrEqual(1)</span>
+<span class="a">+})</span>
+<span class="a">+</span>
+<span class="a">+// Skip the macro completions test as regular checks because they are flaky and</span>
+<span class="a">+// covered in other non-integration tests.</span>
+<span class="a">+test.describe(&#x27;Macro Completions&#x27;, () =&gt; {</span>
+<span class="a">+  test(&#x27;Completion for inbuilt macros&#x27;, async ({ page, sharedCodeServer }) =&gt; {</span>
+<span class="a">+    const tempDir = await fs.mkdtemp(</span>
+<span class="a m">+      path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;),</span>
+<span class="a">+    )</span>
+<span class="a">+    await fs.copy(SUSHI_SOURCE_PATH, tempDir)</span>
+ 
+<span class="d">-  try {</span>
+<span class="d">-    await page.goto(`http://127.0.0.1:${context.codeServerPort}`)</span>
+<span class="a">+    await createPythonInterpreterSettingsSpecifier(tempDir)</span>
+<span class="a">+    await page.goto(</span>
+<span class="a">+      `http://127.0.0.1:${sharedCodeServer.codeServerPort}/?folder=${tempDir}`,</span>
+<span class="a">+    )</span>
+ 
+     // Wait for the models folder to be visible
+     await page.waitForSelector(&#x27;text=models&#x27;)
+<span class="h">@@ -32,7 +82,7 @@ test(&#x27;Autocomplete for model names&#x27;, async ({ page }) =&gt; {</span>
+ 
+     // Open the top_waiters model
+     await page
+<span class="d">-      .getByRole(&#x27;treeitem&#x27;, { name: &#x27;top_waiters.sql&#x27;, exact: true })</span>
+<span class="a">+      .getByRole(&#x27;treeitem&#x27;, { name: &#x27;customers.sql&#x27;, exact: true })</span>
+       .locator(&#x27;a&#x27;)
+       .click()
+ 
+<span class="h">@@ -49,140 +99,69 @@ test(&#x27;Autocomplete for model names&#x27;, async ({ page }) =&gt; {</span>
+     // Add a new line
+     await page.keyboard.press(&#x27;Enter&#x27;)
+ 
+<span class="d">-    // Type the beginning of sushi.customers to trigger autocomplete</span>
+<span class="d">-    await page.keyboard.type(&#x27;sushi.waiter_as_customer&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-    // Wait a moment for autocomplete to appear</span>
+     await page.waitForTimeout(500)
+ 
+<span class="d">-    // Check if the autocomplete suggestion for sushi.customers is visible</span>
+<span class="d">-    expect(</span>
+<span class="d">-      await page.locator(&#x27;text=sushi.waiter_as_customer_by_day&#x27;).count(),</span>
+<span class="d">-    ).toBeGreaterThanOrEqual(1)</span>
+<span class="d">-    expect(</span>
+<span class="d">-      await page.locator(&#x27;text=SQLMesh Model&#x27;).count(),</span>
+<span class="d">-    ).toBeGreaterThanOrEqual(1)</span>
+<span class="d">-  } finally {</span>
+<span class="d">-    await stopCodeServer(context)</span>
+<span class="d">-  }</span>
+<span class="d">-})</span>
+<span class="d">-</span>
+<span class="d">-// Skip the macro completions test as regular checks because they are flaky and</span>
+<span class="d">-// covered in other non-integration tests.</span>
+<span class="d">-test.describe(&#x27;Macro Completions&#x27;, () =&gt; {</span>
+<span class="d">-  test(&#x27;Completion for inbuilt macros&#x27;, async ({ page }) =&gt; {</span>
+<span class="d">-    const tempDir = await fs.mkdtemp(</span>
+<span class="d m">-      path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;),</span>
+<span class="d">-    )</span>
+<span class="d">-    await fs.copy(SUSHI_SOURCE_PATH, tempDir)</span>
+<span class="d">-</span>
+<span class="d">-    const context = await startCodeServer({</span>
+<span class="d">-      tempDir,</span>
+<span class="d">-    })</span>
+<span class="d">-    await createPythonInterpreterSettingsSpecifier(tempDir)</span>
+<span class="d">-</span>
+<span class="d">-    try {</span>
+<span class="d">-      await page.goto(`http://127.0.0.1:${context.codeServerPort}`)</span>
+<span class="a">+    // Hit the &#x27;@&#x27; key to trigger autocomplete for inbuilt macros</span>
+<span class="a">+    await page.keyboard.press(&#x27;@&#x27;)</span>
+<span class="a">+    await page.keyboard.type(&#x27;eac&#x27;)</span>
+ 
+<span class="d">-      // Wait for the models folder to be visible</span>
+<span class="d">-      await page.waitForSelector(&#x27;text=models&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-      // Click on the models folder</span>
+<span class="d">-      await page</span>
+<span class="d">-        .getByRole(&#x27;treeitem&#x27;, { name: &#x27;models&#x27;, exact: true })</span>
+<span class="d">-        .locator(&#x27;a&#x27;)</span>
+<span class="d">-        .click()</span>
+<span class="d">-</span>
+<span class="d">-      // Open the top_waiters model</span>
+<span class="d">-      await page</span>
+<span class="d">-        .getByRole(&#x27;treeitem&#x27;, { name: &#x27;customers.sql&#x27;, exact: true })</span>
+<span class="d">-        .locator(&#x27;a&#x27;)</span>
+<span class="d">-        .click()</span>
+<span class="d">-</span>
+<span class="d">-      await page.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="d">-      await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-      await page.locator(&#x27;text=grain&#x27;).first().click()</span>
+<span class="d">-</span>
+<span class="d">-      // Move to the end of the file</span>
+<span class="d">-      for (let i = 0; i &lt; 100; i++) {</span>
+<span class="d">-        await page.keyboard.press(&#x27;ArrowDown&#x27;)</span>
+<span class="d">-      }</span>
+<span class="d">-</span>
+<span class="d">-      // Add a new line</span>
+<span class="d">-      await page.keyboard.press(&#x27;Enter&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-      await page.waitForTimeout(500)</span>
+<span class="d">-</span>
+<span class="d">-      // Hit the &#x27;@&#x27; key to trigger autocomplete for inbuilt macros</span>
+<span class="d">-      await page.keyboard.press(&#x27;@&#x27;)</span>
+<span class="d">-      await page.keyboard.type(&#x27;eac&#x27;)</span>
+<span class="d">-</span>
+<span class="d">-      // Wait a moment for autocomplete to appear</span>
+<span class="d">-      await page.waitForTimeout(500)</span>
+<span class="a">+    // Wait a moment for autocomplete to appear</span>
+<span class="a">+    await page.waitForTimeout(500)</span>
+ 
+<span class="d">-      // Check if the autocomplete suggestion for inbuilt macros is visible</span>
+<span class="d">-      expect(await page.locator(&#x27;text=@each&#x27;).count()).toBeGreaterThanOrEqual(1)</span>
+<span class="d">-    } finally {</span>
+<span class="d">-      await stopCodeServer(context)</span>
+<span class="d">-    }</span>
+<span class="a">+    // Check if the autocomplete suggestion for inbuilt macros is visible</span>
+<span class="a">+    expect(await page.locator(&#x27;text=@each&#x27;).count()).toBeGreaterThanOrEqual(1)</span>
+   })
+ 
+<span class="d">-  test(&#x27;Completion for custom macros&#x27;, async ({ page }) =&gt; {</span>
+<span class="a">+  test(&#x27;Completion for custom macros&#x27;, async ({ page, sharedCodeServer }) =&gt; {</span>
+     const tempDir = await fs.mkdtemp(
+<span class=" m">       path.join(os.tmpdir(), &#x27;vscode-test-sushi-&#x27;),</span>
+     )
+     await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+ 
+<span class="d">-    const context = await startCodeServer({</span>
+<span class="d">-      tempDir,</span>
+<span class="d">-    })</span>
+     await createPythonInterpreterSettingsSpecifier(tempDir)
+ 
+<span class="d">-    try {</span>
+<span class="d">-      await page.goto(`http://127.0.0.1:${context.codeServerPort}`)</span>
+<span class="a">+    await page.goto(</span>
+<span class="a">+      `http://127.0.0.1:${sharedCodeServer.codeServerPort}/?folder=${tempDir}`,</span>
+<span class="a">+    )</span>
+ 
+<span class="d">-      // Wait for the models folder to be visible</span>
+<span class="d">-      await page.waitForSelector(&#x27;text=models&#x27;)</span>
+<span class="a">+    // Wait for the models folder to be visible</span>
+<span class="a">+    await page.waitForSelector(&#x27;text=models&#x27;)</span>
+ 
+<span class="d">-      // Click on the models folder</span>
+<span class="d">-      await page</span>
+<span class="d">-        .getByRole(&#x27;treeitem&#x27;, { name: &#x27;models&#x27;, exact: true })</span>
+<span class="d">-        .locator(&#x27;a&#x27;)</span>
+<span class="d">-        .click()</span>
+<span class="a">+    // Click on the models folder</span>
+<span class="a">+    await page</span>
+<span class="a">+      .getByRole(&#x27;treeitem&#x27;, { name: &#x27;models&#x27;, exact: true })</span>
+<span class="a">+      .locator(&#x27;a&#x27;)</span>
+<span class="a">+      .click()</span>
+ 
+<span class="d">-      // Open the top_waiters model</span>
+<span class="d">-      await page</span>
+<span class="d">-        .getByRole(&#x27;treeitem&#x27;, { name: &#x27;customers.sql&#x27;, exact: true })</span>
+<span class="d">-        .locator(&#x27;a&#x27;)</span>
+<span class="d">-        .click()</span>
+<span class="a">+    // Open the top_waiters model</span>
+<span class="a">+    await page</span>
+<span class="a">+      .getByRole(&#x27;treeitem&#x27;, { name: &#x27;customers.sql&#x27;, exact: true })</span>
+<span class="a">+      .locator(&#x27;a&#x27;)</span>
+<span class="a">+      .click()</span>
+ 
+<span class="d">-      await page.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="d">-      await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="a">+    await page.waitForSelector(&#x27;text=grain&#x27;)</span>
+<span class="a">+    await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+ 
+<span class="d">-      await page.locator(&#x27;text=grain&#x27;).first().click()</span>
+<span class="a">+    await page.locator(&#x27;text=grain&#x27;).first().click()</span>
+ 
+<span class="d">-      // Move to the end of the file</span>
+<span class="d">-      for (let i = 0; i &lt; 100; i++) {</span>
+<span class="d">-        await page.keyboard.press(&#x27;ArrowDown&#x27;)</span>
+<span class="d">-      }</span>
+<span class="a">+    // Move to the end of the file</span>
+<span class="a">+    for (let i = 0; i &lt; 100; i++) {</span>
+<span class="a">+      await page.keyboard.press(&#x27;ArrowDown&#x27;)</span>
+<span class="a">+    }</span>
+ 
+<span class="d">-      // Add a new line</span>
+<span class="d">-      await page.keyboard.press(&#x27;Enter&#x27;)</span>
+<span class="a">+    // Add a new line</span>
+<span class="a">+    await page.keyboard.press(&#x27;Enter&#x27;)</span>
+ 
+<span class="d">-      // Type the beginning of a macro to trigger autocomplete</span>
+<span class="d">-      await page.keyboard.press(&#x27;@&#x27;)</span>
+<span class="d">-      await page.keyboard.type(&#x27;add_o&#x27;)</span>
+<span class="a">+    // Type the beginning of a macro to trigger autocomplete</span>
+<span class="a">+    await page.keyboard.press(&#x27;@&#x27;)</span>
+<span class="a">+    await page.keyboard.type(&#x27;add_o&#x27;)</span>
+ 
+<span class="d">-      // Wait a moment for autocomplete to appear</span>
+<span class="d">-      await page.waitForTimeout(500)</span>
+<span class="a">+    // Wait a moment for autocomplete to appear</span>
+<span class="a">+    await page.waitForTimeout(500)</span>
+ 
+<span class="d">-      // Check if the autocomplete suggestion for custom macros is visible</span>
+<span class="d">-      expect(</span>
+<span class="d">-        await page.locator(&#x27;text=@add_one&#x27;).count(),</span>
+<span class="d">-      ).toBeGreaterThanOrEqual(1)</span>
+<span class="d">-    } finally {</span>
+<span class="d">-      await stopCodeServer(context)</span>
+<span class="d">-    }</span>
+<span class="a">+    // Check if the autocomplete suggestion for custom macros is visible</span>
+<span class="a">+    expect(await page.locator(&#x27;text=@add_one&#x27;).count()).toBeGreaterThanOrEqual(</span>
+<span class="a">+      1,</span>
+<span class="a">+    )</span>
+   })
+ })</pre><h2>Commit #4: <a href="https://github.com/tobikodata/sqlmesh/commit/107fe2561129db80bbb4a8d67934d16ee51734f5">107fe25611</a> (2025-07-13T22:59:37+01:00)</h2><p class="k">chore(vscode): refactoring e2e tests (#4962)<br>Path after this commit: vscode/extension/tests/completions.spec.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/vscode/extension/tests/completions.spec.ts b/vscode/extension/tests/completions.spec.ts
+index 693934d4..da4eed6e 100644
+<span class="d">--- a/vscode/extension/tests/completions.spec.ts</span>
+<span class="a">+++ b/vscode/extension/tests/completions.spec.ts</span>
+<span class="h">@@ -2,7 +2,7 @@ import { test, expect } from &#x27;./fixtures&#x27;</span>
+ import path from &#x27;path&#x27;
+ import fs from &#x27;fs-extra&#x27;
+ import os from &#x27;os&#x27;
+<span class="d">-import { SUSHI_SOURCE_PATH } from &#x27;./utils&#x27;</span>
+<span class="a">+import { openServerPage, SUSHI_SOURCE_PATH } from &#x27;./utils&#x27;</span>
+ import { createPythonInterpreterSettingsSpecifier } from &#x27;./utils_code_server&#x27;
+ 
+ test(&#x27;Autocomplete for model names&#x27;, async ({ page, sharedCodeServer }) =&gt; {
+<span class="h">@@ -10,9 +10,7 @@ test(&#x27;Autocomplete for model names&#x27;, async ({ page, sharedCodeServer }) =&gt; {</span>
+   await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+ 
+   await createPythonInterpreterSettingsSpecifier(tempDir)
+<span class="d">-  await page.goto(</span>
+<span class="d">-    `http://127.0.0.1:${sharedCodeServer.codeServerPort}/?folder=${tempDir}`,</span>
+<span class="d">-  )</span>
+<span class="a">+  await openServerPage(page, tempDir, sharedCodeServer)</span>
+ 
+   // Wait for the models folder to be visible
+   await page.waitForSelector(&#x27;text=models&#x27;)
+<span class="h">@@ -67,9 +65,7 @@ test.describe(&#x27;Macro Completions&#x27;, () =&gt; {</span>
+     await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+ 
+     await createPythonInterpreterSettingsSpecifier(tempDir)
+<span class="d">-    await page.goto(</span>
+<span class="d">-      `http://127.0.0.1:${sharedCodeServer.codeServerPort}/?folder=${tempDir}`,</span>
+<span class="d">-    )</span>
+<span class="a">+    await openServerPage(page, tempDir, sharedCodeServer)</span>
+ 
+     // Wait for the models folder to be visible
+     await page.waitForSelector(&#x27;text=models&#x27;)
+<span class="h">@@ -119,10 +115,7 @@ test.describe(&#x27;Macro Completions&#x27;, () =&gt; {</span>
+     await fs.copy(SUSHI_SOURCE_PATH, tempDir)
+ 
+     await createPythonInterpreterSettingsSpecifier(tempDir)
+<span class="d">-</span>
+<span class="d">-    await page.goto(</span>
+<span class="d">-      `http://127.0.0.1:${sharedCodeServer.codeServerPort}/?folder=${tempDir}`,</span>
+<span class="d">-    )</span>
+<span class="a">+    await openServerPage(page, tempDir, sharedCodeServer)</span>
+ 
+     // Wait for the models folder to be visible
+     await page.waitForSelector(&#x27;text=models&#x27;)</pre><h2>Commit #5: <a href="https://github.com/tobikodata/sqlmesh/commit/c02022e0c2b619f5857998723016cf0b9107522e">c02022e0c2</a> (2025-07-25T13:10:13+01:00)</h2><p class="k">chore(vscode): refactor tests (#5021)<br>Path after this commit: vscode/extension/tests/completions.spec.ts. Lines with exactly this text in the file after the commit: 2.</p><pre>diff --git a/vscode/extension/tests/completions.spec.ts b/vscode/extension/tests/completions.spec.ts
+index da4eed6e..32ec7d96 100644
+<span class="d">--- a/vscode/extension/tests/completions.spec.ts</span>
+<span class="a">+++ b/vscode/extension/tests/completions.spec.ts</span>
+<span class="h">@@ -2,7 +2,11 @@ import { test, expect } from &#x27;./fixtures&#x27;</span>
+ import path from &#x27;path&#x27;
+ import fs from &#x27;fs-extra&#x27;
+ import os from &#x27;os&#x27;
+<span class="d">-import { openServerPage, SUSHI_SOURCE_PATH } from &#x27;./utils&#x27;</span>
+<span class="a">+import {</span>
+<span class="a">+  openServerPage,</span>
+<span class="a">+  SUSHI_SOURCE_PATH,</span>
+<span class="a">+  waitForLoadedSQLMesh,</span>
+<span class="a">+} from &#x27;./utils&#x27;</span>
+ import { createPythonInterpreterSettingsSpecifier } from &#x27;./utils_code_server&#x27;
+ 
+ test(&#x27;Autocomplete for model names&#x27;, async ({ page, sharedCodeServer }) =&gt; {
+<span class="h">@@ -28,7 +32,7 @@ test(&#x27;Autocomplete for model names&#x27;, async ({ page, sharedCodeServer }) =&gt; {</span>
+     .click()
+ 
+   await page.waitForSelector(&#x27;text=grain&#x27;)
+<span class="d">-  await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="a">+  await waitForLoadedSQLMesh(page)</span>
+ 
+   await page.locator(&#x27;text=grain&#x27;).first().click()
+ 
+<span class="h">@@ -83,7 +87,7 @@ test.describe(&#x27;Macro Completions&#x27;, () =&gt; {</span>
+       .click()
+ 
+     await page.waitForSelector(&#x27;text=grain&#x27;)
+<span class="d">-    await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="a">+    await waitForLoadedSQLMesh(page)</span>
+ 
+     await page.locator(&#x27;text=grain&#x27;).first().click()
+ 
+<span class="h">@@ -133,7 +137,7 @@ test.describe(&#x27;Macro Completions&#x27;, () =&gt; {</span>
+       .click()
+ 
+     await page.waitForSelector(&#x27;text=grain&#x27;)
+<span class="d">-    await page.waitForSelector(&#x27;text=Loaded SQLMesh Context&#x27;)</span>
+<span class="a">+    await waitForLoadedSQLMesh(page)</span>
+ 
+     await page.locator(&#x27;text=grain&#x27;).first().click()
+ </pre></body></html>

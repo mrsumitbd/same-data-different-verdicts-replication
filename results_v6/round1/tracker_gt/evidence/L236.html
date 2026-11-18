@@ -1,0 +1,655 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L236</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L236</h1><p><b>Repository:</b> <a href="https://github.com/celestiaorg/celestia-core">celestiaorg/celestia-core</a><br><b>File at merge:</b> types/part_set.go, line 246<br><b>Merge commit (birth):</b> <a href="https://github.com/celestiaorg/celestia-core/commit/56eb5954813a86c7e065c5ea3ad5c4c721010b12">56eb595481</a> (2025-06-24T11:30:02)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/celestiaorg/celestia-core/tree/b5850ac7d807ab5d79842ea9c21cfa6e8d26f074">b5850ac7d8</a>)</p><p><b>The line:</b></p><pre><span class="t">		if !added {</span></pre><h2>File at the merge commit, lines 238 to 254</h2><pre>  238 | 		added, err := ops.AddPart(&amp;Part{
+  239 | 			Index: uint32(index),
+  240 | 			Bytes: chunk,
+  241 | 			Proof: *proofs[index],
+  242 | 		})
+  243 | 		if err != nil {
+  244 | 			return nil, err
+  245 | 		}
+<span class="t">  246 | 		if !added {</span>
+  247 | 			return nil, fmt.Errorf(&quot;couldn&#x27;t add part %d when creating ops&quot;, index)
+  248 | 		}
+  249 | 	}
+  250 | 
+  251 | 	if len(chunks[len(chunks)-1]) &lt; int(partSize) {
+  252 | 		padded := make([]byte, partSize)
+  253 | 		copy(padded, chunks[len(chunks)-1])
+  254 | 		chunks[len(chunks)-1] = padded</pre><p class="k">Below are all 6 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/celestiaorg/celestia-core/commit/e7d73893b25bfc9ed69f6c8c6ea2782c7e6fc47a">e7d73893b2</a> (2025-08-21T13:26:12+02:00)</h2><p class="k">refactor!: replace `PartSet` parts slice with buffer (#2342)<br>Path after this commit: types/part_set.go. Lines with exactly this text in the file after the commit: 1. Identical text added in other files in this commit: types/part_set_test.go.</p><pre>diff --git a/types/part_set.go b/types/part_set.go
+index 84240303b..008bca837 100644
+<span class="d">--- a/types/part_set.go</span>
+<span class="a">+++ b/types/part_set.go</span>
+<span class="h">@@ -4,7 +4,6 @@ import (</span>
+ 	&quot;bytes&quot;
+ 	&quot;errors&quot;
+ 	&quot;fmt&quot;
+<span class="d">-	&quot;io&quot;</span>
+ 
+ 	&quot;github.com/klauspost/reedsolomon&quot;
+ 
+<span class="h">@@ -204,11 +203,19 @@ type PartSet struct {</span>
+ 	total uint32
+ 	hash  []byte
+ 
+<span class="d">-	mtx           cmtsync.Mutex</span>
+<span class="d">-	parts         []*Part</span>
+<span class="a">+	mtx cmtsync.Mutex</span>
+<span class="a">+</span>
+<span class="a">+	// buffer is a single preallocated buffer for all parts</span>
+<span class="a">+	buffer []byte</span>
+<span class="a">+	// partSize specifies the size of each part in bytes (excluding last part)</span>
+<span class="a">+	partSize int</span>
+<span class="a">+	// lastPartSize is the size of the last part (which may be smaller than partSize)</span>
+<span class="a">+	lastPartSize int</span>
+<span class="a">+	// proofs stores part proofs separately</span>
+<span class="a">+	proofs        []merkle.Proof</span>
+ 	partsBitArray *bits.BitArray
+ 	count         uint32
+<span class="d">-	// a count of the total size (in bytes). Used to ensure that the</span>
+<span class="a">+	// byteSize is the total size (in bytes). Used to ensure that the</span>
+ 	// part set doesn&#x27;t exceed the maximum block bytes
+ 	byteSize int64
+ 
+<span class="h">@@ -232,27 +239,26 @@ func NewPartSetFromData(data []byte, partSize uint32) (ops *PartSet, err error)</span>
+ 	ops = NewPartSetFromHeader(PartSetHeader{
+ 		Total: total,
+ 		Hash:  root,
+<span class="d">-	})</span>
+<span class="a">+	}, partSize)</span>
+ 
+<span class="d">-	for index, chunk := range chunks {</span>
+<span class="d">-		added, err := ops.AddPart(&amp;Part{</span>
+<span class="d">-			Index: uint32(index),</span>
+<span class="d">-			Bytes: chunk,</span>
+<span class="d">-			Proof: *proofs[index],</span>
+<span class="d">-		})</span>
+<span class="d">-		if err != nil {</span>
+<span class="d">-			return nil, err</span>
+<span class="d">-		}</span>
+<span class="d m">-		if !added {</span>
+<span class="d">-			return nil, fmt.Errorf(&quot;couldn&#x27;t add part %d when creating ops&quot;, index)</span>
+<span class="d">-		}</span>
+<span class="a">+	// Fill the buffer in a single copy and populate metadata.</span>
+<span class="a">+	copied := copy(ops.buffer, data)</span>
+<span class="a">+	if copied != len(data) {</span>
+<span class="a">+		return nil, fmt.Errorf(&quot;copy failed: %d &lt; %d&quot;, copied, len(data))</span>
+ 	}
+ 
+<span class="d">-	if len(chunks[len(chunks)-1]) &lt; int(partSize) {</span>
+<span class="d">-		padded := make([]byte, partSize)</span>
+<span class="d">-		copy(padded, chunks[len(chunks)-1])</span>
+<span class="d">-		chunks[len(chunks)-1] = padded</span>
+<span class="a">+	// Set sizes and bookkeeping.</span>
+<span class="a">+	if total &gt; 0 {</span>
+<span class="a">+		lastIdx := total - 1</span>
+<span class="a">+		ops.lastPartSize = len(chunks[lastIdx])</span>
+<span class="a">+	}</span>
+<span class="a">+	ops.proofs = make([]merkle.Proof, total)</span>
+<span class="a">+	for i := uint32(0); i &lt; total; i++ {</span>
+<span class="a">+		ops.proofs[i] = *proofs[i]</span>
+<span class="a">+		ops.partsBitArray.SetIndex(int(i), true)</span>
+ 	}
+<span class="a">+	ops.count = total</span>
+<span class="a">+	ops.byteSize = int64(len(data))</span>
+ 
+ 	return ops, nil
+ }
+<span class="h">@@ -303,7 +309,7 @@ func Encode(ops *PartSet, partSize uint32) (*PartSet, int, error) {</span>
+ 	eps := NewPartSetFromHeader(PartSetHeader{
+ 		Total: ops.Total(),
+ 		Hash:  eroot,
+<span class="d">-	})</span>
+<span class="a">+	}, partSize)</span>
+ 	for i := uint32(0); i &lt; ops.Total(); i++ {
+ 		added, err := eps.AddPart(&amp;Part{
+ 			Index: i,
+<span class="h">@@ -339,12 +345,12 @@ func Decode(ops, eps *PartSet, lastPartLen int) (*PartSet, *PartSet, error) {</span>
+ 
+ 	data := make([][]byte, ops.Total()+eps.Total())
+ 	ops.mtx.Lock()
+<span class="d">-	for i, part := range ops.parts {</span>
+<span class="d">-		if part == nil {</span>
+<span class="a">+	for i := 0; i &lt; int(ops.Total()); i++ {</span>
+<span class="a">+		chunk := ops.getPartBytes(i)</span>
+<span class="a">+		if chunk == nil {</span>
+ 			data[i] = nil
+ 			continue
+ 		}
+<span class="d">-		chunk := part.Bytes</span>
+ 		if len(chunk) != int(BlockPartSizeBytes) {
+ 			padded := make([]byte, BlockPartSizeBytes)
+ 			count := copy(padded, chunk)
+<span class="h">@@ -358,12 +364,13 @@ func Decode(ops, eps *PartSet, lastPartLen int) (*PartSet, *PartSet, error) {</span>
+ 	ops.mtx.Unlock()
+ 
+ 	eps.mtx.Lock()
+<span class="d">-	for i, part := range eps.parts {</span>
+<span class="d">-		if part == nil {</span>
+<span class="a">+	for i := 0; i &lt; int(eps.Total()); i++ {</span>
+<span class="a">+		chunk := eps.getPartBytes(i)</span>
+<span class="a">+		if chunk == nil {</span>
+ 			data[int(ops.Total())+i] = nil
+ 			continue
+ 		}
+<span class="d">-		data[int(ops.Total())+i] = part.Bytes</span>
+<span class="a">+		data[int(ops.Total())+i] = chunk</span>
+ 	}
+ 	eps.mtx.Unlock()
+ 
+<span class="h">@@ -429,11 +436,16 @@ func Decode(ops, eps *PartSet, lastPartLen int) (*PartSet, *PartSet, error) {</span>
+ }
+ 
+ // Returns an empty PartSet ready to be populated.
+<span class="d">-func NewPartSetFromHeader(header PartSetHeader) *PartSet {</span>
+<span class="a">+func NewPartSetFromHeader(header PartSetHeader, partSize uint32) *PartSet {</span>
+<span class="a">+	// Calculate buffer size: (total-1) full parts + potentially smaller last part</span>
+<span class="a">+	bufferSize := int(header.Total) * int(partSize)</span>
+ 	return &amp;PartSet{
+ 		total:         header.Total,
+ 		hash:          header.Hash,
+<span class="d">-		parts:         make([]*Part, header.Total),</span>
+<span class="a">+		buffer:        make([]byte, bufferSize),</span>
+<span class="a">+		partSize:      int(partSize),</span>
+<span class="a">+		lastPartSize:  0, // default to 0; will be updated when the last part is added</span>
+<span class="a">+		proofs:        make([]merkle.Proof, header.Total),</span>
+ 		partsBitArray: bits.NewBitArray(int(header.Total)),
+ 		count:         0,
+ 		byteSize:      0,
+<span class="h">@@ -517,10 +529,10 @@ func (ps *PartSet) AddPart(part *Part) (bool, error) {</span>
+ 		return false, fmt.Errorf(&quot;%w:%w&quot;, ErrPartSetInvalidProofHash, err)
+ 	}
+ 
+<span class="d">-	return ps.AddPartWithoutProof(part)</span>
+<span class="a">+	return ps.addPart(part)</span>
+ }
+ 
+<span class="d">-func (ps *PartSet) AddPartWithoutProof(part *Part) (bool, error) {</span>
+<span class="a">+func (ps *PartSet) addPart(part *Part) (bool, error) {</span>
+ 	if part == nil {
+ 		return false, errors.New(&quot;nil part&quot;)
+ 	}
+<span class="h">@@ -534,22 +546,85 @@ func (ps *PartSet) AddPartWithoutProof(part *Part) (bool, error) {</span>
+ 	}
+ 
+ 	// If part already exists, return false.
+<span class="d">-	if ps.parts[part.Index] != nil {</span>
+<span class="a">+	if ps.partsBitArray.GetIndex(int(part.Index)) {</span>
+ 		return false, nil
+ 	}
+ 
+<span class="d">-	// Add part</span>
+<span class="d">-	ps.parts[part.Index] = part</span>
+<span class="a">+	// Calculate buffer position and copy part data</span>
+<span class="a">+	start := int(part.Index) * ps.partSize</span>
+<span class="a">+	end := start + len(part.Bytes)</span>
+<span class="a">+</span>
+<span class="a">+	// Ensure we don&#x27;t exceed buffer bounds</span>
+<span class="a">+	if end &gt; len(ps.buffer) {</span>
+<span class="a">+		return false, fmt.Errorf(&quot;part data exceeds buffer bounds&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	copy(ps.buffer[start:end], part.Bytes)</span>
+<span class="a">+</span>
+<span class="a">+	ps.proofs[part.Index] = part.Proof</span>
+<span class="a">+</span>
+<span class="a">+	// Track last part size if this is the last part</span>
+<span class="a">+	if part.Index == ps.total-1 {</span>
+<span class="a">+		ps.lastPartSize = len(part.Bytes)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+ 	ps.partsBitArray.SetIndex(int(part.Index), true)
+ 	ps.count++
+ 	ps.byteSize += int64(len(part.Bytes))
+ 	return true, nil
+ }
+ 
+<span class="a">+// getPartBytes returns the bytes for a part from the internal buffer.</span>
+<span class="a">+// Assumes mutex is already locked.</span>
+<span class="a">+//</span>
+<span class="a">+// Returns nil if:</span>
+<span class="a">+// - The part at given index doesn&#x27;t exist (not yet received)</span>
+<span class="a">+// - The index is out of bounds</span>
+<span class="a">+// - Buffer access would be out of bounds</span>
+<span class="a">+func (ps *PartSet) getPartBytes(index int) []byte {</span>
+<span class="a">+	if !ps.partsBitArray.GetIndex(index) {</span>
+<span class="a">+		return nil</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// Calculate buffer position</span>
+<span class="a">+	start := index * ps.partSize</span>
+<span class="a">+	partSize := ps.partSize</span>
+<span class="a">+</span>
+<span class="a">+	// For the last part, use the actual size</span>
+<span class="a">+	if index == int(ps.total)-1 {</span>
+<span class="a">+		partSize = ps.lastPartSize</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	end := start + partSize</span>
+<span class="a">+	if start &gt;= len(ps.buffer) || end &gt; len(ps.buffer) {</span>
+<span class="a">+		return nil</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	return ps.buffer[start:end]</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+// GetPartBytes returns only the bytes for a part, without the proof.</span>
+<span class="a">+// This is more efficient when only the data is needed.</span>
+<span class="a">+func (ps *PartSet) GetPartBytes(index int) []byte {</span>
+<span class="a">+	ps.mtx.Lock()</span>
+<span class="a">+	defer ps.mtx.Unlock()</span>
+<span class="a">+	return ps.getPartBytes(index)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func (ps *PartSet) GetPart(index int) *Part {
+ 	ps.mtx.Lock()
+ 	defer ps.mtx.Unlock()
+<span class="d">-	return ps.parts[index]</span>
+<span class="a">+</span>
+<span class="a">+	bytes := ps.getPartBytes(index)</span>
+<span class="a">+	if bytes == nil {</span>
+<span class="a">+		return nil</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	return &amp;Part{</span>
+<span class="a">+		Index: uint32(index),</span>
+<span class="a">+		Bytes: bytes,</span>
+<span class="a">+		Proof: ps.proofs[index],</span>
+<span class="a">+	}</span>
+ }
+ 
+ func (ps *PartSet) HasPart(index int) bool {
+<span class="h">@@ -564,46 +639,12 @@ func (ps *PartSet) IsComplete() bool {</span>
+ 	return ps.count == ps.total
+ }
+ 
+<span class="d">-func (ps *PartSet) GetReader() io.Reader {</span>
+<span class="a">+func (ps *PartSet) GetBytes() []byte {</span>
+ 	if !ps.IsComplete() {
+<span class="d">-		panic(&quot;Cannot GetReader() on incomplete PartSet&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-	return NewPartSetReader(ps.parts)</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-type PartSetReader struct {</span>
+<span class="d">-	i      int</span>
+<span class="d">-	parts  []*Part</span>
+<span class="d">-	reader *bytes.Reader</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func NewPartSetReader(parts []*Part) *PartSetReader {</span>
+<span class="d">-	return &amp;PartSetReader{</span>
+<span class="d">-		i:      0,</span>
+<span class="d">-		parts:  parts,</span>
+<span class="d">-		reader: bytes.NewReader(parts[0].Bytes),</span>
+<span class="d">-	}</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func (psr *PartSetReader) Read(p []byte) (n int, err error) {</span>
+<span class="d">-	readerLen := psr.reader.Len()</span>
+<span class="d">-	if readerLen &gt;= len(p) {</span>
+<span class="d">-		return psr.reader.Read(p)</span>
+<span class="d">-	} else if readerLen &gt; 0 {</span>
+<span class="d">-		n1, err := psr.Read(p[:readerLen])</span>
+<span class="d">-		if err != nil {</span>
+<span class="d">-			return n1, err</span>
+<span class="d">-		}</span>
+<span class="d">-		n2, err := psr.Read(p[readerLen:])</span>
+<span class="d">-		return n1 + n2, err</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	psr.i++</span>
+<span class="d">-	if psr.i &gt;= len(psr.parts) {</span>
+<span class="d">-		return 0, io.EOF</span>
+<span class="a">+		panic(&quot;Cannot GetBytes() on incomplete PartSet&quot;)</span>
+ 	}
+<span class="d">-	psr.reader = bytes.NewReader(psr.parts[psr.i].Bytes)</span>
+<span class="d">-	return psr.Read(p)</span>
+<span class="a">+	dataSize := int(ps.total-1)*ps.partSize + ps.lastPartSize</span>
+<span class="a">+	return ps.buffer[:dataSize]</span>
+ }
+ 
+ // StringShort returns a short version of String.</pre><h2>Commit #2: <a href="https://github.com/celestiaorg/celestia-core/commit/e0c2f7b9d0aacfad44a2bbef554df97ba2a02061">e0c2f7b9d0</a> (2025-09-05T16:23:44+02:00)</h2><p class="k">feat: dynamically change all timeouts using the application (backport #2364) (#2408)<br>Path after this commit: types/part_set.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/types/part_set.go b/types/part_set.go
+index 008bca837..b96a83fc0 100644
+<span class="d">--- a/types/part_set.go</span>
+<span class="a">+++ b/types/part_set.go</span>
+<span class="h">@@ -532,6 +532,10 @@ func (ps *PartSet) AddPart(part *Part) (bool, error) {</span>
+ 	return ps.addPart(part)
+ }
+ 
+<span class="a">+func (ps *PartSet) AddPartWithoutProof(part *Part) (bool, error) {</span>
+<span class="a">+	return ps.addPart(part)</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ func (ps *PartSet) addPart(part *Part) (bool, error) {
+ 	if part == nil {
+ 		return false, errors.New(&quot;nil part&quot;)</pre><h2>Commit #3: <a href="https://github.com/celestiaorg/celestia-core/commit/17e0229c5f54cecaebb4fcbbd189d3620f915c29">17e0229c5f</a> (2025-09-16T06:27:46+02:00)</h2><p class="k">feat: parallel binary merkle root and proof generation (#2366)<br>Path after this commit: types/part_set.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/types/part_set.go b/types/part_set.go
+index b96a83fc0..28ebc4dea 100644
+<span class="d">--- a/types/part_set.go</span>
+<span class="a">+++ b/types/part_set.go</span>
+<span class="h">@@ -234,7 +234,7 @@ func NewPartSetFromData(data []byte, partSize uint32) (ops *PartSet, err error)</span>
+ 	}
+ 
+ 	// Compute merkle proofs
+<span class="d">-	root, proofs := merkle.ProofsFromByteSlices(chunks)</span>
+<span class="a">+	root, proofs := merkle.ParallelProofsFromByteSlices(chunks)</span>
+ 
+ 	ops = NewPartSetFromHeader(PartSetHeader{
+ 		Total: total,
+<span class="h">@@ -303,7 +303,7 @@ func Encode(ops *PartSet, partSize uint32) (*PartSet, int, error) {</span>
+ 
+ 	// only the parity data is needed for the new partset.
+ 	chunks = chunks[ops.Total():]
+<span class="d">-	eroot, eproofs := merkle.ProofsFromByteSlices(chunks)</span>
+<span class="a">+	eroot, eproofs := merkle.ParallelProofsFromByteSlices(chunks)</span>
+ 
+ 	// create a new partset using the new parity parts.
+ 	eps := NewPartSetFromHeader(PartSetHeader{
+<span class="h">@@ -387,7 +387,7 @@ func Decode(ops, eps *PartSet, lastPartLen int) (*PartSet, *PartSet, error) {</span>
+ 	// recalculate all of the proofs since we apparently don&#x27;t have a function
+ 	// to generate a single proof... TODO: don&#x27;t generate proofs for block parts
+ 	// we already have...
+<span class="d">-	root, proofs := merkle.ProofsFromByteSlices(data[:ops.Total()])</span>
+<span class="a">+	root, proofs := merkle.ParallelProofsFromByteSlices(data[:ops.Total()])</span>
+ 	if !bytes.Equal(root, ops.Hash()) {
+ 		return nil, nil, fmt.Errorf(&quot;reconstructed data has different hash!! want: %X, got: %X&quot;, ops.hash, root)
+ 	}
+<span class="h">@@ -411,7 +411,7 @@ func Decode(ops, eps *PartSet, lastPartLen int) (*PartSet, *PartSet, error) {</span>
+ 	// recalculate all of the proofs since we apparently don&#x27;t have a function
+ 	// to generate a single proof... TODO: don&#x27;t generate proofs for block parts
+ 	// we already have.
+<span class="d">-	eroot, eproofs := merkle.ProofsFromByteSlices(data[ops.Total():])</span>
+<span class="a">+	eroot, eproofs := merkle.ParallelProofsFromByteSlices(data[ops.Total():])</span>
+ 	if !bytes.Equal(eroot, eps.Hash()) {
+ 		return nil, nil, fmt.Errorf(&quot;reconstructed parity data has different hash!! want: %X, got: %X&quot;, eps.hash, eroot)
+ 	}</pre><h2>Commit #4: <a href="https://github.com/celestiaorg/celestia-core/commit/ebe750a07ee4cda5bd10a24df86638afd09260b2">ebe750a07e</a> (2025-09-17T14:23:31+00:00)</h2><p class="k">perf: further improve PartSet (#2439)<br>Path after this commit: types/part_set.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/types/part_set.go b/types/part_set.go
+index 28ebc4dea..8a9311815 100644
+<span class="d">--- a/types/part_set.go</span>
+<span class="a">+++ b/types/part_set.go</span>
+<span class="h">@@ -255,42 +255,83 @@ func NewPartSetFromData(data []byte, partSize uint32) (ops *PartSet, err error)</span>
+ 	ops.proofs = make([]merkle.Proof, total)
+ 	for i := uint32(0); i &lt; total; i++ {
+ 		ops.proofs[i] = *proofs[i]
+<span class="d">-		ops.partsBitArray.SetIndex(int(i), true)</span>
+ 	}
+<span class="a">+	ops.partsBitArray.Fill()</span>
+ 	ops.count = total
+ 	ops.byteSize = int64(len(data))
+ 
+ 	return ops, nil
+ }
+ 
+<span class="a">+// newPartSetFromChunks creates a new PartSet from given data chunks, and other data.</span>
+<span class="a">+func newPartSetFromChunks(chunks [][]byte, root cmtbytes.HexBytes, proofs []*merkle.Proof, partSize int) (*PartSet, error) {</span>
+<span class="a">+	total := len(chunks)</span>
+<span class="a">+	if total != len(proofs) {</span>
+<span class="a">+		return nil, fmt.Errorf(&quot;chunks and proofs have different lengths: %d != %d&quot;, len(chunks), len(proofs))</span>
+<span class="a">+	}</span>
+<span class="a">+	if root == nil {</span>
+<span class="a">+		return nil, fmt.Errorf(&quot;root is nil&quot;)</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+<span class="a">+	// create a new partset using the new parity parts.</span>
+<span class="a">+	ps := NewPartSetFromHeader(PartSetHeader{</span>
+<span class="a">+		Total: uint32(total),</span>
+<span class="a">+		Hash:  root,</span>
+<span class="a">+	}, uint32(partSize))</span>
+<span class="a">+</span>
+<span class="a">+	// access ps directly, without mutex, because we know it is not used elsewhere</span>
+<span class="a">+	for i := 0; i &lt; total; i++ {</span>
+<span class="a">+		start := i * partSize</span>
+<span class="a">+		end := start + len(chunks[i])</span>
+<span class="a">+</span>
+<span class="a">+		// Ensure we don&#x27;t exceed buffer bounds</span>
+<span class="a">+		if end &gt; len(ps.buffer) {</span>
+<span class="a">+			return nil, fmt.Errorf(&quot;part data exceeds buffer bounds&quot;)</span>
+<span class="a">+		}</span>
+<span class="a">+</span>
+<span class="a">+		copy(ps.buffer[start:end], chunks[i])</span>
+<span class="a">+		ps.proofs[i] = *proofs[i]</span>
+<span class="a">+	}</span>
+<span class="a">+	ps.partsBitArray.Fill()</span>
+<span class="a">+	ps.count = uint32(total)</span>
+<span class="a">+	ps.lastPartSize = len(chunks[total-1])</span>
+<span class="a">+	ps.byteSize = int64(len(ps.buffer))</span>
+<span class="a">+	return ps, nil</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+ // Encode Extend erasure encodes the block parts. Only the original parts should be
+ // provided. The parity data is formed into its own PartSet and returned
+ // alongside the length of the last part. The length of the last part is
+ // necessary because the last part may be padded with zeros after decoding. These zeros must be removed before computi
+ func Encode(ops *PartSet, partSize uint32) (*PartSet, int, error) {
+<span class="d">-	chunks := make([][]byte, 2*ops.Total())</span>
+<span class="d">-	for i := range chunks {</span>
+<span class="d">-		if i &lt; int(ops.Total()) {</span>
+<span class="d">-			chunks[i] = ops.GetPart(i).Bytes.Bytes()</span>
+<span class="d">-			continue</span>
+<span class="d">-		}</span>
+<span class="d">-		chunks[i] = make([]byte, partSize)</span>
+<span class="a">+	total := int(ops.Total())</span>
+<span class="a">+	chunks := make([][]byte, 2*total)</span>
+<span class="a">+	ops.mtx.Lock()</span>
+<span class="a">+	for i := range total {</span>
+<span class="a">+		chunks[i] = ops.getPartBytes(i)</span>
+<span class="a">+	}</span>
+<span class="a">+	ops.mtx.Unlock()</span>
+<span class="a">+</span>
+<span class="a">+	ps := int(partSize)</span>
+<span class="a">+	parityBuffer := make([]byte, total*ps) // allocate once, only slice later</span>
+<span class="a">+	for i := 0; i &lt; total; i++ {</span>
+<span class="a">+		chunks[total+i] = parityBuffer[i*ps : (i+1)*ps]</span>
+ 	}
+ 
+ 	// pad ONLY the last chunk and not the part with zeros if necessary AFTER the root has been generated
+<span class="d">-	lastLen := len(ops.GetPart(int(ops.Total() - 1)).Bytes.Bytes())</span>
+<span class="a">+	lastLen := len(ops.GetPartBytes(total - 1))</span>
+ 	if lastLen &lt; int(partSize) {
+ 		padded := make([]byte, partSize)
+<span class="d">-		count := copy(padded, chunks[ops.Total()-1])</span>
+<span class="d">-		if count &lt; len(chunks[ops.Total()-1]) {</span>
+<span class="a">+		count := copy(padded, chunks[total-1])</span>
+<span class="a">+		if count &lt; len(chunks[total-1]) {</span>
+ 			return nil, 0, fmt.Errorf(&quot;copy failed of unpadded part with index %d: %d &lt; %d&quot;, ops.Total()-1, count, len(chunks[ops.Total()-1]))
+ 		}
+<span class="d">-		chunks[ops.Total()-1] = padded</span>
+<span class="a">+		chunks[total-1] = padded</span>
+ 	}
+ 
+ 	// init an encoder if it is not already initialized using the original
+ 	// number of parts.
+<span class="d">-	enc, err := reedsolomon.New(int(ops.Total()), int(ops.Total()))</span>
+<span class="a">+	enc, err := reedsolomon.New(total, total)</span>
+ 	if err != nil {
+ 		return nil, 0, err
+ 	}
+<span class="h">@@ -302,26 +343,12 @@ func Encode(ops *PartSet, partSize uint32) (*PartSet, int, error) {</span>
+ 	}
+ 
+ 	// only the parity data is needed for the new partset.
+<span class="d">-	chunks = chunks[ops.Total():]</span>
+<span class="a">+	chunks = chunks[total:]</span>
+ 	eroot, eproofs := merkle.ParallelProofsFromByteSlices(chunks)
+ 
+<span class="d">-	// create a new partset using the new parity parts.</span>
+<span class="d">-	eps := NewPartSetFromHeader(PartSetHeader{</span>
+<span class="d">-		Total: ops.Total(),</span>
+<span class="d">-		Hash:  eroot,</span>
+<span class="d">-	}, partSize)</span>
+<span class="d">-	for i := uint32(0); i &lt; ops.Total(); i++ {</span>
+<span class="d">-		added, err := eps.AddPart(&amp;Part{</span>
+<span class="d">-			Index: i,</span>
+<span class="d">-			Bytes: chunks[i],</span>
+<span class="d">-			Proof: *eproofs[i],</span>
+<span class="d">-		})</span>
+<span class="d">-		if err != nil {</span>
+<span class="d">-			return nil, 0, err</span>
+<span class="d">-		}</span>
+<span class="d m">-		if !added {</span>
+<span class="d">-			return nil, 0, fmt.Errorf(&quot;couldn&#x27;t add parity part %d&quot;, i)</span>
+<span class="d">-		}</span>
+<span class="a">+	eps, err := newPartSetFromChunks(chunks, eroot, eproofs, ps)</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		return nil, 0, err</span>
+ 	}
+ 	return eps, lastLen, nil
+ }
+<span class="h">@@ -541,9 +568,6 @@ func (ps *PartSet) addPart(part *Part) (bool, error) {</span>
+ 		return false, errors.New(&quot;nil part&quot;)
+ 	}
+ 
+<span class="d">-	ps.mtx.Lock()</span>
+<span class="d">-	defer ps.mtx.Unlock()</span>
+<span class="d">-</span>
+ 	// Invalid part index
+ 	if part.Index &gt;= ps.total {
+ 		return false, ErrPartSetUnexpectedIndex
+<span class="h">@@ -563,18 +587,22 @@ func (ps *PartSet) addPart(part *Part) (bool, error) {</span>
+ 		return false, fmt.Errorf(&quot;part data exceeds buffer bounds&quot;)
+ 	}
+ 
+<span class="d">-	copy(ps.buffer[start:end], part.Bytes)</span>
+<span class="a">+	ps.mtx.Lock()</span>
+ 
+<span class="a">+	copy(ps.buffer[start:end], part.Bytes)</span>
+ 	ps.proofs[part.Index] = part.Proof
+ 
+ 	// Track last part size if this is the last part
+ 	if part.Index == ps.total-1 {
+ 		ps.lastPartSize = len(part.Bytes)
+ 	}
+<span class="d">-</span>
+<span class="d">-	ps.partsBitArray.SetIndex(int(part.Index), true)</span>
+ 	ps.count++
+ 	ps.byteSize += int64(len(part.Bytes))
+<span class="a">+</span>
+<span class="a">+	ps.mtx.Unlock()</span>
+<span class="a">+</span>
+<span class="a">+	ps.partsBitArray.SetIndex(int(part.Index), true)</span>
+<span class="a">+</span>
+ 	return true, nil
+ }
+ 
+<span class="h">@@ -632,8 +660,6 @@ func (ps *PartSet) GetPart(index int) *Part {</span>
+ }
+ 
+ func (ps *PartSet) HasPart(index int) bool {
+<span class="d">-	ps.mtx.Lock()</span>
+<span class="d">-	defer ps.mtx.Unlock()</span>
+ 	return ps.partsBitArray.GetIndex(index)
+ }
+ </pre><h2>Commit #5: <a href="https://github.com/celestiaorg/celestia-core/commit/355b86724c5f4eae63e14d26fa70481508bed650">355b86724c</a> (2025-09-23T11:25:31+02:00)</h2><p class="k">perf: optimize mempool recovery (#2483)<br>Path after this commit: types/part_set.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/types/part_set.go b/types/part_set.go
+index 8a9311815..f8701f8ee 100644
+<span class="d">--- a/types/part_set.go</span>
+<span class="a">+++ b/types/part_set.go</span>
+<span class="h">@@ -547,6 +547,11 @@ func (ps *PartSet) AddPart(part *Part) (bool, error) {</span>
+ 		return false, fmt.Errorf(&quot;nil part&quot;)
+ 	}
+ 
+<span class="a">+	// If part already exists, return false.</span>
+<span class="a">+	if ps.partsBitArray.GetIndex(int(part.Index)) {</span>
+<span class="a">+		return false, nil</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+ 	// The proof should be compatible with the number of parts.
+ 	if part.Proof.Total != int64(ps.total) {
+ 		return false, fmt.Errorf(ErrPartSetInvalidProofTotal.Error()+&quot;:%v %v&quot;, part.Proof.Total, ps.total)</pre><h2>Commit #6: <a href="https://github.com/celestiaorg/celestia-core/commit/e477743b85c2469052993e7592e26f036a1e779a">e477743b85</a> (2025-10-10T06:29:15+02:00)</h2><p class="k">perf: add parts to the partset in parallel (#2548)<br>Path after this commit: types/part_set.go. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/types/part_set.go b/types/part_set.go
+index f8701f8ee..087da1df4 100644
+<span class="d">--- a/types/part_set.go</span>
+<span class="a">+++ b/types/part_set.go</span>
+<span class="h">@@ -4,6 +4,9 @@ import (</span>
+ 	&quot;bytes&quot;
+ 	&quot;errors&quot;
+ 	&quot;fmt&quot;
+<span class="a">+	&quot;runtime&quot;</span>
+<span class="a">+</span>
+<span class="a">+	&quot;golang.org/x/sync/errgroup&quot;</span>
+ 
+ 	&quot;github.com/klauspost/reedsolomon&quot;
+ 
+<span class="h">@@ -419,20 +422,29 @@ func Decode(ops, eps *PartSet, lastPartLen int) (*PartSet, *PartSet, error) {</span>
+ 		return nil, nil, fmt.Errorf(&quot;reconstructed data has different hash!! want: %X, got: %X&quot;, ops.hash, root)
+ 	}
+ 
+<span class="a">+	eg := errgroup.Group{}</span>
+<span class="a">+	eg.SetLimit(runtime.NumCPU())</span>
+ 	for i, d := range data[:ops.Total()] {
+<span class="d">-		if !ops.HasPart(i) {</span>
+<span class="d">-			added, err := ops.AddPart(&amp;Part{</span>
+<span class="d">-				Index: uint32(i),</span>
+<span class="d">-				Bytes: d,</span>
+<span class="d">-				Proof: *proofs[i],</span>
+<span class="d">-			})</span>
+<span class="d">-			if err != nil {</span>
+<span class="d">-				return nil, nil, err</span>
+<span class="d">-			}</span>
+<span class="d m">-			if !added {</span>
+<span class="d">-				return nil, nil, fmt.Errorf(&quot;couldn&#x27;t add original part %d when decoding&quot;, i)</span>
+<span class="a">+		eg.Go(func() error {</span>
+<span class="a">+			if !ops.HasPart(i) {</span>
+<span class="a">+				added, err := ops.AddPart(&amp;Part{</span>
+<span class="a">+					Index: uint32(i),</span>
+<span class="a">+					Bytes: d,</span>
+<span class="a">+					Proof: *proofs[i],</span>
+<span class="a">+				})</span>
+<span class="a">+				if err != nil {</span>
+<span class="a">+					return err</span>
+<span class="a">+				}</span>
+<span class="a m">+				if !added {</span>
+<span class="a">+					return fmt.Errorf(&quot;couldn&#x27;t add original part %d when decoding&quot;, i)</span>
+<span class="a">+				}</span>
+ 			}
+<span class="d">-		}</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+	}</span>
+<span class="a">+	err = eg.Wait()</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		return nil, nil, err</span>
+ 	}
+ 
+ 	// recalculate all of the proofs since we apparently don&#x27;t have a function
+<span class="h">@@ -443,20 +455,29 @@ func Decode(ops, eps *PartSet, lastPartLen int) (*PartSet, *PartSet, error) {</span>
+ 		return nil, nil, fmt.Errorf(&quot;reconstructed parity data has different hash!! want: %X, got: %X&quot;, eps.hash, eroot)
+ 	}
+ 
+<span class="a">+	eg = errgroup.Group{}</span>
+<span class="a">+	eg.SetLimit(runtime.NumCPU())</span>
+ 	for i := 0; i &lt; int(eps.Total()); i++ {
+<span class="d">-		if !eps.HasPart(i) {</span>
+<span class="d">-			added, err := eps.AddPart(&amp;Part{</span>
+<span class="d">-				Index: uint32(i),</span>
+<span class="d">-				Bytes: data[int(ops.Total())+i],</span>
+<span class="d">-				Proof: *eproofs[i],</span>
+<span class="d">-			})</span>
+<span class="d">-			if err != nil {</span>
+<span class="d">-				return nil, nil, err</span>
+<span class="a">+		eg.Go(func() error {</span>
+<span class="a">+			if !eps.HasPart(i) {</span>
+<span class="a">+				added, err := eps.AddPart(&amp;Part{</span>
+<span class="a">+					Index: uint32(i),</span>
+<span class="a">+					Bytes: data[int(ops.Total())+i],</span>
+<span class="a">+					Proof: *eproofs[i],</span>
+<span class="a">+				})</span>
+<span class="a">+				if err != nil {</span>
+<span class="a">+					return err</span>
+<span class="a">+				}</span>
+<span class="a m">+				if !added {</span>
+<span class="a">+					return fmt.Errorf(&quot;couldn&#x27;t add parity part %d when decoding&quot;, i)</span>
+<span class="a">+				}</span>
+ 			}
+<span class="d m">-			if !added {</span>
+<span class="d">-				return nil, nil, fmt.Errorf(&quot;couldn&#x27;t add parity part %d when decoding&quot;, i)</span>
+<span class="d">-			}</span>
+<span class="d">-		}</span>
+<span class="a">+			return nil</span>
+<span class="a">+		})</span>
+<span class="a">+	}</span>
+<span class="a">+	err = eg.Wait()</span>
+<span class="a">+	if err != nil {</span>
+<span class="a">+		return nil, nil, err</span>
+ 	}
+ 
+ 	return ops, eps, nil</pre></body></html>

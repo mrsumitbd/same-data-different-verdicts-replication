@@ -1,0 +1,130 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L273</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L273</h1><p><b>Repository:</b> <a href="https://github.com/onnx/onnx">onnx/onnx</a><br><b>File at merge:</b> onnx/defs/function.cc, line 209<br><b>Merge commit (birth):</b> <a href="https://github.com/onnx/onnx/commit/5631e5ed16049bfd364103c8848f5f97a153b924">5631e5ed16</a> (2025-07-17T18:36:05)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/onnx/onnx/tree/336652a4b2ab1e530ae02269efa7038082cef250">336652a4b2</a>)</p><p><b>The line:</b></p><pre><span class="t">    // Rename the node using the renamer</span></pre><h2>File at the merge commit, lines 201 to 217</h2><pre>  201 |     Const(const_name, initializer);
+  202 |   }
+  203 | 
+  204 |   // Add a copy of every node in the graph with renamed variables
+  205 |   for (const auto&amp; node : graph.node()) {
+  206 |     NodeProto new_node;
+  207 |     new_node.CopyFrom(node);
+  208 | 
+<span class="t">  209 |     // Rename the node using the renamer</span>
+  210 |     renamer.RenameNode(new_node);
+  211 | 
+  212 |     // Add the node to the function
+  213 |     *funProto.add_node() = new_node;
+  214 |   }
+  215 | 
+  216 |   return *this;
+  217 | }</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/onnx/onnx/commit/cc76f3a896404561f6ece00873ae3c79cc6d002e">cc76f3a896</a> (2025-11-22T11:06:53+01:00)</h2><p class="k">Fix typos (#7478)<br>Path after this commit: onnx/defs/function.cc. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/onnx/defs/function.cc b/onnx/defs/function.cc
+index a1b6a1a6f..5d6411a5a 100644
+<span class="d">--- a/onnx/defs/function.cc</span>
+<span class="a">+++ b/onnx/defs/function.cc</span>
+<span class="h">@@ -7,7 +7,7 @@</span>
+ #include &quot;onnx/defs/schema.h&quot;
+ #include &quot;onnx/inliner/inliner.h&quot;
+ 
+<span class="d">-static std::string InteralTensorNameGenerator(const std::string&amp; node_name, const std::string&amp; internal_name) {</span>
+<span class="a">+static std::string InternalTensorNameGenerator(const std::string&amp; node_name, const std::string&amp; internal_name) {</span>
+   std::string new_name = &quot;Func_&quot; + node_name + internal_name;
+   return new_name;
+ }
+<span class="h">@@ -88,14 +88,14 @@ void FunctionExpandHelper(</span>
+       if (io_names_map.count(input)) {
+         new_node-&gt;add_input(io_names_map[input]);
+       } else {
+<span class="d">-        new_node-&gt;add_input(InteralTensorNameGenerator(node_name, input));</span>
+<span class="a">+        new_node-&gt;add_input(InternalTensorNameGenerator(node_name, input));</span>
+       }
+     }
+     for (auto&amp; output : function_node.output()) {
+       if (io_names_map.count(output)) {
+         new_node-&gt;add_output(io_names_map[output]);
+       } else {
+<span class="d">-        new_node-&gt;add_output(InteralTensorNameGenerator(node_name, output));</span>
+<span class="a">+        new_node-&gt;add_output(InternalTensorNameGenerator(node_name, output));</span>
+       }
+     }
+     for (auto&amp; attr : function_node.attribute()) {</pre><h2>Commit #2: <a href="https://github.com/onnx/onnx/commit/cff22d9c9ad17c2c14a72f64615e2a45a09ce845">cff22d9c9a</a> (2025-12-11T09:53:34-08:00)</h2><p class="k">More clang-tidy fixes (#7486)<br>Path after this commit: onnx/defs/function.cc. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/onnx/defs/function.cc b/onnx/defs/function.cc
+index 5d6411a5a..d9e5b7201 100644
+<span class="d">--- a/onnx/defs/function.cc</span>
+<span class="a">+++ b/onnx/defs/function.cc</span>
+<span class="h">@@ -49,7 +49,7 @@ void FunctionExpandHelper(</span>
+     io_names_map[func.output().Get(idx)] = node.output().Get(idx);
+   }
+ 
+<span class="d">-  for (auto&amp; attr : node.attribute()) {</span>
+<span class="a">+  for (const auto&amp; attr : node.attribute()) {</span>
+     attr_map[attr.name()] = attr;
+   }
+ 
+<span class="h">@@ -67,7 +67,7 @@ void FunctionExpandHelper(</span>
+   }
+ 
+   const OpSchemaRegistry* schema_registry = OpSchemaRegistry::Instance();
+<span class="d">-  const auto schema = schema_registry-&gt;GetSchema(node.op_type(), domain_version, node.domain());</span>
+<span class="a">+  const auto* const schema = schema_registry-&gt;GetSchema(node.op_type(), domain_version, node.domain());</span>
+   auto default_attrs = schema-&gt;attributes();
+ 
+   for (const auto&amp; pair : default_attrs) {
+<span class="h">@@ -78,27 +78,27 @@ void FunctionExpandHelper(</span>
+     }
+   }
+ 
+<span class="d">-  for (auto&amp; function_node : func.node()) {</span>
+<span class="a">+  for (const auto&amp; function_node : func.node()) {</span>
+     NodeProto* new_node = g.add_node();
+     new_node-&gt;CopyFrom(function_node);
+     new_node-&gt;clear_input();
+     new_node-&gt;clear_output();
+     new_node-&gt;clear_attribute();
+<span class="d">-    for (auto&amp; input : function_node.input()) {</span>
+<span class="a">+    for (const auto&amp; input : function_node.input()) {</span>
+       if (io_names_map.count(input)) {
+         new_node-&gt;add_input(io_names_map[input]);
+       } else {
+         new_node-&gt;add_input(InternalTensorNameGenerator(node_name, input));
+       }
+     }
+<span class="d">-    for (auto&amp; output : function_node.output()) {</span>
+<span class="a">+    for (const auto&amp; output : function_node.output()) {</span>
+       if (io_names_map.count(output)) {
+         new_node-&gt;add_output(io_names_map[output]);
+       } else {
+         new_node-&gt;add_output(InternalTensorNameGenerator(node_name, output));
+       }
+     }
+<span class="d">-    for (auto&amp; attr : function_node.attribute()) {</span>
+<span class="a">+    for (const auto&amp; attr : function_node.attribute()) {</span>
+       if (attr.has_ref_attr_name()) {
+         if (attr_map.count(attr.ref_attr_name())) {
+           AttributeProto* new_attr = new_node-&gt;add_attribute();
+<span class="h">@@ -161,7 +161,7 @@ bool FunctionBodyHelper::BuildFunctionProto(</span>
+     const std::vector&lt;OperatorSetIdProto&gt;&amp; relied_opsets) {
+   BuildNodes(functionProto, node_defs);
+ 
+<span class="d">-  for (auto&amp; relied_opset : relied_opsets) {</span>
+<span class="a">+  for (const auto&amp; relied_opset : relied_opsets) {</span>
+     *(functionProto.mutable_opset_import()-&gt;Add()) = relied_opset;
+   }
+ 
+<span class="h">@@ -178,7 +178,7 @@ FunctionBuilder&amp; FunctionBuilder::AddInlinedCall(</span>
+   inliner::Renamer renamer(std::string(prefix), graph);
+ 
+   // Bind formal inputs to actual inputs
+<span class="d">-  auto input_it = inputs.begin();</span>
+<span class="a">+  const auto* input_it = inputs.begin();</span>
+   for (const auto&amp; graph_input : graph.input()) {
+     if (input_it != inputs.end()) {
+       renamer.BindName(graph_input.name(), std::string(*input_it));
+<span class="h">@@ -187,7 +187,7 @@ FunctionBuilder&amp; FunctionBuilder::AddInlinedCall(</span>
+   }
+ 
+   // Bind formal outputs to actual outputs
+<span class="d">-  auto output_it = outputs.begin();</span>
+<span class="a">+  const auto* output_it = outputs.begin();</span>
+   for (const auto&amp; graph_output : graph.output()) {
+     if (output_it != outputs.end()) {
+       renamer.BindName(graph_output.name(), std::string(*output_it));</pre></body></html>

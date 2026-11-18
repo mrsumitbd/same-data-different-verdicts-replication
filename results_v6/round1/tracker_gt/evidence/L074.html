@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L074</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L074</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/runtime">dotnet/runtime</a><br><b>File at merge:</b> src/libraries/System.Linq.AsyncEnumerable/src/System/Linq/Sequence.cs, line 130<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/runtime/commit/9b4f83ed53c7be3639d79c2c5ca123ab0e675a61">9b4f83ed53</a> (2025-06-18T20:52:08)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/runtime/tree/32fcc41afe5747cf674ca6c62de087ab5fd332eb">32fcc41afe</a>)</p><p><b>The line:</b></p><pre><span class="t">                    T next = current + step;</span></pre><h2>File at the merge commit, lines 122 to 138</h2><pre>  122 |             static async IAsyncEnumerable&lt;T&gt; DecrementingIterator(T current, T endInclusive, T step)
+  123 |             {
+  124 |                 Debug.Assert(step &lt; T.Zero);
+  125 | 
+  126 |                 yield return current;
+  127 | 
+  128 |                 while (true)
+  129 |                 {
+<span class="t">  130 |                     T next = current + step;</span>
+  131 | 
+  132 |                     if (next &lt;= endInclusive || next &gt;= current) // handle overflow and saturation
+  133 |                     {
+  134 |                         if (next == endInclusive &amp;&amp; current != next)
+  135 |                         {
+  136 |                             yield return next;
+  137 |                         }
+  138 | </pre><p class="k">Below are all 0 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><p><b>No commit touches this file in the window.</b></p></body></html>

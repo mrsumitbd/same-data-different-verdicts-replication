@@ -1,0 +1,194 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L069</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L069</h1><p><b>Repository:</b> <a href="https://github.com/schemahero/schemahero">schemahero/schemahero</a><br><b>File at merge:</b> pkg/database/postgres/connection.go, line 78<br><b>Merge commit (birth):</b> <a href="https://github.com/schemahero/schemahero/commit/622374af1820c61a96dc77409bdf99d1158e90e5">622374af18</a> (2025-05-01T14:19:11)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/schemahero/schemahero/tree/a34d82846e2802aa4115f0db232072f50e93cf5b">a34d82846e</a>)</p><p><b>The line:</b></p><pre><span class="t">				schemas = []string{schema}</span></pre><h2>File at the merge commit, lines 70 to 86</h2><pre>   70 | 		} else if parsed.Query().Get(&quot;currentSchema&quot;) != &quot;&quot; {
+   71 | 			schema = parsed.Query().Get(&quot;currentSchema&quot;)
+   72 | 			schemas = []string{schema}
+   73 | 		} else if parsed.Query().Get(&quot;search_path&quot;) != &quot;&quot; {
+   74 | 			searchPath := parsed.Query().Get(&quot;search_path&quot;)
+   75 | 			pathSchemas := strings.Split(searchPath, &quot;,&quot;)
+   76 | 			if len(pathSchemas) &gt; 0 {
+   77 | 				schema = strings.TrimSpace(pathSchemas[0])
+<span class="t">   78 | 				schemas = []string{schema}</span>
+   79 | 			}
+   80 | 		}
+   81 | 		
+   82 | 		if parsed.Query().Get(&quot;schemas&quot;) != &quot;&quot; {
+   83 | 			schemasList := parsed.Query().Get(&quot;schemas&quot;)
+   84 | 			schemas = []string{}
+   85 | 			for _, s := range strings.Split(schemasList, &quot;,&quot;) {
+   86 | 				schemas = append(schemas, strings.TrimSpace(s))</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/schemahero/schemahero/commit/d8eff9fce58959e03ea89ccaf874d45863159d22">d8eff9fce5</a> (2025-05-01T09:32:20-06:00)</h2><p class="k">Remove unnecessary replace directive for prometheus/client_golang (#1168)<br>Path after this commit: pkg/database/postgres/connection.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/pkg/database/postgres/connection.go b/pkg/database/postgres/connection.go
+index 0ca80188..e6d72afc 100644
+<span class="d">--- a/pkg/database/postgres/connection.go</span>
+<span class="a">+++ b/pkg/database/postgres/connection.go</span>
+<span class="h">@@ -61,7 +61,7 @@ func Connect(uri string) (*PostgresConnection, error) {</span>
+ 
+ 	schema := &quot;public&quot; // Default to public
+ 	schemas := []string{&quot;public&quot;}
+<span class="d">-	</span>
+<span class="a">+</span>
+ 	parsed, err := dburl.Parse(uri)
+ 	if err == nil {
+ 		if parsed.Query().Get(&quot;schema&quot;) != &quot;&quot; {
+<span class="h">@@ -78,7 +78,7 @@ func Connect(uri string) (*PostgresConnection, error) {</span>
+<span class=" m"> 				schemas = []string{schema}</span>
+ 			}
+ 		}
+<span class="d">-		</span>
+<span class="a">+</span>
+ 		if parsed.Query().Get(&quot;schemas&quot;) != &quot;&quot; {
+ 			schemasList := parsed.Query().Get(&quot;schemas&quot;)
+ 			schemas = []string{}</pre><h2>Commit #2: <a href="https://github.com/schemahero/schemahero/commit/72d2c42078238b1048bd62f52d1b808363d8241c">72d2c42078</a> (2025-08-28T10:46:09-05:00)</h2><p class="k">plugins architecture (#1211)<br>Path after this commit: file deleted. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: plugins/postgres/lib/connection.go.</p><pre>diff --git a/pkg/database/postgres/connection.go b/pkg/database/postgres/connection.go
+deleted file mode 100644
+index e6d72afc..00000000
+<span class="d">--- a/pkg/database/postgres/connection.go</span>
+<span class="a">+++ /dev/null</span>
+<span class="h">@@ -1,147 +0,0 @@</span>
+<span class="d">-package postgres</span>
+<span class="d">-</span>
+<span class="d">-import (</span>
+<span class="d">-	&quot;context&quot;</span>
+<span class="d">-	&quot;fmt&quot;</span>
+<span class="d">-	&quot;regexp&quot;</span>
+<span class="d">-	&quot;strings&quot;</span>
+<span class="d">-</span>
+<span class="d">-	&quot;github.com/jackc/pgx/v4&quot;</span>
+<span class="d">-	&quot;github.com/pkg/errors&quot;</span>
+<span class="d">-	&quot;github.com/schemahero/schemahero/pkg/logger&quot;</span>
+<span class="d">-	&quot;github.com/xo/dburl&quot;</span>
+<span class="d">-)</span>
+<span class="d">-</span>
+<span class="d">-type PostgresConnection struct {</span>
+<span class="d">-	databaseName  string</span>
+<span class="d">-	engineVersion string</span>
+<span class="d">-	schema        string   // Default schema to use</span>
+<span class="d">-	schemas       []string // All schemas to scan</span>
+<span class="d">-</span>
+<span class="d">-	conn *pgx.Conn</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func (p *PostgresConnection) DatabaseName() string {</span>
+<span class="d">-	return p.databaseName</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func (p *PostgresConnection) EngineVersion() string {</span>
+<span class="d">-	return p.engineVersion</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func (p *PostgresConnection) GetConnection() *pgx.Conn {</span>
+<span class="d">-	return p.conn</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func Connect(uri string) (*PostgresConnection, error) {</span>
+<span class="d">-	conn, err := pgx.Connect(context.Background(), uri)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		return nil, errors.Wrap(err, &quot;failed to connect to postgres&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	if err := conn.Ping(context.Background()); err != nil {</span>
+<span class="d">-		return nil, err</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	databaseName, err := DatabaseNameFromURI(uri)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		return nil, err</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	query := `select version()`</span>
+<span class="d">-	row := conn.QueryRow(context.Background(), query)</span>
+<span class="d">-	var reportedVersion string</span>
+<span class="d">-	if err := row.Scan(&amp;reportedVersion); err != nil {</span>
+<span class="d">-		return nil, err</span>
+<span class="d">-	}</span>
+<span class="d">-	engineVersion, err := parsePostgresVersion(reportedVersion)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		logger.Info(err.Error()) // NOTE: this doesnt work with cockroachdb</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	schema := &quot;public&quot; // Default to public</span>
+<span class="d">-	schemas := []string{&quot;public&quot;}</span>
+<span class="d">-</span>
+<span class="d">-	parsed, err := dburl.Parse(uri)</span>
+<span class="d">-	if err == nil {</span>
+<span class="d">-		if parsed.Query().Get(&quot;schema&quot;) != &quot;&quot; {</span>
+<span class="d">-			schema = parsed.Query().Get(&quot;schema&quot;)</span>
+<span class="d m">-			schemas = []string{schema}</span>
+<span class="d">-		} else if parsed.Query().Get(&quot;currentSchema&quot;) != &quot;&quot; {</span>
+<span class="d">-			schema = parsed.Query().Get(&quot;currentSchema&quot;)</span>
+<span class="d m">-			schemas = []string{schema}</span>
+<span class="d">-		} else if parsed.Query().Get(&quot;search_path&quot;) != &quot;&quot; {</span>
+<span class="d">-			searchPath := parsed.Query().Get(&quot;search_path&quot;)</span>
+<span class="d">-			pathSchemas := strings.Split(searchPath, &quot;,&quot;)</span>
+<span class="d">-			if len(pathSchemas) &gt; 0 {</span>
+<span class="d">-				schema = strings.TrimSpace(pathSchemas[0])</span>
+<span class="d m">-				schemas = []string{schema}</span>
+<span class="d">-			}</span>
+<span class="d">-		}</span>
+<span class="d">-</span>
+<span class="d">-		if parsed.Query().Get(&quot;schemas&quot;) != &quot;&quot; {</span>
+<span class="d">-			schemasList := parsed.Query().Get(&quot;schemas&quot;)</span>
+<span class="d">-			schemas = []string{}</span>
+<span class="d">-			for _, s := range strings.Split(schemasList, &quot;,&quot;) {</span>
+<span class="d">-				schemas = append(schemas, strings.TrimSpace(s))</span>
+<span class="d">-			}</span>
+<span class="d">-			if len(schemas) &gt; 0 {</span>
+<span class="d">-				schema = schemas[0]</span>
+<span class="d">-			}</span>
+<span class="d">-		}</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	postgresConnection := PostgresConnection{</span>
+<span class="d">-		databaseName:  databaseName,</span>
+<span class="d">-		engineVersion: engineVersion,</span>
+<span class="d">-		schema:        schema,</span>
+<span class="d">-		schemas:       schemas,</span>
+<span class="d">-		conn:          conn,</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	return &amp;postgresConnection, nil</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func (p *PostgresConnection) Close() error {</span>
+<span class="d">-	if p.conn == nil {</span>
+<span class="d">-		return nil</span>
+<span class="d">-	}</span>
+<span class="d">-	return p.conn.Close(context.Background())</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func DatabaseNameFromURI(uri string) (string, error) {</span>
+<span class="d">-	parsed, err := dburl.Parse(uri)</span>
+<span class="d">-	if err != nil {</span>
+<span class="d">-		return &quot;&quot;, errors.Wrap(err, &quot;failed to parse uri&quot;)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	return strings.TrimLeft(parsed.Path, &quot;/&quot;), nil</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func parsePostgresVersion(reportedVersion string) (string, error) {</span>
+<span class="d">-	//  PostgreSQL 9.5.17 on x86_64-pc-linux-gnu (Debian 9.5.17-1.pgdg90+1), compiled by gcc (Debian 6.3.0-18+deb9u1) 6.3.0 20170516, 64-bit</span>
+<span class="d">-	r := regexp.MustCompile(`\s*PostgreSQL (?P&lt;major&gt;\d*).(?P&lt;minor&gt;\d*).(?P&lt;patch&gt;\d*)*`)</span>
+<span class="d">-	matchGroups := r.FindStringSubmatch(reportedVersion)</span>
+<span class="d">-</span>
+<span class="d">-	if len(matchGroups) == 0 {</span>
+<span class="d">-		return &quot;&quot;, errors.New(`faled to parse postgres version`)</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	major := matchGroups[1]</span>
+<span class="d">-	minor := matchGroups[2]</span>
+<span class="d">-	patch := matchGroups[3]</span>
+<span class="d">-</span>
+<span class="d">-	if patch == &quot;&quot; {</span>
+<span class="d">-		patch = &quot;0&quot;</span>
+<span class="d">-	}</span>
+<span class="d">-</span>
+<span class="d">-	return fmt.Sprintf(&quot;%s.%s.%s&quot;, major, minor, patch), nil</span>
+<span class="d">-}</span>
+<span class="d">-</span>
+<span class="d">-func SanitizeArray(idents []string) []string {</span>
+<span class="d">-	var idents_ []string</span>
+<span class="d">-	for _, ident := range idents {</span>
+<span class="d">-		idents_ = append(idents_, pgx.Identifier{ident}.Sanitize())</span>
+<span class="d">-	}</span>
+<span class="d">-	return idents_</span>
+<span class="d">-}</span></pre></body></html>

@@ -1,0 +1,100 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L123</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L123</h1><p><b>Repository:</b> <a href="https://github.com/microsoft/typespec">microsoft/typespec</a><br><b>File at merge:</b> packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java, line 93<br><b>Merge commit (birth):</b> <a href="https://github.com/microsoft/typespec/commit/65062e339e746825ba62009f420d71c862c305b2">65062e339e</a> (2025-07-16T05:57:59)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/microsoft/typespec/tree/07aae1a44ec732b819744f106ae6d8d5e49f5ebf">07aae1a44e</a>)</p><p><b>The line:</b></p><pre><span class="t">     * @return the response.</span></pre><h2>File at the merge commit, lines 85 to 101</h2><pre>   85 |     /**
+   86 |      * The put operation.
+   87 |      * 
+   88 |      * @param input The input parameter.
+   89 |      * @param requestContext The context to configure the HTTP request before HTTP client sends it.
+   90 |      * @throws IllegalArgumentException thrown if parameters fail the validation.
+   91 |      * @throws HttpResponseException thrown if the service returns an error.
+   92 |      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent.
+<span class="t">   93 |      * @return the response.</span>
+   94 |      */
+   95 |     @Metadata(properties = { MetadataProperties.GENERATED })
+   96 |     @ServiceMethod(returns = ReturnType.SINGLE)
+   97 |     public Response&lt;BinaryData&gt; putWithResponse(BinaryData input, RequestContext requestContext) {
+   98 |         return this.instrumentation.instrumentWithResponse(
+   99 |             &quot;Type.Union.Discriminated.NoEnvelope.CustomDiscriminator.put&quot;, requestContext,
+  100 |             updatedContext -&gt; this.serviceClient.putWithResponse(input, updatedContext));
+  101 |     }</pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/microsoft/typespec/commit/a37318da04da76bcbacc1164c755f07066018e43">a37318da04</a> (2025-10-10T01:59:58+00:00)</h2><p class="k">http-client-java, bump dependencies, handle the support for previewVersion (#8592)<br>Path after this commit: packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java. Lines with exactly this text in the file after the commit: 0. Identical text added in other files in this commit: packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/encode/duration/HeaderClient.java, packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/encode/duration/PropertyClient.java, packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/encode/duration/QueryClient.java, packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/encode/duration/implementation/HeadersImpl.java, packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/encode/duration/implementation/PropertiesImpl.java.</p><pre>diff --git a/packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java b/packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java
+index 50f3db193..a29c1d75f 100644
+<span class="d">--- a/packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java</span>
+<span class="a">+++ b/packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java</span>
+<span class="h">@@ -43,7 +43,9 @@ public final class NoEnvelopeCustomDiscriminatorClient {</span>
+      * @throws IllegalArgumentException thrown if parameters fail the validation.
+      * @throws HttpResponseException thrown if the service returns an error.
+      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent.
+<span class="d m">-     * @return the response.</span>
+<span class="a">+     * @return test discriminated union with inline discriminator and custom discriminator property name.</span>
+<span class="a">+     * The discriminated union should serialize with custom discriminator property</span>
+<span class="a">+     * injected directly into the variant object.</span>
+      */
+     @Metadata(properties = { MetadataProperties.GENERATED })
+     @ServiceMethod(returns = ReturnType.SINGLE)
+<span class="h">@@ -60,7 +62,9 @@ public final class NoEnvelopeCustomDiscriminatorClient {</span>
+      * @throws IllegalArgumentException thrown if parameters fail the validation.
+      * @throws HttpResponseException thrown if the service returns an error.
+      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent.
+<span class="d m">-     * @return the response.</span>
+<span class="a">+     * @return test discriminated union with inline discriminator and custom discriminator property name.</span>
+<span class="a">+     * The discriminated union should serialize with custom discriminator property</span>
+<span class="a">+     * injected directly into the variant object.</span>
+      */
+     @Metadata(properties = { MetadataProperties.GENERATED })
+     @ServiceMethod(returns = ReturnType.SINGLE)
+<span class="h">@@ -73,7 +77,9 @@ public final class NoEnvelopeCustomDiscriminatorClient {</span>
+      * 
+      * @throws HttpResponseException thrown if the service returns an error.
+      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent.
+<span class="d m">-     * @return the response.</span>
+<span class="a">+     * @return test discriminated union with inline discriminator and custom discriminator property name.</span>
+<span class="a">+     * The discriminated union should serialize with custom discriminator property</span>
+<span class="a">+     * injected directly into the variant object.</span>
+      */
+     @Metadata(properties = { MetadataProperties.GENERATED })
+     @ServiceMethod(returns = ReturnType.SINGLE)
+<span class="h">@@ -90,7 +96,9 @@ public final class NoEnvelopeCustomDiscriminatorClient {</span>
+      * @throws IllegalArgumentException thrown if parameters fail the validation.
+      * @throws HttpResponseException thrown if the service returns an error.
+      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent.
+<span class="d m">-     * @return the response.</span>
+<span class="a">+     * @return test discriminated union with inline discriminator and custom discriminator property name.</span>
+<span class="a">+     * The discriminated union should serialize with custom discriminator property</span>
+<span class="a">+     * injected directly into the variant object.</span>
+      */
+     @Metadata(properties = { MetadataProperties.GENERATED })
+     @ServiceMethod(returns = ReturnType.SINGLE)
+<span class="h">@@ -107,7 +115,9 @@ public final class NoEnvelopeCustomDiscriminatorClient {</span>
+      * @throws IllegalArgumentException thrown if parameters fail the validation.
+      * @throws HttpResponseException thrown if the service returns an error.
+      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent.
+<span class="d m">-     * @return the response.</span>
+<span class="a">+     * @return test discriminated union with inline discriminator and custom discriminator property name.</span>
+<span class="a">+     * The discriminated union should serialize with custom discriminator property</span>
+<span class="a">+     * injected directly into the variant object.</span>
+      */
+     @Metadata(properties = { MetadataProperties.GENERATED })
+     @ServiceMethod(returns = ReturnType.SINGLE)</pre><h2>Commit #2: <a href="https://github.com/microsoft/typespec/commit/51ed31e2a421143b806d90e059b7cf1cb2885af0">51ed31e2a4</a> (2025-11-25T01:35:34+00:00)</h2><p class="k">Overhaul handling of V1 vs V2 vs ClientCore code generation (#9059)<br>Path after this commit: packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java b/packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java
+index a29c1d75f..80a7d738e 100644
+<span class="d">--- a/packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java</span>
+<span class="a">+++ b/packages/http-client-java/generator/http-client-generator-clientcore-test/src/main/java/type/union/discriminated/NoEnvelopeCustomDiscriminatorClient.java</span>
+<span class="h">@@ -45,7 +45,7 @@ public final class NoEnvelopeCustomDiscriminatorClient {</span>
+      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent.
+      * @return test discriminated union with inline discriminator and custom discriminator property name.
+      * The discriminated union should serialize with custom discriminator property
+<span class="d">-     * injected directly into the variant object.</span>
+<span class="a">+     * injected directly into the variant object along with {@link Response}.</span>
+      */
+     @Metadata(properties = { MetadataProperties.GENERATED })
+     @ServiceMethod(returns = ReturnType.SINGLE)
+<span class="h">@@ -98,7 +98,7 @@ public final class NoEnvelopeCustomDiscriminatorClient {</span>
+      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent.
+      * @return test discriminated union with inline discriminator and custom discriminator property name.
+      * The discriminated union should serialize with custom discriminator property
+<span class="d">-     * injected directly into the variant object.</span>
+<span class="a">+     * injected directly into the variant object along with {@link Response}.</span>
+      */
+     @Metadata(properties = { MetadataProperties.GENERATED })
+     @ServiceMethod(returns = ReturnType.SINGLE)</pre></body></html>

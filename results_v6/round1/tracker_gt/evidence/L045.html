@@ -1,0 +1,376 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L045</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L045</h1><p><b>Repository:</b> <a href="https://github.com/risingwavelabs/risingwave">risingwavelabs/risingwave</a><br><b>File at merge:</b> src/common/src/config/storage.rs, line 204<br><b>Merge commit (birth):</b> <a href="https://github.com/risingwavelabs/risingwave/commit/0fcf512dd7bfcb02e4fe2b55c3a635228ec2dc03">0fcf512dd7</a> (2025-07-18T08:16:58)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/risingwavelabs/risingwave/tree/fef6e1f4e5f6cbf5dd756a510a116543f8d8ba97">fef6e1f4e5</a>)</p><p><b>The line:</b></p><pre><span class="t">    pub iceberg_compaction_max_record_batch_rows: usize,</span></pre><h2>File at the merge commit, lines 196 to 212</h2><pre>  196 |     pub time_travel_version_cache_capacity: u64,
+  197 | 
+  198 |     // iceberg compaction
+  199 |     #[serde(default = &quot;default::storage::iceberg_compaction_target_file_size_mb&quot;)]
+  200 |     pub iceberg_compaction_target_file_size_mb: u32,
+  201 |     #[serde(default = &quot;default::storage::iceberg_compaction_enable_validate&quot;)]
+  202 |     pub iceberg_compaction_enable_validate: bool,
+  203 |     #[serde(default = &quot;default::storage::iceberg_compaction_max_record_batch_rows&quot;)]
+<span class="t">  204 |     pub iceberg_compaction_max_record_batch_rows: usize,</span>
+  205 |     #[serde(default = &quot;default::storage::iceberg_compaction_min_size_per_partition_mb&quot;)]
+  206 |     pub iceberg_compaction_min_size_per_partition_mb: u32,
+  207 |     #[serde(default = &quot;default::storage::iceberg_compaction_max_file_count_per_partition&quot;)]
+  208 |     pub iceberg_compaction_max_file_count_per_partition: u32,
+  209 | 
+  210 |     #[serde(default = &quot;default::storage::iceberg_compaction_write_parquet_max_row_group_rows&quot;)]
+  211 |     pub iceberg_compaction_write_parquet_max_row_group_rows: usize,
+  212 | }</pre><p class="k">Below are all 9 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/risingwavelabs/risingwave/commit/ffb2ce460aaf643746ffea4390961c79fe0b311c">ffb2ce460a</a> (2025-07-25T14:56:08+00:00)</h2><p class="k">feat: iceberg COW write-mode framework (#22713)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index 7749db3bbe..f564003b99 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -206,9 +206,24 @@ pub struct StorageConfig {</span>
+     pub iceberg_compaction_min_size_per_partition_mb: u32,
+     #[serde(default = &quot;default::storage::iceberg_compaction_max_file_count_per_partition&quot;)]
+     pub iceberg_compaction_max_file_count_per_partition: u32,
+<span class="d">-</span>
+     #[serde(default = &quot;default::storage::iceberg_compaction_write_parquet_max_row_group_rows&quot;)]
+     pub iceberg_compaction_write_parquet_max_row_group_rows: usize,
+<span class="a">+</span>
+<span class="a">+    /// The ratio of iceberg compaction max parallelism to the number of CPU cores</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_task_parallelism_ratio&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_task_parallelism_ratio: f32,</span>
+<span class="a">+    /// Whether to enable heuristic output parallelism in iceberg compaction.</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_enable_heuristic_output_parallelism&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_enable_heuristic_output_parallelism: bool,</span>
+<span class="a">+    /// Maximum number of concurrent file close operations</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_max_concurrent_closes&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_max_concurrent_closes: usize,</span>
+<span class="a">+    /// Whether to enable dynamic size estimation for iceberg compaction.</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_enable_dynamic_size_estimation&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_enable_dynamic_size_estimation: bool,</span>
+<span class="a">+    /// The smoothing factor for size estimation in iceberg compaction.(default: 0.3)</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_size_estimation_smoothing_factor&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_size_estimation_smoothing_factor: f64,</span>
+ }
+ 
+ /// the section `[storage.cache]` in `risingwave.toml`.
+<span class="h">@@ -845,7 +860,13 @@ pub mod default {</span>
+         }
+ 
+         pub fn compactor_max_task_multiplier() -&gt; f32 {
+<span class="d">-            3.0000</span>
+<span class="a">+            match std::env::var(&quot;RW_COMPACTOR_MODE&quot;)</span>
+<span class="a">+                .unwrap_or_default()</span>
+<span class="a">+                .as_str()</span>
+<span class="a">+            {</span>
+<span class="a">+                mode if mode.contains(&quot;iceberg&quot;) =&gt; 12.0000,</span>
+<span class="a">+                _ =&gt; 3.0000,</span>
+<span class="a">+            }</span>
+         }
+ 
+         pub fn compactor_memory_available_proportion() -&gt; f64 {
+<span class="h">@@ -993,6 +1014,26 @@ pub mod default {</span>
+         pub fn iceberg_compaction_max_file_count_per_partition() -&gt; u32 {
+             32
+         }
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_task_parallelism_ratio() -&gt; f32 {</span>
+<span class="a">+            4.0</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_enable_heuristic_output_parallelism() -&gt; bool {</span>
+<span class="a">+            false</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_max_concurrent_closes() -&gt; usize {</span>
+<span class="a">+            8</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_enable_dynamic_size_estimation() -&gt; bool {</span>
+<span class="a">+            true</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_size_estimation_smoothing_factor() -&gt; f64 {</span>
+<span class="a">+            0.3</span>
+<span class="a">+        }</span>
+     }
+ 
+     pub mod file_cache {</pre><h2>Commit #2: <a href="https://github.com/risingwavelabs/risingwave/commit/75c40d356278eff6b3b5331d096c52ef87ad4d0d">75c40d3562</a> (2025-07-29T09:21:13+00:00)</h2><p class="k">feat(iceberg): introduce small file compaction (#22527)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index f564003b99..b92866b2ff 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -224,6 +224,13 @@ pub struct StorageConfig {</span>
+     /// The smoothing factor for size estimation in iceberg compaction.(default: 0.3)
+     #[serde(default = &quot;default::storage::iceberg_compaction_size_estimation_smoothing_factor&quot;)]
+     pub iceberg_compaction_size_estimation_smoothing_factor: f64,
+<span class="a">+    // For Small File Compaction</span>
+<span class="a">+    /// The threshold for small file compaction in MB.</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_small_file_threshold_mb&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_small_file_threshold_mb: u32,</span>
+<span class="a">+    /// The maximum total size of tasks in small file compaction in MB.</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_max_task_total_size_mb&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_max_task_total_size_mb: u32,</span>
+ }
+ 
+ /// the section `[storage.cache]` in `risingwave.toml`.
+<span class="h">@@ -1034,6 +1041,14 @@ pub mod default {</span>
+         pub fn iceberg_compaction_size_estimation_smoothing_factor() -&gt; f64 {
+             0.3
+         }
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_small_file_threshold_mb() -&gt; u32 {</span>
+<span class="a">+            32</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_max_task_total_size_mb() -&gt; u32 {</span>
+<span class="a">+            50 * 1024 // 50GB</span>
+<span class="a">+        }</span>
+     }
+ 
+     pub mod file_cache {</pre><h2>Commit #3: <a href="https://github.com/risingwavelabs/risingwave/commit/b98135345e72f7e94ed0cf154365ed7501c1fb5a">b98135345e</a> (2025-08-21T07:06:00+00:00)</h2><p class="k">feat(hummock): support skip recent filter, add sharded recent filter (#22940)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index b92866b2ff..b53a149d5e 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -336,6 +336,10 @@ pub struct CacheRefillConfig {</span>
+     #[serde(default = &quot;default::cache_refill::threshold&quot;)]
+     pub threshold: f64,
+ 
+<span class="a">+    /// Recent filter layer shards.</span>
+<span class="a">+    #[serde(default = &quot;default::cache_refill::recent_filter_shards&quot;)]</span>
+<span class="a">+    pub recent_filter_shards: usize,</span>
+<span class="a">+</span>
+     /// Recent filter layer count.
+     #[serde(default = &quot;default::cache_refill::recent_filter_layers&quot;)]
+     pub recent_filter_layers: usize,
+<span class="h">@@ -344,6 +348,12 @@ pub struct CacheRefillConfig {</span>
+     #[serde(default = &quot;default::cache_refill::recent_filter_rotate_interval_ms&quot;)]
+     pub recent_filter_rotate_interval_ms: usize,
+ 
+<span class="a">+    /// Skip check recent filter on data refill.</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// This option is suitable for a single compute node or debugging.</span>
+<span class="a">+    #[serde(default = &quot;default::cache_refill::skip_recent_filter&quot;)]</span>
+<span class="a">+    pub skip_recent_filter: bool,</span>
+<span class="a">+</span>
+     #[serde(default, flatten)]
+     #[config_doc(omitted)]
+     pub unrecognized: Unrecognized&lt;Self&gt;,
+<span class="h">@@ -1141,6 +1151,10 @@ pub mod default {</span>
+             0.5
+         }
+ 
+<span class="a">+        pub fn recent_filter_shards() -&gt; usize {</span>
+<span class="a">+            16</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         pub fn recent_filter_layers() -&gt; usize {
+             6
+         }
+<span class="h">@@ -1148,6 +1162,10 @@ pub mod default {</span>
+         pub fn recent_filter_rotate_interval_ms() -&gt; usize {
+             10000
+         }
+<span class="a">+</span>
+<span class="a">+        pub fn skip_recent_filter() -&gt; bool {</span>
+<span class="a">+            false</span>
+<span class="a">+        }</span>
+     }
+ 
+     pub mod object_store_config {</pre><h2>Commit #4: <a href="https://github.com/risingwavelabs/risingwave/commit/aeb03378fffe71b710f6fd3d143f497067e690d8">aeb03378ff</a> (2025-09-09T04:16:40+00:00)</h2><p class="k">feat(foyer): expose blob size index configuration (#23097)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index b53a149d5e..60cf02cb96 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -401,6 +401,20 @@ pub struct FileCacheConfig {</span>
+     #[serde(default = &quot;default::file_cache::fifo_probation_ratio&quot;)]
+     pub fifo_probation_ratio: f64,
+ 
+<span class="a">+    /// Set the blob index size for each blob.</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// A larger blob index size can hold more blob entries, but it will also increase the io size of each blob part</span>
+<span class="a">+    /// write.</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// NOTE:</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// - The size will be aligned up to a multiplier of 4K.</span>
+<span class="a">+    /// - Modifying this configuration will invalidate all existing file cache data.</span>
+<span class="a">+    ///</span>
+<span class="a">+    /// Default: 16 `KiB`</span>
+<span class="a">+    #[serde(default = &quot;default::file_cache::blob_index_size_kb&quot;)]</span>
+<span class="a">+    pub blob_index_size_kb: usize,</span>
+<span class="a">+</span>
+     /// Recover mode.
+     ///
+     /// Options:
+<span class="h">@@ -1110,6 +1124,10 @@ pub mod default {</span>
+             0.1
+         }
+ 
+<span class="a">+        pub fn blob_index_size_kb() -&gt; usize {</span>
+<span class="a">+            16</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         pub fn recover_mode() -&gt; RecoverMode {
+             RecoverMode::Quiet
+         }</pre><h2>Commit #5: <a href="https://github.com/risingwavelabs/risingwave/commit/b95da09b97840d07e3e96e27bb93ef08ab351709">b95da09b97</a> (2025-10-27T07:33:06+00:00)</h2><p class="k">refactor: refactor iceberg compactor task queue (#23309)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index 60cf02cb96..dc3e50af54 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -231,6 +231,13 @@ pub struct StorageConfig {</span>
+     /// The maximum total size of tasks in small file compaction in MB.
+     #[serde(default = &quot;default::storage::iceberg_compaction_max_task_total_size_mb&quot;)]
+     pub iceberg_compaction_max_task_total_size_mb: u32,
+<span class="a">+    /// Multiplier for pending waiting parallelism budget for iceberg compaction task queue.</span>
+<span class="a">+    /// Effective pending budget = `ceil(max_task_parallelism * multiplier)`. Default 4.0.</span>
+<span class="a">+    /// Set &lt; 1.0 to reduce buffering (may increase `PullTask` RPC frequency); set higher to batch more tasks.</span>
+<span class="a">+    #[serde(</span>
+<span class="a">+        default = &quot;default::storage::iceberg_compaction_pending_parallelism_budget_multiplier&quot;</span>
+<span class="a">+    )]</span>
+<span class="a">+    pub iceberg_compaction_pending_parallelism_budget_multiplier: f32,</span>
+ }
+ 
+ /// the section `[storage.cache]` in `risingwave.toml`.
+<span class="h">@@ -1073,6 +1080,10 @@ pub mod default {</span>
+         pub fn iceberg_compaction_max_task_total_size_mb() -&gt; u32 {
+             50 * 1024 // 50GB
+         }
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_pending_parallelism_budget_multiplier() -&gt; f32 {</span>
+<span class="a">+            4.0</span>
+<span class="a">+        }</span>
+     }
+ 
+     pub mod file_cache {</pre><h2>Commit #6: <a href="https://github.com/risingwavelabs/risingwave/commit/a412a59e9f1f64310964afb393c698df2d226d6d">a412a59e9f</a> (2025-10-30T07:39:05+00:00)</h2><p class="k">feat: integrated with new iceberg compact interface (#23414)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index dc3e50af54..d32b06403a 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -1081,6 +1081,10 @@ pub mod default {</span>
+             50 * 1024 // 50GB
+         }
+ 
+<span class="a">+        pub fn iceberg_compaction_max_file_group_size_bytes() -&gt; u64 {</span>
+<span class="a">+            100 * 1024 * 1024 * 1024 // 100GB</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         pub fn iceberg_compaction_pending_parallelism_budget_multiplier() -&gt; f32 {
+             4.0
+         }</pre><h2>Commit #7: <a href="https://github.com/risingwavelabs/risingwave/commit/627ab9f4294509fe11efbcff10eba77a2004e534">627ab9f429</a> (2025-11-03T08:16:38+00:00)</h2><p class="k">feat: Introduce SmallFiles Compaction for all sink types. (#23626)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index d32b06403a..69b665e459 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -228,9 +228,6 @@ pub struct StorageConfig {</span>
+     /// The threshold for small file compaction in MB.
+     #[serde(default = &quot;default::storage::iceberg_compaction_small_file_threshold_mb&quot;)]
+     pub iceberg_compaction_small_file_threshold_mb: u32,
+<span class="d">-    /// The maximum total size of tasks in small file compaction in MB.</span>
+<span class="d">-    #[serde(default = &quot;default::storage::iceberg_compaction_max_task_total_size_mb&quot;)]</span>
+<span class="d">-    pub iceberg_compaction_max_task_total_size_mb: u32,</span>
+     /// Multiplier for pending waiting parallelism budget for iceberg compaction task queue.
+     /// Effective pending budget = `ceil(max_task_parallelism * multiplier)`. Default 4.0.
+     /// Set &lt; 1.0 to reduce buffering (may increase `PullTask` RPC frequency); set higher to batch more tasks.
+<span class="h">@@ -238,6 +235,13 @@ pub struct StorageConfig {</span>
+         default = &quot;default::storage::iceberg_compaction_pending_parallelism_budget_multiplier&quot;
+     )]
+     pub iceberg_compaction_pending_parallelism_budget_multiplier: f32,
+<span class="a">+</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_target_binpack_group_size_mb&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_target_binpack_group_size_mb: Option&lt;u64&gt;,</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_min_group_size_mb&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_min_group_size_mb: Option&lt;u64&gt;,</span>
+<span class="a">+    #[serde(default = &quot;default::storage::iceberg_compaction_min_group_file_count&quot;)]</span>
+<span class="a">+    pub iceberg_compaction_min_group_file_count: Option&lt;usize&gt;,</span>
+ }
+ 
+ /// the section `[storage.cache]` in `risingwave.toml`.
+<span class="h">@@ -1077,16 +1081,20 @@ pub mod default {</span>
+             32
+         }
+ 
+<span class="d">-        pub fn iceberg_compaction_max_task_total_size_mb() -&gt; u32 {</span>
+<span class="d">-            50 * 1024 // 50GB</span>
+<span class="a">+        pub fn iceberg_compaction_pending_parallelism_budget_multiplier() -&gt; f32 {</span>
+<span class="a">+            4.0</span>
+         }
+ 
+<span class="d">-        pub fn iceberg_compaction_max_file_group_size_bytes() -&gt; u64 {</span>
+<span class="d">-            100 * 1024 * 1024 * 1024 // 100GB</span>
+<span class="a">+        pub fn iceberg_compaction_target_binpack_group_size_mb() -&gt; Option&lt;u64&gt; {</span>
+<span class="a">+            Some(100 * 1024) // 100GB</span>
+         }
+ 
+<span class="d">-        pub fn iceberg_compaction_pending_parallelism_budget_multiplier() -&gt; f32 {</span>
+<span class="d">-            4.0</span>
+<span class="a">+        pub fn iceberg_compaction_min_group_size_mb() -&gt; Option&lt;u64&gt; {</span>
+<span class="a">+            None</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+<span class="a">+        pub fn iceberg_compaction_min_group_file_count() -&gt; Option&lt;usize&gt; {</span>
+<span class="a">+            None</span>
+         }
+     }
+ </pre><h2>Commit #8: <a href="https://github.com/risingwavelabs/risingwave/commit/a8bd2f37ae829ff664e0531e24e3fb2df18b8bd6">a8bd2f37ae</a> (2025-11-12T10:59:54+00:00)</h2><p class="k">feat(iceberg): Introduce FileWithDeletes Compaction (#23660)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index 69b665e459..a87288f339 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -196,8 +196,6 @@ pub struct StorageConfig {</span>
+     pub time_travel_version_cache_capacity: u64,
+ 
+     // iceberg compaction
+<span class="d">-    #[serde(default = &quot;default::storage::iceberg_compaction_target_file_size_mb&quot;)]</span>
+<span class="d">-    pub iceberg_compaction_target_file_size_mb: u32,</span>
+     #[serde(default = &quot;default::storage::iceberg_compaction_enable_validate&quot;)]
+     pub iceberg_compaction_enable_validate: bool,
+     #[serde(default = &quot;default::storage::iceberg_compaction_max_record_batch_rows&quot;)]
+<span class="h">@@ -224,10 +222,6 @@ pub struct StorageConfig {</span>
+     /// The smoothing factor for size estimation in iceberg compaction.(default: 0.3)
+     #[serde(default = &quot;default::storage::iceberg_compaction_size_estimation_smoothing_factor&quot;)]
+     pub iceberg_compaction_size_estimation_smoothing_factor: f64,
+<span class="d">-    // For Small File Compaction</span>
+<span class="d">-    /// The threshold for small file compaction in MB.</span>
+<span class="d">-    #[serde(default = &quot;default::storage::iceberg_compaction_small_file_threshold_mb&quot;)]</span>
+<span class="d">-    pub iceberg_compaction_small_file_threshold_mb: u32,</span>
+     /// Multiplier for pending waiting parallelism budget for iceberg compaction task queue.
+     /// Effective pending budget = `ceil(max_task_parallelism * multiplier)`. Default 4.0.
+     /// Set &lt; 1.0 to reduce buffering (may increase `PullTask` RPC frequency); set higher to batch more tasks.
+<span class="h">@@ -1033,10 +1027,6 @@ pub mod default {</span>
+             10
+         }
+ 
+<span class="d">-        pub fn iceberg_compaction_target_file_size_mb() -&gt; u32 {</span>
+<span class="d">-            1024</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+         pub fn iceberg_compaction_enable_validate() -&gt; bool {
+             false
+         }
+<span class="h">@@ -1077,10 +1067,6 @@ pub mod default {</span>
+             0.3
+         }
+ 
+<span class="d">-        pub fn iceberg_compaction_small_file_threshold_mb() -&gt; u32 {</span>
+<span class="d">-            32</span>
+<span class="d">-        }</span>
+<span class="d">-</span>
+         pub fn iceberg_compaction_pending_parallelism_budget_multiplier() -&gt; f32 {
+             4.0
+         }</pre><h2>Commit #9: <a href="https://github.com/risingwavelabs/risingwave/commit/cd1686d2e265d0b262a6ca165c9a49f04eb15b30">cd1686d2e2</a> (2025-12-10T08:07:06+00:00)</h2><p class="k">fix: fix sstable serde to avoid losing bloom filter (#24025)<br>Path after this commit: src/common/src/config/storage.rs. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/src/common/src/config/storage.rs b/src/common/src/config/storage.rs
+index a87288f339..eb0b72dcf5 100644
+<span class="d">--- a/src/common/src/config/storage.rs</span>
+<span class="a">+++ b/src/common/src/config/storage.rs</span>
+<span class="h">@@ -119,6 +119,12 @@ pub struct StorageConfig {</span>
+     #[config_doc(nested)]
+     pub meta_file_cache: FileCacheConfig,
+ 
+<span class="a">+    /// sst serde happens when a sst meta is written to meta disk cache.</span>
+<span class="a">+    /// excluding bloom filter from serde can reduce the meta disk cache entry size</span>
+<span class="a">+    /// and reduce the disk io throughput at the cost of making the bloom filter useless</span>
+<span class="a">+    #[serde(default = &quot;default::storage::sst_skip_bloom_filter_in_serde&quot;)]</span>
+<span class="a">+    pub sst_skip_bloom_filter_in_serde: bool,</span>
+<span class="a">+</span>
+     #[serde(default)]
+     #[config_doc(nested)]
+     pub cache_refill: CacheRefillConfig,
+<span class="h">@@ -1027,6 +1033,10 @@ pub mod default {</span>
+             10
+         }
+ 
+<span class="a">+        pub fn sst_skip_bloom_filter_in_serde() -&gt; bool {</span>
+<span class="a">+            false</span>
+<span class="a">+        }</span>
+<span class="a">+</span>
+         pub fn iceberg_compaction_enable_validate() -&gt; bool {
+             false
+         }</pre></body></html>

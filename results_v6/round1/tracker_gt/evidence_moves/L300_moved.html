@@ -1,0 +1,236 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L300 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L300: after the move</h1><p><b>Repository:</b> <a href="https://github.com/go-vikunja/vikunja">go-vikunja/vikunja</a><br><b>Original file:</b> pkg/models/task_collection_subtasks_move_test.go (see L300.html)<br><b>Move commit:</b> <a href="https://github.com/go-vikunja/vikunja/commit/510b1f246ab00b6b65a077121d94e148d2856e96">510b1f246a</a> (commit #3 on L300.html)<br><b>Destination file (your label):</b> pkg/models/task_collection_test.go<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/go-vikunja/vikunja/tree/705e3468c0dd673a04167773a0305c79d8e67ade">705e3468c0</a>)</p><p><b>The line:</b></p><pre><span class="t">	err = subtask.Update(s, u)</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 1 (lines 1694).</p><h2>Destination file at the move commit, lines 1686 to 1702</h2><pre> 1686 | 		if tsk.ID == 29 {
+ 1687 | 			found = true
+ 1688 | 			break
+ 1689 | 		}
+ 1690 | 	}
+ 1691 | 	assert.True(t, found, &quot;subtask should be returned before moving&quot;)
+ 1692 | 
+ 1693 | 	subtask := &amp;Task{ID: 29, ProjectID: 7}
+<span class="t"> 1694 | 	err = subtask.Update(s, u)</span>
+ 1695 | 	require.NoError(t, err)
+ 1696 | 	require.NoError(t, s.Commit())
+ 1697 | 
+ 1698 | 	s2 := db.NewSession()
+ 1699 | 	defer s2.Close()
+ 1700 | 	c = &amp;TaskCollection{
+ 1701 | 		ProjectID: 7,
+ 1702 | 		Expand:    []TaskCollectionExpandable{TaskCollectionExpandSubtasks},</pre><p class="k">Below are all 5 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/go-vikunja/vikunja/commit/3db1ddcee4b325a4759ab71f7a0cd298e1e03f81">3db1ddcee4</a> (2025-07-18T23:18:04+02:00)</h2><p class="k">feat(tasks): add support for ParadeDB when searching tasks<br>Path after this commit: pkg/models/task_collection_test.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/pkg/models/task_collection_test.go b/pkg/models/task_collection_test.go
+index b814022d8..23f2f8bfc 100644
+<span class="d">--- a/pkg/models/task_collection_test.go</span>
+<span class="a">+++ b/pkg/models/task_collection_test.go</span>
+<span class="h">@@ -1439,19 +1439,6 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 			},
+ 			wantErr: false,
+ 		},
+<span class="d">-		{</span>
+<span class="d">-			name:   &quot;search for task index&quot;,</span>
+<span class="d">-			fields: fields{},</span>
+<span class="d">-			args: args{</span>
+<span class="d">-				search: &quot;number #17&quot;,</span>
+<span class="d">-				a:      &amp;user.User{ID: 1},</span>
+<span class="d">-				page:   0,</span>
+<span class="d">-			},</span>
+<span class="d">-			want: []*Task{</span>
+<span class="d">-				task33, // has the index 17</span>
+<span class="d">-			},</span>
+<span class="d">-			wantErr: false,</span>
+<span class="d">-		},</span>
+ 		{
+ 			name: &quot;order by position&quot;,
+ 			fields: fields{
+<span class="h">@@ -1603,6 +1590,40 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 		// TODO date magic
+ 	}
+ 
+<span class="a">+	// Here we&#x27;re explicitly testing search with and without paradeDB. Both return different results but that&#x27;s</span>
+<span class="a">+	// expected - paradeDB returns more results than other databases with a naive like-search.</span>
+<span class="a">+</span>
+<span class="a">+	if db.ParadeDBAvailable() {</span>
+<span class="a">+		tests = append(tests, testcase{</span>
+<span class="a">+			name:   &quot;search for task index&quot;,</span>
+<span class="a">+			fields: fields{},</span>
+<span class="a">+			args: args{</span>
+<span class="a">+				search: &quot;number #17&quot;,</span>
+<span class="a">+				a:      &amp;user.User{ID: 1},</span>
+<span class="a">+				page:   0,</span>
+<span class="a">+			},</span>
+<span class="a">+			want: []*Task{</span>
+<span class="a">+				task17, // has the text #17 in the title</span>
+<span class="a">+				task33, // has the index 17</span>
+<span class="a">+			},</span>
+<span class="a">+			wantErr: false,</span>
+<span class="a">+		})</span>
+<span class="a">+	} else {</span>
+<span class="a">+		tests = append(tests, testcase{</span>
+<span class="a">+			name:   &quot;search for task index&quot;,</span>
+<span class="a">+			fields: fields{},</span>
+<span class="a">+			args: args{</span>
+<span class="a">+				search: &quot;number #17&quot;,</span>
+<span class="a">+				a:      &amp;user.User{ID: 1},</span>
+<span class="a">+				page:   0,</span>
+<span class="a">+			},</span>
+<span class="a">+			want: []*Task{</span>
+<span class="a">+				task33, // has the index 17</span>
+<span class="a">+			},</span>
+<span class="a">+			wantErr: false,</span>
+<span class="a">+		})</span>
+<span class="a">+	}</span>
+<span class="a">+</span>
+ 	for _, tt := range tests {
+ 		t.Run(tt.name, func(t *testing.T) {
+ 			db.LoadAndAssertFixtures(t)
+<span class="h">@@ -1629,7 +1650,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 				t.Errorf(&quot;Test %s, Task.ReadAll() error = %v, wantErr %v&quot;, tt.name, err, tt.wantErr)
+ 				return
+ 			}
+<span class="d">-			if diff, equal := messagediff.PrettyDiff(got, tt.want); !equal {</span>
+<span class="a">+			if diff, equal := messagediff.PrettyDiff(tt.want, got); !equal {</span>
+ 				var is bool
+ 				var gotTasks []*Task
+ 				gotTasks, is = got.([]*Task)
+<span class="h">@@ -1656,7 +1677,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 					return gotIDs[i] &lt; gotIDs[j]
+ 				})
+ 
+<span class="d">-				diffIDs, _ := messagediff.PrettyDiff(gotIDs, wantIDs)</span>
+<span class="a">+				diffIDs, _ := messagediff.PrettyDiff(wantIDs, gotIDs)</span>
+ 
+ 				t.Errorf(&quot;Test %s, Task.ReadAll() = %v, \nwant %v, \ndiff: %v \n\n diffIDs: %v&quot;, tt.name, got, tt.want, diff, diffIDs)
+ 			}</pre><h2>Commit #2: <a href="https://github.com/go-vikunja/vikunja/commit/7985a6500a70ec498005fd7a9f999257496902d5">7985a6500a</a> (2025-07-18T23:18:04+02:00)</h2><p class="k">fix: use assertions which are more specific<br>Path after this commit: pkg/models/task_collection_test.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/pkg/models/task_collection_test.go b/pkg/models/task_collection_test.go
+index 23f2f8bfc..c0488e571 100644
+<span class="d">--- a/pkg/models/task_collection_test.go</span>
+<span class="a">+++ b/pkg/models/task_collection_test.go</span>
+<span class="h">@@ -238,6 +238,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 	task6 := &amp;Task{
+ 		ID:           6,
+ 		Title:        &quot;task #6 lower due date&quot;,
+<span class="a">+		Description:  &quot;This has something unique&quot;,</span>
+ 		Identifier:   &quot;test1-6&quot;,
+ 		Index:        6,
+ 		CreatedByID:  1,</pre><h2>Commit #3: <a href="https://github.com/go-vikunja/vikunja/commit/4042f66efa05dc41cc55bb7ad03917e39a06685a">4042f66efa</a> (2025-07-30T15:50:26+00:00)</h2><p class="k">feat: show user export status in settings (#1200)<br>Path after this commit: pkg/models/task_collection_test.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/pkg/models/task_collection_test.go b/pkg/models/task_collection_test.go
+index c0488e571..90b092022 100644
+<span class="d">--- a/pkg/models/task_collection_test.go</span>
+<span class="a">+++ b/pkg/models/task_collection_test.go</span>
+<span class="h">@@ -46,6 +46,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 		OverdueTasksRemindersTime:    &quot;09:00&quot;,
+ 		Created:                      testCreatedTime,
+ 		Updated:                      testUpdatedTime,
+<span class="a">+		ExportFileID:                 1,</span>
+ 	}
+ 	user2 := &amp;user.User{
+ 		ID:                           2,</pre><h2>Commit #4: <a href="https://github.com/go-vikunja/vikunja/commit/a81a3ee0e5a371773ba2fc12c058f4eb46b3dbcb">a81a3ee0e5</a> (2025-08-13T11:05:05+02:00)</h2><p class="k">feat!: rename right to permission (#1277)<br>Path after this commit: pkg/models/task_collection_test.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/pkg/models/task_collection_test.go b/pkg/models/task_collection_test.go
+index 90b092022..e324452df 100644
+<span class="d">--- a/pkg/models/task_collection_test.go</span>
+<span class="a">+++ b/pkg/models/task_collection_test.go</span>
+<span class="h">@@ -661,8 +661,8 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 
+ 		Expand []TaskCollectionExpandable
+ 
+<span class="d">-		CRUDable web.CRUDable</span>
+<span class="d">-		Rights   web.Rights</span>
+<span class="a">+		CRUDable    web.CRUDable</span>
+<span class="a">+		Permissions web.Permissions</span>
+ 	}
+ 	type args struct {
+ 		search string
+<span class="h">@@ -1644,8 +1644,8 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 
+ 				Expand: tt.fields.Expand,
+ 
+<span class="d">-				CRUDable: tt.fields.CRUDable,</span>
+<span class="d">-				Rights:   tt.fields.Rights,</span>
+<span class="a">+				CRUDable:    tt.fields.CRUDable,</span>
+<span class="a">+				Permissions: tt.fields.Permissions,</span>
+ 			}
+ 			got, _, _, err := lt.ReadAll(s, tt.args.a, tt.args.search, tt.args.page, 50)
+ 			if (err != nil) != tt.wantErr {</pre><h2>Commit #5: <a href="https://github.com/go-vikunja/vikunja/commit/5b42724205ec93b57f5ff9bb3e6a500f300f8947">5b42724205</a> (2025-11-14T16:57:53+00:00)</h2><p class="k">fix(kanban): repeating tasks dates won&#x27;t update when moved in done bucket (#1638)<br>Path after this commit: pkg/models/task_collection_test.go. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/pkg/models/task_collection_test.go b/pkg/models/task_collection_test.go
+index e324452df..06ce891db 100644
+<span class="d">--- a/pkg/models/task_collection_test.go</span>
+<span class="a">+++ b/pkg/models/task_collection_test.go</span>
+<span class="h">@@ -502,7 +502,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 	}
+ 	task28 := &amp;Task{
+ 		ID:           28,
+<span class="d">-		Title:        &quot;task #28 with repeat after&quot;,</span>
+<span class="a">+		Title:        &quot;task #28 with repeat after, start_date, end_date and due_date&quot;,</span>
+ 		Identifier:   &quot;test1-13&quot;,
+ 		Index:        13,
+ 		CreatedByID:  1,
+<span class="h">@@ -512,6 +512,9 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 		RepeatAfter:  3600,
+ 		Created:      time.Unix(1543626724, 0).In(loc),
+ 		Updated:      time.Unix(1543626724, 0).In(loc),
+<span class="a">+		DueDate:      time.Unix(1543789524, 0).In(loc),</span>
+<span class="a">+		StartDate:    time.Unix(1543616724, 0).In(loc),</span>
+<span class="a">+		EndDate:      time.Unix(1544700000, 0).In(loc),</span>
+ 	}
+ 	task29 := &amp;Task{
+ 		ID:          29,
+<span class="h">@@ -832,6 +835,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 				task7,
+ 				task8,
+ 				task9,
+<span class="a">+				task28,</span>
+ 			},
+ 			wantErr: false,
+ 		},
+<span class="h">@@ -844,6 +848,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 			want: []*Task{
+ 				task8,
+ 				task9,
+<span class="a">+				task28,</span>
+ 			},
+ 			wantErr: false,
+ 		},
+<span class="h">@@ -890,6 +895,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 				task7,
+ 				task8,
+ 				task9,
+<span class="a">+				task28,</span>
+ 			},
+ 			wantErr: false,
+ 		},
+<span class="h">@@ -1500,6 +1506,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 				// The only tasks with a due date
+ 				task6,
+ 				task5,
+<span class="a">+				task28,</span>
+ 				// The other ones don&#x27;t have a due date
+ 				task39,
+ 				task35,
+<span class="h">@@ -1508,7 +1515,6 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 				task31,
+ 				task30,
+ 				task29,
+<span class="d">-				task28,</span>
+ 				task27,
+ 				task26,
+ 				task25,
+<span class="h">@@ -1550,6 +1556,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 				task7,
+ 				task6,
+ 				task5,
+<span class="a">+				task28,</span>
+ 			},
+ 		},
+ 		{
+<span class="h">@@ -1563,6 +1570,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 				a: &amp;user.User{ID: 1},
+ 			},
+ 			want: []*Task{
+<span class="a">+				task28,</span>
+ 				task5,
+ 				task6,
+ 				task7,
+<span class="h">@@ -1583,6 +1591,7 @@ func TestTaskCollection_ReadAll(t *testing.T) {</span>
+ 			want: []*Task{
+ 				task6,
+ 				task5,
+<span class="a">+				task28,</span>
+ 				task7,
+ 				task8,
+ 				task9,</pre></body></html>

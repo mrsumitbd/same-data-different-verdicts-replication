@@ -1,0 +1,86 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L283 (moved)</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L283: after the move</h1><p><b>Repository:</b> <a href="https://github.com/appsmithorg/appsmith">appsmithorg/appsmith</a><br><b>Original file:</b> app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/PingScheduledTaskCEImpl.java (see L283.html)<br><b>Move commit:</b> <a href="https://github.com/appsmithorg/appsmith/commit/f020be7c96f545db26c02990a4a26c6059ed0988">f020be7c96</a> (commit #1 on L283.html)<br><b>Destination file (your label):</b> app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/appsmithorg/appsmith/tree/8f2592704d8b6627387c1608a0545812bcbf95b5">8f2592704d</a>)</p><p><b>The line:</b></p><pre><span class="t">                .retrieveAll()</span></pre><p class="k">Lines with exactly this text in the destination file at the move commit: 3 (lines 101, 178, 270).</p><h2>Destination file at the move commit, lines 93 to 109</h2><pre>   93 |     public void pingSchedule() {
+   94 |         if (commonConfig.isTelemetryDisabled()) {
+   95 |             return;
+   96 |         }
+   97 | 
+   98 |         Mono&lt;String&gt; instanceMono = configService.getInstanceId().cache();
+   99 |         Mono&lt;String&gt; ipMono = networkUtils.getExternalAddress().cache();
+  100 |         organizationService
+<span class="t">  101 |                 .retrieveAll()</span>
+  102 |                 .delayElements(DELAY_BETWEEN_PINGS)
+  103 |                 .flatMap(organization -&gt; Mono.zip(Mono.just(organization.getId()), instanceMono, ipMono))
+  104 |                 .flatMap(objects -&gt; doPing(objects.getT1(), objects.getT2(), objects.getT3()))
+  105 |                 .subscribeOn(Schedulers.single())
+  106 |                 .subscribe();
+  107 |     }
+  108 | 
+  109 |     /**</pre><h2>Destination file at the move commit, lines 170 to 186</h2><pre>  170 |                 applicationRepository.countByDeletedAtNull().defaultIfEmpty(0L),
+  171 |                 newPageRepository.countByDeletedAtNull().defaultIfEmpty(0L),
+  172 |                 newActionRepository.countByDeletedAtNull().defaultIfEmpty(0L),
+  173 |                 datasourceRepository.countByDeletedAtNull().defaultIfEmpty(0L),
+  174 |                 userCountMono,
+  175 |                 getUserTrackingDetails());
+  176 | 
+  177 |         organizationService
+<span class="t">  178 |                 .retrieveAll()</span>
+  179 |                 .delayElements(DELAY_BETWEEN_PINGS)
+  180 |                 .map(Organization::getId)
+  181 |                 .zipWith(publicPermissionGroupIdMono)
+  182 |                 .flatMap(tuple2 -&gt; {
+  183 |                     final String organizationId = tuple2.getT1();
+  184 |                     final String publicPermissionGroupId = tuple2.getT2();
+  185 |                     return Mono.zip(
+  186 |                             configService.getInstanceId().defaultIfEmpty(&quot;null&quot;),</pre><h2>Destination file at the move commit, lines 262 to 278</h2><pre>  262 |     @DistributedLock(
+  263 |             key = &quot;fetchFeatures&quot;,
+  264 |             ttl = 20 * 60, // 20 minutes
+  265 |             shouldReleaseLock = false) // Ensure only one pod executes this
+  266 |     @Observed(name = &quot;fetchFeatures&quot;)
+  267 |     public void fetchFeatures() {
+  268 |         log.info(&quot;Fetching features for organizations&quot;);
+  269 |         organizationService
+<span class="t">  270 |                 .retrieveAll()</span>
+  271 |                 .delayElements(DELAY_BETWEEN_PINGS)
+  272 |                 .flatMap(organization -&gt; featureFlagService
+  273 |                         .getAllRemoteFeaturesForOrganizationAndUpdateFeatureFlagsWithPendingMigrations(organization)
+  274 |                         .flatMap(featureFlagService::checkAndExecuteMigrationsForOrganizationFeatureFlags)
+  275 |                         .onErrorResume(error -&gt; {
+  276 |                             log.error(&quot;Error while fetching organization feature flags&quot;, error);
+  277 |                             return Mono.empty();
+  278 |                         })</pre><p class="k">Below are all 1 first-parent commits of the default branch, in time order, that touch the destination file (following renames) after the move commit and up to the end of the window. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/appsmithorg/appsmith/commit/39636498cee0b1dbf5416841186c1d06bc297542">39636498ce</a> (2025-05-30T07:28:44+00:00)</h2><p class="k">fix: Handle burst traffic for fetching feature flags during cron job (#40808)<br>Path after this commit: app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java. Lines with exactly this text in the file after the commit: 3.</p><pre>diff --git a/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java b/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java
+index 6cdab9350c..675b83b67b 100644
+<span class="d">--- a/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java</span>
+<span class="a">+++ b/app/server/appsmith-server/src/main/java/com/appsmith/server/solutions/ce/ScheduledTaskCEImpl.java</span>
+<span class="h">@@ -7,7 +7,6 @@ import com.appsmith.server.configurations.DeploymentProperties;</span>
+ import com.appsmith.server.configurations.ProjectProperties;
+ import com.appsmith.server.configurations.SegmentConfig;
+ import com.appsmith.server.domains.Organization;
+<span class="d">-import com.appsmith.server.helpers.LoadShifter;</span>
+ import com.appsmith.server.helpers.NetworkUtils;
+ import com.appsmith.server.repositories.ApplicationRepository;
+ import com.appsmith.server.repositories.DatasourceRepository;
+<span class="h">@@ -258,10 +257,10 @@ public class ScheduledTaskCEImpl implements ScheduledTaskCE {</span>
+                         UserTrackingType.MAU.name(), tuple.getT3()));
+     }
+ 
+<span class="d">-    @Scheduled(initialDelay = 10 * 1000 /* ten seconds */, fixedRate = 30 * 60 * 1000 /* thirty minutes */)</span>
+<span class="a">+    @Scheduled(initialDelay = 10 * 1000 /* ten seconds */, fixedRate = 1 * 60 * 60 * 1000 /* one hour */)</span>
+     @DistributedLock(
+             key = &quot;fetchFeatures&quot;,
+<span class="d">-            ttl = 20 * 60, // 20 minutes</span>
+<span class="a">+            ttl = 45 * 60, // 45 minutes</span>
+             shouldReleaseLock = false) // Ensure only one pod executes this
+     @Observed(name = &quot;fetchFeatures&quot;)
+     public void fetchFeatures() {
+<span class="h">@@ -277,7 +276,7 @@ public class ScheduledTaskCEImpl implements ScheduledTaskCE {</span>
+                             return Mono.empty();
+                         })
+                         .contextWrite(Context.of(ORGANIZATION_ID, organization.getId())))
+<span class="d">-                .subscribeOn(LoadShifter.elasticScheduler)</span>
+<span class="a">+                .subscribeOn(Schedulers.single())</span>
+                 .subscribe();
+     }
+ }</pre></body></html>

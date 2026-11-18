@@ -1,0 +1,109 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L097</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L097</h1><p><b>Repository:</b> <a href="https://github.com/gridaco/grida">gridaco/grida</a><br><b>File at merge:</b> apps/viewer/app/pdf/[[...file]]/page.tsx, line 37<br><b>Merge commit (birth):</b> <a href="https://github.com/gridaco/grida/commit/b4d9c5002769402fd72d031e7fef458e44536c2e">b4d9c50027</a> (2025-02-17T08:34:00)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/gridaco/grida/tree/3fc6a525839f2dcfd090fa8f1804cfc0268b96d3">3fc6a52583</a>)</p><p><b>The line:</b></p><pre><span class="t">  searchParams: _SearchParams;</span></pre><h2>File at the merge commit, lines 29 to 45</h2><pre>   29 |   return _p_file?.[0];
+   30 | }
+   31 | 
+   32 | export default async function PDFViewerPage({
+   33 |   params,
+   34 |   searchParams,
+   35 | }: {
+   36 |   params: _Params;
+<span class="t">   37 |   searchParams: _SearchParams;</span>
+   38 | }) {
+   39 |   const p = {
+   40 |     ...(await params),
+   41 |     ...(await searchParams),
+   42 |   };
+   43 |   const app = p.app || &quot;&quot;;
+   44 |   const file = get_file_path(p);
+   45 | </pre><p class="k">Below are all 2 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/gridaco/grida/commit/63b90af5107218e00a43a6d228f3c769a6e96b35">63b90af510</a> (2025-02-20T19:22:08+09:00)</h2><p class="k">Merge pull request #256 from gridaco/storage<br>Path after this commit: apps/viewer/app/pdf/[[...file]]/page.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/viewer/app/pdf/[[...file]]/page.tsx b/apps/viewer/app/pdf/[[...file]]/page.tsx
+index f13aaec7d..dba9c437b 100644
+<span class="d">--- a/apps/viewer/app/pdf/[[...file]]/page.tsx</span>
+<span class="a">+++ b/apps/viewer/app/pdf/[[...file]]/page.tsx</span>
+<span class="h">@@ -1,5 +1,6 @@</span>
+ import { redirect } from &quot;next/navigation&quot;;
+ import PDFViewer from &quot;./viewer&quot;;
+<span class="a">+import { Metadata } from &quot;next&quot;;</span>
+ 
+ const FIRST_PARTY_BASE_STORAGE_URL =
+   process.env.NEXT_PUBLIC_SUPABASE_URL + &quot;/storage/v1&quot;;
+<span class="h">@@ -12,10 +13,20 @@ type SearchParams = {</span>
+   url?: string | undefined;
+   object?: string | undefined;
+   app?: PdfViewerApp | undefined;
+<span class="a">+  title?: string | undefined;</span>
+<span class="a">+  favicon?: string | undefined;</span>
+<span class="a">+  logo?: string | undefined;</span>
+ };
+ type _SearchParams = Promise&lt;SearchParams&gt;;
+ 
+<span class="d">-function get_file_path(params: SearchParams &amp; Params): string | undefined {</span>
+<span class="a">+type Props = {</span>
+<span class="a">+  params: _Params;</span>
+<span class="a m">+  searchParams: _SearchParams;</span>
+<span class="a">+};</span>
+<span class="a">+</span>
+<span class="a">+function get_file_path_from_params(</span>
+<span class="a">+  params: SearchParams &amp; Params</span>
+<span class="a">+): string | undefined {</span>
+   const { file: _p_file, url: _q_url, object: _q_object } = params;
+ 
+   if (_q_object) {
+<span class="h">@@ -29,23 +40,45 @@ function get_file_path(params: SearchParams &amp; Params): string | undefined {</span>
+   return _p_file?.[0];
+ }
+ 
+<span class="d">-export default async function PDFViewerPage({</span>
+<span class="a">+function resolve_resource_url(path: string) {</span>
+<span class="a">+  // if url</span>
+<span class="a">+  if (path.startsWith(&quot;http&quot;)) {</span>
+<span class="a">+    return path;</span>
+<span class="a">+  }</span>
+<span class="a">+</span>
+<span class="a">+  // if object</span>
+<span class="a">+  return `${FIRST_PARTY_BASE_STORAGE_URL}/${path}`;</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+export async function generateMetadata({</span>
+   params,
+   searchParams,
+<span class="d">-}: {</span>
+<span class="d">-  params: _Params;</span>
+<span class="d m">-  searchParams: _SearchParams;</span>
+<span class="d">-}) {</span>
+<span class="a">+}: Props): Promise&lt;Metadata&gt; {</span>
+<span class="a">+  const p = {</span>
+<span class="a">+    ...(await params),</span>
+<span class="a">+    ...(await searchParams),</span>
+<span class="a">+  };</span>
+<span class="a">+</span>
+<span class="a">+  const title = p.title;</span>
+<span class="a">+</span>
+<span class="a">+  return {</span>
+<span class="a">+    title: title,</span>
+<span class="a">+  };</span>
+<span class="a">+}</span>
+<span class="a">+</span>
+<span class="a">+export default async function PDFViewerPage({ params, searchParams }: Props) {</span>
+   const p = {
+     ...(await params),
+     ...(await searchParams),
+   };
+   const app = p.app || &quot;&quot;;
+<span class="d">-  const file = get_file_path(p);</span>
+<span class="a">+  const title = p.title;</span>
+<span class="a">+  const logo = p.logo ? resolve_resource_url(p.logo) : undefined;</span>
+<span class="a">+  const file = get_file_path_from_params(p);</span>
+ 
+   if (!file) {
+     redirect(&quot;/&quot;);
+   }
+ 
+<span class="d">-  return &lt;PDFViewer app={app} file={file} /&gt;;</span>
+<span class="a">+  return &lt;PDFViewer app={app} file={file} title={title} logo={logo} /&gt;;</span>
+ }</pre><h2>Commit #2: <a href="https://github.com/gridaco/grida/commit/b72c783d3334eccc7bce3b695806430be1fdd072">b72c783d33</a> (2025-02-20T19:23:31+09:00)</h2><p class="k">viewer prefix<br>Path after this commit: apps/viewer/app/v1/pdf/[[...file]]/page.tsx. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/apps/viewer/app/pdf/[[...file]]/page.tsx b/apps/viewer/app/v1/pdf/[[...file]]/page.tsx
+similarity index 100%
+rename from apps/viewer/app/pdf/[[...file]]/page.tsx
+rename to apps/viewer/app/v1/pdf/[[...file]]/page.tsx</pre></body></html>

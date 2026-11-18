@@ -1,0 +1,76 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L091</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L091</h1><p><b>Repository:</b> <a href="https://github.com/sam-goodwin/alchemy">sam-goodwin/alchemy</a><br><b>File at merge:</b> alchemy/src/util/ignore-matcher.ts, line 411<br><b>Merge commit (birth):</b> <a href="https://github.com/sam-goodwin/alchemy/commit/dbea5738ce40d64793fd535b60534c7182233aeb">dbea5738ce</a> (2025-06-10T21:06:45)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/sam-goodwin/alchemy/tree/ff4155941fe13145370a52fb222d74cdd7247fb8">ff4155941f</a>)</p><p><b>The line:</b></p><pre><span class="t">    const key = UNDERSCORE + MODE_CHECK_IGNORE;</span></pre><h2>File at the merge commit, lines 403 to 419</h2><pre>  403 |     if (this._regex) {
+  404 |       return this._regex;
+  405 |     }
+  406 | 
+  407 |     return this._make(MODE_IGNORE);
+  408 |   }
+  409 | 
+  410 |   get checkRegex(): RegExp {
+<span class="t">  411 |     const key = UNDERSCORE + MODE_CHECK_IGNORE;</span>
+  412 | 
+  413 |     if (this._checkRegex) {
+  414 |       return this._checkRegex;
+  415 |     }
+  416 | 
+  417 |     return this._makeCheck(MODE_CHECK_IGNORE);
+  418 |   }
+  419 | </pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/sam-goodwin/alchemy/commit/510e29a45555269feec64e1f252926c2fecdf9b1">510e29a455</a> (2025-06-10T18:00:41-07:00)</h2><p class="k">feat(cloudflare): add routes support to Worker and Website resources (#336)<br>Path after this commit: alchemy/src/util/ignore-matcher.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/alchemy/src/util/ignore-matcher.ts b/alchemy/src/util/ignore-matcher.ts
+index c347aa2c8..48085ddd2 100644
+<span class="d">--- a/alchemy/src/util/ignore-matcher.ts</span>
+<span class="a">+++ b/alchemy/src/util/ignore-matcher.ts</span>
+<span class="h">@@ -245,7 +245,7 @@ const REPLACERS: Array&lt;[RegExp, (this: string, ...args: any[]) =&gt; string]&gt; = [</span>
+ 
+     // `\` is escaped by step 3
+     /(\\)?\[([^\]/]*?)(\\*)($|\])/g,
+<span class="d">-    (match, leadEscape, range, endEscape, close) =&gt;</span>
+<span class="a">+    (_match, leadEscape, range, endEscape, close) =&gt;</span>
+       leadEscape === ESCAPE
+         ? // &#x27;\\[bar]&#x27; -&gt; &#x27;\\\\[bar\\]&#x27;
+           `\\[${range}${cleanRangeBackSlash(endEscape)}${close}`
+<span class="h">@@ -398,7 +398,7 @@ class IgnoreRuleImpl implements IgnoreRule {</span>
+   }
+ 
+   get regex(): RegExp {
+<span class="d">-    const key = UNDERSCORE + MODE_IGNORE;</span>
+<span class="a">+    const _key = UNDERSCORE + MODE_IGNORE;</span>
+ 
+     if (this._regex) {
+       return this._regex;
+<span class="h">@@ -408,7 +408,7 @@ class IgnoreRuleImpl implements IgnoreRule {</span>
+   }
+ 
+   get checkRegex(): RegExp {
+<span class="d m">-    const key = UNDERSCORE + MODE_CHECK_IGNORE;</span>
+<span class="a">+    const _key = UNDERSCORE + MODE_CHECK_IGNORE;</span>
+ 
+     if (this._checkRegex) {
+       return this._checkRegex;</pre><h2>Commit #2: <a href="https://github.com/sam-goodwin/alchemy/commit/77d6cf0d5b53c770c832851684fb37f2e185096f">77d6cf0d5b</a> (2025-07-17T16:57:18-07:00)</h2><p class="k">fix(cloudflare): fix tanstack build and dev command (#702)<br>Path after this commit: alchemy/src/util/ignore-matcher.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/alchemy/src/util/ignore-matcher.ts b/alchemy/src/util/ignore-matcher.ts
+index 48085ddd2..86a211881 100644
+<span class="d">--- a/alchemy/src/util/ignore-matcher.ts</span>
+<span class="a">+++ b/alchemy/src/util/ignore-matcher.ts</span>
+<span class="h">@@ -835,7 +835,6 @@ const isPathValid = (path: string): boolean =&gt;</span>
+ const setupWindows = (): void =&gt; {
+   /* eslint no-control-regex: &quot;off&quot; */
+   const makePosix = (str: string): string =&gt;
+<span class="d">-    // biome-ignore lint/suspicious/noControlCharactersInRegex: adapted from node-ignore</span>
+     /^\\\\\?\\/.test(str) || /[&quot;&lt;&gt;|\u0000-\u001F]+/u.test(str)
+       ? str
+       : str.replace(/\\/g, &quot;/&quot;);</pre><h2>Commit #3: <a href="https://github.com/sam-goodwin/alchemy/commit/50a84fde99fec4aa179dcc14083e4a661b52fe7b">50a84fde99</a> (2025-08-25T16:46:48-07:00)</h2><p class="k">feat(cli): support --adopt flag to blanket adopt resources (#900)<br>Path after this commit: alchemy/src/util/ignore-matcher.ts. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/alchemy/src/util/ignore-matcher.ts b/alchemy/src/util/ignore-matcher.ts
+index 86a211881..63e96d27e 100644
+<span class="d">--- a/alchemy/src/util/ignore-matcher.ts</span>
+<span class="a">+++ b/alchemy/src/util/ignore-matcher.ts</span>
+<span class="h">@@ -515,7 +515,9 @@ class RuleManager {</span>
+ 
+     makeArray(
+       isString(pattern) ? splitPattern(pattern) : (pattern as any),
+<span class="d">-    ).forEach((p) =&gt; this._add(p));</span>
+<span class="a">+    ).forEach((p) =&gt; {</span>
+<span class="a">+      this._add(p);</span>
+<span class="a">+    });</span>
+ 
+     return this._added;
+   }</pre></body></html>

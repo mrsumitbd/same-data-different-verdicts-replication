@@ -1,0 +1,167 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L068</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L068</h1><p><b>Repository:</b> <a href="https://github.com/dotnet/aspire">dotnet/aspire</a><br><b>File at merge:</b> src/Aspire.Dashboard/Model/IconResolver.cs, line 51<br><b>Merge commit (birth):</b> <a href="https://github.com/dotnet/aspire/commit/f6c5f2a09b5b4c0ad42ac47091b8f25e7c015a90">f6c5f2a09b</a> (2025-03-29T02:22:42)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/dotnet/aspire/tree/28f530255626ca260d98a226f4626a9494e2913a">28f5302556</a>)</p><p><b>The line:</b></p><pre><span class="t">                Name = key.IconName,</span></pre><h2>File at the merge commit, lines 43 to 59</h2><pre>   43 |     }
+   44 | 
+   45 |     private static bool TryGetIcon(IconKey key, IconSize size, [NotNullWhen(true)] out CustomIcon? icon)
+   46 |     {
+   47 |         try
+   48 |         {
+   49 |             icon = (new IconInfo
+   50 |             {
+<span class="t">   51 |                 Name = key.IconName,</span>
+   52 |                 Variant = key.IconVariant,
+   53 |                 Size = size
+   54 |             }).GetInstance();
+   55 |             return true;
+   56 |         }
+   57 |         catch
+   58 |         {
+   59 |             // Icon name or size couldn&#x27;t be found.</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/dotnet/aspire/commit/e0e5da05778f28b52a81dff584f756a5fd377395">e0e5da0577</a> (2025-05-20T14:17:56-06:00)</h2><p class="k">Update FluentUI to 4.11.9 (#9417)<br>Path after this commit: src/Aspire.Dashboard/Model/IconResolver.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Dashboard/Model/IconResolver.cs b/src/Aspire.Dashboard/Model/IconResolver.cs
+index 5f1733ce1c..6f9289f980 100644
+<span class="d">--- a/src/Aspire.Dashboard/Model/IconResolver.cs</span>
+<span class="a">+++ b/src/Aspire.Dashboard/Model/IconResolver.cs</span>
+<span class="h">@@ -44,21 +44,13 @@ public static class IconResolver</span>
+ 
+     private static bool TryGetIcon(IconKey key, IconSize size, [NotNullWhen(true)] out CustomIcon? icon)
+     {
+<span class="d">-        try</span>
+<span class="a">+        var iconInfo = new IconInfo</span>
+         {
+<span class="d">-            icon = (new IconInfo</span>
+<span class="d">-            {</span>
+<span class="d m">-                Name = key.IconName,</span>
+<span class="d">-                Variant = key.IconVariant,</span>
+<span class="d">-                Size = size</span>
+<span class="d">-            }).GetInstance();</span>
+<span class="d">-            return true;</span>
+<span class="d">-        }</span>
+<span class="d">-        catch</span>
+<span class="d">-        {</span>
+<span class="d">-            // Icon name or size couldn&#x27;t be found.</span>
+<span class="d">-            icon = null;</span>
+<span class="d">-            return false;</span>
+<span class="d">-        }</span>
+<span class="a m">+            Name = key.IconName,</span>
+<span class="a">+            Variant = key.IconVariant,</span>
+<span class="a">+            Size = size</span>
+<span class="a">+        };</span>
+<span class="a">+</span>
+<span class="a">+        return iconInfo.TryGetInstance(out icon);</span>
+     }
+ }</pre><h2>Commit #2: <a href="https://github.com/dotnet/aspire/commit/f237b7f15cb0a15dc2ac5a44b09625b2814fe8c3">f237b7f15c</a> (2025-09-30T07:14:52-07:00)</h2><p class="k">Refactor IconResolver to singleton with DI and logging (#11729)<br>Path after this commit: src/Aspire.Dashboard/Model/IconResolver.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Dashboard/Model/IconResolver.cs b/src/Aspire.Dashboard/Model/IconResolver.cs
+index 6f9289f980..3bbce96638 100644
+<span class="d">--- a/src/Aspire.Dashboard/Model/IconResolver.cs</span>
+<span class="a">+++ b/src/Aspire.Dashboard/Model/IconResolver.cs</span>
+<span class="h">@@ -7,15 +7,21 @@ using Microsoft.FluentUI.AspNetCore.Components;</span>
+ 
+ namespace Aspire.Dashboard.Model;
+ 
+<span class="d">-public static class IconResolver</span>
+<span class="a">+public sealed class IconResolver</span>
+ {
+     private sealed record IconKey(string IconName, IconSize DesiredIconSize, IconVariant IconVariant);
+<span class="d">-    private static readonly ConcurrentDictionary&lt;IconKey, Icon?&gt; s_iconCache = new();</span>
+<span class="a">+    private readonly ConcurrentDictionary&lt;IconKey, Icon?&gt; _iconCache = new();</span>
+<span class="a">+    private readonly ILogger&lt;IconResolver&gt; _logger;</span>
+ 
+<span class="d">-    public static Icon? ResolveIconName(string iconName, IconSize? desiredIconSize, IconVariant? iconVariant)</span>
+<span class="a">+    public IconResolver(ILogger&lt;IconResolver&gt; logger)</span>
+<span class="a">+    {</span>
+<span class="a">+        _logger = logger;</span>
+<span class="a">+    }</span>
+<span class="a">+</span>
+<span class="a">+    public Icon? ResolveIconName(string iconName, IconSize? desiredIconSize, IconVariant? iconVariant)</span>
+     {
+         // Icons.GetInstance isn&#x27;t efficient. Cache icon lookup.
+<span class="d">-        return s_iconCache.GetOrAdd(new IconKey(iconName, desiredIconSize ?? IconSize.Size20, iconVariant ?? IconVariant.Regular), static key =&gt;</span>
+<span class="a">+        return _iconCache.GetOrAdd(new IconKey(iconName, desiredIconSize ?? IconSize.Size20, iconVariant ?? IconVariant.Regular), key =&gt;</span>
+         {
+             // Try to get the desired size.
+             CustomIcon? icon;
+<span class="h">@@ -38,6 +44,7 @@ public static class IconResolver</span>
+                 return icon;
+             }
+ 
+<span class="a">+            _logger.LogWarning(&quot;Icon &#x27;{IconName}&#x27; (variant: {IconVariant}, size: {IconSize}) could not be resolved.&quot;, key.IconName, key.IconVariant, key.DesiredIconSize);</span>
+             return null;
+         });
+     }</pre><h2>Commit #3: <a href="https://github.com/dotnet/aspire/commit/81d96226bae01ec97e816268eb1d6e8dfb3e031a">81d96226ba</a> (2025-10-14T00:12:42-07:00)</h2><p class="k">Add dashboard language icons for Python, JavaScript and C# (#11999)<br>Path after this commit: src/Aspire.Dashboard/Model/IconResolver.cs. Lines with exactly this text in the file after the commit: 0.</p><pre>diff --git a/src/Aspire.Dashboard/Model/IconResolver.cs b/src/Aspire.Dashboard/Model/IconResolver.cs
+index 3bbce96638..2a8dfcf637 100644
+<span class="d">--- a/src/Aspire.Dashboard/Model/IconResolver.cs</span>
+<span class="a">+++ b/src/Aspire.Dashboard/Model/IconResolver.cs</span>
+<span class="h">@@ -10,6 +10,7 @@ namespace Aspire.Dashboard.Model;</span>
+ public sealed class IconResolver
+ {
+     private sealed record IconKey(string IconName, IconSize DesiredIconSize, IconVariant IconVariant);
+<span class="a">+    private static readonly List&lt;IconSize&gt; s_iconSizes = [IconSize.Size16, IconSize.Size20, IconSize.Size24];</span>
+     private readonly ConcurrentDictionary&lt;IconKey, Icon?&gt; _iconCache = new();
+     private readonly ILogger&lt;IconResolver&gt; _logger;
+ 
+<span class="h">@@ -25,31 +26,60 @@ public sealed class IconResolver</span>
+         {
+             // Try to get the desired size.
+             CustomIcon? icon;
+<span class="d">-            if (TryGetIcon(key, key.DesiredIconSize, out icon))</span>
+<span class="a">+            if (TryGetIconCore(key, key.DesiredIconSize, out icon))</span>
+             {
+                 return icon;
+             }
+ 
+<span class="a">+            var iconSizesTried = new List&lt;IconSize&gt;</span>
+<span class="a">+            {</span>
+<span class="a">+                key.DesiredIconSize</span>
+<span class="a">+            };</span>
+<span class="a">+</span>
+             // Some icons aren&#x27;t available in all sizes. Try until we find a match. Prefer size bigger than desired.
+<span class="d">-            if (key.DesiredIconSize &lt;= IconSize.Size16 &amp;&amp; TryGetIcon(key, IconSize.Size16, out icon))</span>
+<span class="a">+            if (key.DesiredIconSize &lt;= IconSize.Size16 &amp;&amp; TryGetIcon(iconSizesTried, key, IconSize.Size16, out icon))</span>
+             {
+                 return icon;
+             }
+<span class="d">-            if (key.DesiredIconSize &lt;= IconSize.Size20 &amp;&amp; TryGetIcon(key, IconSize.Size20, out icon))</span>
+<span class="a">+            if (key.DesiredIconSize &lt;= IconSize.Size20 &amp;&amp; TryGetIcon(iconSizesTried, key, IconSize.Size20, out icon))</span>
+             {
+                 return icon;
+             }
+<span class="d">-            if (key.DesiredIconSize &lt;= IconSize.Size24 &amp;&amp; TryGetIcon(key, IconSize.Size24, out icon))</span>
+<span class="a">+            if (key.DesiredIconSize &lt;= IconSize.Size24 &amp;&amp; TryGetIcon(iconSizesTried, key, IconSize.Size24, out icon))</span>
+             {
+                 return icon;
+             }
+ 
+<span class="a">+            // Usually icons are always available in bigger sizes and smaller sizes are removed.</span>
+<span class="a">+            // This is because it isn&#x27;t possible to scale down the detail. For example, BrainCircuit has a size 20 icon, but not a size 16 icon.</span>
+<span class="a">+            // There are some rare icons that only have smaller sizes, For example, CodePyRectangle only has size 16 icon.</span>
+<span class="a">+            // To handle the situation where we ask for a bigger than available icon, fall back to try any remaining icon sizes, including smaller.</span>
+<span class="a">+            foreach (var size in s_iconSizes)</span>
+<span class="a">+            {</span>
+<span class="a">+                if (TryGetIcon(iconSizesTried, key, size, out icon))</span>
+<span class="a">+                {</span>
+<span class="a">+                    return icon;</span>
+<span class="a">+                }</span>
+<span class="a">+            }</span>
+<span class="a">+</span>
+             _logger.LogWarning(&quot;Icon &#x27;{IconName}&#x27; (variant: {IconVariant}, size: {IconSize}) could not be resolved.&quot;, key.IconName, key.IconVariant, key.DesiredIconSize);
+             return null;
+         });
+<span class="a">+</span>
+<span class="a">+        static bool TryGetIcon(List&lt;IconSize&gt; triedSizes, IconKey key, IconSize size, [NotNullWhen(true)] out CustomIcon? icon)</span>
+<span class="a">+        {</span>
+<span class="a">+            if (triedSizes.Contains(size))</span>
+<span class="a">+            {</span>
+<span class="a">+                icon = null;</span>
+<span class="a">+                return false;</span>
+<span class="a">+            }</span>
+<span class="a">+</span>
+<span class="a">+            triedSizes.Add(size);</span>
+<span class="a">+            return TryGetIconCore(key, size, out icon);</span>
+<span class="a">+        }</span>
+     }
+ 
+<span class="d">-    private static bool TryGetIcon(IconKey key, IconSize size, [NotNullWhen(true)] out CustomIcon? icon)</span>
+<span class="a">+    private static bool TryGetIconCore(IconKey key, IconSize size, [NotNullWhen(true)] out CustomIcon? icon)</span>
+     {
+         var iconInfo = new IconInfo
+         {</pre></body></html>

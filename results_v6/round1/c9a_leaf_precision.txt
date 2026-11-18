@@ -1,0 +1,17 @@
+C9a. Precision of the AST rule labels per tier (results/ast_validation_scores.txt, Section B; manual labels of the AST validation sample, not re-drawn on v6)
+
+rule leaf-only: human_supervised 27/32 = 84.4%; fully_autonomous 30/32 = 93.8%; human 26/32 = 81.2%
+  Fisher human_supervised vs human: p = 1.000
+  Fisher fully_autonomous vs human: p = 0.257
+  chi-square across the three tiers: p = 0.315
+
+rule structural: human_supervised 87/92 = 94.6%; fully_autonomous 47/54 = 87.0%; human 204/211 = 96.7%
+  Fisher human_supervised vs human: p = 0.522
+  Fisher fully_autonomous vs human: p = 0.011
+  chi-square across the three tiers: p = 0.019
+
+Leaf-only share of modified lines with known AST status, v6 rule share corrected with each tier's precisions
+  (true leaf = p_rule * prec_leaf + (1 - p_rule) * (1 - prec_struct), as score_ast_validation.py Section C)
+  human_supervised  rule 7.0%  corrected 11.0%
+  fully_autonomous  rule 14.2%  corrected 24.4%
+  human             rule 5.8%  corrected 7.8%

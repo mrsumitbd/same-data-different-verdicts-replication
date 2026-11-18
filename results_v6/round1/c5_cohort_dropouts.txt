@@ -1,0 +1,33 @@
+>= 240 d (8 months): human_supervised: PRs kept 3/1055, lines kept 1,032/177,787 (0.6%), repos kept 3
+>= 240 d (8 months): fully_autonomous: PRs kept 270/412, lines kept 33,596/87,634 (38.3%), repos kept 26
+>= 240 d (8 months): human: PRs kept 884/1327, lines kept 247,385/378,756 (65.3%), repos kept 164
+>= 300 d (10 months): human_supervised: PRs kept 0/1055, lines kept 0/177,787 (0.0%), repos kept 0
+>= 300 d (10 months): fully_autonomous: PRs kept 125/412, lines kept 16,865/87,634 (19.2%), repos kept 14
+>= 300 d (10 months): human: PRs kept 415/1327, lines kept 71,974/378,756 (19.0%), repos kept 108
+
+Devin PRs by size (top 15), follow-up days, kept under 8/10 months:
+  pdfme/pdfme#1059: 36,537 lines (41.7% of Devin lines), merged 2025-06-26, follow-up 189 d, 8m DROPPED, 10m DROPPED
+  sam-goodwin/alchemy#251: 3,867 lines (4.4% of Devin lines), merged 2025-06-04, follow-up 211 d, 8m DROPPED, 10m DROPPED
+  kiwicom/orbit#4576: 1,536 lines (1.8% of Devin lines), merged 2025-01-22, follow-up 343 d, 8m kept, 10m kept
+  marimo-team/marimo#4010: 1,127 lines (1.3% of Devin lines), merged 2025-03-07, follow-up 300 d, 8m kept, 10m DROPPED
+  crewaiinc/crewai#1892: 902 lines (1.0% of Devin lines), merged 2025-01-16, follow-up 349 d, 8m kept, 10m kept
+  crewaiinc/crewai#1828: 896 lines (1.0% of Devin lines), merged 2024-12-31, follow-up 366 d, 8m kept, 10m kept
+  assistant-ui/assistant-ui#2116: 877 lines (1.0% of Devin lines), merged 2025-06-17, follow-up 198 d, 8m DROPPED, 10m DROPPED
+  sam-goodwin/alchemy#275: 811 lines (0.9% of Devin lines), merged 2025-06-05, follow-up 210 d, 8m DROPPED, 10m DROPPED
+  jina-ai/node-deepresearch#48: 800 lines (0.9% of Devin lines), merged 2025-02-09, follow-up 326 d, 8m kept, 10m kept
+  marimo-team/marimo#4055: 755 lines (0.9% of Devin lines), merged 2025-03-11, follow-up 296 d, 8m kept, 10m DROPPED
+  lingodotdev/lingo.dev#708: 700 lines (0.8% of Devin lines), merged 2025-05-02, follow-up 243 d, 8m kept, 10m DROPPED
+  schemahero/schemahero#1171: 617 lines (0.7% of Devin lines), merged 2025-05-02, follow-up 243 d, 8m kept, 10m DROPPED
+  onlook-dev/onlook#1386: 605 lines (0.7% of Devin lines), merged 2025-02-15, follow-up 319 d, 8m kept, 10m kept
+  crewaiinc/crewai#2866: 594 lines (0.7% of Devin lines), merged 2025-05-20, follow-up 225 d, 8m DROPPED, 10m DROPPED
+  agentops-ai/agentops#605: 564 lines (0.6% of Devin lines), merged 2024-12-29, follow-up 368 d, 8m kept, 10m kept
+
+Devin PRs dropped at 8 months: 142 of 412 PRs, 54,038 lines = 61.7% of Devin lines
+
+Human-supervised lines kept at 8 months by agent:
+                    n  kept8
+agent_name                  
+Claude Code     48182   1032
+Cursor          13340      0
+GitHub Copilot  67398      0
+OpenAI Codex    48867      0

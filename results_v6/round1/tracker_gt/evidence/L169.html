@@ -1,0 +1,61 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L169</title><style>body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#222}
+pre{background:#f6f8fa;padding:8px;overflow-x:auto;font-size:12px;line-height:1.35}
+.t{background:#fff3b0;font-weight:bold}.a{color:#116329}.d{color:#82071e}.h{color:#6639ba}
+.m{background:#fff3b0}h2{border-top:1px solid #ccc;padding-top:12px;font-size:16px}
+.k{color:#555;font-size:13px}</style></head><body><h1>L169</h1><p><b>Repository:</b> <a href="https://github.com/prebid/prebid.js">prebid/prebid.js</a><br><b>File at merge:</b> test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js, line 475<br><b>Merge commit (birth):</b> <a href="https://github.com/prebid/prebid.js/commit/a2d74b8bbac47fcbcd9457a432704ef27a305d27">a2d74b8bba</a> (2025-07-08T16:19:44)<br><b>Window ends:</b> 2025-12-31 (end snapshot <a href="https://github.com/prebid/prebid.js/tree/60baec61d09bdc52b09bde5de4ce4cc0f84f0953">60baec61d0</a>)</p><p><b>The line:</b></p><pre><span class="t">    it(&#x27;should populate ad state from event&#x27;, function () {</span></pre><h2>File at the merge commit, lines 467 to 483</h2><pre>  467 |       ts.updateForTimeEvent({currentTime: 1, duration: 10});
+  468 |       expect(ts.getState().playbackMode).to.equal(PLAYBACK_MODE.VOD);
+  469 |       ts.updateForTimeEvent({currentTime: 1, duration: 0});
+  470 |       expect(ts.getState().playbackMode).to.equal(PLAYBACK_MODE.LIVE);
+  471 |       ts.updateForTimeEvent({currentTime: 1, duration: -1});
+  472 |       expect(ts.getState().playbackMode).to.equal(PLAYBACK_MODE.DVR);
+  473 |     });
+  474 | 
+<span class="t">  475 |     it(&#x27;should populate ad state from event&#x27;, function () {</span>
+  476 |       const as = adStateFactory();
+  477 |       as.updateForEvent({
+  478 |         adId: &#x27;1&#x27;,
+  479 |         adSystem: &#x27;sys&#x27;,
+  480 |         advertiserName: &#x27;adv&#x27;,
+  481 |         clickThroughUrl: &#x27;clk&#x27;,
+  482 |         creativeId: &#x27;c1&#x27;,
+  483 |         dealId: &#x27;d1&#x27;,</pre><p class="k">Below are all 3 first-parent commits of the default branch, in time order, that touch this file (following renames) after the merge commit and up to the end of the window. Each shows the diff of this file against the commit's first parent. Lines whose text equals the line above are shaded. Identical text is not proof that it is the same line.</p><h2>Commit #1: <a href="https://github.com/prebid/prebid.js/commit/7203d19a6349b12b34cd82dc7afa2fb15fcef918">7203d19a63</a> (2025-07-10T10:32:20-04:00)</h2><p class="k">Linting: remove exception (#13518)<br>Path after this commit: test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js b/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js
+index e4807a917..7a23b5f5c 100644
+<span class="d">--- a/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js</span>
+<span class="a">+++ b/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js</span>
+<span class="h">@@ -176,7 +176,7 @@ describe(&#x27;videojsProvider&#x27;, function () {</span>
+         }
+       }
+ 
+<span class="d">-      let provider = VideojsProvider(config, videojs, null, null, null, utils);</span>
+<span class="a">+      const provider = VideojsProvider(config, videojs, null, null, null, utils);</span>
+       provider.init();
+       const video = provider.getOrtbVideo();
+ </pre><h2>Commit #2: <a href="https://github.com/prebid/prebid.js/commit/217887e9c152153f44535912ba049235f76c0b7d">217887e9c1</a> (2025-07-14T11:52:48-06:00)</h2><p class="k">Test suite: enforce import extensions in tests (#13569)<br>Path after this commit: test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js b/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js
+index 7a23b5f5c..15751c412 100644
+<span class="d">--- a/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js</span>
+<span class="a">+++ b/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js</span>
+<span class="h">@@ -2,7 +2,7 @@</span>
+ import {
+   SETUP_COMPLETE, SETUP_FAILED
+ } from &#x27;libraries/video/constants/events.js&#x27;;
+<span class="d">-import { getWinDimensions } from &#x27;../../../../../src/utils&#x27;;</span>
+<span class="a">+import { getWinDimensions } from &#x27;../../../../../src/utils.js&#x27;;</span>
+ 
+ const {VideojsProvider, utils, adStateFactory, timeStateFactory} = require(&#x27;modules/videojsVideoProvider&#x27;);
+ </pre><h2>Commit #3: <a href="https://github.com/prebid/prebid.js/commit/7b41a953b67c361a33b00575a27171480f71d411">7b41a953b6</a> (2025-07-29T22:09:14-04:00)</h2><p class="k">Test suite: enforce no-unused-expressions in tests (#13570)<br>Path after this commit: test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js. Lines with exactly this text in the file after the commit: 1.</p><pre>diff --git a/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js b/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js
+index 15751c412..6646cfb61 100644
+<span class="d">--- a/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js</span>
+<span class="a">+++ b/test/spec/modules/videoModule/submodules/videojsVideoProvider_spec.js</span>
+<span class="h">@@ -12,9 +12,9 @@ const {</span>
+ const { PLAYBACK_MODE } = require(&#x27;libraries/video/constants/constants.js&#x27;);
+ 
+ const videojs = require(&#x27;video.js&#x27;).default;
+<span class="d">-require(&#x27;videojs-playlist&#x27;).default;</span>
+<span class="d">-require(&#x27;videojs-ima&#x27;).default;</span>
+<span class="d">-require(&#x27;videojs-contrib-ads&#x27;).default;</span>
+<span class="a">+require(&#x27;videojs-playlist&#x27;);</span>
+<span class="a">+require(&#x27;videojs-ima&#x27;);</span>
+<span class="a">+require(&#x27;videojs-contrib-ads&#x27;);</span>
+ 
+ describe(&#x27;videojsProvider&#x27;, function () {
+   let config;</pre></body></html>
